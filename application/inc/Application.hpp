@@ -1,3 +1,5 @@
+#pragma once
+
 #include <SFML/Graphics/RenderWindow.hpp>
 
 class Application
@@ -10,7 +12,6 @@ class Application
         void processInput();
         void update(sf::Time fixedTimeStep);
         void render();
-
 
     private:
         static const sf::Time TimePerFrame;
