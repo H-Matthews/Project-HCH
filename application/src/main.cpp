@@ -1,9 +1,10 @@
-// from Util lib
-#include "Logger.hpp"
+#include "Application.hpp"
 
 int main()
 {
-    Utility::Logger::log("This is a message");
 
+    Application game;
+    game.run();
+    
     return 0;
 }
