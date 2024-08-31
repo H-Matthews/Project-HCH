@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(SRC src/main.cpp  src/Application.cpp)
-set(INC inc/Application.hpp)
+set(SRC src/main.cpp  src/Application.cpp src/SceneNode.cpp)
+set(INC inc/Application.hpp inc/SceneNode.hpp)
 
 add_executable(hch ${SRC} ${INC})
 
