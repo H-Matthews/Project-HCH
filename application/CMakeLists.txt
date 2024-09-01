@@ -1,7 +1,21 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(SRC src/main.cpp  src/Application.cpp src/SceneNode.cpp)
-set(INC inc/Application.hpp inc/SceneNode.hpp)
+set(SRC src/main.cpp  
+        src/Application.cpp 
+        src/SceneNode.cpp
+        src/State.cpp 
+        src/StateStack.cpp 
+        src/MenuState.cpp
+        src/GameState.cpp
+        src/PauseState.cpp)
+
+set(INC inc/Application.hpp 
+        inc/SceneNode.hpp 
+        inc/State.hpp
+        inc/StateStack.hpp 
+        inc/MenuState.hpp 
+        inc/GameState.hpp
+        inc/PauseState.hpp)
 
 add_executable(hch ${SRC} ${INC})
 
