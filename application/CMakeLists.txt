@@ -20,12 +20,12 @@ set(INC inc/Application.hpp
 add_executable(hch ${SRC} ${INC})
 
 if(MSVC)
-  target_compile_options(hch PRIVATE /W4 /WX)
+  target_compile_options(hch PRIVATE /W4 )
 else()
   target_compile_options(hch PRIVATE -Wall -Wextra -Wpedantic )
 endif()
 
-target_link_libraries(hch PRIVATE utility sfml-graphics utility)
+target_link_libraries(hch PRIVATE sfml-graphics utility)
 target_include_directories(utility PUBLIC ../lib/utility/inc inc)
 target_compile_features(hch PRIVATE cxx_std_17)
 
