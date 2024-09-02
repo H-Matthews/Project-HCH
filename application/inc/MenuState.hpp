@@ -7,7 +7,7 @@
 class MenuState : public State 
 {
     public:
-        MenuState(StateStack& stack, SharedObjects sharedObjects);
+        MenuState(StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects);
 
         virtual void draw();
         virtual bool update(sf::Time fixedTimeStep);

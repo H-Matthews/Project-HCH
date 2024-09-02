@@ -5,6 +5,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include <memory>
+#include <string>
 
 namespace States
 {
@@ -31,7 +32,7 @@ class State
         };
 
     public:
-        State(StateStack& stack, SharedObjects sObjects);
+        State(StateStack& stack, std::string mStateIdentifierString, SharedObjects sObjects);
         virtual ~State();
 
         virtual void draw() = 0;
@@ -47,5 +48,6 @@ class State
 
     private:
         StateStack* mStack;
+        std::string mStateIdentifierString;
         SharedObjects mSharedObjects;
 };

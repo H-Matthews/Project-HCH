@@ -5,8 +5,8 @@
 
 #include <iostream>
 
-PauseState::PauseState(StateStack& stack, SharedObjects sharedObjects) : 
-State(stack, sharedObjects)
+PauseState::PauseState(StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) : 
+State(stack, stateIdentifier, sharedObjects)
 {
     std::cout << "Creating PauseState " << std::endl;
 

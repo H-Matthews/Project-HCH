@@ -5,7 +5,7 @@
 class GameState : public State
 {
     public:
-        GameState(StateStack& stack, SharedObjects sharedObjects);
+        GameState(StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects);
 
         virtual void draw();
         virtual bool update(sf::Time fixedTimeStep);

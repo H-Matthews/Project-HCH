@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-GameState::GameState(StateStack& stack, SharedObjects sharedObjects) : 
-State(stack, sharedObjects)
+GameState::GameState(StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) : 
+State(stack, stateIdentifier, sharedObjects)
 {
     std::cout << "Creating GameState " << std::endl;
 

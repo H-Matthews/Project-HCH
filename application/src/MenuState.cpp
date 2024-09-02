@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-MenuState::MenuState(StateStack& stack, SharedObjects sharedObjects) :
-State(stack, sharedObjects)
+MenuState::MenuState(StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) :
+State(stack, stateIdentifier, sharedObjects)
 {
     std::cout << "Creating MenuState " << std::endl;
     

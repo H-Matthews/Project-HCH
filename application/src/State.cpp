@@ -6,8 +6,9 @@
  {
  }
 
- State::State(StateStack& stack, SharedObjects sObjects) :
+ State::State(StateStack& stack, std::string stateIdentifier, SharedObjects sObjects) :
  mStack(&stack),
+ mStateIdentifierString(stateIdentifier),
  mSharedObjects(sObjects)
  {
  }

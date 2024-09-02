@@ -5,7 +5,7 @@
 class PauseState : public State 
 {
     public:
-        PauseState(StateStack& stack, SharedObjects sharedObjects);
+        PauseState(StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects);
 
         virtual void draw();
 

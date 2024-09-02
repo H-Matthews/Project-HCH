@@ -1,6 +1,7 @@
 #pragma once
 
 #include "State.hpp"
+#include "StringOperations.hpp"
 
 #include <SFML/System/Time.hpp>
 
@@ -8,6 +9,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <sstream>
 
 class StateStack 
 {
@@ -51,17 +53,18 @@ class StateStack
     private:
         std::vector<std::unique_ptr<State>> mStack;
         std::vector<pendingStateRequests> mPendingList;
-        std::map<States::ID, std::function<std::unique_ptr<State>()>> mRegistry;
-
         State::SharedObjects mSharedObjects;
+        std::map<States::ID, std::function<std::unique_ptr<State>()>> mRegistry;
 };
 
 template <typename T>
 void StateStack::registerState(States::ID stateID)
 {
+    const std::string stateString(Utility::statesEnumToString(stateID));
+
     // Stores a Lambda in mRegistry
-    mRegistry[stateID] = [this] ()
+    mRegistry[stateID] = [this, stateString] ()
     {
-        return std::unique_ptr<State>(new T(*this, mSharedObjects));
+        return std::unique_ptr<State>(new T(*this, stateString, mSharedObjects));
     };
 }
