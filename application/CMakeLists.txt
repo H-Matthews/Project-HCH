@@ -1,9 +1,29 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(SRC src/main.cpp  src/Application.cpp)
-set(INC inc/Application.hpp)
+set(SRC src/main.cpp  
+        src/Application.cpp 
+        src/SceneNode.cpp
+        src/State.cpp 
+        src/StateStack.cpp 
+        src/MenuState.cpp
+        src/GameState.cpp
+        src/PauseState.cpp)
+
+set(INC inc/Application.hpp 
+        inc/SceneNode.hpp 
+        inc/State.hpp
+        inc/StateStack.hpp 
+        inc/MenuState.hpp 
+        inc/GameState.hpp
+        inc/PauseState.hpp)
 
 add_executable(hch ${SRC} ${INC})
+
+if(MSVC)
+  target_compile_options(hch PRIVATE /W4 )
+else()
+  target_compile_options(hch PRIVATE -Wall -Wextra -Wpedantic )
+endif()
 
 target_link_libraries(hch PRIVATE sfml-graphics utility)
 target_include_directories(utility PUBLIC ../lib/utility/inc inc)
