@@ -2,20 +2,24 @@
 
 #include "MessageNetwork.hpp"
 
+#include <string>
+
 class MessageNode 
 {
     public:
-        MessageNode(MessageNetwork* messageNetwork);
+        MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName);
 
     protected:
         std::function<void (Message)> getNotifyFunc();
         void send(Message message);
         virtual void onNotify(Message message);
 
-        void registerMessageListener();
+        void registerSubscriberTopics();
 
     protected:
         MessageNetwork* mMessageNetwork;
-        MessageFlag mSubscribeTopics;
-        MessageFlag mPublishTopics;
+
+        MessageTopicFlag mSubscribeToTopics;
+        MessageTopicFlag mPublishToTopics;
+        std::string mMessageNodeName;
 };

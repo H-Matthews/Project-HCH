@@ -1,11 +1,14 @@
 #include "Application.hpp"
-#include "MessageFlag.hpp"
+#include "MessageTopicFlag.hpp"
 #include "MessageNetwork.hpp"
 
-#include "TestA.hpp"
-#include "TestB.hpp"
+// Just for Testing
+#include "TestComponentPub.hpp"
+#include "TestComponentSub.hpp"
+#include "TestComponentSub2.hpp"
 
 #include <iostream>
+#include <chrono>
 
 int main()
 {
@@ -13,16 +16,28 @@ int main()
     //Application game;
     //game.run();
 
+    auto begin = std::chrono::steady_clock::now();
+
     MessageNetwork mMessageNetwork;
 
-    TestA testA(&mMessageNetwork);  //Sub
-    TestB testB(&mMessageNetwork);  //Pub
+    TestComponentPub componentPub(&mMessageNetwork);    //Pub
+    TestComponentSub componentSub(&mMessageNetwork);    //Sub --> PLAYER Messages
+    TestComponentSub2 componentSub2(&mMessageNetwork);  //Sub --> ENEMY Messages
 
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < 1000; i++)
     {
-        testB.update();
-        mMessageNetwork.notifyListeners();
+        componentPub.update();
+        mMessageNetwork.notifySubscribers();
     }
+
+    auto end = std::chrono::steady_clock::now();
+
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
+    std::cout << "Elapsed Time: " << duration.count();
+    std::cout << " Microseconds" << std::endl;
+
+    if(duration.count() < 1000000)
+        std::cout << "Under a second " << std::endl;
     
     return 0;
 }

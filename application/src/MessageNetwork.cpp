@@ -1,24 +1,65 @@
 #include "MessageNetwork.hpp"
 
-void MessageNetwork::addListener(std::function<void (Message)> messageListener)
+MessageNetwork::MessageNetwork() :
+    mSubscriberList(),
+    mMessageQueue()
 {
-    listener.push_back(messageListener);
+    registerTopic(MessageTopic::PLAYER);
+    registerTopic(MessageTopic::ENEMY);
 }
 
-void MessageNetwork::addMessage(Message message)
+void MessageNetwork::addSubscriber(MessageTopicFlag topicFlag, std::function<void (Message)> messageSubscriber)
 {
-    messageQueue.push(message);
-}
-
-void MessageNetwork::notifyListeners()
-{
-    while( !messageQueue.empty())
+    if(topicFlag.getFlagValue() != 0)
     {
-        for(auto iter = listener.begin(); iter != listener.end(); ++iter)
+        // Add subscriber to map 
+        for(auto& [topic, subscribers] : mSubscriberList)
         {
-            (*iter)(messageQueue.front());
+            if(topicFlag.hasFlag(topic))
+                subscribers.push_back(messageSubscriber);
+        }
+    }
+}
+
+void MessageNetwork::sendMessage(Message message)
+{
+    mMessageQueue.push(message);
+}
+
+// Note: Potentially dangerous due to the nested loops
+// Although it should be fine to use for PlayerRequests due to the small volume of messages needed
+void MessageNetwork::notifySubscribers()
+{
+    while( !mMessageQueue.empty())
+    {
+        // Loop through all topics the message is publishing
+        for(const auto& topic : mMessageQueue.front().getTopicList())
+        {
+            // Gets list of subscribers for that topic
+            if(mSubscriberList.find(topic) != mSubscriberList.end())
+            {
+                // Call each subscriber
+                for(const auto& subscriber : mSubscriberList[topic])
+                {
+                    subscriber(mMessageQueue.front());
+                }
+            }
         }
 
-        messageQueue.pop();
+        mMessageQueue.pop();
     }
+}
+
+bool MessageNetwork::registerTopic(MessageTopic topic)
+{
+    bool successfulInsertion = false;
+
+    // Ensure the topic is not already in the map
+    if(mSubscriberList.find(topic) == mSubscriberList.end())
+    {
+        mSubscriberList[topic];
+        successfulInsertion = true;
+    }
+
+    return successfulInsertion;
 }

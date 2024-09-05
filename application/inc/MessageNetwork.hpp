@@ -6,16 +6,17 @@
 #include <queue>
 #include <map>
 
-class Entity;
-
 class MessageNetwork
 {
     public:
-        void addListener(std::function<void (Message)> messageListener);
-        void addMessage(Message message);
-        void notifyListeners();
+        MessageNetwork();
+        void addSubscriber(MessageTopicFlag topicFlag, std::function<void (Message)> messageListener);
+        void sendMessage(Message message);
+        void notifySubscribers();
 
     private:
-        std::vector<std::function<void (Message)>> listener;
-        std::queue<Message> messageQueue;
+        bool registerTopic(MessageTopic topic);
+
+        std::map< MessageTopic, std::vector<std::function<void (Message)>>> mSubscriberList;
+        std::queue<Message> mMessageQueue;
 };

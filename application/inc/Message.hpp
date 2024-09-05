@@ -1,18 +1,16 @@
 #pragma once
 
-#include "MessageFlag.hpp"
+#include "MessageTopicFlag.hpp"
 
-enum class MessageType
-{
-    Movement = 0,
-    Combat
-};
-
-struct Message
+class Message
 {
     public:
-        Message(MessageFlag messageRecipients, MessageType messageType);
+        Message(MessageTopicFlag topic);
 
-        MessageFlag mMessageRecipients;
-        MessageType mMessageType;
+        void determineTopics();
+        std::vector< MessageTopic > getTopicList();
+
+    private:
+        MessageTopicFlag mTopicFlag;
+        std::vector< MessageTopic > mTopicList;
 };  

@@ -8,12 +8,13 @@ set(SRC src/main.cpp
         src/MenuState.cpp
         src/GameState.cpp
         src/PauseState.cpp
-        src/MessageFlag.cpp
+        src/MessageTopicFlag.cpp
         src/Message.cpp
         src/MessageNetwork.cpp
         src/MessageNode.cpp 
-        src/TestA.cpp 
-        src/TestB.cpp )
+        src/TestComponentPub.cpp 
+        src/TestComponentSub.cpp
+        src/TestComponentSub2.cpp )
 
 set(INC inc/Application.hpp 
         inc/SceneNode.hpp 
@@ -22,12 +23,13 @@ set(INC inc/Application.hpp
         inc/MenuState.hpp 
         inc/GameState.hpp
         inc/PauseState.hpp
-        inc/MessageFlag.hpp
+        inc/MessageTopicFlag.hpp
         inc/Message.hpp
         inc/MessageNetwork.hpp
         inc/MessageNode.hpp
-        inc/TestA.hpp 
-        inc/TestB.hpp )
+        inc/TestComponentPub.hpp 
+        inc/TestComponentSub.hpp
+        inc/TestComponentSub2.hpp )
 
 add_executable(hch ${SRC} ${INC})
 
