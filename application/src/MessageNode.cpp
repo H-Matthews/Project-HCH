@@ -4,10 +4,11 @@
 
 MessageNode::MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName) :
     mMessageNetwork(messageNetwork),
+    mSubscriptionInfo(messageNodeName),
     mSubscribeToTopics(),
-    mPublishToTopics(),
-    mMessageNodeName(messageNodeName)
+    mPublishToTopics()
 {
+    mSubscriptionInfo.callback = this->getNotifyFunc();
 }
 
 std::function<void (Message)> MessageNode::getNotifyFunc()
@@ -21,19 +22,37 @@ std::function<void (Message)> MessageNode::getNotifyFunc()
 
 void MessageNode::send(Message message)
 {
-    // Only send messages if were publishing
-    if(mPublishToTopics.getFlagValue() != 0)
+   message.setMessageTopicFlag(mPublishToTopics);
+   message.populateTopicList();
+
+   if( message.getTopicFlag().getFlagValue() != 0 )
+   {
+        std::cout << "Publishing Message. Sender: " << mSubscriptionInfo.name << std::endl;
         mMessageNetwork->sendMessage(message);
+   }
+   else
+   {
+        std::cout << "Did not send mesasge because there is no Topic associated with Node " << std::endl;
+   }
 }
 
 void MessageNode::onNotify(Message)
 {
-    std::cout << "Calling default method ---> MessageNode::onNotify(Message)... Maybe forgot to implement??" << std::endl;
+    std::cout << "Calling default method ---> MessageNode::onNotify(Message)... This message is intended for "
+              << mSubscriptionInfo.name << std::endl;
 }
 
 void MessageNode::registerSubscriberTopics()
 {
-    // Only Register as a listener if we are listening....
     if(mSubscribeToTopics.getFlagValue() != 0)
-        mMessageNetwork->addSubscriber(mSubscribeToTopics, this->getNotifyFunc());
+    {
+        std::cout << "Registering Subscriber: " << mSubscriptionInfo.name << std::endl;
+
+        std::pair<MessageTopicFlag, MessageSubscriptionInfo> subscriberPair(mSubscribeToTopics, mSubscriptionInfo);
+        mMessageNetwork->addSubscriber(subscriberPair);
+    }
+    else
+    {
+        std::cout << "Did not send message because Subscriber did not designate a topic to subscribe to " << std::endl;
+    }
 }

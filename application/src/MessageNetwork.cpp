@@ -1,23 +1,22 @@
 #include "MessageNetwork.hpp"
 
+#include <iostream>
+
 MessageNetwork::MessageNetwork() :
     mSubscriberList(),
     mMessageQueue()
 {
-    registerTopic(MessageTopic::PLAYER);
-    registerTopic(MessageTopic::ENEMY);
 }
 
-void MessageNetwork::addSubscriber(MessageTopicFlag topicFlag, std::function<void (Message)> messageSubscriber)
+void MessageNetwork::addSubscriber(std::pair< MessageTopicFlag, MessageSubscriptionInfo > subscriber)
 {
-    if(topicFlag.getFlagValue() != 0)
+    std::vector< MessageTopic > topicList = subscriber.first.determineTopics();
+
+    for(const auto& topic : topicList)
     {
-        // Add subscriber to map 
-        for(auto& [topic, subscribers] : mSubscriberList)
-        {
-            if(topicFlag.hasFlag(topic))
-                subscribers.push_back(messageSubscriber);
-        }
+        std::pair< MessageTopic, MessageSubscriptionInfo > singleSubscriberEntry(topic, subscriber.second);
+
+        mSubscriberList.insert(singleSubscriberEntry);
     }
 }
 
@@ -30,36 +29,26 @@ void MessageNetwork::sendMessage(Message message)
 // Although it should be fine to use for PlayerRequests due to the small volume of messages needed
 void MessageNetwork::notifySubscribers()
 {
+    std::vector< MessageTopic > topicList;
+    topicList.reserve(3); // Number of Topics
+
     while( !mMessageQueue.empty())
     {
-        // Loop through all topics the message is publishing
-        for(const auto& topic : mMessageQueue.front().getTopicList())
+        topicList = mMessageQueue.front().getTopicList();
+
+        // Iterate over ALL message topics
+        for(const auto& messageTopic : topicList)
         {
-            // Gets list of subscribers for that topic
-            if(mSubscriberList.find(topic) != mSubscriberList.end())
+            auto iterator = mSubscriberList.find(messageTopic);
+            while(iterator != mSubscriberList.end() && iterator->first == messageTopic )
             {
-                // Call each subscriber
-                for(const auto& subscriber : mSubscriberList[topic])
-                {
-                    subscriber(mMessageQueue.front());
-                }
+                iterator->second.callback(mMessageQueue.front());
+                iterator++;
             }
         }
 
+        topicList.clear();
         mMessageQueue.pop();
     }
-}
 
-bool MessageNetwork::registerTopic(MessageTopic topic)
-{
-    bool successfulInsertion = false;
-
-    // Ensure the topic is not already in the map
-    if(mSubscriberList.find(topic) == mSubscriberList.end())
-    {
-        mSubscriberList[topic];
-        successfulInsertion = true;
-    }
-
-    return successfulInsertion;
 }

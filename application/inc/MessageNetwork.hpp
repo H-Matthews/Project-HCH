@@ -2,21 +2,30 @@
 #include "Message.hpp"
 
 #include <functional>
+#include <string>
 #include <vector>
 #include <queue>
 #include <map>
+
+struct MessageSubscriptionInfo
+{
+    std::string name;
+    std::function<void(Message)> callback;
+
+    MessageSubscriptionInfo(std::string nodeName) { name = nodeName; }
+};
 
 class MessageNetwork
 {
     public:
         MessageNetwork();
-        void addSubscriber(MessageTopicFlag topicFlag, std::function<void (Message)> messageListener);
+
         void sendMessage(Message message);
+
+        void addSubscriber(std::pair< MessageTopicFlag, MessageSubscriptionInfo > subscriber);
         void notifySubscribers();
 
     private:
-        bool registerTopic(MessageTopic topic);
-
-        std::map< MessageTopic, std::vector<std::function<void (Message)>>> mSubscriberList;
+        std::multimap< MessageTopic, MessageSubscriptionInfo > mSubscriberList;
         std::queue<Message> mMessageQueue;
 };

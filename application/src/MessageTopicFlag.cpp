@@ -40,6 +40,9 @@ std::vector< MessageTopic > MessageTopicFlag::determineTopics()
     if(hasFlag(MessageTopic::ENEMY))
         messageTopics.push_back(MessageTopic::ENEMY);
 
+    if(hasFlag(MessageTopic::DROPS))
+        messageTopics.push_back(MessageTopic::DROPS);
+
     return messageTopics;
 }
 

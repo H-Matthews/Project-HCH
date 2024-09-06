@@ -5,9 +5,12 @@
 class Message
 {
     public:
-        Message(MessageTopicFlag topic);
+        Message();
 
-        void determineTopics();
+        void populateTopicList();
+        void setMessageTopicFlag(MessageTopicFlag topicFlag);
+
+        MessageTopicFlag getTopicFlag();
         std::vector< MessageTopic > getTopicList();
 
     private:

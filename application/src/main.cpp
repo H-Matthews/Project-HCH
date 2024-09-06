@@ -16,15 +16,15 @@ int main()
     //Application game;
     //game.run();
 
-    auto begin = std::chrono::steady_clock::now();
-
     MessageNetwork mMessageNetwork;
 
     TestComponentPub componentPub(&mMessageNetwork);    //Pub
     TestComponentSub componentSub(&mMessageNetwork);    //Sub --> PLAYER Messages
     TestComponentSub2 componentSub2(&mMessageNetwork);  //Sub --> ENEMY Messages
 
-    for(int i = 0; i < 1000; i++)
+    auto begin = std::chrono::steady_clock::now();
+
+    for(int i = 0; i < 10; i++)
     {
         componentPub.update();
         mMessageNetwork.notifySubscribers();

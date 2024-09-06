@@ -19,7 +19,8 @@ class MessageNode
     protected:
         MessageNetwork* mMessageNetwork;
 
+        MessageSubscriptionInfo mSubscriptionInfo;
+
         MessageTopicFlag mSubscribeToTopics;
         MessageTopicFlag mPublishToTopics;
-        std::string mMessageNodeName;
 };

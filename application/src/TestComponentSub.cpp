@@ -4,12 +4,14 @@
 TestComponentSub::TestComponentSub(MessageNetwork* messageNetwork) : 
         MessageNode(messageNetwork, "TestComponentSub")
 {
-    mSubscribeToTopics.setFlag(MessageTopic::PLAYER);
+    MessageNode::mSubscribeToTopics.setFlag(MessageTopic::PLAYER);
+    MessageNode::mSubscribeToTopics.setFlag(MessageTopic::ENEMY);
 
     registerSubscriberTopics();
 }
 
 void TestComponentSub::onNotify(Message)
 {
-    std::cout << "Recieved Message in ComponentSub::onNotify for message topic for Player " << std::endl;
+    std::cout << "Node: " << MessageNode::mSubscriptionInfo.name << " Recieved message "
+              << "for topic PLAYER " << std::endl;
 }
