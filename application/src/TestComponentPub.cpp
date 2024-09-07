@@ -7,14 +7,15 @@ TestComponentPub::TestComponentPub(MessageNetwork* messageNetwork) :
     // Set Subscribe / Publish  topics here
     MessageNode::mPublishToTopics.push_back(MessageTopic::PLAYER);
     MessageNode::mPublishToTopics.push_back(MessageTopic::ENEMY);
+    MessageNode::mPublishToTopics.push_back(MessageTopic::DROPS);
 }
 
 void TestComponentPub::update()
 {
-    Message message;
+    std::unique_ptr< Message > message = std::make_unique< Message >();
 
-    // You can set the mPublishTopics flag based on logic as well
-    // This will publish a message for both PLAYER & ENEMY
-    // mPublishToTopics.setFlag(MessageTopic::ENEMY);
-    send(message);
+    // You can dynamically add more mPublishToTopics if needed
+    // MessageNode::mPublishToTopics.setFlag(MessageTopic::ENEMY);
+
+    send(message.get());
 }

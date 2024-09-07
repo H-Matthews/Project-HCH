@@ -8,9 +8,14 @@ MessageNetwork::MessageNetwork() :
 {
 }
 
-void MessageNetwork::sendMessage(Message message)
+void MessageNetwork::sendMessage(Message* message)
 {
-    mMessageQueue.push(message);
+    // Make a unique_ptr clone and move to mMessageQueue
+    auto msg = std::make_unique< Message >( message ); 
+
+    // Programmer WARNING: do NOT attempt to use msg after this call
+    // Its ownership has changed
+    mMessageQueue.push(std::move(msg));
 }
 
 void MessageNetwork::addSubscriber(std::pair< std::vector< MessageTopic >, MessageSubscriptionInfo > subscriber)
@@ -24,15 +29,13 @@ void MessageNetwork::addSubscriber(std::pair< std::vector< MessageTopic >, Messa
     }
 }
 
-// Note: Potentially dangerous due to the nested loops
-// Although it should be fine to use for PlayerRequests due to the small volume of messages needed
 void MessageNetwork::notifySubscribers()
 {
     std::vector< MessageTopic > topicList;
 
     while( !mMessageQueue.empty())
     {
-        topicList = mMessageQueue.front().getTopicList();
+        topicList = mMessageQueue.front()->getTopicList();
 
         // Iterate over ALL message topics
         for(const auto& messageTopic : topicList)
@@ -40,7 +43,10 @@ void MessageNetwork::notifySubscribers()
             auto iterator = mSubscriberList.find(messageTopic);
             while(iterator != mSubscriberList.end() && iterator->first == messageTopic )
             {
-                iterator->second.callback(mMessageQueue.front());
+                // Potentially Dangerous... If the callback function attempts to use 
+                // this object in anyway after its initial use... It will be a nullptr
+                // Proper way to deal with this is to clone the object
+                iterator->second.callback(mMessageQueue.front().get());
                 iterator++;
             }
         }

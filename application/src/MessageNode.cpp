@@ -29,7 +29,7 @@ void MessageNode::registerSubscriberTopics()
     }
 }
 
-std::function<void (Message)> MessageNode::getNotifyFunc()
+std::function<void (Message*)> MessageNode::getNotifyFunc()
 {
     auto messageSubscriber = [=] (Message message) -> void {
         this->onNotify(message);
@@ -38,17 +38,17 @@ std::function<void (Message)> MessageNode::getNotifyFunc()
     return messageSubscriber;
 }
 
-void MessageNode::build(Message& message)
+void MessageNode::build(Message* message)
 {
-    message.buildMessage(mPublishToTopics);
+    message->buildMessage(mPublishToTopics);
 }
 
-void MessageNode::send(Message message)
+void MessageNode::send(Message* message)
 { 
     // Assigns message the MessageNode::mPublishToTopics
     build(message);
 
-    if( !message.getTopicList().empty())
+    if( !message->getTopicList().empty())
     {
         std::cout << "Publishing Message. Sender: " << mSubscriptionInfo.name << std::endl;
         mMessageNetwork->sendMessage(message);

@@ -7,6 +7,8 @@ TestComponentSub::TestComponentSub(MessageNetwork* messageNetwork) :
     // Set Subscribe / Publish  topics here
     MessageNode::mSubscribeToTopics.push_back(MessageTopic::PLAYER);
     MessageNode::mSubscribeToTopics.push_back(MessageTopic::ENEMY);
+    MessageNode::mSubscribeToTopics.push_back(MessageTopic::DROPS);
+
 
     registerSubscriberTopics();
 }

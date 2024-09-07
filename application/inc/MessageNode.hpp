@@ -13,9 +13,9 @@ class MessageNode
     protected:
         void registerSubscriberTopics();
 
-        std::function<void (Message)> getNotifyFunc();
-        void build(Message& message);
-        void send(Message message);
+        std::function<void (Message*)> getNotifyFunc();
+        void build(Message* message);
+        void send(Message* message);
         virtual void onNotify(Message message);
 
     protected:
