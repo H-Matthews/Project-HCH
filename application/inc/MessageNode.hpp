@@ -14,16 +14,15 @@ class MessageNode
         void registerSubscriberTopics();
 
         std::function<void (Message*)> getNotifyFunc();
-        void build(Message* message);
         void send(Message* message);
-        virtual void onNotify(Message message);
+        virtual void onNotify(Message* message);
 
     protected:
         MessageNetwork* mMessageNetwork;
 
         MessageSubscriptionInfo mSubscriptionInfo;
+        std::string mPublisherName;
 
-        // Using array instead of vector since the size is predetermined
         std::vector< MessageTopic > mSubscribeToTopics;
         std::vector< MessageTopic > mPublishToTopics;
 };

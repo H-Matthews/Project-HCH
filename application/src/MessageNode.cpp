@@ -25,28 +25,22 @@ void MessageNode::registerSubscriberTopics()
     }
     else
     {
-        std::cout << "Did not send message because Subscriber did not designate a topic to subscribe to " << std::endl;
+        std::cout << "Did not Register Subscriber because they did not designate a topic to subscriber to " << std::endl;
     }
 }
 
 std::function<void (Message*)> MessageNode::getNotifyFunc()
 {
-    auto messageSubscriber = [=] (Message message) -> void {
+    auto messageSubscriber = [=] (Message* message) -> void {
         this->onNotify(message);
     };
 
     return messageSubscriber;
 }
 
-void MessageNode::build(Message* message)
-{
-    message->buildMessage(mPublishToTopics);
-}
-
 void MessageNode::send(Message* message)
 { 
-    // Assigns message the MessageNode::mPublishToTopics
-    build(message);
+    message->buildMessage(mPublishToTopics, mPublisherName);
 
     if( !message->getTopicList().empty())
     {
@@ -55,11 +49,11 @@ void MessageNode::send(Message* message)
     }
     else
     {
-        std::cout << "Did not send mesasge because there is no Topic associated with Node " << std::endl;
+        std::cout << "Did not send message because there is no Topic associated with Node " << std::endl;
     }
 }
 
-void MessageNode::onNotify(Message)
+void MessageNode::onNotify(Message*)
 {
     std::cout << "Calling default method ---> MessageNode::onNotify(Message)... This message is intended for "
               << mSubscriptionInfo.name << std::endl;

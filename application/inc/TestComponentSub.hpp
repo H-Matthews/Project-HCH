@@ -9,5 +9,5 @@ class TestComponentSub : public MessageNode
     TestComponentSub(MessageNetwork* messageNetwork);
 
     private:
-        void onNotify(Message message) override;
+        void onNotify(Message* message) override;
 };

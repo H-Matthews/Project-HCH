@@ -1,4 +1,5 @@
 #include "MessageNetwork.hpp"
+#include "PlayerActionMessage.hpp"
 
 #include <iostream>
 
@@ -10,12 +11,14 @@ MessageNetwork::MessageNetwork() :
 
 void MessageNetwork::sendMessage(Message* message)
 {
-    // Make a unique_ptr clone and move to mMessageQueue
-    auto msg = std::make_unique< Message >( message ); 
-
-    // Programmer WARNING: do NOT attempt to use msg after this call
-    // Its ownership has changed
-    mMessageQueue.push(std::move(msg));
+    // Determine Message Type and Send
+    PlayerActionMessage* pam = dynamic_cast<PlayerActionMessage*>( message );
+    if(pam)
+    {
+        // Make copy of PlayerActionMessage and send to Queues
+        auto msg = std::make_unique< PlayerActionMessage > ( pam );
+        mMessageQueue.push(std::move(msg));
+    }
 }
 
 void MessageNetwork::addSubscriber(std::pair< std::vector< MessageTopic >, MessageSubscriptionInfo > subscriber)

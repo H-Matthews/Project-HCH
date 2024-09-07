@@ -3,20 +3,19 @@
 #include "MessageTopic.hpp"
 
 #include <vector>
+#include <string>
 
 class Message
 {
     public:
-        Message();
-        Message(Message* message);
+        virtual ~Message();
 
-        void buildMessage(std::vector< MessageTopic >);
+        virtual void buildMessage(std::vector< MessageTopic > messageTopics, std::string sender) = 0;
 
         std::vector< MessageTopic > getTopicList();
+        std::string getSenderName();
 
-    private:
-        void buildMessageHeader();
-
-    private:
+    protected:
         std::vector< MessageTopic > mTopicList;
+        std::string mSender;
 };  

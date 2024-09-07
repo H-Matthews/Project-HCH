@@ -13,7 +13,8 @@ set(SRC src/main.cpp
         src/MessageNode.cpp 
         src/TestComponentPub.cpp 
         src/TestComponentSub.cpp
-        src/TestComponentSub2.cpp )
+        src/TestComponentSub2.cpp
+        src/PlayerActionMessage.cpp )
 
 set(INC inc/Application.hpp 
         inc/SceneNode.hpp 
@@ -28,7 +29,8 @@ set(INC inc/Application.hpp
         inc/MessageNode.hpp
         inc/TestComponentPub.hpp 
         inc/TestComponentSub.hpp
-        inc/TestComponentSub2.hpp )
+        inc/TestComponentSub2.hpp
+        inc/PlayerActionMessage.hpp )
 
 add_executable(hch ${SRC} ${INC})
 

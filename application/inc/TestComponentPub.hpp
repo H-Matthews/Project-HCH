@@ -1,4 +1,5 @@
 #include "MessageNode.hpp"
+#include "PlayerActionMessage.hpp"
 
 #include <iostream>
 #include <memory>
