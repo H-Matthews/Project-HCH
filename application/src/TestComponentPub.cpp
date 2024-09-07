@@ -4,10 +4,9 @@
 TestComponentPub::TestComponentPub(MessageNetwork* messageNetwork) : 
     MessageNode(messageNetwork, "TestComponentPublish")
 {
-    // Set subscribe / Publish  topics here
-    MessageNode::mPublishToTopics.setFlag(MessageTopic::PLAYER);
-    MessageNode::mPublishToTopics.setFlag(MessageTopic::ENEMY);
-    //MessageNode::mPublishToTopics.setFlag(MessageTopic::DROPS);
+    // Set Subscribe / Publish  topics here
+    MessageNode::mPublishToTopics.push_back(MessageTopic::PLAYER);
+    MessageNode::mPublishToTopics.push_back(MessageTopic::ENEMY);
 }
 
 void TestComponentPub::update()

@@ -8,11 +8,15 @@ MessageNetwork::MessageNetwork() :
 {
 }
 
-void MessageNetwork::addSubscriber(std::pair< MessageTopicFlag, MessageSubscriptionInfo > subscriber)
+void MessageNetwork::sendMessage(Message message)
 {
-    std::vector< MessageTopic > topicList = subscriber.first.determineTopics();
+    mMessageQueue.push(message);
+}
 
-    for(const auto& topic : topicList)
+void MessageNetwork::addSubscriber(std::pair< std::vector< MessageTopic >, MessageSubscriptionInfo > subscriber)
+{
+    
+    for(const auto& topic : subscriber.first)
     {
         std::pair< MessageTopic, MessageSubscriptionInfo > singleSubscriberEntry(topic, subscriber.second);
 
@@ -20,17 +24,11 @@ void MessageNetwork::addSubscriber(std::pair< MessageTopicFlag, MessageSubscript
     }
 }
 
-void MessageNetwork::sendMessage(Message message)
-{
-    mMessageQueue.push(message);
-}
-
 // Note: Potentially dangerous due to the nested loops
 // Although it should be fine to use for PlayerRequests due to the small volume of messages needed
 void MessageNetwork::notifySubscribers()
 {
     std::vector< MessageTopic > topicList;
-    topicList.reserve(3); // Number of Topics
 
     while( !mMessageQueue.empty())
     {
@@ -47,7 +45,6 @@ void MessageNetwork::notifySubscribers()
             }
         }
 
-        topicList.clear();
         mMessageQueue.pop();
     }
 

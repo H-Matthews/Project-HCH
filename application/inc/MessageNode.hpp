@@ -3,6 +3,7 @@
 #include "MessageNetwork.hpp"
 
 #include <string>
+#include <array>
 
 class MessageNode 
 {
@@ -10,17 +11,19 @@ class MessageNode
         MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName);
 
     protected:
+        void registerSubscriberTopics();
+
         std::function<void (Message)> getNotifyFunc();
+        void build(Message& message);
         void send(Message message);
         virtual void onNotify(Message message);
-
-        void registerSubscriberTopics();
 
     protected:
         MessageNetwork* mMessageNetwork;
 
         MessageSubscriptionInfo mSubscriptionInfo;
 
-        MessageTopicFlag mSubscribeToTopics;
-        MessageTopicFlag mPublishToTopics;
+        // Using array instead of vector since the size is predetermined
+        std::vector< MessageTopic > mSubscribeToTopics;
+        std::vector< MessageTopic > mPublishToTopics;
 };

@@ -8,7 +8,6 @@ set(SRC src/main.cpp
         src/MenuState.cpp
         src/GameState.cpp
         src/PauseState.cpp
-        src/MessageTopicFlag.cpp
         src/Message.cpp
         src/MessageNetwork.cpp
         src/MessageNode.cpp 
@@ -23,7 +22,7 @@ set(INC inc/Application.hpp
         inc/MenuState.hpp 
         inc/GameState.hpp
         inc/PauseState.hpp
-        inc/MessageTopicFlag.hpp
+        inc/MessageTopic.hpp
         inc/Message.hpp
         inc/MessageNetwork.hpp
         inc/MessageNode.hpp

@@ -1,23 +1,13 @@
 #include "Message.hpp"
 
-Message::Message() :
-mTopicFlag()
+Message::Message()
 {
+    mTopicList.reserve(MESSAGE_TOPIC_SIZE);
 }
 
-void Message::setMessageTopicFlag(MessageTopicFlag topicFlag)
+void Message::buildMessage(std::vector< MessageTopic > messageTopics)
 {
-    mTopicFlag = topicFlag;
-}
-
-void Message::populateTopicList()
-{
-    mTopicList = mTopicFlag.determineTopics();
-}
-
-MessageTopicFlag Message::getTopicFlag()
-{
-    return mTopicFlag;
+    mTopicList = messageTopics;
 }
 
 std::vector< MessageTopic > Message::getTopicList()

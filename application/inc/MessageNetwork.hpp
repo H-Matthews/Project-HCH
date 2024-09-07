@@ -22,7 +22,7 @@ class MessageNetwork
 
         void sendMessage(Message message);
 
-        void addSubscriber(std::pair< MessageTopicFlag, MessageSubscriptionInfo > subscriber);
+        void addSubscriber(std::pair< std::vector< MessageTopic >, MessageSubscriptionInfo > subscriber);
         void notifySubscribers();
 
     private:

@@ -1,5 +1,4 @@
 #include "Application.hpp"
-#include "MessageTopicFlag.hpp"
 #include "MessageNetwork.hpp"
 
 // Just for Testing
@@ -24,7 +23,7 @@ int main()
 
     auto begin = std::chrono::steady_clock::now();
 
-    for(int i = 0; i < 10; i++)
+    for(int i = 0; i < 3; i++)
     {
         componentPub.update();
         mMessageNetwork.notifySubscribers();
