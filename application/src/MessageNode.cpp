@@ -5,14 +5,16 @@
 
 MessageNode::MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName) :
     mMessageNetwork(messageNetwork),
-    mSubscriptionInfo(messageNodeName),
-    mSubscribeToTopics(),
-    mPublishToTopics()
+    mMessageNodeInfo(messageNodeName),
+    mSubscribeToMessages(),
+    mPublishMessageID()
+{   
+    mMessageNodeInfo.callback = this->getNotifyFunc();
+}
+
+MessageNode::MessageNode(MessageNetwork* messageNetwork) :
+    mMessageNetwork(messageNetwork)
 {
-    mSubscribeToTopics.reserve(3);
-    mPublishToTopics.reserve(3);
-    
-    mSubscriptionInfo.callback = this->getNotifyFunc();
 }
 
 std::unique_ptr<Message> MessageNode::createMessage(Messages::ID messageID)
@@ -24,13 +26,46 @@ std::unique_ptr<Message> MessageNode::createMessage(Messages::ID messageID)
     return found->second();
 }
 
-void MessageNode::registerSubscriberTopics()
+void MessageNode::setPublishMessage(Messages::ID publishMessageID)
 {
-    if(!mSubscribeToTopics.empty())
-    {
-        std::cout << "Registering Subscriber: " << mSubscriptionInfo.name << std::endl;
+    mPublishMessageID = publishMessageID;
+}
 
-        std::pair<std::vector< Messages::ID >, MessageSubscriptionInfo> subscriberPair(mSubscribeToTopics, mSubscriptionInfo);
+void MessageNode::setSubscribeMessage(Messages::ID subscribeMessageID)
+{
+    auto result = mSubscribeToMessages.insert(subscribeMessageID);
+
+    if(!result.second)
+        std::cout << "Already subscribing to that message: " << Utility::messageEnumToString(subscribeMessageID) << std::endl;
+}
+
+void MessageNode::setNodeName(std::string nodeName)
+{
+    mMessageNodeInfo.nodeName = nodeName;
+}
+
+const std::set< Messages::ID >& MessageNode::getSubscribeToMessageList() const
+{
+    return mSubscribeToMessages;
+}
+
+const Messages::ID& MessageNode::getPublishMessageID() const
+{
+    return mPublishMessageID;
+}
+
+const std::string& MessageNode::getNodeName() const
+{
+    return mMessageNodeInfo.nodeName;
+}
+
+void MessageNode::registerSubscriberMessages()
+{
+    if(!mSubscribeToMessages.empty())
+    {
+        std::cout << "Registering Subscriber: " << mMessageNodeInfo.nodeName << std::endl;
+
+        std::pair<std::set< Messages::ID >, MessageNodeInfo> subscriberPair(mSubscribeToMessages, mMessageNodeInfo);
         mMessageNetwork->addSubscriber(subscriberPair);
     }
     else
@@ -50,16 +85,16 @@ std::function<void (Message*)> MessageNode::getNotifyFunc()
 
 void MessageNode::send(Message* message)
 { 
-    message->buildMessage(mPublishToTopics, mPublisherName);
+    message->populateMessageHeader(mPublishMessageID, mMessageNodeInfo.nodeName);
 
-    if( !message->getTopicList().empty())
+    if( mPublishMessageID != Messages::ID::None)
     {
-        std::cout << "Publishing Message. Sender: " << mSubscriptionInfo.name << std::endl;
+        std::cout << "Publishing Message. Sender: " << mMessageNodeInfo.nodeName << std::endl;
         mMessageNetwork->sendMessage(message);
     }
     else
     {
-        std::cout << "Did not send message because there is no Topic associated with Node " << std::endl;
+        std::cout << "Did not send message because there is no Topic associated with NodeID: " << getNodeName() << std::endl;
     }
 
     message = nullptr;
@@ -68,5 +103,5 @@ void MessageNode::send(Message* message)
 void MessageNode::onNotify(Message*)
 {
     std::cout << "Calling default method ---> MessageNode::onNotify(Message)... This message is intended for "
-              << mSubscriptionInfo.name << std::endl;
+              << mMessageNodeInfo.nodeName << std::endl;
 }

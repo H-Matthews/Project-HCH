@@ -7,17 +7,18 @@
 
 #include <functional>
 #include <string>
-#include <vector>
 #include <queue>
 #include <map>
 #include <memory>
+#include <set>
 
-struct MessageSubscriptionInfo
+struct MessageNodeInfo
 {
-    std::string name;
+    std::string nodeName;
     std::function<void(Message*)> callback;
 
-    MessageSubscriptionInfo(std::string nodeName) { name = nodeName; }
+    MessageNodeInfo(std::string name) { nodeName = name; }
+    MessageNodeInfo() {}
 };
 
 class MessageNetwork
@@ -32,11 +33,11 @@ class MessageNetwork
 
         void sendMessage(Message* message);
 
-        void addSubscriber(std::pair< std::vector< Messages::ID >, MessageSubscriptionInfo > subscriber);
+        void addSubscriber(std::pair< std::set< Messages::ID >, MessageNodeInfo > subscriber);
         void notifySubscribers();
 
     private:
-        std::multimap< Messages::ID, MessageSubscriptionInfo > mSubscriberList;
+        std::multimap< Messages::ID, MessageNodeInfo > mSubscriberList;
         std::queue< std::unique_ptr< Message > > mMessageQueue;
         std::map< Messages::ID, std::function<std::unique_ptr< Message >()> > mMessageRegistry;
 };
@@ -46,7 +47,7 @@ void MessageNetwork::registerMessage(Messages::ID messageID)
 {
     const std::string identifierString(Utility::messageEnumToString(messageID));
 
-    // Stores a Lambda in mRegistry
+    // Stores a Lambda in mMessageRegistry
     mMessageRegistry[messageID] = [this, identifierString] ()
     {
         return std::unique_ptr< Message >(new T(*this, identifierString));

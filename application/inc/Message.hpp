@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <string>
+#include <set>
 
 constexpr uint8_t MESSAGE_TYPE_SIZE = 3;
 
@@ -27,15 +27,14 @@ class Message
         Message(Message* message);
         virtual ~Message();
 
-        virtual void buildMessage(std::vector< Messages::ID > messageTopics, std::string sender) = 0;
+        void populateMessageHeader(Messages::ID IDType, std::string sender);
 
-        std::vector< Messages::ID > getTopicList();
-        std::string getSenderName();
+        std::string getSenderName() const;
+        Messages::ID getMessageID() const;
 
     protected:
         MessageNetwork* mMessageNetwork;
+        Messages::ID mIDType;
         std::string mIdentifierString;
-
-        std::vector< Messages::ID > mTopicList;
         std::string mSender;
 };  

@@ -1,30 +1,41 @@
 #include "Message.hpp"
 
 Message::Message() :
-    mIdentifierString()
+    mMessageNetwork(),
+    mIDType(),
+    mIdentifierString(),
+    mSender()
 {
 }
 
 Message::Message(MessageNetwork& messageNetwork, std::string identifierString) :
     mMessageNetwork(&messageNetwork),
-    mIdentifierString(identifierString)
+    mIDType(),
+    mIdentifierString(identifierString),
+    mSender()
 {
 }
 
-Message::Message(Message* message)
+Message::Message(Message*)
 {
+}
+
+void Message::populateMessageHeader( Messages::ID IDType, std::string sender)
+{
+    mIDType = IDType;
+    mSender = sender;
 }
 
 Message::~Message()
 {
 }
 
-std::vector< Messages::ID > Message::getTopicList()
-{
-    return mTopicList;
-}
-
-std::string Message::getSenderName()
+std::string Message::getSenderName() const
 {
     return mSender;
+}
+
+Messages::ID Message::getMessageID() const
+{
+    return mIDType;
 }

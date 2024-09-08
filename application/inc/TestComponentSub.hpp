@@ -2,7 +2,9 @@
 
 #include <iostream>
 
-// This class is the publisher
+/* This class only handles the following Messages
+1. PlayerActionMessage
+*/
 class TestComponentSub : public MessageNode 
 {
     public:

@@ -28,12 +28,11 @@ void MessageNetwork::sendMessage(Message* message)
     }
 }
 
-void MessageNetwork::addSubscriber(std::pair< std::vector< Messages::ID >, MessageSubscriptionInfo > subscriber)
+void MessageNetwork::addSubscriber(std::pair< std::set< Messages::ID >, MessageNodeInfo > subscriber)
 {
-    
     for(const auto& topic : subscriber.first)
     {
-        std::pair< Messages::ID, MessageSubscriptionInfo > singleSubscriberEntry(topic, subscriber.second);
+        std::pair< Messages::ID, MessageNodeInfo > singleSubscriberEntry(topic, subscriber.second);
 
         mSubscriberList.insert(singleSubscriberEntry);
     }
@@ -41,28 +40,24 @@ void MessageNetwork::addSubscriber(std::pair< std::vector< Messages::ID >, Messa
 
 void MessageNetwork::notifySubscribers()
 {
-    std::vector< Messages::ID > topicList;
+    Messages::ID messageID;
 
     while( !mMessageQueue.empty())
     {
-        topicList = mMessageQueue.front()->getTopicList();
+        messageID = mMessageQueue.front().get()->getMessageID();
 
-        // Iterate over ALL message topics
-        for(const auto& messageTopic : topicList)
+        auto iterator = mSubscriberList.find(messageID);
+        while(iterator != mSubscriberList.end() && iterator->first == messageID )
         {
-            auto iterator = mSubscriberList.find(messageTopic);
-            while(iterator != mSubscriberList.end() && iterator->first == messageTopic )
-            {
-                // Potentially Dangerous... If the subscriber attempts to use 
-                // this object in anyway after popping the message from the queue... 
-                // It will be a nullptr
-                // Proper way to deal with this is to clone the object
-                iterator->second.callback(mMessageQueue.front().get());
-                iterator++;
-            }
+            // Potentially Dangerous... If the subscriber attempts to use 
+            // this object in anyway after popping the message from the queue... 
+            // It will be a nullptr
+            // Proper way to deal with this is to clone the object
+            iterator->second.callback(mMessageQueue.front().get());
+            iterator++;
         }
-
+        
         mMessageQueue.pop();
-    }
+    }  
 
 }

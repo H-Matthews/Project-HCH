@@ -2,20 +2,14 @@
 
 
 TestComponentPub::TestComponentPub(MessageNetwork* messageNetwork) : 
-    MessageNode(messageNetwork, "TestComponentPublish")
+    MessageNode(messageNetwork)
 {
-    // Set Subscribe / Publish  topics here
-    MessageNode::mPublishToTopics.push_back(Messages::ID::PlayerActionMessage);
-    //MessageNode::mPublishToTopics.push_back(MessageTopic::ENEMY);
-    //MessageNode::mPublishToTopics.push_back(MessageTopic::DROPS);
-
-    mPublisherName = mSubscriptionInfo.name;
+    MessageNode::setPublishMessage(Messages::ID::PlayerActionMessage);
+    MessageNode::setNodeName("TestComponentPublish");
 }
 
 void TestComponentPub::update()
 {
-    //auto msg = std::make_unique< PlayerActionMessage > ();
-
     auto msg = createMessage(Messages::ID::PlayerActionMessage);
 
     // You can dynamically add more mPublishToTopics if needed

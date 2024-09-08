@@ -3,7 +3,6 @@
 #include "MessageNetwork.hpp"
 
 #include <string>
-#include <array>
 
 class MessageNetwork;
 
@@ -11,22 +10,28 @@ class MessageNode
 {
     public:
         MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName);
+        MessageNode(MessageNetwork* messageNetwork);
 
         std::unique_ptr<Message> createMessage(Messages::ID messageID);
 
-    protected:
-        void registerSubscriberTopics();
+        void setPublishMessage(Messages::ID publishMessageID);
+        void setSubscribeMessage(Messages::ID subscribeMessageID);
+        void setNodeName(std::string nodeName);
+        const std::set< Messages::ID >& getSubscribeToMessageList() const;
+        const Messages::ID& getPublishMessageID() const;
+        const std::string& getNodeName() const;
 
-        std::function<void (Message*)> getNotifyFunc();
+    protected:
+        void registerSubscriberMessages();
         void send(Message* message);
         virtual void onNotify(Message* message);
 
-    protected:
+    private:
+        std::function<void (Message*)> getNotifyFunc();
+
+    private:
         MessageNetwork* mMessageNetwork;
-
-        MessageSubscriptionInfo mSubscriptionInfo;
-        std::string mPublisherName;
-
-        std::vector< Messages::ID > mSubscribeToTopics;
-        std::vector< Messages::ID > mPublishToTopics;
+        MessageNodeInfo mMessageNodeInfo;
+        std::set< Messages::ID > mSubscribeToMessages;
+        Messages::ID mPublishMessageID;
 };

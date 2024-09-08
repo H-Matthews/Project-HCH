@@ -8,7 +8,6 @@
 
 #include <iostream>
 #include <chrono>
-#include <cassert>
 
 int main()
 {

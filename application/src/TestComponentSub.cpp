@@ -4,24 +4,17 @@
 TestComponentSub::TestComponentSub(MessageNetwork* messageNetwork) : 
         MessageNode(messageNetwork, "TestComponentSub")
 {
-    // Set Subscribe / Publish  topics here
-    MessageNode::mSubscribeToTopics.push_back(Messages::ID::PlayerActionMessage);
-    //MessageNode::mSubscribeToTopics.push_back(MessageTopic::ENEMY);
-    //MessageNode::mSubscribeToTopics.push_back(MessageTopic::DROPS);
-
-    registerSubscriberTopics();
+    MessageNode::setSubscribeMessage(Messages::ID::PlayerActionMessage);
+    registerSubscriberMessages();
 }
 
-/* This class only handles the following Messages
-1. PlayerActionMessage
-*/
 void TestComponentSub::onNotify(Message* message)
 {
     PlayerActionMessage* pam = dynamic_cast<PlayerActionMessage*>(message);
 
     if(pam != nullptr)
     {
-        std::cout << "Receiver Node: " << MessageNode::mSubscriptionInfo.name << std::endl;
+        std::cout << "Receiver Node: " << MessageNode::getNodeName() << std::endl;
         std::cout << "Received Message: PlayerActionMessage " << std::endl;
         std::cout << "Sender: " << pam->getSenderName() << std::endl;
         if(pam->action == MOVE_UP)
