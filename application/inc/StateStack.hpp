@@ -1,6 +1,8 @@
 #pragma once
 
 #include "State.hpp"
+
+// Utility
 #include "StringOperations.hpp"
 
 #include <SFML/System/Time.hpp>
@@ -60,11 +62,11 @@ class StateStack
 template <typename T>
 void StateStack::registerState(States::ID stateID)
 {
-    const std::string stateString(Utility::statesEnumToString(stateID));
+    const std::string identifierString(Utility::statesEnumToString(stateID));
 
     // Stores a Lambda in mRegistry
-    mRegistry[stateID] = [this, stateString] ()
+    mRegistry[stateID] = [this, identifierString] ()
     {
-        return std::unique_ptr<State>(new T(*this, stateString, mSharedObjects));
+        return std::unique_ptr<State>(new T(*this, identifierString, mSharedObjects));
     };
 }

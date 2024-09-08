@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <chrono>
+#include <cassert>
 
 int main()
 {
@@ -17,13 +18,16 @@ int main()
 
     MessageNetwork mMessageNetwork;
 
+    mMessageNetwork.registerMessage<PlayerActionMessage>(Messages::ID::PlayerActionMessage);
+    //mMessageNetwork.registerMessage<>(Messages::ID::EnemySpawnMessage);
+
     TestComponentPub componentPub(&mMessageNetwork);    //Pub
     TestComponentSub componentSub(&mMessageNetwork);    //Sub --> PLAYER Messages
     TestComponentSub2 componentSub2(&mMessageNetwork);  //Sub --> ENEMY Messages
 
     auto begin = std::chrono::steady_clock::now();
 
-    for(int i = 0; i < 2; i++)
+    for(int i = 0; i < 100; i++)
     {
         componentPub.update();
         mMessageNetwork.notifySubscribers();

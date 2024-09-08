@@ -27,3 +27,26 @@ const std::string Utility::statesEnumToString(States::ID identifier)
 
     return sStream.str();
 }
+
+const std::string Utility::messageEnumToString(Messages::ID identifier)
+{
+    std::stringstream sStream;
+
+    switch(identifier)
+    {
+        case Messages::ID::PlayerActionMessage:
+        {
+            sStream << "Player Action Message ";
+            break;
+        }
+        case Messages::ID::EnemySpawnMessage:
+        {
+            sStream << "Enemy Spawn Message";
+            break;
+        }
+        default:
+            sStream << "No Message";
+    }
+
+    return sStream.str();
+}

@@ -5,10 +5,14 @@
 #include <string>
 #include <array>
 
+class MessageNetwork;
+
 class MessageNode 
 {
     public:
         MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName);
+
+        std::unique_ptr<Message> createMessage(Messages::ID messageID);
 
     protected:
         void registerSubscriberTopics();
@@ -23,6 +27,6 @@ class MessageNode
         MessageSubscriptionInfo mSubscriptionInfo;
         std::string mPublisherName;
 
-        std::vector< MessageTopic > mSubscribeToTopics;
-        std::vector< MessageTopic > mPublishToTopics;
+        std::vector< Messages::ID > mSubscribeToTopics;
+        std::vector< Messages::ID > mPublishToTopics;
 };

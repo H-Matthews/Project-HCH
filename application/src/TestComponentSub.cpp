@@ -5,7 +5,7 @@ TestComponentSub::TestComponentSub(MessageNetwork* messageNetwork) :
         MessageNode(messageNetwork, "TestComponentSub")
 {
     // Set Subscribe / Publish  topics here
-    MessageNode::mSubscribeToTopics.push_back(MessageTopic::PLAYER);
+    MessageNode::mSubscribeToTopics.push_back(Messages::ID::PlayerActionMessage);
     //MessageNode::mSubscribeToTopics.push_back(MessageTopic::ENEMY);
     //MessageNode::mSubscribeToTopics.push_back(MessageTopic::DROPS);
 
