@@ -1,7 +1,6 @@
 #include "MessageNetwork.hpp"
 #include "PlayerActionMessage.hpp"
-
-#include <iostream>
+#include "EnemySpawnMessage.hpp"
 
 MessageNetwork::MessageNetwork() :
     mSubscriberList(),
@@ -9,7 +8,7 @@ MessageNetwork::MessageNetwork() :
 {
 }
 
-std::map< Messages::ID, std::function< std::unique_ptr< Message > () > >& MessageNetwork::getMessageRegistry()
+const std::map< Messages::ID, std::function< std::unique_ptr< Message > () > >& MessageNetwork::getMessageRegistry() const
 {
     return mMessageRegistry;
 }
@@ -25,7 +24,21 @@ void MessageNetwork::sendMessage(Message* message)
         mMessageQueue.push(std::move(msg));
 
         pam = nullptr;
+        return;
     }
+
+    EnemySpawnMessage* esm = dynamic_cast<EnemySpawnMessage*>( message );
+    if(esm)
+    {
+        auto msg = std::make_unique< EnemySpawnMessage > ( esm );
+        mMessageQueue.push(std::move(msg));
+
+        esm = nullptr;
+        return;
+    }
+
+
+    return;
 }
 
 void MessageNetwork::addSubscriber(std::pair< std::set< Messages::ID >, MessageNodeInfo > subscriber)

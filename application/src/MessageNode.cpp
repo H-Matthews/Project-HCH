@@ -34,6 +34,7 @@ void MessageNode::setPublishMessage(Messages::ID publishMessageID)
 void MessageNode::setSubscribeMessage(Messages::ID subscribeMessageID)
 {
     auto result = mSubscribeToMessages.insert(subscribeMessageID);
+    mMessageNodeInfo.stringSubscriberList.insert(Utility::messageEnumToString(subscribeMessageID));
 
     if(!result.second)
         std::cout << "Already subscribing to that message: " << Utility::messageEnumToString(subscribeMessageID) << std::endl;

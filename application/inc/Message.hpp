@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <set>
 
 constexpr uint8_t MESSAGE_TYPE_SIZE = 3;
 
@@ -24,12 +23,11 @@ class Message
     public:
         Message();
         Message(MessageNetwork& messageNetwork, std::string identifierString);
-        Message(Message* message);
         virtual ~Message();
 
         void populateMessageHeader(Messages::ID IDType, std::string sender);
 
-        std::string getSenderName() const;
+        const std::string getSenderName() const;
         Messages::ID getMessageID() const;
 
     protected:

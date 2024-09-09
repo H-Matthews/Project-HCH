@@ -2,8 +2,6 @@
 
 #include "MessageNetwork.hpp"
 
-#include <string>
-
 class MessageNetwork;
 
 class MessageNode 

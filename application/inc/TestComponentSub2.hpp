@@ -3,7 +3,7 @@
 #include <iostream>
 
 /* This class only handles the following Messages
-1. PlayerActionMessage
+1. EnemySpawnMessage
 */
 class TestComponentSub2 : public MessageNode 
 {

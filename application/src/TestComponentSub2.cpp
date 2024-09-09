@@ -1,10 +1,10 @@
 #include "TestComponentSub2.hpp"
-#include "PlayerActionMessage.hpp"
+#include "EnemySpawnMessage.hpp"
 
 TestComponentSub2::TestComponentSub2(MessageNetwork* messageNetwork) : 
         MessageNode(messageNetwork, "TestComponentSub2")
 {
-    MessageNode::setSubscribeMessage(Messages::ID::PlayerActionMessage);
+    MessageNode::setSubscribeMessage(Messages::ID::EnemySpawnMessage);
     registerSubscriberMessages();
 }
 
@@ -13,21 +13,14 @@ TestComponentSub2::TestComponentSub2(MessageNetwork* messageNetwork) :
 */
 void TestComponentSub2::onNotify(Message* message)
 {
-    PlayerActionMessage* pam = dynamic_cast<PlayerActionMessage*>(message);
+    EnemySpawnMessage* eam = dynamic_cast<EnemySpawnMessage*>( message );
 
-    if(pam != nullptr)
+    if(eam != nullptr)
     {
         std::cout << "Receiver Node: " << MessageNode::getNodeName() << std::endl;
-        std::cout << "Received Message: PlayerActionMessage " << std::endl;
-        std::cout << "Sender: " << pam->getSenderName() << std::endl;
-        if(pam->action == MOVE_UP)
-        {
-            std::cout << "Action: MOVE_UP " << std::endl;
-        }
-        else if(pam->action == MOVE_DOWN)
-        {
-            std::cout << "Action: MOVE_DOWN " << std::endl;
-        }
+        std::cout << "Received Message: EnemyActionMessage " << std::endl;
+        std::cout << "Sender: " << eam->getSenderName() << std::endl;
+        std::cout << "Value: " << eam->x << std::endl;
     }
     std::cout << "\n";
 }

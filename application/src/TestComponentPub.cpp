@@ -4,7 +4,6 @@
 TestComponentPub::TestComponentPub(MessageNetwork* messageNetwork) : 
     MessageNode(messageNetwork)
 {
-    MessageNode::setPublishMessage(Messages::ID::PlayerActionMessage);
     MessageNode::setNodeName("TestComponentPublish");
 }
 
@@ -12,8 +11,11 @@ void TestComponentPub::update()
 {
     auto msg = createMessage(Messages::ID::PlayerActionMessage);
 
-    // You can dynamically add more mPublishToTopics if needed
-    // MessageNode::mPublishToTopics.push_back(MessageTopic::DROPS);
+    MessageNode::setPublishMessage(Messages::ID::PlayerActionMessage);
+    send(msg.get());
 
+    msg = createMessage(Messages::ID::EnemySpawnMessage);
+
+    MessageNode::setPublishMessage(Messages::ID::EnemySpawnMessage);
     send(msg.get());
 }

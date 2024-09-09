@@ -16,10 +16,6 @@ Message::Message(MessageNetwork& messageNetwork, std::string identifierString) :
 {
 }
 
-Message::Message(Message*)
-{
-}
-
 void Message::populateMessageHeader( Messages::ID IDType, std::string sender)
 {
     mIDType = IDType;
@@ -30,7 +26,7 @@ Message::~Message()
 {
 }
 
-std::string Message::getSenderName() const
+const std::string Message::getSenderName() const
 {
     return mSender;
 }

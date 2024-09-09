@@ -16,6 +16,7 @@ struct MessageNodeInfo
 {
     std::string nodeName;
     std::function<void(Message*)> callback;
+    std::set< std::string > stringSubscriberList;
 
     MessageNodeInfo(std::string name) { nodeName = name; }
     MessageNodeInfo() {}
@@ -29,7 +30,7 @@ class MessageNetwork
         template <typename T>
         void registerMessage(Messages::ID messageID);
         
-        std::map< Messages::ID, std::function< std::unique_ptr< Message > () > >& getMessageRegistry();
+        const std::map< Messages::ID, std::function< std::unique_ptr< Message > () > >& getMessageRegistry() const;
 
         void sendMessage(Message* message);
 

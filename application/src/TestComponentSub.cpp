@@ -27,5 +27,4 @@ void TestComponentSub::onNotify(Message* message)
         }
     }
     std::cout << "\n";
-
 }

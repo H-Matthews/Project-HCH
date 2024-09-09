@@ -12,6 +12,7 @@ set(SRC src/main.cpp
         src/MessageNetwork.cpp
         src/MessageNode.cpp 
         src/PlayerActionMessage.cpp
+        src/EnemySpawnMessage.cpp
         src/TestComponentPub.cpp 
         src/TestComponentSub.cpp
         src/TestComponentSub2.cpp )
@@ -27,6 +28,7 @@ set(INC inc/Application.hpp
         inc/MessageNetwork.hpp
         inc/MessageNode.hpp
         inc/PlayerActionMessage.hpp
+        inc/EnemySpawnMessage.hpp
         inc/TestComponentPub.hpp 
         inc/TestComponentSub.hpp
         inc/TestComponentSub2.hpp )

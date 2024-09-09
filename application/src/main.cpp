@@ -15,21 +15,21 @@ int main()
     //Application game;
     //game.run();
 
-    MessageNetwork mMessageNetwork;
+    MessageNetwork messageNetwork;
 
-    mMessageNetwork.registerMessage<PlayerActionMessage>(Messages::ID::PlayerActionMessage);
-    //mMessageNetwork.registerMessage<>(Messages::ID::EnemySpawnMessage);
+    messageNetwork.registerMessage<PlayerActionMessage>(Messages::ID::PlayerActionMessage);
+    messageNetwork.registerMessage<EnemySpawnMessage>(Messages::ID::EnemySpawnMessage);
 
-    TestComponentPub componentPub(&mMessageNetwork);    //Pub
-    TestComponentSub componentSub(&mMessageNetwork);    //Sub --> PLAYER Messages
-    TestComponentSub2 componentSub2(&mMessageNetwork);  //Sub --> ENEMY Messages
+    TestComponentPub componentPub(&messageNetwork);    //Pub
+    TestComponentSub componentSub(&messageNetwork);    //Sub --> PLAYER Messages
+    TestComponentSub2 componentSub2(&messageNetwork);  //Sub --> ENEMY Messages
 
     auto begin = std::chrono::steady_clock::now();
 
-    for(int i = 0; i < 100; i++)
+    for(int i = 0; i < 10; i++)
     {
         componentPub.update();
-        mMessageNetwork.notifySubscribers();
+        messageNetwork.notifySubscribers();
     }
 
     auto end = std::chrono::steady_clock::now();
