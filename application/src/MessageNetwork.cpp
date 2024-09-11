@@ -1,6 +1,7 @@
 #include "MessageNetwork.hpp"
 #include "PlayerActionMessage.hpp"
-#include "EnemySpawnMessage.hpp"
+
+#include <iostream>
 
 MessageNetwork::MessageNetwork() :
     mSubscriberList(),
@@ -8,7 +9,7 @@ MessageNetwork::MessageNetwork() :
 {
 }
 
-const std::map< Messages::ID, std::function< std::unique_ptr< Message > () > >& MessageNetwork::getMessageRegistry() const
+const std::map< Message::ID, std::function< std::unique_ptr< Message > () > >& MessageNetwork::getMessageRegistry() const
 {
     return mMessageRegistry;
 }
@@ -16,44 +17,36 @@ const std::map< Messages::ID, std::function< std::unique_ptr< Message > () > >& 
 void MessageNetwork::sendMessage(Message* message)
 {
     // Determine Message Type and Send
-    PlayerActionMessage* pam = dynamic_cast<PlayerActionMessage*>( message );
-    if(pam)
+    switch (message->getMessageID())
     {
-        // Make copy of PlayerActionMessage and send to Queue
-        auto msg = std::make_unique< PlayerActionMessage > ( pam );
-        mMessageQueue.push(std::move(msg));
+        case Message::ID::NONE:
+        {
+            std::cout << "MessageNetwork::sendMessage(): Message does not have a ID associated with it\n";
+            break;
+        }
+        case Message::ID::PlayerActionMessage:
+        {
+            PlayerActionMessage* pam = dynamic_cast<PlayerActionMessage*>( message ); 
+            auto msg = std::make_unique< PlayerActionMessage > ( pam );
+            mMessageQueue.push(std::move(msg));
 
-        pam = nullptr;
-        return;
+            pam = nullptr;
+            break;
+        }
     }
-
-    EnemySpawnMessage* esm = dynamic_cast<EnemySpawnMessage*>( message );
-    if(esm)
-    {
-        auto msg = std::make_unique< EnemySpawnMessage > ( esm );
-        mMessageQueue.push(std::move(msg));
-
-        esm = nullptr;
-        return;
-    }
-
-
-    return;
 }
 
-void MessageNetwork::addSubscriber(std::pair< std::set< Messages::ID >, MessageNodeInfo > subscriber)
+void MessageNetwork::addSubscriber(MessageNodeInfo subscriber)
 {
-    for(const auto& topic : subscriber.first)
+    for(const auto& IDs : subscriber.subscriptions)
     {
-        std::pair< Messages::ID, MessageNodeInfo > singleSubscriberEntry(topic, subscriber.second);
-
-        mSubscriberList.insert(singleSubscriberEntry);
+        mSubscriberList.insert(std::make_pair(IDs, subscriber));
     }
 }
 
 void MessageNetwork::notifySubscribers()
 {
-    Messages::ID messageID;
+    Message::ID messageID;
 
     while( !mMessageQueue.empty())
     {

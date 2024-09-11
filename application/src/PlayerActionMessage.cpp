@@ -1,17 +1,14 @@
 #include "PlayerActionMessage.hpp"
 
-PlayerActionMessage::PlayerActionMessage(MessageNetwork& messageNetwork, std::string identifierString) :
-    Message(messageNetwork, identifierString)
-{
-}
-
-PlayerActionMessage::PlayerActionMessage()
+PlayerActionMessage::PlayerActionMessage(Message::ID ID ) :
+    Message(ID),
+    action()
 {
 }
 
 PlayerActionMessage::PlayerActionMessage( PlayerActionMessage* message)
 {
-    mSender = message->mSender;
-    mIdentifierString = message->mIdentifierString;
-    mIDType = message->mIDType;
+    mMessageInfo.sender = message->mMessageInfo.sender;
+    mMessageInfo.messageID = message->mMessageInfo.messageID;
+    action = message->action;
 }

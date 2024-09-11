@@ -4,18 +4,19 @@
 TestComponentPub::TestComponentPub(MessageNetwork* messageNetwork) : 
     MessageNode(messageNetwork)
 {
-    MessageNode::setNodeName("TestComponentPublish");
+    MessageNode::mMessageNodeInfo.nodeName = "TestComponentPublish";
 }
 
 void TestComponentPub::update()
 {
-    auto msg = createMessage(Messages::ID::PlayerActionMessage);
+    auto msg = createMessage(Message::ID::PlayerActionMessage);
 
-    MessageNode::setPublishMessage(Messages::ID::PlayerActionMessage);
-    send(msg.get());
+    // Must cast to set properties for derived class
+    PlayerActionMessage* pam = dynamic_cast<PlayerActionMessage*>( msg.get() );
+    if(pam)
+    {
+        pam->action = Action::MOVE_DOWN;
+    }
 
-    msg = createMessage(Messages::ID::EnemySpawnMessage);
-
-    MessageNode::setPublishMessage(Messages::ID::EnemySpawnMessage);
     send(msg.get());
 }

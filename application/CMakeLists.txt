@@ -9,10 +9,10 @@ set(SRC src/main.cpp
         src/GameState.cpp
         src/PauseState.cpp
         src/Message.cpp
+        src/MessageNodeInfo.cpp
         src/MessageNetwork.cpp
         src/MessageNode.cpp 
         src/PlayerActionMessage.cpp
-        src/EnemySpawnMessage.cpp
         src/TestComponentPub.cpp 
         src/TestComponentSub.cpp
         src/TestComponentSub2.cpp )
@@ -25,10 +25,10 @@ set(INC inc/Application.hpp
         inc/GameState.hpp
         inc/PauseState.hpp
         inc/Message.hpp
+        inc/MessageNodeInfo.hpp
         inc/MessageNetwork.hpp
         inc/MessageNode.hpp
         inc/PlayerActionMessage.hpp
-        inc/EnemySpawnMessage.hpp
         inc/TestComponentPub.hpp 
         inc/TestComponentSub.hpp
         inc/TestComponentSub2.hpp )

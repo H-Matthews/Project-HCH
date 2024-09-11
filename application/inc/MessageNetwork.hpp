@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Message.hpp"
+#include "MessageNodeInfo.hpp"
 
 //Utility
 #include "StringOperations.hpp"
@@ -12,45 +13,33 @@
 #include <memory>
 #include <set>
 
-struct MessageNodeInfo
-{
-    std::string nodeName;
-    std::function<void(Message*)> callback;
-    std::set< std::string > stringSubscriberList;
-
-    MessageNodeInfo(std::string name) { nodeName = name; }
-    MessageNodeInfo() {}
-};
-
 class MessageNetwork
 {
     public:
         MessageNetwork();
 
         template <typename T>
-        void registerMessage(Messages::ID messageID);
+        void registerMessage(Message::ID messageID);
         
-        const std::map< Messages::ID, std::function< std::unique_ptr< Message > () > >& getMessageRegistry() const;
+        const std::map< Message::ID, std::function< std::unique_ptr< Message > () > >& getMessageRegistry() const;
 
         void sendMessage(Message* message);
 
-        void addSubscriber(std::pair< std::set< Messages::ID >, MessageNodeInfo > subscriber);
+        void addSubscriber(MessageNodeInfo subscriber);
         void notifySubscribers();
 
     private:
-        std::multimap< Messages::ID, MessageNodeInfo > mSubscriberList;
+        std::multimap< Message::ID, MessageNodeInfo > mSubscriberList;
         std::queue< std::unique_ptr< Message > > mMessageQueue;
-        std::map< Messages::ID, std::function<std::unique_ptr< Message >()> > mMessageRegistry;
+        std::map< Message::ID, std::function<std::unique_ptr< Message >()> > mMessageRegistry;
 };
 
 template <typename T>
-void MessageNetwork::registerMessage(Messages::ID messageID)
+void MessageNetwork::registerMessage(Message::ID messageID)
 {
-    const std::string identifierString(Utility::messageEnumToString(messageID));
-
     // Stores a Lambda in mMessageRegistry
-    mMessageRegistry[messageID] = [this, identifierString] ()
+    mMessageRegistry[messageID] = [messageID] ()
     {
-        return std::unique_ptr< Message >(new T(*this, identifierString));
+        return std::make_unique< T >(messageID);
     };
 }

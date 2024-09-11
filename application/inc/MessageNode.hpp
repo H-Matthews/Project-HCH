@@ -1,6 +1,11 @@
 #pragma once
 
 #include "MessageNetwork.hpp"
+#include "MessageNodeInfo.hpp"
+
+#include <set>
+#include <functional>
+#include <memory>
 
 class MessageNetwork;
 
@@ -10,16 +15,10 @@ class MessageNode
         MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName);
         MessageNode(MessageNetwork* messageNetwork);
 
-        std::unique_ptr<Message> createMessage(Messages::ID messageID);
-
-        void setPublishMessage(Messages::ID publishMessageID);
-        void setSubscribeMessage(Messages::ID subscribeMessageID);
-        void setNodeName(std::string nodeName);
-        const std::set< Messages::ID >& getSubscribeToMessageList() const;
-        const Messages::ID& getPublishMessageID() const;
-        const std::string& getNodeName() const;
+        std::unique_ptr<Message> createMessage(Message::ID messageID);
 
     protected:
+        void subscribeTo(Message::ID subscribeMessageID);
         void registerSubscriberMessages();
         void send(Message* message);
         virtual void onNotify(Message* message);
@@ -29,7 +28,7 @@ class MessageNode
 
     private:
         MessageNetwork* mMessageNetwork;
+
+    protected:
         MessageNodeInfo mMessageNodeInfo;
-        std::set< Messages::ID > mSubscribeToMessages;
-        Messages::ID mPublishMessageID;
 };

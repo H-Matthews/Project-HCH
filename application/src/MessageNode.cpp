@@ -5,19 +5,18 @@
 
 MessageNode::MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName) :
     mMessageNetwork(messageNetwork),
-    mMessageNodeInfo(messageNodeName),
-    mSubscribeToMessages(),
-    mPublishMessageID()
+    mMessageNodeInfo(messageNodeName)
 {   
     mMessageNodeInfo.callback = this->getNotifyFunc();
 }
 
 MessageNode::MessageNode(MessageNetwork* messageNetwork) :
-    mMessageNetwork(messageNetwork)
+    mMessageNetwork(messageNetwork),
+    mMessageNodeInfo("")
 {
 }
 
-std::unique_ptr<Message> MessageNode::createMessage(Messages::ID messageID)
+std::unique_ptr<Message> MessageNode::createMessage(Message::ID messageID)
 {
     auto found = mMessageNetwork->getMessageRegistry().find(messageID);
     assert(found != mMessageNetwork->getMessageRegistry().end());
@@ -26,52 +25,25 @@ std::unique_ptr<Message> MessageNode::createMessage(Messages::ID messageID)
     return found->second();
 }
 
-void MessageNode::setPublishMessage(Messages::ID publishMessageID)
+void MessageNode::subscribeTo(Message::ID subscribeMessageID)
 {
-    mPublishMessageID = publishMessageID;
-}
-
-void MessageNode::setSubscribeMessage(Messages::ID subscribeMessageID)
-{
-    auto result = mSubscribeToMessages.insert(subscribeMessageID);
+    auto result = mMessageNodeInfo.subscriptions.insert(subscribeMessageID);
     mMessageNodeInfo.stringSubscriberList.insert(Utility::messageEnumToString(subscribeMessageID));
 
     if(!result.second)
         std::cout << "Already subscribing to that message: " << Utility::messageEnumToString(subscribeMessageID) << std::endl;
 }
 
-void MessageNode::setNodeName(std::string nodeName)
-{
-    mMessageNodeInfo.nodeName = nodeName;
-}
-
-const std::set< Messages::ID >& MessageNode::getSubscribeToMessageList() const
-{
-    return mSubscribeToMessages;
-}
-
-const Messages::ID& MessageNode::getPublishMessageID() const
-{
-    return mPublishMessageID;
-}
-
-const std::string& MessageNode::getNodeName() const
-{
-    return mMessageNodeInfo.nodeName;
-}
-
 void MessageNode::registerSubscriberMessages()
 {
-    if(!mSubscribeToMessages.empty())
+    if(!mMessageNodeInfo.subscriptions.empty())
     {
         std::cout << "Registering Subscriber: " << mMessageNodeInfo.nodeName << std::endl;
-
-        std::pair<std::set< Messages::ID >, MessageNodeInfo> subscriberPair(mSubscribeToMessages, mMessageNodeInfo);
-        mMessageNetwork->addSubscriber(subscriberPair);
+        mMessageNetwork->addSubscriber(mMessageNodeInfo);
     }
     else
     {
-        std::cout << "Did not Register Subscriber because they did not designate a topic to subscriber to " << std::endl;
+        std::cout << mMessageNodeInfo.nodeName << " has not set any messages to subscribe to " << std::endl;
     }
 }
 
@@ -86,16 +58,17 @@ std::function<void (Message*)> MessageNode::getNotifyFunc()
 
 void MessageNode::send(Message* message)
 { 
-    message->populateMessageHeader(mPublishMessageID, mMessageNodeInfo.nodeName);
+    message->setSender(mMessageNodeInfo.nodeName);
 
-    if( mPublishMessageID != Messages::ID::None)
+    if( message->getMessageID() != Message::ID::NONE)
     {
         std::cout << "Publishing Message. Sender: " << mMessageNodeInfo.nodeName << std::endl;
         mMessageNetwork->sendMessage(message);
     }
     else
     {
-        std::cout << "Did not send message because there is no Topic associated with NodeID: " << getNodeName() << std::endl;
+        std::cout << "Did not send message because there is no Topic associated with NodeID: "
+                  << mMessageNodeInfo.nodeName << std::endl;
     }
 
     message = nullptr;

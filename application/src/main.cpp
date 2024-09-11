@@ -17,8 +17,7 @@ int main()
 
     MessageNetwork messageNetwork;
 
-    messageNetwork.registerMessage<PlayerActionMessage>(Messages::ID::PlayerActionMessage);
-    messageNetwork.registerMessage<EnemySpawnMessage>(Messages::ID::EnemySpawnMessage);
+    messageNetwork.registerMessage<PlayerActionMessage>(Message::ID::PlayerActionMessage);
 
     TestComponentPub componentPub(&messageNetwork);    //Pub
     TestComponentSub componentSub(&messageNetwork);    //Sub --> PLAYER Messages

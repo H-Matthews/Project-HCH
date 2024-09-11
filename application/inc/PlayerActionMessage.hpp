@@ -5,19 +5,18 @@
 #include <string>
 
 // Test Class
-enum Action
+enum class Action
 {
-    MOVE_UP,
-    MOVE_DOWN
-
+    MOVE_UP = 0,
+    MOVE_DOWN,
+    MOVE_LEFT,
+    MOVE_RIGHT
 };
 
-class PlayerActionMessage : public Message 
+struct PlayerActionMessage : public Message 
 {
-    public:
-        PlayerActionMessage();
-        PlayerActionMessage( MessageNetwork& messageNetwork, std::string identifierString);
-        PlayerActionMessage( PlayerActionMessage* message);
+    PlayerActionMessage( Message::ID ID );
+    PlayerActionMessage( PlayerActionMessage* message);
 
-        Action action = MOVE_UP;
+    Action action;
 };

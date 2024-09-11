@@ -6,33 +6,35 @@ constexpr uint8_t MESSAGE_TYPE_SIZE = 3;
 
 class MessageNetwork;
 
-namespace Messages 
-{
-    enum class ID
-    {
-        None = 0,
-        PlayerActionMessage,
-        EnemySpawnMessage
-    };
-}
-
 class Message
 {
     public:
+        enum class ID
+        {
+            NONE = 0,
+            PlayerActionMessage
+        };
+
+        struct Info 
+        {
+            ID messageID;
+            std::string sender;
+
+            Info() { messageID = Message::ID::NONE; sender = ""; }
+            Info(const Message::ID messageID);
+        };
 
     public:
         Message();
-        Message(MessageNetwork& messageNetwork, std::string identifierString);
         virtual ~Message();
+        Message::ID getMessageID() const;
 
-        void populateMessageHeader(Messages::ID IDType, std::string sender);
-
-        const std::string getSenderName() const;
-        Messages::ID getMessageID() const;
+        void setSender(const std::string& sender);
+        const std::string& getSenderName() const;
+    
+    protected:
+        Message(const Message::ID ID );
 
     protected:
-        MessageNetwork* mMessageNetwork;
-        Messages::ID mIDType;
-        std::string mIdentifierString;
-        std::string mSender;
+        Info mMessageInfo;
 };  
