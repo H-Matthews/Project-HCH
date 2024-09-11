@@ -17,5 +17,7 @@ void TestComponentSub::onNotify(Message* message)
     {
         if(pam->action == Action::MOVE_DOWN)
             std::cout << "Moving Down " << std::endl;
+
+        std::cout << pam->getStringMessageID() << std::endl;
     }
 }

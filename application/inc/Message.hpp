@@ -12,28 +12,31 @@ class Message
         enum class ID
         {
             NONE = 0,
-            PlayerActionMessage
+            PlayerActionMessage,
+            EnemySpawnMessage
         };
 
         struct Info 
         {
-            ID messageID;
+            std::pair<ID, std::string> messageID;
             std::string sender;
 
-            Info() { messageID = Message::ID::NONE; sender = ""; }
-            Info(const Message::ID messageID);
+            Info();
+            Info(const std::pair<ID, std::string >& messageID);
         };
 
     public:
         Message();
         virtual ~Message();
-        Message::ID getMessageID() const;
 
         void setSender(const std::string& sender);
-        const std::string& getSenderName() const;
+
+        std::string getSenderName() const;
+        Message::ID getMessageID() const;
+        std::string getStringMessageID() const;
     
     protected:
-        Message(const Message::ID ID );
+        Message(const std::pair<ID, std::string >& messageID );
 
     protected:
         Info mMessageInfo;

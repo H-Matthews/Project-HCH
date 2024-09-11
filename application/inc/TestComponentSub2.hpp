@@ -1,4 +1,5 @@
 #include "MessageNode.hpp"
+#include "EnemySpawnMessage.hpp"
 
 #include <iostream>
 

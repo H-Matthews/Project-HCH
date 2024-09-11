@@ -1,7 +1,7 @@
 #include "PlayerActionMessage.hpp"
 
-PlayerActionMessage::PlayerActionMessage(Message::ID ID ) :
-    Message(ID),
+PlayerActionMessage::PlayerActionMessage(const std::pair< Message::ID, std::string >& messageID ) :
+    Message( messageID ),
     action()
 {
 }

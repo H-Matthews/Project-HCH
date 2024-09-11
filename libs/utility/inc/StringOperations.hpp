@@ -10,8 +10,6 @@ namespace Utility
 {
     const std::string statesEnumToString(const States::ID identifier);
 
-    const std::string messageEnumToString(const Message::ID identifier);
-
     template <typename T>
     const std::string& toString(const T& value);
 }

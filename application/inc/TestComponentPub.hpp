@@ -1,8 +1,6 @@
 #include "MessageNode.hpp"
 #include "PlayerActionMessage.hpp"
-
-#include <iostream>
-#include <memory>
+#include "EnemySpawnMessage.hpp"
 
 // This class will be the Subscriber
 class TestComponentPub : public MessageNode

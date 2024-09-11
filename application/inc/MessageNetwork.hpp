@@ -3,9 +3,6 @@
 #include "Message.hpp"
 #include "MessageNodeInfo.hpp"
 
-//Utility
-#include "StringOperations.hpp"
-
 #include <functional>
 #include <string>
 #include <queue>
@@ -19,13 +16,13 @@ class MessageNetwork
         MessageNetwork();
 
         template <typename T>
-        void registerMessage(Message::ID messageID);
+        void registerMessage(std::pair< Message::ID, std::string > messageID);
         
         const std::map< Message::ID, std::function< std::unique_ptr< Message > () > >& getMessageRegistry() const;
 
         void sendMessage(Message* message);
 
-        void addSubscriber(MessageNodeInfo subscriber);
+        void addSubscriber(const MessageNodeInfo& subscriber);
         void notifySubscribers();
 
     private:
@@ -35,10 +32,10 @@ class MessageNetwork
 };
 
 template <typename T>
-void MessageNetwork::registerMessage(Message::ID messageID)
+void MessageNetwork::registerMessage(std::pair< Message::ID, std::string > messageID)
 {
     // Stores a Lambda in mMessageRegistry
-    mMessageRegistry[messageID] = [messageID] ()
+    mMessageRegistry[messageID.first] = [messageID] ()
     {
         return std::make_unique< T >(messageID);
     };

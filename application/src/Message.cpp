@@ -1,6 +1,13 @@
 #include "Message.hpp"
 
-Message::Info::Info(const Message::ID messageID) :
+Message::Info::Info()
+{
+    sender = "";
+    messageID.first = Message::ID::NONE;
+    messageID.second = "NONE";
+}
+
+Message::Info::Info(const std::pair<ID, std::string >& messageID) :
     messageID(messageID),
     sender("")
 {
@@ -10,8 +17,8 @@ Message::Message()
 {
 }
 
-Message::Message(const Message::ID ID) :
-    mMessageInfo(ID)
+Message::Message(const std::pair<ID, std::string >& messageID) :
+    mMessageInfo(messageID)
 {
 }
 
@@ -19,17 +26,22 @@ Message::~Message()
 {
 }
 
-Message::ID Message::getMessageID() const
+void Message::setSender(const std::string& sender)
 {
-    return mMessageInfo.messageID;
+    mMessageInfo.sender = sender;
 }
 
-const std::string& Message::getSenderName() const
+Message::ID Message::getMessageID() const
+{
+    return mMessageInfo.messageID.first;
+}
+
+std::string Message::getSenderName() const
 {
     return mMessageInfo.sender;
 }
 
-void Message::setSender(const std::string& sender)
+std::string Message::getStringMessageID() const
 {
-    mMessageInfo.sender = sender;
+    return mMessageInfo.messageID.second;
 }

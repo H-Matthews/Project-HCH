@@ -28,10 +28,9 @@ std::unique_ptr<Message> MessageNode::createMessage(Message::ID messageID)
 void MessageNode::subscribeTo(Message::ID subscribeMessageID)
 {
     auto result = mMessageNodeInfo.subscriptions.insert(subscribeMessageID);
-    mMessageNodeInfo.stringSubscriberList.insert(Utility::messageEnumToString(subscribeMessageID));
 
     if(!result.second)
-        std::cout << "Already subscribing to that message: " << Utility::messageEnumToString(subscribeMessageID) << std::endl;
+        std::cout << "Already Subscribed to that Message " << std::endl;
 }
 
 void MessageNode::registerSubscriberMessages()

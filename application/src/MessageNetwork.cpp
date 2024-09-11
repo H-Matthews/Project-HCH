@@ -1,5 +1,6 @@
 #include "MessageNetwork.hpp"
 #include "PlayerActionMessage.hpp"
+#include "EnemySpawnMessage.hpp"
 
 #include <iostream>
 
@@ -33,10 +34,19 @@ void MessageNetwork::sendMessage(Message* message)
             pam = nullptr;
             break;
         }
+        case Message::ID::EnemySpawnMessage:
+        {
+            EnemySpawnMessage* esm = dynamic_cast<EnemySpawnMessage*>( message ); 
+            auto msg = std::make_unique< EnemySpawnMessage > ( esm );
+            mMessageQueue.push(std::move(msg));
+
+            esm = nullptr;
+            break;
+        }
     }
 }
 
-void MessageNetwork::addSubscriber(MessageNodeInfo subscriber)
+void MessageNetwork::addSubscriber(const MessageNodeInfo& subscriber)
 {
     for(const auto& IDs : subscriber.subscriptions)
     {

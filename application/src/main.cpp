@@ -17,14 +17,14 @@ int main()
 
     MessageNetwork messageNetwork;
 
-    messageNetwork.registerMessage<PlayerActionMessage>(Message::ID::PlayerActionMessage);
+    messageNetwork.registerMessage<PlayerActionMessage>(std::make_pair(Message::ID::PlayerActionMessage, "PlayerActionMessage"));
+    messageNetwork.registerMessage<EnemySpawnMessage>(std::make_pair(Message::ID::EnemySpawnMessage, "EnemySpawnMessage"));
 
     TestComponentPub componentPub(&messageNetwork);    //Pub
     TestComponentSub componentSub(&messageNetwork);    //Sub --> PLAYER Messages
     TestComponentSub2 componentSub2(&messageNetwork);  //Sub --> ENEMY Messages
 
     auto begin = std::chrono::steady_clock::now();
-
     for(int i = 0; i < 10; i++)
     {
         componentPub.update();
@@ -36,9 +36,6 @@ int main()
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
     std::cout << "Elapsed Time: " << duration.count();
     std::cout << " Microseconds" << std::endl;
-
-    if(duration.count() < 1000000)
-        std::cout << "Under a second " << std::endl;
     
     return 0;
 }

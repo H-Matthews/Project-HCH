@@ -15,7 +15,7 @@ enum class Action
 
 struct PlayerActionMessage : public Message 
 {
-    PlayerActionMessage( Message::ID ID );
+    PlayerActionMessage( const std::pair< Message::ID, std::string >& messageID );
     PlayerActionMessage( PlayerActionMessage* message);
 
     Action action;

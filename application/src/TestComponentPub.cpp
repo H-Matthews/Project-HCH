@@ -1,5 +1,7 @@
 #include "TestComponentPub.hpp"
 
+#include <iostream>
+#include <memory>
 
 TestComponentPub::TestComponentPub(MessageNetwork* messageNetwork) : 
     MessageNode(messageNetwork)
@@ -9,14 +11,24 @@ TestComponentPub::TestComponentPub(MessageNetwork* messageNetwork) :
 
 void TestComponentPub::update()
 {
-    auto msg = createMessage(Message::ID::PlayerActionMessage);
+    auto pamBase = createMessage(Message::ID::PlayerActionMessage);
 
-    // Must cast to set properties for derived class
-    PlayerActionMessage* pam = dynamic_cast<PlayerActionMessage*>( msg.get() );
+    // Base to derived cast 
+    PlayerActionMessage* pam = dynamic_cast<PlayerActionMessage*>( pamBase.get() );
     if(pam)
     {
         pam->action = Action::MOVE_DOWN;
     }
 
-    send(msg.get());
+    send(pamBase.get());
+
+    auto esmBase = createMessage(Message::ID::EnemySpawnMessage);
+
+    EnemySpawnMessage* esm = dynamic_cast<EnemySpawnMessage*>( esmBase.get() );
+    if(esm)
+    {
+        esm->spawn = true;
+    }
+
+    send(esmBase.get());
 }
