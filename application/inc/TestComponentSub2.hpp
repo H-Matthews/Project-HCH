@@ -1,10 +1,12 @@
 #include "MessageNode.hpp"
 #include "EnemySpawnMessage.hpp"
+#include "PlayerActionMessage.hpp"
 
 #include <iostream>
 
 /* This class only handles the following Messages
-1. EnemySpawnMessage
+1. PlayerActionMessage
+2. EnemySpawnMessage
 */
 class TestComponentSub2 : public MessageNode 
 {

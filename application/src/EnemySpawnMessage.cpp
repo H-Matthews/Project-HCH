@@ -1,14 +1,12 @@
 #include "EnemySpawnMessage.hpp"
 
-EnemySpawnMessage::EnemySpawnMessage(const std::pair< Message::ID, std::string >& messageID ) :
-    Message( messageID ),
+EnemySpawnMessage::EnemySpawnMessage(const Message::ID messageID ) :
+    Message( messageID, "EnemySpawnMessage"),
     spawn()
 {
 }
 
-EnemySpawnMessage::EnemySpawnMessage( EnemySpawnMessage* message)
+std::unique_ptr<Message> EnemySpawnMessage::clone() const
 {
-    mMessageInfo.sender = message->mMessageInfo.sender;
-    mMessageInfo.messageID = message->mMessageInfo.messageID;
-    spawn = message->spawn;
+    return std::make_unique<EnemySpawnMessage>(*this);
 }

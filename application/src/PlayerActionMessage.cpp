@@ -1,14 +1,12 @@
 #include "PlayerActionMessage.hpp"
 
-PlayerActionMessage::PlayerActionMessage(const std::pair< Message::ID, std::string >& messageID ) :
-    Message( messageID ),
+PlayerActionMessage::PlayerActionMessage(const Message::ID messageID ) :
+    Message( messageID, "PlayerActionMessage"),
     action()
 {
 }
 
-PlayerActionMessage::PlayerActionMessage( PlayerActionMessage* message)
+std::unique_ptr<Message> PlayerActionMessage::clone() const
 {
-    mMessageInfo.sender = message->mMessageInfo.sender;
-    mMessageInfo.messageID = message->mMessageInfo.messageID;
-    action = message->action;
+    return std::make_unique<PlayerActionMessage>(*this);
 }

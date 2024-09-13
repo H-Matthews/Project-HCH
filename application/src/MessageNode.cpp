@@ -16,15 +16,6 @@ MessageNode::MessageNode(MessageNetwork* messageNetwork) :
 {
 }
 
-std::unique_ptr<Message> MessageNode::createMessage(Message::ID messageID)
-{
-    auto found = mMessageNetwork->getMessageRegistry().find(messageID);
-    assert(found != mMessageNetwork->getMessageRegistry().end());
-
-    // Returns the newly created Message Object
-    return found->second();
-}
-
 void MessageNode::subscribeTo(Message::ID subscribeMessageID)
 {
     auto result = mMessageNodeInfo.subscriptions.insert(subscribeMessageID);
@@ -44,15 +35,6 @@ void MessageNode::registerSubscriberMessages()
     {
         std::cout << mMessageNodeInfo.nodeName << " has not set any messages to subscribe to " << std::endl;
     }
-}
-
-std::function<void (Message*)> MessageNode::getNotifyFunc()
-{
-    auto messageSubscriber = [=] (Message* message) -> void {
-        this->onNotify(message);
-    };
-
-    return messageSubscriber;
 }
 
 void MessageNode::send(Message* message)
@@ -77,4 +59,13 @@ void MessageNode::onNotify(Message*)
 {
     std::cout << "Calling default method ---> MessageNode::onNotify(Message)... This message is intended for "
               << mMessageNodeInfo.nodeName << std::endl;
+}
+
+std::function<void (Message*)> MessageNode::getNotifyFunc()
+{
+    auto messageSubscriber = [=] (Message* message) -> void {
+        this->onNotify(message);
+    };
+
+    return messageSubscriber;
 }

@@ -2,12 +2,11 @@
 
 #include "Message.hpp"
 
-#include <string>
-
-struct EnemySpawnMessage : public Message 
+class EnemySpawnMessage : public Message 
 {
-    EnemySpawnMessage( const std::pair< Message::ID, std::string >& messageID );
-    EnemySpawnMessage( EnemySpawnMessage* message);
+    public:
+        EnemySpawnMessage( const Message::ID messageID );
+        std::unique_ptr<Message> clone() const override;
 
-    bool spawn;
+        bool spawn;
 };

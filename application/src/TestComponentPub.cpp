@@ -11,24 +11,13 @@ TestComponentPub::TestComponentPub(MessageNetwork* messageNetwork) :
 
 void TestComponentPub::update()
 {
-    auto pamBase = createMessage(Message::ID::PlayerActionMessage);
+    auto pam = std::make_unique<PlayerActionMessage>(Message::ID::PlayerActionMessage);
+    pam->action = Action::MOVE_DOWN;
 
-    // Base to derived cast 
-    PlayerActionMessage* pam = dynamic_cast<PlayerActionMessage*>( pamBase.get() );
-    if(pam)
-    {
-        pam->action = Action::MOVE_DOWN;
-    }
+    send(pam.get());
 
-    send(pamBase.get());
+    auto esm = std::make_unique<EnemySpawnMessage>(Message::ID::EnemySpawnMessage);
+    esm->spawn = true;
 
-    auto esmBase = createMessage(Message::ID::EnemySpawnMessage);
-
-    EnemySpawnMessage* esm = dynamic_cast<EnemySpawnMessage*>( esmBase.get() );
-    if(esm)
-    {
-        esm->spawn = true;
-    }
-
-    send(esmBase.get());
+    send(esm.get());
 }

@@ -15,8 +15,6 @@ class MessageNode
         MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName);
         MessageNode(MessageNetwork* messageNetwork);
 
-        std::unique_ptr<Message> createMessage(Message::ID messageID);
-
     protected:
         void subscribeTo(Message::ID subscribeMessageID);
         void registerSubscriberMessages();

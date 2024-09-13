@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 constexpr uint8_t MESSAGE_TYPE_SIZE = 3;
 
@@ -9,6 +10,7 @@ class MessageNetwork;
 class Message
 {
     public:
+
         enum class ID
         {
             NONE = 0,
@@ -18,25 +20,26 @@ class Message
 
         struct Info 
         {
-            std::pair<ID, std::string> messageID;
+            Message::ID messageID;
+            std::string stringMessageID;
             std::string sender;
 
             Info();
-            Info(const std::pair<ID, std::string >& messageID);
+            Info(Message::ID messageID, const std::string& stringMessageID);
         };
 
     public:
-        Message();
         virtual ~Message();
+        virtual std::unique_ptr<Message> clone() const = 0;
 
         void setSender(const std::string& sender);
 
         std::string getSenderName() const;
         Message::ID getMessageID() const;
-        std::string getStringMessageID() const;
+        const std::string& getStringMessageID() const;
     
     protected:
-        Message(const std::pair<ID, std::string >& messageID );
+        Message(const Message::ID messageID, const std::string& stringMessageID );
 
     protected:
         Info mMessageInfo;

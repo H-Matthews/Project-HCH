@@ -10,11 +10,6 @@ MessageNetwork::MessageNetwork() :
 {
 }
 
-const std::map< Message::ID, std::function< std::unique_ptr< Message > () > >& MessageNetwork::getMessageRegistry() const
-{
-    return mMessageRegistry;
-}
-
 void MessageNetwork::sendMessage(Message* message)
 {
     // Determine Message Type and Send
@@ -28,19 +23,17 @@ void MessageNetwork::sendMessage(Message* message)
         case Message::ID::PlayerActionMessage:
         {
             PlayerActionMessage* pam = dynamic_cast<PlayerActionMessage*>( message ); 
-            auto msg = std::make_unique< PlayerActionMessage > ( pam );
+            auto msg = pam->clone();
             mMessageQueue.push(std::move(msg));
 
-            pam = nullptr;
             break;
         }
         case Message::ID::EnemySpawnMessage:
         {
             EnemySpawnMessage* esm = dynamic_cast<EnemySpawnMessage*>( message ); 
-            auto msg = std::make_unique< EnemySpawnMessage > ( esm );
+            auto msg = esm->clone();
             mMessageQueue.push(std::move(msg));
 
-            esm = nullptr;
             break;
         }
     }
@@ -62,17 +55,16 @@ void MessageNetwork::notifySubscribers()
     {
         messageID = mMessageQueue.front().get()->getMessageID();
 
-        auto iterator = mSubscriberList.find(messageID);
-        while(iterator != mSubscriberList.end() && iterator->first == messageID )
+        for(auto it = mSubscriberList.lower_bound(messageID),
+            end = mSubscriberList.upper_bound(messageID); it != end; ++it)
         {
             // Potentially Dangerous... If the subscriber attempts to use 
-            // this object in anyway after popping the message from the queue... 
-            // It will be a nullptr
-            // Proper way to deal with this is to clone the object
-            iterator->second.callback(mMessageQueue.front().get());
-            iterator++;
+            // this object in anyway after popping the message from the queue
+            // it will result in a segfault as the Queue owns the memory for messages
+            // Not going to clone everytime as that is not necessary, if the message needs to live 
+            // after popping from the Queue, the subscriber needs to clone the message
+            it->second.callback(mMessageQueue.front().get());
         }
-        
         mMessageQueue.pop();
     }  
 

@@ -3,22 +3,17 @@
 Message::Info::Info()
 {
     sender = "";
-    messageID.first = Message::ID::NONE;
-    messageID.second = "NONE";
+    messageID = Message::ID::NONE;
 }
 
-Message::Info::Info(const std::pair<ID, std::string >& messageID) :
+Message::Info::Info(const Message::ID messageID, const std::string& stringMessageID) :
     messageID(messageID),
+    stringMessageID(stringMessageID),
     sender("")
 {
 }
-
-Message::Message()
-{
-}
-
-Message::Message(const std::pair<ID, std::string >& messageID) :
-    mMessageInfo(messageID)
+Message::Message(const Message::ID messageID, const std::string& stringMessageID) :
+    mMessageInfo(messageID, stringMessageID)
 {
 }
 
@@ -31,17 +26,17 @@ void Message::setSender(const std::string& sender)
     mMessageInfo.sender = sender;
 }
 
-Message::ID Message::getMessageID() const
-{
-    return mMessageInfo.messageID.first;
-}
-
 std::string Message::getSenderName() const
 {
     return mMessageInfo.sender;
 }
 
-std::string Message::getStringMessageID() const
+Message::ID Message::getMessageID() const
 {
-    return mMessageInfo.messageID.second;
+    return mMessageInfo.messageID;
+}
+
+const std::string& Message::getStringMessageID() const
+{
+    return mMessageInfo.stringMessageID;
 }

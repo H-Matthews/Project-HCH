@@ -2,8 +2,6 @@
 
 #include "Message.hpp"
 
-#include <string>
-
 // Test Class
 enum class Action
 {
@@ -13,10 +11,11 @@ enum class Action
     MOVE_RIGHT
 };
 
-struct PlayerActionMessage : public Message 
+class PlayerActionMessage : public Message 
 {
-    PlayerActionMessage( const std::pair< Message::ID, std::string >& messageID );
-    PlayerActionMessage( PlayerActionMessage* message);
+    public:
+        PlayerActionMessage( const Message::ID messageID );
+        std::unique_ptr<Message> clone() const override;
 
-    Action action;
+        Action action;
 };

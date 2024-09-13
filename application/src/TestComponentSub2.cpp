@@ -4,20 +4,27 @@ TestComponentSub2::TestComponentSub2(MessageNetwork* messageNetwork) :
         MessageNode(messageNetwork, "TestComponentSub2")
 {
     MessageNode::subscribeTo(Message::ID::EnemySpawnMessage);
+    MessageNode::subscribeTo(Message::ID::PlayerActionMessage);
     registerSubscriberMessages();
 }
 
-/* This class only handles the following Messages
-1. PlayerActionMessage
-*/
 void TestComponentSub2::onNotify(Message* message)
 {
-    EnemySpawnMessage* pam = dynamic_cast<EnemySpawnMessage*>( message );
+
+    std::cout << MessageNode::mMessageNodeInfo.nodeName << " recieved " << message->getStringMessageID() << std::endl;
+    EnemySpawnMessage* esm = dynamic_cast<EnemySpawnMessage*>( message );
+    if(esm)
+    {
+        if(esm->spawn == true)
+            std::cout << "Spawning Enemy...... " << std::endl;
+    }
+
+    PlayerActionMessage* pam = dynamic_cast<PlayerActionMessage*>( message );
     if(pam)
     {
-        if(pam->spawn == true)
-            std::cout << "Spawning Enemy...... " << std::endl;
-
-        std::cout << pam->getStringMessageID() << std::endl;
+        if(pam->action == Action::MOVE_DOWN)
+            std::cout << "Moving Down " << std::endl;
     }
+
+    std::cout << "\n";
 }

@@ -12,12 +12,14 @@ TestComponentSub::TestComponentSub(MessageNetwork* messageNetwork) :
 
 void TestComponentSub::onNotify(Message* message)
 {
+    std::cout << MessageNode::mMessageNodeInfo.nodeName << " recieved " << message->getStringMessageID() << std::endl;
+
     PlayerActionMessage* pam = dynamic_cast<PlayerActionMessage*>( message );
     if(pam)
     {
         if(pam->action == Action::MOVE_DOWN)
             std::cout << "Moving Down " << std::endl;
-
-        std::cout << pam->getStringMessageID() << std::endl;
     }
+
+    std::cout << "\n";
 }
