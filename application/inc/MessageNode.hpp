@@ -17,6 +17,7 @@ class MessageNode
 
     protected:
         void subscribeTo(Message::ID subscribeMessageID);
+        void notifyUnsubscribe(Message::ID messageID);
         void registerSubscriberMessages();
         void send(Message* message);
         virtual void onNotify(Message* message);

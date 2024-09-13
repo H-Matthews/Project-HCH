@@ -6,6 +6,11 @@ const std::string Utility::statesEnumToString(States::ID identifier)
 
     switch(identifier)
     {
+        case States::ID::NONE:
+        {
+            sStream << "None";
+            break;
+        }
         case States::ID::Menu:
         {
             sStream << "Menu State";
@@ -21,8 +26,32 @@ const std::string Utility::statesEnumToString(States::ID identifier)
             sStream << "Pause State";
             break;
         }
-        default:
-            sStream << "No State";
+    }
+
+    return sStream.str();
+}
+
+const std::string Utility::messageIDEnumToString(const Message::ID identifier)
+{
+    std::stringstream sStream;
+
+    switch(identifier)
+    {
+        case Message::ID::NONE:
+        {
+            sStream << "NONE";
+            break;
+        }
+        case Message::ID::PlayerActionMessage:
+        {
+            sStream << "PlayerAction Message";
+            break;
+        }
+        case Message::ID::EnemySpawnMessage:
+        {
+            sStream << "EnemySpawn Message";
+            break;
+        }
     }
 
     return sStream.str();

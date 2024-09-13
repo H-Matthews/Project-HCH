@@ -1,4 +1,5 @@
 #include "MessageNode.hpp"
+#include "StringOperations.hpp"
 
 #include <iostream>
 #include <cassert>
@@ -22,6 +23,15 @@ void MessageNode::subscribeTo(Message::ID subscribeMessageID)
 
     if(!result.second)
         std::cout << "Already Subscribed to that Message " << std::endl;
+}
+
+// Notifys messageNetwork that we would like to unSubscribe from a message
+// It will evaulate the request at the end of MessageNetwork::notifySubscribers()
+// This ensures the messages that were sent in the middle of the loop still gets sent to 
+// the subscriber as intended
+void MessageNode::notifyUnsubscribe(Message::ID messageID)
+{
+    mMessageNetwork->insertUnsubscriber(messageID, mMessageNodeInfo.nodeName);
 }
 
 void MessageNode::registerSubscriberMessages()

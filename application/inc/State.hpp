@@ -11,7 +11,7 @@ namespace States
 {
     enum ID
     {
-        None = 0,
+        NONE = 0,
         Menu,
         Game, 
         Pause

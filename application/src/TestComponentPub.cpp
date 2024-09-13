@@ -4,20 +4,23 @@
 #include <memory>
 
 TestComponentPub::TestComponentPub(MessageNetwork* messageNetwork) : 
-    MessageNode(messageNetwork)
+    MessageNode(messageNetwork),
+    playerAction()
 {
     MessageNode::mMessageNodeInfo.nodeName = "TestComponentPublish";
+
+    // Initialize Messages
+    playerAction = std::make_unique<PlayerActionMessage>(Message::ID::PlayerActionMessage);
+    enemySpawn = std::make_unique<EnemySpawnMessage>(Message::ID::EnemySpawnMessage);
 }
 
 void TestComponentPub::update()
 {
-    auto pam = std::make_unique<PlayerActionMessage>(Message::ID::PlayerActionMessage);
-    pam->action = Action::MOVE_DOWN;
+    playerAction->action = Action::MOVE_DOWN;
 
-    send(pam.get());
+    send(playerAction.get());
 
-    auto esm = std::make_unique<EnemySpawnMessage>(Message::ID::EnemySpawnMessage);
-    esm->spawn = true;
+    enemySpawn->spawn = true;
 
-    send(esm.get());
+    send(enemySpawn.get());
 }

@@ -46,7 +46,7 @@ class StateStack
 
         struct pendingStateRequests
         {
-            explicit pendingStateRequests(Action action, States::ID stateID = States::None);
+            explicit pendingStateRequests(Action action, States::ID stateID = States::NONE);
 
             Action action;
             States::ID stateID;

@@ -26,5 +26,8 @@ void TestComponentSub2::onNotify(Message* message)
             std::cout << "Moving Down " << std::endl;
     }
 
+    MessageNode::notifyUnsubscribe(Message::ID::EnemySpawnMessage);
+    MessageNode::notifyUnsubscribe(Message::ID::PlayerActionMessage);
+
     std::cout << "\n";
 }

@@ -47,6 +47,24 @@ void MessageNetwork::addSubscriber(const MessageNodeInfo& subscriber)
     }
 }
 
+void MessageNetwork::insertUnsubscriber(const Message::ID& messageID, const std::string& nodeName)
+{
+    // Ensure we are not adding duplicate UnSubscribe messages
+    bool isDuplicate = false;
+    for(auto it = mUnsubscribeList.lower_bound(messageID),
+            end = mUnsubscribeList.upper_bound(messageID); it != end; ++it)
+    {
+        if(it->second == nodeName)
+        {
+            isDuplicate = true;
+            break;
+        }
+    }
+
+    if(!isDuplicate)
+        mUnsubscribeList.insert(std::make_pair(messageID, nodeName));
+}
+
 void MessageNetwork::notifySubscribers()
 {
     Message::ID messageID;
@@ -68,4 +86,27 @@ void MessageNetwork::notifySubscribers()
         mMessageQueue.pop();
     }  
 
+    // Unsubscribe if there are any to unsubscribe to
+    unSubscribe();
+}
+
+void MessageNetwork::unSubscribe()
+{
+    for(const auto& unsubscriber : mUnsubscribeList)
+    {
+        for(auto it = mSubscriberList.lower_bound(unsubscriber.first),
+            end = mSubscriberList.upper_bound(unsubscriber.first); it != end;)
+        {
+            if(it->second.nodeName == unsubscriber.second)
+            {
+                mSubscriberList.erase(it++);
+                break;
+            }
+            else
+            {
+                ++it;
+            }
+        }
+    }
+    mUnsubscribeList.clear();
 }

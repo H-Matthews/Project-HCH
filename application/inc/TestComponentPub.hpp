@@ -11,4 +11,7 @@ class TestComponentPub : public MessageNode
     public:
         TestComponentPub(MessageNetwork* messageNetwork);
         void update();
+
+        std::unique_ptr<PlayerActionMessage> playerAction;
+        std::unique_ptr<EnemySpawnMessage> enemySpawn;
 };
