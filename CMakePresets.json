@@ -6,7 +6,7 @@
             "displayName": "Debug-unix Config",
             "description": "Debug build using Unix Makefiles",
             "generator": "Unix Makefiles",
-            "binaryDir": "${sourceDir}/build/debug-unix",
+            "binaryDir": "${sourceDir}/build",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             }
@@ -17,7 +17,7 @@
             "displayName": "Release-unix Config",
             "description": "Release build using Unix Makefiles",
             "generator": "Unix Makefiles",
-            "binaryDir": "${sourceDir}/build/release-unix",
+            "binaryDir": "${sourceDir}/build",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
@@ -28,14 +28,14 @@
             "displayName": "Windows VS2022 Config",
             "description": "Generates soulution for VS2022",
             "generator": "Visual Studio 17 2022",
-            "binaryDir": "${sourceDir}/build/windows"
+            "binaryDir": "${sourceDir}/build"
         },
         {
             "name": "windows-VS19",
             "displayName": "Windows VS2019 Config",
             "description": "Generates soulution for VS2019",
             "generator": "Visual Studio 16 2019",
-            "binaryDir": "${sourceDir}/build/windows"
+            "binaryDir": "${sourceDir}/build"
         }
     ],
     "buildPresets": [
