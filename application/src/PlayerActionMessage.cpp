@@ -5,8 +5,3 @@ PlayerActionMessage::PlayerActionMessage(const Message::ID messageID ) :
     action()
 {
 }
-
-std::unique_ptr<Message> PlayerActionMessage::clone() const
-{
-    return std::make_unique<PlayerActionMessage>(*this);
-}

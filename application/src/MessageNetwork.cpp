@@ -12,31 +12,10 @@ MessageNetwork::MessageNetwork() :
 
 void MessageNetwork::sendMessage(Message* message)
 {
-    // Determine Message Type and Send
-    switch (message->getMessageID())
-    {
-        case Message::ID::NONE:
-        {
-            std::cout << "MessageNetwork::sendMessage(): Message does not have a ID associated with it\n";
-            break;
-        }
-        case Message::ID::PlayerActionMessage:
-        {
-            PlayerActionMessage* pam = dynamic_cast<PlayerActionMessage*>( message ); 
-            auto msg = pam->clone();
-            mMessageQueue.push(std::move(msg));
+    // Clone and put onto Queue
+    std::unique_ptr<Message> clonedMessage = message->clone();
+    mMessageQueue.push(std::move(clonedMessage));
 
-            break;
-        }
-        case Message::ID::EnemySpawnMessage:
-        {
-            EnemySpawnMessage* esm = dynamic_cast<EnemySpawnMessage*>( message ); 
-            auto msg = esm->clone();
-            mMessageQueue.push(std::move(msg));
-
-            break;
-        }
-    }
 }
 
 void MessageNetwork::addSubscriber(const MessageNodeInfo& subscriber)

@@ -21,6 +21,11 @@ Message::~Message()
 {
 }
 
+std::unique_ptr<Message> Message::clone() const
+{
+    return std::make_unique<Message>(*this);
+}
+
 void Message::setSender(const std::string& sender)
 {
     mMessageInfo.sender = sender;

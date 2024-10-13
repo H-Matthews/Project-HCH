@@ -15,7 +15,6 @@ class PlayerActionMessage : public Message
 {
     public:
         PlayerActionMessage( const Message::ID messageID );
-        std::unique_ptr<Message> clone() const override;
 
         Action action;
 };

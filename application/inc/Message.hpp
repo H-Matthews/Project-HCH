@@ -30,7 +30,7 @@ class Message
 
     public:
         virtual ~Message();
-        virtual std::unique_ptr<Message> clone() const = 0;
+        virtual std::unique_ptr<Message> clone() const;
 
         void setSender(const std::string& sender);
 
