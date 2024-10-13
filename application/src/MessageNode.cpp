@@ -1,8 +1,7 @@
 #include "MessageNode.hpp"
-#include "StringOperations.hpp"
+#include "MessageNetwork.hpp"
 
 #include <iostream>
-#include <cassert>
 
 MessageNode::MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName) :
     mMessageNetwork(messageNetwork),

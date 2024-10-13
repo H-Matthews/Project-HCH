@@ -4,7 +4,6 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
-#include <memory>
 #include <string>
 
 namespace States

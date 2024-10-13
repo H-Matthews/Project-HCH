@@ -1,11 +1,8 @@
 #pragma once
 
-#include "MessageNetwork.hpp"
 #include "MessageNodeInfo.hpp"
 
-#include <set>
 #include <functional>
-#include <memory>
 
 class MessageNetwork;
 

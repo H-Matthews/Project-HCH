@@ -2,7 +2,7 @@
 
 #include "State.hpp"
 
-// Utility
+// Utility Lib
 #include "StringOperations.hpp"
 
 #include <SFML/System/Time.hpp>
@@ -11,7 +11,6 @@
 #include <functional>
 #include <map>
 #include <memory>
-#include <sstream>
 
 class StateStack 
 {

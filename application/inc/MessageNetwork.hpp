@@ -3,12 +3,10 @@
 #include "Message.hpp"
 #include "MessageNodeInfo.hpp"
 
-#include <functional>
 #include <string>
 #include <queue>
 #include <map>
 #include <memory>
-#include <set>
 
 class MessageNetwork
 {
