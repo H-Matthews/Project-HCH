@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Message.hpp"
-#include "MessageNodeInfo.hpp"
+#include "core/inc/Messaging/Message.hpp"
+#include "core/inc/Messaging/MessageNodeInfo.hpp"
 
 #include <string>
 #include <queue>

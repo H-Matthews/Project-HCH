@@ -1,4 +1,4 @@
-#include "SceneNode.hpp"
+#include "core/inc/SceneNode.hpp"
 #include "assert.h"
 
 SceneNode::SceneNode() : mParent(nullptr)

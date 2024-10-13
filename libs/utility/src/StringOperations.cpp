@@ -1,4 +1,4 @@
-#include "StringOperations.hpp"
+#include "utility/inc/StringOperations.hpp"
 
 const std::string Utility::statesEnumToString(States::ID identifier)
 {

@@ -19,5 +19,5 @@ set(INC inc/Messaging/Message.hpp
         inc/SceneNode.hpp )
 
 add_library(core STATIC ${SRC} ${INC})
-target_include_directories(core PUBLIC inc ${SFML_INC_DIR} ../)
+target_include_directories(core PUBLIC ${SFML_INC_DIR} ../)
 target_compile_features(core PRIVATE cxx_std_17)

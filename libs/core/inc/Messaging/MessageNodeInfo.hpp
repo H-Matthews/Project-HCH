@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Message.hpp"
+#include "core/inc/Messaging/Message.hpp"
 
 #include <set>
 #include <string>

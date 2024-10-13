@@ -1,8 +1,7 @@
 #pragma once
 
-#include "State.hpp"
+#include "core/inc/State/State.hpp"
 
-// Utility Lib
 #include "utility/inc/StringOperations.hpp"
 
 #include <SFML/System/Time.hpp>

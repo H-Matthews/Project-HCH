@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MessageNodeInfo.hpp"
+#include "core/inc/Messaging/MessageNodeInfo.hpp"
 
 #include <functional>
 
