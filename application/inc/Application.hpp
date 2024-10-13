@@ -1,6 +1,6 @@
 #pragma once
 
-#include "StateStack.hpp"
+#include "core/inc/State/StateStack.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Time.hpp>

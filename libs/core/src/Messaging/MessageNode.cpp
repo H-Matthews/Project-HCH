@@ -1,5 +1,5 @@
-#include "MessageNode.hpp"
-#include "MessageNetwork.hpp"
+#include "Messaging/MessageNode.hpp"
+#include "Messaging/MessageNetwork.hpp"
 
 #include <iostream>
 

@@ -1,4 +1,4 @@
-#include "PauseState.hpp"
+#include "application/inc/State/PauseState.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>

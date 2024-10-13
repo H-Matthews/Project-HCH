@@ -3,7 +3,7 @@
 #include "State.hpp"
 
 // Utility Lib
-#include "StringOperations.hpp"
+#include "utility/inc/StringOperations.hpp"
 
 #include <SFML/System/Time.hpp>
 

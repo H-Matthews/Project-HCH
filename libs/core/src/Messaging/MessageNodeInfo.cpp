@@ -1,4 +1,4 @@
-#include "MessageNodeInfo.hpp"
+#include "Messaging/MessageNodeInfo.hpp"
 
 
 MessageNodeInfo::MessageNodeInfo(const std::string& name) :

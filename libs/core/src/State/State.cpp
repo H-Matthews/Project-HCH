@@ -1,5 +1,5 @@
-#include "State.hpp"
-#include "StateStack.hpp"
+#include "State/State.hpp"
+#include "State/StateStack.hpp"
 
  State::SharedObjects::SharedObjects(sf::RenderWindow& window) :
  window(&window)

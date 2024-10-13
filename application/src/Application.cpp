@@ -1,8 +1,9 @@
-#include "Application.hpp"
-#include "State.hpp"
-#include "MenuState.hpp"
-#include "GameState.hpp"
-#include "PauseState.hpp"
+#include "application/inc/Application.hpp"
+#include "application/inc/State/MenuState.hpp"
+#include "application/inc/State/GameState.hpp"
+#include "application/inc/State/PauseState.hpp"
+
+#include "core/inc/State/State.hpp"
 
 #include <SFML/Graphics.hpp>
 

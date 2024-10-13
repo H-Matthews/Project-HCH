@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "State.hpp"
-#include "Message.hpp"
+#include "core/inc/State/State.hpp"
+#include "core/inc/Messaging/Message.hpp"
 
 #include <sstream>
 

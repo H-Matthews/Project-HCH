@@ -2,28 +2,14 @@ cmake_minimum_required(VERSION 3.16)
 
 set(SRC src/main.cpp  
         src/Application.cpp 
-        src/SceneNode.cpp
-        src/State.cpp 
-        src/StateStack.cpp 
-        src/MenuState.cpp
-        src/GameState.cpp
-        src/PauseState.cpp
-        src/Message.cpp
-        src/MessageNodeInfo.cpp
-        src/MessageNetwork.cpp
-        src/MessageNode.cpp )
+        src/State/MenuState.cpp
+        src/State/GameState.cpp
+        src/State/PauseState.cpp )
 
 set(INC inc/Application.hpp 
-        inc/SceneNode.hpp 
-        inc/State.hpp
-        inc/StateStack.hpp 
-        inc/MenuState.hpp 
-        inc/GameState.hpp
-        inc/PauseState.hpp
-        inc/Message.hpp
-        inc/MessageNodeInfo.hpp
-        inc/MessageNetwork.hpp
-        inc/MessageNode.hpp )
+        inc/State/MenuState.hpp 
+        inc/State/GameState.hpp
+        inc/State/PauseState.hpp )
 
 add_executable(hch ${SRC} ${INC})
 
@@ -33,8 +19,9 @@ else()
   target_compile_options(hch PRIVATE -Wall -Wextra -Wpedantic )
 endif()
 
-target_link_libraries(hch PRIVATE sfml-graphics utility)
-target_include_directories(utility PUBLIC ../lib/utility/inc inc)
+target_link_libraries(hch PRIVATE sfml-graphics utility core)
+target_include_directories(utility PUBLIC ../ ../libs)
+target_include_directories(core PUBLIC ../ ../libs)
 target_compile_features(hch PRIVATE cxx_std_17)
 
 if(WIN32)

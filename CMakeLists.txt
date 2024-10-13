@@ -12,6 +12,7 @@ FetchContent_MakeAvailable(SFML)
 
 set(SFML_INC_DIR ../../build/_deps/sfml-src/include)
 
+add_subdirectory(libs/core)
 add_subdirectory(libs/utility)
 add_subdirectory(application)
 

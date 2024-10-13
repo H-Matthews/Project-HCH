@@ -1,4 +1,4 @@
-#include "Message.hpp"
+#include "Messaging/Message.hpp"
 
 Message::Info::Info()
 {
