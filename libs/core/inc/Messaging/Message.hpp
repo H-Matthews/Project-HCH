@@ -3,8 +3,6 @@
 #include <string>
 #include <memory>
 
-constexpr uint8_t MESSAGE_TYPE_SIZE = 3;
-
 class MessageNetwork;
 
 class Message
