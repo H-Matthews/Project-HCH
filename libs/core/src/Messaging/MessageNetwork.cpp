@@ -2,13 +2,13 @@
 
 #include <iostream>
 
-MessageNetwork::MessageNetwork() :
+Core::MessageNetwork::MessageNetwork() :
     mSubscriberList(),
     mMessageQueue()
 {
 }
 
-void MessageNetwork::sendMessage(Message* message)
+void Core::MessageNetwork::sendMessage(Message* message)
 {
     // Clone and put onto Queue
     std::unique_ptr<Message> clonedMessage = message->clone();
@@ -16,7 +16,7 @@ void MessageNetwork::sendMessage(Message* message)
 
 }
 
-void MessageNetwork::addSubscriber(const MessageNodeInfo& subscriber)
+void Core::MessageNetwork::addSubscriber(const MessageNodeInfo& subscriber)
 {
     for(const auto& IDs : subscriber.subscriptions)
     {
@@ -24,7 +24,7 @@ void MessageNetwork::addSubscriber(const MessageNodeInfo& subscriber)
     }
 }
 
-void MessageNetwork::insertUnsubscriber(const Message::ID& messageID, const std::string& nodeName)
+void Core::MessageNetwork::insertUnsubscriber(const Messages::ID& messageID, const std::string& nodeName)
 {
     // Ensure we are not adding duplicate UnSubscribe messages
     bool isDuplicate = false;
@@ -42,9 +42,9 @@ void MessageNetwork::insertUnsubscriber(const Message::ID& messageID, const std:
         mUnsubscribeList.insert(std::make_pair(messageID, nodeName));
 }
 
-void MessageNetwork::notifySubscribers()
+void Core::MessageNetwork::notifySubscribers()
 {
-    Message::ID messageID;
+    Messages::ID messageID;
 
     while( !mMessageQueue.empty())
     {
@@ -67,7 +67,7 @@ void MessageNetwork::notifySubscribers()
     unSubscribe();
 }
 
-void MessageNetwork::unSubscribe()
+void Core::MessageNetwork::unSubscribe()
 {
     for(const auto& unsubscriber : mUnsubscribeList)
     {

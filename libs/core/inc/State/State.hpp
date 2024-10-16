@@ -6,47 +6,51 @@
 
 #include <string>
 
-namespace States
+namespace Core
 {
-    enum ID
+    class StateStack;
+
+    namespace States
     {
-        NONE = 0,
-        Menu,
-        Game, 
-        Pause
-    };
-}
-
-class StateStack;
-
-class State
-{
-    public:
-
-        struct SharedObjects
+        enum ID
         {
-            SharedObjects(sf::RenderWindow& window);
-
-            sf::RenderWindow* window;
+            NONE = 0,
+            Menu,
+            Game, 
+            Pause
         };
+    }
 
-    public:
-        State(StateStack& stack, std::string mStateIdentifierString, SharedObjects sObjects);
-        virtual ~State();
+    class State
+    {
+        public:
 
-        virtual void draw() = 0;
-        virtual bool update(sf::Time fixedTimeStep) = 0;
-        virtual bool handleEvent(const sf::Event& event) = 0;
+            struct SharedObjects
+            {
+                SharedObjects(sf::RenderWindow& window);
 
-    protected:
-        void requestStackPush(States::ID stateID);
-        void requestStackPop();
-        void requestStateClear();
+                sf::RenderWindow* window;
+            };
 
-        SharedObjects getSharedObjects() const;
+        public:
+            State(StateStack& stack, std::string mStateIdentifierString, SharedObjects sObjects);
+            virtual ~State();
 
-    private:
-        StateStack* mStack;
-        std::string mStateIdentifierString;
-        SharedObjects mSharedObjects;
-};
+            virtual void draw() = 0;
+            virtual bool update(sf::Time fixedTimeStep) = 0;
+            virtual bool handleEvent(const sf::Event& event) = 0;
+
+        protected:
+            void requestStackPush(States::ID stateID);
+            void requestStackPop();
+            void requestStateClear();
+
+            SharedObjects getSharedObjects() const;
+
+        private:
+            StateStack* mStack;
+            std::string mStateIdentifierString;
+            SharedObjects mSharedObjects;
+    };
+
+}

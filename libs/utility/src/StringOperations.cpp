@@ -1,27 +1,27 @@
 #include "utility/inc/StringOperations.hpp"
 
-const std::string Utility::statesEnumToString(States::ID identifier)
+const std::string Utility::statesEnumToString(Core::States::ID identifier)
 {
     std::stringstream sStream;
 
     switch(identifier)
     {
-        case States::ID::NONE:
+        case Core::States::ID::NONE:
         {
             sStream << "None";
             break;
         }
-        case States::ID::Menu:
+        case Core::States::ID::Menu:
         {
             sStream << "Menu State";
             break;
         }
-        case States::ID::Game:
+        case Core::States::ID::Game:
         {
             sStream << "Game State";
             break;
         }
-        case States::ID::Pause:
+        case Core::States::ID::Pause:
         {
             sStream << "Pause State";
             break;
@@ -31,23 +31,23 @@ const std::string Utility::statesEnumToString(States::ID identifier)
     return sStream.str();
 }
 
-const std::string Utility::messageIDEnumToString(const Message::ID identifier)
+const std::string Utility::messageIDEnumToString(const Core::Messages::ID identifier)
 {
     std::stringstream sStream;
 
     switch(identifier)
     {
-        case Message::ID::NONE:
+        case Core::Messages::ID::NONE:
         {
             sStream << "NONE";
             break;
         }
-        case Message::ID::PlayerActionMessage:
+        case Core::Messages::ID::PlayerActionMessage:
         {
             sStream << "PlayerAction Message";
             break;
         }
-        case Message::ID::EnemySpawnMessage:
+        case Core::Messages::ID::EnemySpawnMessage:
         {
             sStream << "EnemySpawn Message";
             break;

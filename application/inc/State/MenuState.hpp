@@ -4,10 +4,10 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 
-class MenuState : public State 
+class MenuState : public Core::State 
 {
     public:
-        MenuState(StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects);
+        MenuState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects);
 
         virtual void draw();
         virtual bool update(sf::Time fixedTimeStep);

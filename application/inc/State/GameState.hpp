@@ -2,10 +2,10 @@
 
 #include "core/inc/State/State.hpp"
 
-class GameState : public State
+class GameState : public Core::State
 {
     public:
-        GameState(StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects);
+        GameState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects);
 
         virtual void draw();
         virtual bool update(sf::Time fixedTimeStep);

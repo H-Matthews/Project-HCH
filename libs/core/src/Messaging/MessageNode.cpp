@@ -3,20 +3,20 @@
 
 #include <iostream>
 
-MessageNode::MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName) :
+Core::MessageNode::MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName) :
     mMessageNetwork(messageNetwork),
     mMessageNodeInfo(messageNodeName)
 {   
     mMessageNodeInfo.callback = this->getNotifyFunc();
 }
 
-MessageNode::MessageNode(MessageNetwork* messageNetwork) :
+Core::MessageNode::MessageNode(MessageNetwork* messageNetwork) :
     mMessageNetwork(messageNetwork),
     mMessageNodeInfo("")
 {
 }
 
-void MessageNode::subscribeTo(Message::ID subscribeMessageID)
+void Core::MessageNode::subscribeTo(Messages::ID subscribeMessageID)
 {
     auto result = mMessageNodeInfo.subscriptions.insert(subscribeMessageID);
 
@@ -28,12 +28,12 @@ void MessageNode::subscribeTo(Message::ID subscribeMessageID)
 // It will evaulate the request at the end of MessageNetwork::notifySubscribers()
 // This ensures the messages that were sent in the middle of the loop still gets sent to 
 // the subscriber as intended
-void MessageNode::notifyUnsubscribe(Message::ID messageID)
+void Core::MessageNode::notifyUnsubscribe(Messages::ID messageID)
 {
     mMessageNetwork->insertUnsubscriber(messageID, mMessageNodeInfo.nodeName);
 }
 
-void MessageNode::registerSubscriberMessages()
+void Core::MessageNode::registerSubscriberMessages()
 {
     if(!mMessageNodeInfo.subscriptions.empty())
     {
@@ -46,11 +46,11 @@ void MessageNode::registerSubscriberMessages()
     }
 }
 
-void MessageNode::send(Message* message)
+void Core::MessageNode::send(Message* message)
 { 
     message->setSender(mMessageNodeInfo.nodeName);
 
-    if( message->getMessageID() != Message::ID::NONE)
+    if( message->getMessageID() != Messages::ID::NONE)
     {
         std::cout << "Publishing Message. Sender: " << mMessageNodeInfo.nodeName << std::endl;
         mMessageNetwork->sendMessage(message);
@@ -64,13 +64,13 @@ void MessageNode::send(Message* message)
     message = nullptr;
 }
 
-void MessageNode::onNotify(Message*)
+void Core::MessageNode::onNotify(Message*)
 {
     std::cout << "Calling default method ---> MessageNode::onNotify(Message)... This message is intended for "
               << mMessageNodeInfo.nodeName << std::endl;
 }
 
-std::function<void (Message*)> MessageNode::getNotifyFunc()
+std::function<void (Core::Message*)> Core::MessageNode::getNotifyFunc()
 {
     auto messageSubscriber = [=] (Message* message) -> void {
         this->onNotify(message);

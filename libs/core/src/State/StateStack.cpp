@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-StateStack::StateStack(State::SharedObjects sObjects) : 
+Core::StateStack::StateStack(Core::State::SharedObjects sObjects) : 
 mStack(),
 mPendingList(),
 mSharedObjects(sObjects),
@@ -10,7 +10,7 @@ mRegistry()
 {
 }
 
-void StateStack::update(sf::Time fixedTimeStep)
+void Core::StateStack::update(sf::Time fixedTimeStep)
 {
     // We should only update the relative state on the stack
     for(auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr)
@@ -22,16 +22,16 @@ void StateStack::update(sf::Time fixedTimeStep)
     applyPendingChanges();
 }
 
-void StateStack::draw()
+void Core::StateStack::draw()
 {
     // We will always draw a state if its on the stack
-    for(std::unique_ptr<State>& state : mStack)
+    for(std::unique_ptr<Core::State>& state : mStack)
     {
         state->draw();
     }
 }
 
-void StateStack::handleEvent(const sf::Event& event)
+void Core::StateStack::handleEvent(const sf::Event& event)
 {
     for(auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr)
     {
@@ -42,27 +42,27 @@ void StateStack::handleEvent(const sf::Event& event)
     applyPendingChanges();
 }
 
-void StateStack::pushState(States::ID stateID)
+void Core::StateStack::pushState(States::ID stateID)
 {
     mPendingList.push_back(pendingStateRequests(Push, stateID));
 }
 
-void StateStack::popState()
+void Core::StateStack::popState()
 {
     mPendingList.push_back(pendingStateRequests(Pop));
 }
 
-void StateStack::clearStates()
+void Core::StateStack::clearStates()
 {
     mPendingList.push_back(pendingStateRequests(Clear));
 }
 
-bool StateStack::isEmpty() const
+bool Core::StateStack::isEmpty() const
 {
     return mStack.empty();
 }
 
-std::unique_ptr<State> StateStack::createState(States::ID stateID)
+std::unique_ptr<Core::State> Core::StateStack::createState(States::ID stateID)
 {
     auto found = mRegistry.find(stateID);
     assert(found != mRegistry.end());
@@ -70,9 +70,9 @@ std::unique_ptr<State> StateStack::createState(States::ID stateID)
     return found->second();
 }
 
-void StateStack::applyPendingChanges()
+void Core::StateStack::applyPendingChanges()
 {
-    for( StateStack::pendingStateRequests change: mPendingList)
+    for( Core::StateStack::pendingStateRequests change: mPendingList)
     {
         switch(change.action)
         {
@@ -93,7 +93,7 @@ void StateStack::applyPendingChanges()
     mPendingList.clear();
 }
 
-StateStack::pendingStateRequests::pendingStateRequests(Action action, States::ID stateID) : 
+Core::StateStack::pendingStateRequests::pendingStateRequests(Action action, Core::States::ID stateID) : 
 action(action),
 stateID(stateID)
 {

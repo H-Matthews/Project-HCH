@@ -2,10 +2,10 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 
-class PauseState : public State 
+class PauseState : public Core::State 
 {
     public:
-        PauseState(StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects);
+        PauseState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects);
 
         virtual void draw();
 

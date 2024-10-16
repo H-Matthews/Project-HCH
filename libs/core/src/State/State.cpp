@@ -1,38 +1,38 @@
 #include "core/inc/State/State.hpp"
 #include "core/inc/State/StateStack.hpp"
 
- State::SharedObjects::SharedObjects(sf::RenderWindow& window) :
+ Core::State::SharedObjects::SharedObjects(sf::RenderWindow& window) :
  window(&window)
  {
  }
 
- State::State(StateStack& stack, std::string stateIdentifier, SharedObjects sObjects) :
+ Core::State::State(StateStack& stack, std::string stateIdentifier, SharedObjects sObjects) :
  mStack(&stack),
  mStateIdentifierString(stateIdentifier),
  mSharedObjects(sObjects)
  {
  }
 
- State::~State()
+ Core::State::~State()
  {
  }
 
- void State::requestStackPush(States::ID stateID)
+ void Core::State::requestStackPush(States::ID stateID)
  {
     mStack->pushState(stateID);
  }
 
- void State::requestStackPop()
+ void Core::State::requestStackPop()
  {
     mStack->popState();
  }
 
- void State::requestStateClear()
+ void Core::State::requestStateClear()
  {
     mStack->clearStates();
  }
 
- State::SharedObjects State::getSharedObjects() const
+ Core::State::SharedObjects Core::State::getSharedObjects() const
  {
     return mSharedObjects;
  }

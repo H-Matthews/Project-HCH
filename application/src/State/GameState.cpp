@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-GameState::GameState(StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) : 
+GameState::GameState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) : 
 State(stack, stateIdentifier, sharedObjects)
 {
     std::cout << "Creating GameState " << std::endl;
@@ -37,13 +37,13 @@ bool GameState::handleEvent(const sf::Event& event)
 
     if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P)
     {
-        requestStackPush(States::Pause);
+        requestStackPush(Core::States::Pause);
     }
 
     if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
     {
         requestStackPop();
-        requestStackPush(States::Menu);
+        requestStackPush(Core::States::Menu);
     }
     
     return true;

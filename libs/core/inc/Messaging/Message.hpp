@@ -3,42 +3,49 @@
 #include <string>
 #include <memory>
 
-class MessageNetwork;
-
-class Message
+namespace Core
 {
-    public:
+    class MessageNetwork;
 
+    namespace Messages
+    {
         enum class ID
         {
             NONE = 0,
             PlayerActionMessage,
             EnemySpawnMessage
         };
+    }
 
-        struct Info 
-        {
-            Message::ID messageID;
-            std::string stringMessageID;
-            std::string sender;
+    class Message
+    {
+        public:
 
-            Info();
-            Info(Message::ID messageID, const std::string& stringMessageID);
-        };
+            struct Info 
+            {
+                Messages::ID messageID;
+                std::string stringMessageID;
+                std::string sender;
 
-    public:
-        virtual ~Message();
-        virtual std::unique_ptr<Message> clone() const;
+                Info();
+                Info(Messages::ID messageID, const std::string& stringMessageID);
+            };
 
-        void setSender(const std::string& sender);
+        public:
+            virtual ~Message();
+            virtual std::unique_ptr<Message> clone() const;
 
-        std::string getSenderName() const;
-        Message::ID getMessageID() const;
-        const std::string& getStringMessageID() const;
-    
-    protected:
-        Message(const Message::ID messageID, const std::string& stringMessageID );
+            void setSender(const std::string& sender);
 
-    protected:
-        Info mMessageInfo;
-};  
+            std::string getSenderName() const;
+            Messages::ID getMessageID() const;
+            const std::string& getStringMessageID() const;
+        
+        protected:
+            Message(const Messages::ID messageID, const std::string& stringMessageID );
+
+        protected:
+            Info mMessageInfo;
+    };  
+
+}

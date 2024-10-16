@@ -25,5 +25,5 @@ class Application
         sf::RenderWindow mWindow;
         // TODO: Implement a Resource Container for Textures / Fonts
 
-        StateStack mStateStack;
+        Core::StateStack mStateStack;
 };

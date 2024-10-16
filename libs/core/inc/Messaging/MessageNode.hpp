@@ -4,27 +4,31 @@
 
 #include <functional>
 
-class MessageNetwork;
-
-class MessageNode 
+namespace Core
 {
-    public:
-        MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName);
-        MessageNode(MessageNetwork* messageNetwork);
+    class MessageNetwork;
 
-    protected:
-        void subscribeTo(Message::ID subscribeMessageID);
-        void notifyUnsubscribe(Message::ID messageID);
-        void registerSubscriberMessages();
-        void send(Message* message);
-        virtual void onNotify(Message* message);
+    class MessageNode 
+    {
+        public:
+            MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName);
+            MessageNode(MessageNetwork* messageNetwork);
 
-    private:
-        std::function<void (Message*)> getNotifyFunc();
+        protected:
+            void subscribeTo(Messages::ID subscribeMessageID);
+            void notifyUnsubscribe(Messages::ID messageID);
+            void registerSubscriberMessages();
+            void send(Message* message);
+            virtual void onNotify(Message* message);
 
-    private:
-        MessageNetwork* mMessageNetwork;
+        private:
+            std::function<void (Message*)> getNotifyFunc();
 
-    protected:
-        MessageNodeInfo mMessageNodeInfo;
-};
+        private:
+            MessageNetwork* mMessageNetwork;
+
+        protected:
+            MessageNodeInfo mMessageNodeInfo;
+    };
+
+}

@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-PauseState::PauseState(StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) : 
+PauseState::PauseState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) : 
 State(stack, stateIdentifier, sharedObjects)
 {
     std::cout << "Creating PauseState " << std::endl;
@@ -42,7 +42,7 @@ bool PauseState::handleEvent(const sf::Event& event)
     {
         // Remove all states and push Menu
         requestStateClear();
-        requestStackPush(States::Menu);
+        requestStackPush(Core::States::Menu);
     }
 
     return false;

@@ -12,10 +12,10 @@ const sf::Time Application::TimePerFrame = sf::seconds(1.0f / 120.0f);
 
 Application::Application() :
 mWindow(sf::VideoMode(640, 480), "Application Window", sf::Style::Close),
-mStateStack(State::SharedObjects(mWindow))
+mStateStack(Core::State::SharedObjects(mWindow))
 {
     registerStates();
-    mStateStack.pushState(States::Menu);
+    mStateStack.pushState(Core::States::Menu);
 }
 
 void Application::run()
@@ -75,7 +75,7 @@ void Application::render()
 
 void Application::registerStates()
 {
-    mStateStack.registerState<MenuState>(States::Menu);
-    mStateStack.registerState<GameState>(States::Game);
-    mStateStack.registerState<PauseState>(States::Pause);
+    mStateStack.registerState<MenuState>(Core::States::Menu);
+    mStateStack.registerState<GameState>(Core::States::Game);
+    mStateStack.registerState<PauseState>(Core::States::Pause);
 }

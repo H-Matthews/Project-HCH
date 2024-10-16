@@ -8,22 +8,27 @@
 #include <map>
 #include <memory>
 
-class MessageNetwork
+namespace Core
 {
-    public:
-        MessageNetwork();
 
-        void sendMessage(Message* message);
+    class MessageNetwork
+    {
+        public:
+            MessageNetwork();
 
-        void addSubscriber(const MessageNodeInfo& subscriber);
-        void insertUnsubscriber(const Message::ID& mesasgeID, const std::string& nodeName);
-        void notifySubscribers();
+            void sendMessage(Message* message);
 
-    private:
-        void unSubscribe();
+            void addSubscriber(const MessageNodeInfo& subscriber);
+            void insertUnsubscriber(const Messages::ID& mesasgeID, const std::string& nodeName);
+            void notifySubscribers();
 
-    private:
-        std::multimap< Message::ID, MessageNodeInfo > mSubscriberList;
-        std::multimap< Message::ID, std::string > mUnsubscribeList;
-        std::queue< std::unique_ptr< Message > > mMessageQueue;
-};
+        private:
+            void unSubscribe();
+
+        private:
+            std::multimap< Messages::ID, MessageNodeInfo > mSubscriberList;
+            std::multimap< Messages::ID, std::string > mUnsubscribeList;
+            std::queue< std::unique_ptr< Message > > mMessageQueue;
+    };
+
+}

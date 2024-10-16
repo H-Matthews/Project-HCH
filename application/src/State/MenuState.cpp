@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-MenuState::MenuState(StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) :
+MenuState::MenuState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) :
 State(stack, stateIdentifier, sharedObjects)
 {
     std::cout << "Creating MenuState " << std::endl;
@@ -42,7 +42,7 @@ bool MenuState::handleEvent(const sf::Event& event)
     else if(event.key.code == sf::Keyboard::Return)
     {
         requestStackPop();
-        requestStackPush(States::Game);
+        requestStackPush(Core::States::Game);
     }
 
     else if(event.key.code == sf::Keyboard::Escape)
