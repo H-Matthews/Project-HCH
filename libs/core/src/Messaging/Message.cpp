@@ -36,7 +36,7 @@ std::string Core::Message::getSenderName() const
     return mMessageInfo.sender;
 }
 
-Core::Messages::ID Core::Message::getMessageID() const
+Messages::ID Core::Message::getMessageID() const
 {
     return mMessageInfo.messageID;
 }

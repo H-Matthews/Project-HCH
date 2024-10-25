@@ -15,7 +15,7 @@ mWindow(sf::VideoMode(640, 480), "Application Window", sf::Style::Close),
 mStateStack(Core::State::SharedObjects(mWindow))
 {
     registerStates();
-    mStateStack.pushState(Core::States::Menu);
+    mStateStack.pushState(States::Menu);
 }
 
 void Application::run()
@@ -75,7 +75,7 @@ void Application::render()
 
 void Application::registerStates()
 {
-    mStateStack.registerState<MenuState>(Core::States::Menu);
-    mStateStack.registerState<GameState>(Core::States::Game);
-    mStateStack.registerState<PauseState>(Core::States::Pause);
+    mStateStack.registerState<MenuState>(States::Menu);
+    mStateStack.registerState<GameState>(States::Game);
+    mStateStack.registerState<PauseState>(States::Pause);
 }

@@ -1,21 +1,13 @@
 #pragma once
 
+#include "core/inc/Messaging/MessageTypes.hpp"
+
 #include <string>
 #include <memory>
 
 namespace Core
 {
     class MessageNetwork;
-
-    namespace Messages
-    {
-        enum class ID
-        {
-            NONE = 0,
-            PlayerActionMessage,
-            EnemySpawnMessage
-        };
-    }
 
     class Message
     {

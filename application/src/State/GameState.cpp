@@ -37,13 +37,13 @@ bool GameState::handleEvent(const sf::Event& event)
 
     if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P)
     {
-        requestStackPush(Core::States::Pause);
+        requestStackPush(States::Pause);
     }
 
     if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
     {
         requestStackPop();
-        requestStackPush(Core::States::Menu);
+        requestStackPush(States::Menu);
     }
     
     return true;

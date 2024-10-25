@@ -1,5 +1,7 @@
 #pragma once
 
+#include "core/inc/State/StateTypes.hpp"
+
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -9,17 +11,6 @@
 namespace Core
 {
     class StateStack;
-
-    namespace States
-    {
-        enum ID
-        {
-            NONE = 0,
-            Menu,
-            Game, 
-            Pause
-        };
-    }
 
     class State
     {

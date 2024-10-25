@@ -42,7 +42,7 @@ bool MenuState::handleEvent(const sf::Event& event)
     else if(event.key.code == sf::Keyboard::Return)
     {
         requestStackPop();
-        requestStackPush(Core::States::Game);
+        requestStackPush(States::Game);
     }
 
     else if(event.key.code == sf::Keyboard::Escape)

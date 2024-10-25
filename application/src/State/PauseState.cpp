@@ -42,7 +42,7 @@ bool PauseState::handleEvent(const sf::Event& event)
     {
         // Remove all states and push Menu
         requestStateClear();
-        requestStackPush(Core::States::Menu);
+        requestStackPush(States::Menu);
     }
 
     return false;

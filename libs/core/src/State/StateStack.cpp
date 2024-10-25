@@ -93,7 +93,7 @@ void Core::StateStack::applyPendingChanges()
     mPendingList.clear();
 }
 
-Core::StateStack::pendingStateRequests::pendingStateRequests(Action action, Core::States::ID stateID) : 
+Core::StateStack::pendingStateRequests::pendingStateRequests(Action action, States::ID stateID) : 
 action(action),
 stateID(stateID)
 {
