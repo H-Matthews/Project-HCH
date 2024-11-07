@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../application/bin)
+
 set(SRC src/main.cpp  
         src/Application.cpp 
         src/State/MenuState.cpp
@@ -20,8 +22,7 @@ else()
 endif()
 
 target_link_libraries(hch PRIVATE sfml-graphics utility core)
-target_include_directories(utility PUBLIC ../ ../libs)
-target_include_directories(core PUBLIC ../ ../libs)
+target_include_directories(hch PUBLIC ../ ../libs)
 target_compile_features(hch PRIVATE cxx_std_17)
 
 if(WIN32)

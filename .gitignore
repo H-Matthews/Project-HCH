@@ -6,3 +6,4 @@ out
 .vscode
 /bin/*
 application/bin
+unit_tests/bin
