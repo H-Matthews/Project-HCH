@@ -35,8 +35,11 @@ FetchContent_Declare(SFML
     GIT_TAG 2.6.x)
 FetchContent_MakeAvailable(SFML)
 
-set(SFML_INC_DIR ../../build/_deps/sfml-src/include)
-set(GTEST_INC_DIR ../../build/_deps/googletest-src/googletest/include)
+# Include Directories 
+set(LIBS_INC_DIR ${PROJECT_SOURCE_DIR}/libs)
+
+set(SFML_INC_DIR ${PROJECT_SOURCE_DIR}/build/_deps/sfml-src/include)
+set(GTEST_INC_DIR ${PROJECT_SOURCE_DIR}/build/_deps/googletest-src/googletest/include)
 
 add_subdirectory(tests)
 add_subdirectory(libs/core)

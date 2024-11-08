@@ -9,5 +9,5 @@ set(INC inc/Logger.hpp
         inc/StringOperations.hpp )
 
 add_library(utility STATIC ${SRC} ${INC})
-target_include_directories(utility PUBLIC ${SFML_INC_DIR} ../)
+target_include_directories(utility PUBLIC ${SFML_INC_DIR} ${LIBS_INC_DIR})
 target_compile_features(utility PRIVATE cxx_std_17)

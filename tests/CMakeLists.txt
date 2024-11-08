@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/tests)
 
+# Glob all Test files and compile a binary for each
 file(GLOB TEST_SRC_FILES ${PROJECT_SOURCE_DIR}/tests/*.cc)
-
 foreach(_test_file ${TEST_SRC_FILES})
   get_filename_component(_test_name ${_test_file} NAME_WE)
   add_executable(${_test_name} ${_test_file})
