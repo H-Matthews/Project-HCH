@@ -38,6 +38,7 @@ jobs:
       run: cmake --build ./build --config Release
 
     - name: Run All GTest Binaries (Linux)
+      if: runner.os != 'Windows'
       run: ctest --test-dir ./build --output-on-failure
 
     - name: Run All GTest Binaries (Windows)
