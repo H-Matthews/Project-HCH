@@ -39,7 +39,7 @@ const std::string Utility::messageIDEnumToString(const Messages::ID identifier)
     {
         case Messages::ID::NONE:
         {
-            sStream << "NONE";
+            sStream << "None";
             break;
         }
         case Messages::ID::PlayerActionMessage:

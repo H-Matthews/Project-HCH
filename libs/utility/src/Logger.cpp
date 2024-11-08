@@ -2,7 +2,8 @@
 
 #include <iostream>
 
-void Utility::Logger::log(const std::string& message)
+std::string Utility::Logger::log(const std::string& message)
 {
-    std::cout << message << std::endl;
+    std::string temp = message;
+    return message;
 }
