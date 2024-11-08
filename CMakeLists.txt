@@ -43,4 +43,4 @@ add_subdirectory(libs/core)
 add_subdirectory(libs/utility)
 add_subdirectory(application)
 
-set_property(TARGET hch PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/application/bin")
+set_property(TARGET hch PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "/bin/app")
