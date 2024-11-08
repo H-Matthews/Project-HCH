@@ -5,5 +5,4 @@ out
 .vs
 .vscode
 /bin/*
-application/bin
-unit_tests/bin
+./Testing/*

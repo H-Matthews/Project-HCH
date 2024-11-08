@@ -28,11 +28,14 @@ jobs:
       if: runner.os == 'Linux'
       run: sudo apt-get update && sudo apt-get install libxrandr-dev libxcursor-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev
 
-    - name: Checkout
+    - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Configure
-      run: cmake -B build ${{matrix.platform.flags}} ${{matrix.config.flags}}
+    - name: Generate Build Files
+      run: cmake -B ./build ${{matrix.config.flags}}
 
-    - name: Build
-      run: cmake --build build --config Release
+    - name: Build Code
+      run: cmake --build ./build --config Release
+
+    - name: Run All GTests Binaries
+      run: ctest --test-dir ./build --output-on-failure

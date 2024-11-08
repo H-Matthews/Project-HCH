@@ -1,11 +1,15 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.30)
 project(Project-HCH LANGUAGES CXX)
 
 # GoogleTest requires at least C++14
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Suppresses some annoying warnings
 cmake_policy(SET CMP0135 NEW)
+
+# Enable CTest
+enable_testing()
 
 ################
 # GTEST 
@@ -18,6 +22,7 @@ FetchContent_Declare(
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
+
 
 ################
 # SFML 
@@ -33,7 +38,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 set(SFML_INC_DIR ../../build/_deps/sfml-src/include)
 set(GTEST_INC_DIR ../../build/_deps/googletest-src/googletest/include)
 
-add_subdirectory(unit_tests)
+add_subdirectory(tests)
 add_subdirectory(libs/core)
 add_subdirectory(libs/utility)
 add_subdirectory(application)
