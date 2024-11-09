@@ -1,4 +1,5 @@
 #include "application/inc/Application.hpp"
+#include "utility/inc/ConsoleLogger.hpp"
 
 #include <iostream>
 #include <stdexcept>
@@ -9,6 +10,7 @@ int main()
     try
     {
         Application game;
+        game.initialize();
         game.run();
     }
     catch(const std::exception& e)

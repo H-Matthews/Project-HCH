@@ -2,10 +2,11 @@ cmake_minimum_required(VERSION 3.30)
 project(utilLibrary LANGUAGES CXX)
 
 
-set(SRC src/Logger.cpp 
+set(SRC src/ConsoleLogger.cpp
         src/StringOperations.cpp )
 
-set(INC inc/Logger.hpp 
+set(INC inc/LoggerI.hpp
+        inc/ConsoleLogger.hpp
         inc/StringOperations.hpp )
 
 add_library(utility STATIC ${SRC} ${INC})

@@ -1,8 +1,9 @@
 build
 out
+bin
+Testing
+output
 .cache
 .idea
 .vs
 .vscode
-/bin/*
-./Testing/*

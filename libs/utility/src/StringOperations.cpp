@@ -1,58 +1,98 @@
 #include "utility/inc/StringOperations.hpp"
-
-const std::string Utility::statesEnumToString(States::ID identifier)
+namespace Utility 
 {
-    std::stringstream sStream;
-
-    switch(identifier)
+    const std::string statesEnumToString(States::ID identifier)
     {
-        case States::ID::NONE:
+        std::stringstream sStream;
+
+        switch(identifier)
         {
-            sStream << "None";
-            break;
+            case States::ID::NONE:
+            {
+                sStream << "None";
+                break;
+            }
+            case States::ID::Menu:
+            {
+                sStream << "Menu State";
+                break;
+            }
+            case States::ID::Game:
+            {
+                sStream << "Game State";
+                break;
+            }
+            case States::ID::Pause:
+            {
+                sStream << "Pause State";
+                break;
+            }
         }
-        case States::ID::Menu:
-        {
-            sStream << "Menu State";
-            break;
-        }
-        case States::ID::Game:
-        {
-            sStream << "Game State";
-            break;
-        }
-        case States::ID::Pause:
-        {
-            sStream << "Pause State";
-            break;
-        }
+
+        return sStream.str();
     }
 
-    return sStream.str();
-}
-
-const std::string Utility::messageIDEnumToString(const Messages::ID identifier)
-{
-    std::stringstream sStream;
-
-    switch(identifier)
+    const std::string messageIDEnumToString(const Messages::ID identifier)
     {
-        case Messages::ID::NONE:
+        std::stringstream sStream;
+
+        switch(identifier)
         {
-            sStream << "None";
-            break;
+            case Messages::ID::NONE:
+            {
+                sStream << "None";
+                break;
+            }
+            case Messages::ID::PlayerActionMessage:
+            {
+                sStream << "PlayerAction Message";
+                break;
+            }
+            case Messages::ID::EnemySpawnMessage:
+            {
+                sStream << "EnemySpawn Message";
+                break;
+            }
         }
-        case Messages::ID::PlayerActionMessage:
-        {
-            sStream << "PlayerAction Message";
-            break;
-        }
-        case Messages::ID::EnemySpawnMessage:
-        {
-            sStream << "EnemySpawn Message";
-            break;
-        }
+
+        return sStream.str();
     }
 
-    return sStream.str();
+    const std::string logLevelEnumToString(const LogLevel identifier)
+    {
+        /*
+         DEBUG = 0,
+        INFO,
+        WARNING,
+        ERROR
+        */
+
+        std::stringstream sStream;
+
+        switch(identifier)
+        {
+            case LogLevel::DEBUG:
+            {
+                sStream << "DEBUG";
+                break;
+            }
+            case LogLevel::INFO:
+            {
+                sStream << "INFO";
+                break;
+            }
+            case LogLevel::WARNING:
+            {
+                sStream << "WARNING";
+                break;
+            }
+            case LogLevel::ERROR:
+            {
+                sStream << "ERROR";
+                break;
+            }
+        }
+
+        return sStream.str();
+    }
 }
