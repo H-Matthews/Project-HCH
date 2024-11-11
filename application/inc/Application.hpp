@@ -31,7 +31,8 @@ class Application
 
         Core::StateStack mStateStack;
 
-        // Related to Logging
-        std::shared_ptr<Utility::ConsoleLogger> mAppConsoleLogger;
+        // Logging
+        Utility::ConsoleLogger mAppConsoleLogger;
+        Utility::TextFileLogger mAppTextFileLogger;
         const std::string outputDirName = "output";
 };

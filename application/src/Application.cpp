@@ -16,12 +16,10 @@ const sf::Time Application::TimePerFrame = sf::seconds(1.0f / 120.0f);
 Application::Application() :
     mWindow(sf::VideoMode(640, 480), "Application Window", sf::Style::Close),
     mStateStack(Core::State::SharedObjects(mWindow)),
-    mAppConsoleLogger(std::make_shared<Utility::ConsoleLogger>())
+    mAppConsoleLogger(),
+    mAppTextFileLogger("Application")
 {
-    Utility::TextFileLogger::establishLogger(__FILE__);
-    auto textLogger = Utility::TextFileLogger::getLogger(__FILE__);
-
-    LOG_ERROR(textLogger, "Error");
+    LOG_INFO(mAppTextFileLogger, "I expect to see a message in a file");
 }
 
 void Application::initialize()

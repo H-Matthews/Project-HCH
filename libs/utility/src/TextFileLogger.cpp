@@ -1,37 +1,75 @@
 #include "utility/inc/TextFileLogger.hpp"
+#include "utility/inc/ConsoleLogger.hpp"
+#include "utility/inc/StringOperations.hpp"
 
 #include <iostream>
 #include <filesystem>
-
-//  Define Static storage
-std::map< std::string, std::shared_ptr<Utility::TextFileLogger> > Utility::TextFileLogger::mLoggers;
+#include <sstream>
 
 namespace Utility
 {
-    void TextFileLogger::establishLogger(const std::string& filePath)
+    TextFileLogger::TextFileLogger(const std::string& fileName) :
+        mFileName(fileName),
+        mFileHandle()
     {
-        // If NOT in map, then create object
-        if(mLoggers.find(filePath) == mLoggers.end())
-        {
-            std::shared_ptr<TextFileLogger> logger = std::make_shared<TextFileLogger>();
-            mLoggers.insert( {filePath, logger} );
-        }
+        establishLogger();
     }
 
-    std::shared_ptr<TextFileLogger> TextFileLogger::getLogger(const std::string& loggerName)
+    void TextFileLogger::establishLogger()
     {
-        std::shared_ptr<TextFileLogger> logRef;
+        Utility::ConsoleLogger cLogger;
+        std::stringstream logStream;
 
-        auto it = mLoggers.find(loggerName);
-        if(it != mLoggers.end())
-            logRef = mLoggers[loggerName];
+        // We will need a way of getting to the output directory here
+        // Perhaps we need to make a Utility Routine that gets us the root project directory
 
-        return logRef;
+        // Append log extension
+        mFileName += logExtension;
+
+        mFileHandle.open(mFileName, std::ios::app);
+
+        if(mFileHandle.is_open())
+        {            
+            logStream << "Creating Log File: " << mFileName;
+            LOG_INFO(cLogger, logStream.str());
+        }
+        else
+        {
+            logStream << "FAILED to create file: " << mFileName;
+            LOG_WARNING(cLogger, logStream.str());
+        }
+        
     }
 
     void TextFileLogger::log(const std::string& message, LogLevel level, const char* file, int line)
     {
-        std::cout << "This is a Test " << std::endl;
+        // Ensure our Handle is allocated properly
+        if(mFileHandle.is_open())
+        {
+            // Get Time Stamp
+            auto now = std::chrono::system_clock::now();
+            std::time_t nowTime = std::chrono::system_clock::to_time_t(now);
+            std::tm now_tm = *std::localtime(&nowTime);
+
+            // Get LogLevel as String
+            const std::string logLevelString = logLevelEnumToString(level);
+    
+            // Build Header
+            mFileHandle << "[" << std::put_time(&now_tm, "%Y-%m-%d %H:%M:%S") << "] "
+                  << "[" << logLevelString << "]";
+
+            if(file)
+            {
+                // Parse the file path for JUST the file NAME
+                std::filesystem::path filePath(file);
+                std::string fileName = filePath.filename().string();
+
+                mFileHandle << " [" << fileName << ":" << line << "]"; 
+            }
+
+            // Write message 
+            mFileHandle << " " << message << std::endl;
+        }
     }
 
 }
