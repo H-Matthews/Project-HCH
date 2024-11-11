@@ -2,6 +2,7 @@
 
 #include "core/inc/State/StateStack.hpp"
 #include "utility/inc/ConsoleLogger.hpp"
+#include "utility/inc/TextFileLogger.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Time.hpp>

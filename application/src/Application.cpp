@@ -18,6 +18,10 @@ Application::Application() :
     mStateStack(Core::State::SharedObjects(mWindow)),
     mAppConsoleLogger()
 {
+    Utility::TextFileLogger::establishLogger(__FILE__);
+    auto logRef = Utility::TextFileLogger::getLogger(__FILE__);
+
+    logRef->log("Hello", Utility::LogLevel::INFO, __FILE__, __LINE__);
 }
 
 void Application::initialize()
