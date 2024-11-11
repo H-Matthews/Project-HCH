@@ -1,36 +1,30 @@
 #include "utility/inc/TextFileLogger.hpp"
 
 #include <iostream>
+#include <filesystem>
 
 //  Define Static storage
-std::map< std::size_t, std::shared_ptr<Utility::TextFileLogger> > Utility::TextFileLogger::mLoggers;
+std::map< std::string, std::shared_ptr<Utility::TextFileLogger> > Utility::TextFileLogger::mLoggers;
 
 namespace Utility
 {
-    void TextFileLogger::establishLogger(const std::string& loggerName)
+    void TextFileLogger::establishLogger(const std::string& filePath)
     {
-        // Hash the logger name
-        std::hash<std::string> hashedLogger;
-        std::size_t hashedLoggerValue = hashedLogger(loggerName);
-
         // If NOT in map, then create object
-        if(mLoggers.find(hashedLoggerValue) == mLoggers.end())
+        if(mLoggers.find(filePath) == mLoggers.end())
         {
             std::shared_ptr<TextFileLogger> logger = std::make_shared<TextFileLogger>();
-            mLoggers.insert( {hashedLoggerValue, logger} );
+            mLoggers.insert( {filePath, logger} );
         }
     }
 
     std::shared_ptr<TextFileLogger> TextFileLogger::getLogger(const std::string& loggerName)
     {
-        std::hash<std::string> hashedLogger;
-        std::size_t hashedLoggerValue = hashedLogger(loggerName);
-
         std::shared_ptr<TextFileLogger> logRef;
 
-        auto it = mLoggers.find(hashedLoggerValue);
+        auto it = mLoggers.find(loggerName);
         if(it != mLoggers.end())
-            logRef = mLoggers[hashedLoggerValue];
+            logRef = mLoggers[loggerName];
 
         return logRef;
     }
