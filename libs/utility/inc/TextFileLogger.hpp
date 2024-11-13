@@ -10,6 +10,9 @@ namespace Utility
     {
         public: 
             TextFileLogger(const std::string& fileName);
+            TextFileLogger();
+
+            void initialize(const std::string& fileName);
 
             void log(const std::string& message, LogLevel level, const char* file, int line) override;
 

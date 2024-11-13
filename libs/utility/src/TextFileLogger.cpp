@@ -15,6 +15,16 @@ namespace Utility
         establishLogger();
     }
 
+    TextFileLogger::TextFileLogger() :
+        mFileName(),
+        mFileHandle(nullptr)
+    {
+    }
+
+    void TextFileLogger::initialize(const std::string& fileName)
+    {
+    }
+
     void TextFileLogger::establishLogger()
     {
         Utility::ConsoleLogger cLogger;
