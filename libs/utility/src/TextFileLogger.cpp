@@ -17,7 +17,7 @@ namespace Utility
 
     TextFileLogger::TextFileLogger() :
         mFileName(),
-        mFileHandle(nullptr)
+        mFileHandle()
     {
     }
 
