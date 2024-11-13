@@ -1,6 +1,8 @@
 #pragma once
 
 #include "core/inc/State/StateStack.hpp"
+#include "core/inc/Configuration.hpp"
+
 #include "utility/inc/ConsoleLogger.hpp"
 #include "utility/inc/TextFileLogger.hpp"
 
@@ -10,7 +12,7 @@
 class Application
 {
     public:
-        Application();
+        Application(std::shared_ptr<Core::ConfigurationI> config);
         void initialize();
         void run();
 
@@ -30,9 +32,9 @@ class Application
         // TODO: Implement a Resource Container for Textures / Fonts
 
         Core::StateStack mStateStack;
+        std::shared_ptr<Core::ConfigurationI> mConfiguration;
 
-        // Logging
+        // Loggers
         Utility::ConsoleLogger mAppConsoleLogger;
         Utility::TextFileLogger mAppTextFileLogger;
-        const std::string outputDirName = "output";
 };

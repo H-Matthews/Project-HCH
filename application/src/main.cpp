@@ -1,4 +1,7 @@
 #include "application/inc/Application.hpp"
+
+#include "core/inc/Configuration.hpp"
+
 #include "utility/inc/ConsoleLogger.hpp"
 
 #include <iostream>
@@ -9,7 +12,9 @@ int main()
 
     try
     {
-        Application game;
+        auto config = std::make_shared<Core::Configuration>();
+
+        Application game(config);
         game.initialize();
         game.run();
     }
