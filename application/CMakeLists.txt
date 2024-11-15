@@ -21,6 +21,7 @@ else()
   target_compile_options(hch PRIVATE -Wall -Wextra -Wpedantic )
 endif()
 
+set_target_properties(hch PROPERTIES FOLDER "application")
 target_link_libraries(hch PRIVATE sfml-graphics utility core)
 target_include_directories(hch PUBLIC ${PROJECT_SOURCE_DIR} ${LIBS_INC_DIR})
 target_compile_features(hch PRIVATE cxx_std_17)
