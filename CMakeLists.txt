@@ -13,6 +13,9 @@ cmake_policy(SET CMP0135 NEW)
 # Enable CTest
 enable_testing()
 
+# Enable Visual Studio to create folders
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 ################
 # GTEST 
 ################
