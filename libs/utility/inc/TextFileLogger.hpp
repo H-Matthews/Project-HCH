@@ -8,20 +8,15 @@ namespace Utility
 {
     class TextFileLogger : public LoggerI
     {
-        public: 
-            TextFileLogger(const std::string& fileName);
-            TextFileLogger();
-
-            void initialize(const std::string& fileName);
-
+        public:
+            TextFileLogger(const std::string& fileName, const std::string& outputDirPath);
             void log(const std::string& message, LogLevel level, const char* file, int line) override;
 
         private:
-            void establishLogger();
+            std::string mOutputDirPath;
+            const std::string mLogExtension;
 
-        private:
             std::string mFileName;
             std::ofstream mFileHandle;
-            const std::string logExtension = ".log";
     };
 }

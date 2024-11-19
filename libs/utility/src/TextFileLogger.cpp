@@ -8,33 +8,19 @@
 
 namespace Utility
 {
-    TextFileLogger::TextFileLogger(const std::string& fileName) :
+    TextFileLogger::TextFileLogger(const std::string& fileName, const std::string& outputDirPath) :
         mFileName(fileName),
-        mFileHandle()
+        mOutputDirPath(outputDirPath),
+        mLogExtension(".log")
     {
-        establishLogger();
-    }
-
-    TextFileLogger::TextFileLogger() :
-        mFileName(),
-        mFileHandle(nullptr)
-    {
-    }
-
-    void TextFileLogger::initialize(const std::string& fileName)
-    {
-    }
-
-    void TextFileLogger::establishLogger()
-    {
-        Utility::ConsoleLogger cLogger;
+        auto cLogger = std::make_unique<ConsoleLogger>();
         std::stringstream logStream;
 
-        // We will need a way of getting to the output directory here
-        // Perhaps we need to make a Utility Routine that gets us the root project directory
+        // Append log extension to build the fileName
+        mFileName += mLogExtension;
 
-        // Append log extension
-        mFileName += logExtension;
+        // Build full path for file
+        mFileName = mOutputDirPath + "/" + mFileName;
 
         mFileHandle.open(mFileName, std::ios::app);
 
@@ -48,7 +34,6 @@ namespace Utility
             logStream << "FAILED to create file: " << mFileName;
             LOG_WARNING(cLogger, logStream.str());
         }
-        
     }
 
     void TextFileLogger::log(const std::string& message, LogLevel level, const char* file, int line)
@@ -81,5 +66,6 @@ namespace Utility
             mFileHandle << " " << message << std::endl;
         }
     }
+
 
 }

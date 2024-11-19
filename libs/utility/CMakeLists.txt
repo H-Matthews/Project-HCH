@@ -4,11 +4,13 @@ project(utilLibrary LANGUAGES CXX)
 
 set(SRC src/ConsoleLogger.cpp
         src/TextFileLogger.cpp
+        src/LogRegistry.cpp
         src/StringOperations.cpp )
 
 set(INC inc/LoggerI.hpp
         inc/ConsoleLogger.hpp
         inc/TextFileLogger.hpp
+        inc/LogRegistry.hpp
         inc/StringOperations.hpp )
 
 add_library(utility STATIC ${SRC} ${INC})

@@ -2,8 +2,6 @@
 
 #include "core/inc/Configuration.hpp"
 
-#include "utility/inc/ConsoleLogger.hpp"
-
 #include <iostream>
 #include <stdexcept>
 

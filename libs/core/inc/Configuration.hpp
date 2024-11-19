@@ -3,8 +3,11 @@
 #include "core/inc/ConfigurationI.hpp"
 
 #include "utility/inc/ConsoleLogger.hpp"
+#include "utility/inc/TextFileLogger.hpp"
 
 #include <string>
+#include <memory>
+
 namespace Core
 {
     class Configuration : public ConfigurationI
@@ -15,6 +18,8 @@ namespace Core
             void initializeIteration() override;
             void loadSettings() override;
 
+            const std::string getOutDirPath();
+
         private:
             // FilePath information
             std::string mConfigDirPath;
@@ -23,6 +28,6 @@ namespace Core
             static const std::string OUTPUT_DIR_NAME;
 
             // Logging
-            Utility::ConsoleLogger mCLogger;
+            std::unique_ptr<Utility::ConsoleLogger> mCLogger;
     };
 }

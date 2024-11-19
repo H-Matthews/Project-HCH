@@ -1,5 +1,8 @@
 #include "core/inc/Configuration.hpp"
 
+#include "utility/inc/LogRegistry.hpp"
+#include "utility/inc/ConsoleLogger.hpp"
+
 #include <sstream>
 #include <filesystem>
 #include <iostream>
@@ -13,7 +16,7 @@ namespace Core
     Configuration::Configuration() :
         mConfigDirPath(),
         mOutputDirPath(),
-        mCLogger()
+        mCLogger(std::make_unique<Utility::ConsoleLogger>())
     {
     }
 
@@ -74,6 +77,9 @@ namespace Core
             logMessage << "SUCCESSFULLY created run directory ";
             logMessage << "Path:" << outputDirectoryPath.str();
 
+            // Set the Output Directory in the LogRegistry
+            Utility::LogRegistry::getInstance()->configureRegistry(mOutputDirPath);
+
             LOG_INFO(mCLogger, logMessage.str());
         }
         else
@@ -86,6 +92,11 @@ namespace Core
     void Configuration::loadSettings()
     {
         // TODO: Define how we will read data into the program (ini?, JSON?)
+    }
+
+    const std::string Configuration::getOutDirPath()
+    {
+        return mOutputDirPath;
     }
 
 }
