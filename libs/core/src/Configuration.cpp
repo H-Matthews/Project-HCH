@@ -1,7 +1,6 @@
 #include "core/inc/Configuration.hpp"
 
-#include "utility/inc/LogRegistry.hpp"
-#include "utility/inc/ConsoleLogger.hpp"
+#include "utility/inc/Logging/LogRegistry.hpp"
 
 #include <sstream>
 #include <filesystem>
@@ -15,8 +14,7 @@ namespace Core
 
     Configuration::Configuration() :
         mConfigDirPath(),
-        mOutputDirPath(),
-        mCLogger(std::make_unique<Utility::ConsoleLogger>())
+        mOutputDirPath()
     {
     }
 
@@ -34,21 +32,27 @@ namespace Core
         // Check to see if Directory exists
         if(std::filesystem::is_directory(outputDirectoryPath.str()))
         {
+            int x;
+            /*
             std::stringstream logMessage;
             logMessage << "Output Directory Already Exists ";
             logMessage << "Path:" << outputDirectoryPath.str();
 
             LOG_INFO(mCLogger, logMessage.str());
+            */
         }
         else // IF NOT, create it
         {
             if( std::filesystem::create_directory(outputDirectoryPath.str()) )
             {
+                int x;
+                /*
                 std::stringstream logMessage;
                 logMessage << "SUCCESSFULLY created output directory ";
                 logMessage << "Path:" << outputDirectoryPath.str();
 
                 LOG_INFO(mCLogger, logMessage.str());
+                */
             }
             else
             {
@@ -73,6 +77,7 @@ namespace Core
         // Create directory
         if( std::filesystem::create_directory(outputDirectoryPath.str()) )
         {
+            /*
             std::stringstream logMessage;
             logMessage << "SUCCESSFULLY created run directory ";
             logMessage << "Path:" << outputDirectoryPath.str();
@@ -81,6 +86,7 @@ namespace Core
             Utility::LogRegistry::getInstance()->configureRegistry(mOutputDirPath);
 
             LOG_INFO(mCLogger, logMessage.str());
+            */
         }
         else
         {

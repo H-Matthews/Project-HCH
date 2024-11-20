@@ -1,20 +1,16 @@
 #pragma once
 
-#include "utility/inc/LoggerI.hpp"
+#include "utility/inc/Logging/Sinks/LogSinksI.hpp"
 
 namespace Utility 
 {
-    class ConsoleLogger : public LoggerI
+    class ColorConsoleSink : public LogSinksI
     {
         public:
-            // Defaults the stream to std::cout 
-            ConsoleLogger();
+            ColorConsoleSink();
 
-            // Lets the User specify the output stream
-            // Specifically for Unit Testing, but it can have other uses
-            ConsoleLogger(std::ostream& oStream);
-
-            void log(const std::string& message, LogLevel level, const char* file, int line) override;
+            void sinkData(const std::string& message, Utility::LogLevel level,
+                          const char* file, int line) override;
 
         private:
             const std::string getColorCode(LogLevel level);

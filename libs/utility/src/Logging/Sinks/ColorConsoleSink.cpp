@@ -1,27 +1,22 @@
-#include "utility/inc/ConsoleLogger.hpp"
+#include "utility/inc/Logging/Sinks/ColorConsoleSink.hpp"
 #include "utility/inc/StringOperations.hpp"
 
 #include <chrono>
 #include <sstream>
 #include <iostream>
-#include <iomanip>  // std::put_time
+#include <iomanip> // std::put_time
 #include <filesystem>
 
-namespace Utility 
+namespace Utility
 {
-
-    ConsoleLogger::ConsoleLogger() :
+    ColorConsoleSink::ColorConsoleSink() :
         mOutputStream(std::cout)
     {
     }
 
-    ConsoleLogger::ConsoleLogger(std::ostream& oStream) :
-        mOutputStream(oStream)
+    void ColorConsoleSink::sinkData(const std::string& message, LogLevel level,
+                                    const char* file, int line)
     {
-    }
-
-    void ConsoleLogger::log(const std::string& message, LogLevel level, const char* file, int line)
-    { 
         // Get Time Stamp
         auto now = std::chrono::system_clock::now();
         std::time_t nowTime = std::chrono::system_clock::to_time_t(now);
@@ -32,7 +27,7 @@ namespace Utility
 
         // Get LogLevel as String
         const std::string logLevelString = logLevelEnumToString(level);
-        
+
         // Build Header
         mOutputStream << colorCode << "[" << std::put_time(&now_tm, "%H:%M:%S") << "] "
                   << "[" << logLevelString << "]";
@@ -45,12 +40,12 @@ namespace Utility
 
             mOutputStream << " [" << fileName << ":" << line << "]"; 
         }
-        
+
         // Write message, put text color back to default
         mOutputStream << " " << message << mDefaultColorCode << std::endl;
     }
 
-    const std::string ConsoleLogger::getColorCode(LogLevel level)
+    const std::string ColorConsoleSink::getColorCode(LogLevel level)
     {
         std::stringstream colorCode;
         switch (level)

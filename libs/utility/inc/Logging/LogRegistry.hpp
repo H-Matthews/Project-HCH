@@ -1,12 +1,9 @@
 #pragma once
 
-#include "utility/inc/TextFileLogger.hpp"
-#include "utility/inc/ConsoleLogger.hpp"
-
 #include <functional> // Hash
 #include <map>
 #include <memory>
-
+/*
 namespace Utility 
 {
 
@@ -42,3 +39,4 @@ namespace Utility
             std::unique_ptr<ConsoleLogger> mCLogger;
     };
 }
+*/

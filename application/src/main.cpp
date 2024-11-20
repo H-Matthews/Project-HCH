@@ -2,8 +2,11 @@
 
 #include "core/inc/Configuration.hpp"
 
+#include "utility/inc/Logging/Logger.hpp"
+
 #include <iostream>
 #include <stdexcept>
+#include <vector>
 
 int main()
 {

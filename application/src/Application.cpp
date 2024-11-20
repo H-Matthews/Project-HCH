@@ -16,9 +16,7 @@ const sf::Time Application::TimePerFrame = sf::seconds(1.0f / 120.0f);
 Application::Application(std::shared_ptr<Core::ConfigurationI> config) :
     mWindow(sf::VideoMode(640, 480), "Application Window", sf::Style::Close),
     mStateStack(Core::State::SharedObjects(mWindow)),
-    mConfiguration(config),
-    mAppConsoleLogger(std::make_unique<Utility::ConsoleLogger>()),
-    mAppTextLogger(nullptr)
+    mConfiguration(config)
 {
 }
 
@@ -28,15 +26,9 @@ void Application::initialize()
     mConfiguration->initializeIteration();
     mConfiguration->loadSettings();
 
-    // Initialize TextFile Logger
-    Utility::LogRegistry::getInstance()->registerLogger("Application");
-    mAppTextLogger = Utility::LogRegistry::getInstance()->getLogger("Application");
-
     // Initialize State Stack
     registerStates();
     mStateStack.pushState(States::Menu);
-
-    LOG_INFO(mAppTextLogger, "Application Initialized " );
 }
 
 void Application::run()
@@ -97,11 +89,6 @@ void Application::render()
 void Application::registerStates()
 {
     mStateStack.registerState<MenuState>(States::Menu);
-    LOG_INFO(mAppTextLogger, "Registered Menu State");
-
     mStateStack.registerState<GameState>(States::Game);
-    LOG_INFO(mAppTextLogger, "Registered Game State");
-
     mStateStack.registerState<PauseState>(States::Pause);
-    LOG_INFO(mAppTextLogger, "Registered Pause State");
 }

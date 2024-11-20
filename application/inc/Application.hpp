@@ -3,9 +3,6 @@
 #include "core/inc/State/StateStack.hpp"
 #include "core/inc/Configuration.hpp"
 
-#include "utility/inc/ConsoleLogger.hpp"
-#include "utility/inc/LogRegistry.hpp"
-
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Time.hpp>
 
@@ -33,8 +30,4 @@ class Application
 
         Core::StateStack mStateStack;
         std::shared_ptr<Core::ConfigurationI> mConfiguration;
-
-        // Loggers
-        std::unique_ptr< Utility::ConsoleLogger > mAppConsoleLogger;
-        std::shared_ptr< Utility::TextFileLogger > mAppTextLogger;
 };

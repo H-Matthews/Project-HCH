@@ -3,7 +3,8 @@
 
 #include "core/inc/State/State.hpp"
 #include "core/inc/Messaging/Message.hpp"
-#include "utility/inc/LoggerI.hpp"
+
+#include "utility/inc/Logging/CommonLog.hpp"
 
 #include <sstream>
 

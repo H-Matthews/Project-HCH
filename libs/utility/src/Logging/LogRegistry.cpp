@@ -1,7 +1,7 @@
-#include "utility/inc/LogRegistry.hpp"
+//#include "utility/inc/Logging/LogRegistry.hpp"
 
 #include<sstream>
-
+/*
 namespace Utility
 {
     std::shared_ptr< LogRegistry > LogRegistry::mLogInstance = nullptr;
@@ -81,3 +81,4 @@ namespace Utility
         return textFileLogger;
     }
 }
+*/
