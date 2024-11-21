@@ -72,7 +72,7 @@ void Core::MessageNode::onNotify(Message*)
 
 std::function<void (Core::Message*)> Core::MessageNode::getNotifyFunc()
 {
-    auto messageSubscriber = [=] (Message* message) -> void {
+    auto messageSubscriber = [=, this] (Message* message) -> void {
         this->onNotify(message);
     };
 

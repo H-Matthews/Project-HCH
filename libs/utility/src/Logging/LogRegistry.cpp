@@ -1,84 +1,70 @@
-//#include "utility/inc/Logging/LogRegistry.hpp"
+#include "utility/inc/Logging/LogRegistry.hpp"
 
-#include<sstream>
-/*
+#include<iostream>
+
 namespace Utility
 {
-    std::shared_ptr< LogRegistry > LogRegistry::mLogInstance = nullptr;
+    std::shared_ptr< LogRegistry > LogRegistry::mRegistryInstance = nullptr;
 
     LogRegistry::LogRegistry() :
         mRegistry(),
-        mOutDirPath(""),
-        mCLogger(std::make_unique<ConsoleLogger>())
+        mAppOutputDirectory("")
     {
     }
 
-    std::shared_ptr< LogRegistry > LogRegistry::getInstance()
+    std::shared_ptr< LogRegistry > LogRegistry::instance()
     {
-        if(mLogInstance == nullptr)
-            mLogInstance = std::shared_ptr< LogRegistry >(new LogRegistry());
+        if(mRegistryInstance == nullptr)
+            mRegistryInstance = std::shared_ptr< LogRegistry >(new LogRegistry());
 
-        return mLogInstance;
+        return mRegistryInstance;
     }
 
     void LogRegistry::configureRegistry(const std::string outputDirPath)
     {
-        mOutDirPath = outputDirPath;
+        mAppOutputDirectory = outputDirPath;
     }
 
     // Create TextFile Logger with fileName
-    void LogRegistry::registerLogger(const std::string& fileName)
+    void LogRegistry::registerLogger(std::shared_ptr< Logger > logger)
     {
-        std::stringstream logStream;
-
-        // Ensure output directory is set
-        if(mOutDirPath != "")
+        if(logger != nullptr)
         {
-            // Hash String
-            std::hash<std::string> hash;
-            std::size_t hashedString = hash(fileName);
+            // Ensure output directory is set
+            if(mAppOutputDirectory != "")
+            {
+                // Hash String
+                std::size_t hashedString = mHash(logger->getLoggerName());
 
-            // Create instance and insert into loggers
-            auto loggerInstance = std::make_shared< TextFileLogger >(fileName, mOutDirPath);
-            auto ret = mRegistry.insert(std::make_pair(hashedString, loggerInstance));
-            
-            if(ret.second)
-            {
-                LOG_INFO(mCLogger, "Successfully Registered TextFile Logger Instance: " + fileName);
+                // Insert Logger
+                mRegistry.insert(std::make_pair(hashedString, logger));
             }
-            else 
-            {
-                LOG_ERROR(mCLogger, "FAILED to Create TextFile Logger Instance: " + fileName);
-            }
-        }
-        else 
-        {
-            LOG_ERROR(mCLogger, "FAILED to create TextFile Logger Instance: " + fileName);
         }
     }
 
-    std::shared_ptr< TextFileLogger > LogRegistry::getLogger(const std::string& fileName)
+    std::shared_ptr< Logger > LogRegistry::getLogger(const std::string& fileName)
     {
-        std::shared_ptr< TextFileLogger > textFileLogger = nullptr;
-        std::stringstream sStream;
+        std::shared_ptr< Logger > textFileLogger = nullptr;
 
         // Hash String
-        std::hash<std::string> hash;
-        std::size_t hashedString = hash(fileName);
+        std::size_t hashedString = mHash(fileName);
 
         // Look for hashedString in registry
-        std::map< std::size_t, std::shared_ptr< TextFileLogger > >::iterator it;
+        std::map< std::size_t, std::shared_ptr< Logger > >::iterator it;
         it = mRegistry.find(hashedString);
 
         textFileLogger = (*it).second;
         if(textFileLogger == nullptr)
         {
-            sStream << "The logger name was NOT found in the Logger Registry! "
+            std::cout << "The logger name was NOT found in the Logger Registry! "
                     << "Logger Name: " << fileName << std::endl;
-            LOG_ERROR(mCLogger, sStream.str());
         }
         
         return textFileLogger;
     }
+
+    const std::string LogRegistry::getAppOutputDir() const
+    {
+        return mAppOutputDirectory;
+    }
 }
-*/

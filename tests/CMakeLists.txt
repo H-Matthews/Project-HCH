@@ -10,7 +10,7 @@ foreach(_test_file ${TEST_SRC_FILES})
   set_target_properties(${_test_name} PROPERTIES FOLDER "tests")
   target_include_directories(${_test_name} PUBLIC ${LIBS_INC_DIR})
   target_link_libraries(${_test_name} GTest::gtest_main utility)
-  target_compile_features(${_test_name} PRIVATE cxx_std_17)
+  target_compile_features(${_test_name} PRIVATE cxx_std_20)
 
   # CTest 
   add_test(NAME ${_test_name} 

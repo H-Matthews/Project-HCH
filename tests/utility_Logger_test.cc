@@ -16,7 +16,12 @@ class UtilityLoggerTest : public ::testing::Test
         
         void SetUp() override 
         {
-            logger_default = std::make_shared< Utility::Logger >();
+            logger_default = std::make_shared< Utility::Logger >("logger_default");
+
+            // Create and add sink to logger_default
+            auto colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >();
+            logger_default->addSink(colorConsoleSink);
+
             sinks = logger_default->getSinkReferences();
 
             // Hold couts buffer reference so we can restore later
@@ -48,10 +53,10 @@ TEST_F(UtilityLoggerTest, defaultConstructor)
     ASSERT_NE(logger_default, nullptr);
 
     // LoggerName
-    EXPECT_EQ(logger_default->getLoggerName(), "");
+    EXPECT_EQ(logger_default->getLoggerName(), "logger_default");
 
     // GlobalLogLevel
-    EXPECT_EQ(logger_default->getGlobalLogLevel(), Utility::LogLevel::INFO);
+    EXPECT_EQ(logger_default->getGlobalLogLevel(), Utility::LogLevel::NONE);
 
     // Ensure Sinks size is 1 and the object is a ColorConsoleSink
     ASSERT_EQ(sinks.size(), 1);
@@ -74,7 +79,7 @@ TEST_F(UtilityLoggerTest, shouldLog)
     bool ret2 = logger_default->shouldLog(Utility::LogLevel::INFO, Utility::LogLevel::DEBUG);
     EXPECT_TRUE(ret2);
 
-    bool ret3 = logger_default->shouldLog(Utility::LogLevel::WARNING, Utility::LogLevel::DEBUG);
+    bool ret3 = logger_default->shouldLog(Utility::LogLevel::WARN, Utility::LogLevel::DEBUG);
     EXPECT_TRUE(ret3);
 
     bool ret4 = logger_default->shouldLog(Utility::LogLevel::ERROR, Utility::LogLevel::DEBUG);
@@ -87,15 +92,15 @@ TEST_F(UtilityLoggerTest, shouldLog)
     bool ret6 = logger_default->shouldLog(Utility::LogLevel::DEBUG, Utility::LogLevel::INFO);
     EXPECT_FALSE(ret6);
 
-    // Test globalLogLevel; Currently set at INFO
+    // Test globalLogLevel; Default Constructor sets it at NONE
     bool ret7 = logger_default->shouldLog(Utility::LogLevel::DEBUG, Utility::LogLevel::NONE);
     EXPECT_FALSE(ret7);
 
-    bool ret8 = logger_default->shouldLog(Utility::LogLevel::WARNING, Utility::LogLevel::NONE);
-    EXPECT_TRUE(ret8);
+    bool ret8 = logger_default->shouldLog(Utility::LogLevel::WARN, Utility::LogLevel::NONE);
+    EXPECT_FALSE(ret8);
 
     bool ret9 = logger_default->shouldLog(Utility::LogLevel::ERROR, Utility::LogLevel::NONE);
-    EXPECT_TRUE(ret9);
+    EXPECT_FALSE(ret9);
 
     // Set GlobalLogLevel & sinkLogLevel to NONE
     logger_default->setGlobalLogLevel(Utility::LogLevel::NONE);
@@ -112,10 +117,10 @@ TEST_F(UtilityLoggerTest, validOutputSanityCheck)
     logger_default->setGlobalLogLevel(Utility::LogLevel::DEBUG);
 
     // Expect message to contain these substrings
-    logger_default->log("This is a test", Utility::LogLevel::DEBUG, "utility_ConsoleLogger_test.cc", 1 );
+    logger_default->logDebug("This is a test");
     EXPECT_NE(mBuffer.str().find("[DEBUG]"), std::string::npos);
     EXPECT_NE(mBuffer.str().find("This is a test"), std::string::npos);
-    EXPECT_NE(mBuffer.str().find("utility_ConsoleLogger_test.cc:1"), std::string::npos);
+    EXPECT_NE(mBuffer.str().find("utility_Logger_test.cc"), std::string::npos);
 }
 
 TEST_F(UtilityLoggerTest, sinkLoggingCheck)
@@ -131,11 +136,11 @@ TEST_F(UtilityLoggerTest, sinkLoggingCheck)
 
     sinks[0]->setSinkLogLevel(Utility::LogLevel::INFO);
 
-    logger_default->log("This is a test", Utility::LogLevel::DEBUG, "utility_ConsoleLogger_test.cc", 1 );
+    logger_default->logDebug("This is a test");
 
     // Expect Buffer to be empty
     ASSERT_EQ(mBuffer.str(), "");
 
-    logger_default->log("This is a test", Utility::LogLevel::INFO, "utility_ConsoleLogger_test.cc", 1 );
+    logger_default->logInfo("This is a test");
     ASSERT_NE(mBuffer.str(), "");
 }

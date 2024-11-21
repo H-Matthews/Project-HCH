@@ -81,9 +81,9 @@ namespace Utility
                 sStream << "INFO";
                 break;
             }
-            case LogLevel::WARNING:
+            case LogLevel::WARN:
             {
-                sStream << "WARNING";
+                sStream << "WARN";
                 break;
             }
             case LogLevel::ERROR:

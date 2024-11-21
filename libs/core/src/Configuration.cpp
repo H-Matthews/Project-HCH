@@ -77,13 +77,13 @@ namespace Core
         // Create directory
         if( std::filesystem::create_directory(outputDirectoryPath.str()) )
         {
+            // Set the Output Directory in the LogRegistry
+            Utility::LogRegistry::instance()->configureRegistry(mOutputDirPath);
+
             /*
             std::stringstream logMessage;
             logMessage << "SUCCESSFULLY created run directory ";
             logMessage << "Path:" << outputDirectoryPath.str();
-
-            // Set the Output Directory in the LogRegistry
-            Utility::LogRegistry::getInstance()->configureRegistry(mOutputDirPath);
 
             LOG_INFO(mCLogger, logMessage.str());
             */

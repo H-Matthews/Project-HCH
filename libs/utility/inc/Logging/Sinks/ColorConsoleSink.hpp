@@ -9,8 +9,7 @@ namespace Utility
         public:
             ColorConsoleSink();
 
-            void sinkData(const std::string& message, Utility::LogLevel level,
-                          const char* file, int line) override;
+            void sinkData(std::string_view message, Utility::LogLevel level, const std::source_location location) override;
 
         private:
             const std::string getColorCode(LogLevel level);

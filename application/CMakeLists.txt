@@ -22,9 +22,9 @@ else()
 endif()
 
 set_target_properties(hch PROPERTIES FOLDER "application")
-target_link_libraries(hch PRIVATE sfml-graphics utility core)
+target_link_libraries(hch PRIVATE sfml-graphics core utility)
 target_include_directories(hch PUBLIC ${PROJECT_SOURCE_DIR} ${LIBS_INC_DIR})
-target_compile_features(hch PRIVATE cxx_std_17)
+target_compile_features(hch PRIVATE cxx_std_20)
 
 if(WIN32)
     add_custom_command(

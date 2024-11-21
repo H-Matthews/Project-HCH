@@ -4,7 +4,7 @@
 #include "core/inc/State/State.hpp"
 #include "core/inc/Messaging/Message.hpp"
 
-#include "utility/inc/Logging/CommonLog.hpp"
+#include "utility/inc/Logging/LogLevel.hpp"
 
 #include <sstream>
 

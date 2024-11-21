@@ -14,8 +14,7 @@ namespace Utility
     {
     }
 
-    void ColorConsoleSink::sinkData(const std::string& message, LogLevel level,
-                                    const char* file, int line)
+    void ColorConsoleSink::sinkData(std::string_view message, LogLevel level, const std::source_location location)
     {
         // Get Time Stamp
         auto now = std::chrono::system_clock::now();
@@ -32,14 +31,10 @@ namespace Utility
         mOutputStream << colorCode << "[" << std::put_time(&now_tm, "%H:%M:%S") << "] "
                   << "[" << logLevelString << "]";
 
-        if(file)
-        {
-            // Parse the file path for JUST the file NAME
-            std::filesystem::path filePath(file);
-            std::string fileName = filePath.filename().string();
+        // Parse the file path for JUST the file NAME
+        std::filesystem::path filePath(location.file_name());
 
-            mOutputStream << " [" << fileName << ":" << line << "]"; 
-        }
+        mOutputStream << " [" << filePath.filename().string() << ":" << location.line() << "]"; 
 
         // Write message, put text color back to default
         mOutputStream << " " << message << mDefaultColorCode << std::endl;
@@ -61,7 +56,7 @@ namespace Utility
                 colorCode << mInfoColorCode;       // Green
                 break;
             }
-            case LogLevel::WARNING:
+            case LogLevel::WARN:
             {
                 colorCode << mWarningColorCode;    // Yellow 
                 break;

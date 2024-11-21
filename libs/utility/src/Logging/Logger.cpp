@@ -5,24 +5,47 @@
 
 namespace Utility
 {
-    // Default Constructor Initializes Sink with ColorConsole
-    Logger::Logger() :
-        mSinks( {std::make_shared< ColorConsoleSink >()} ),
-        mLoggerName(),
-        mGlobalLogLevel(LogLevel::INFO)
-    {
-    }
-
     // Constructor Sets the Logger Name
     Logger::Logger(const std::string& loggerName) :
-        mSinks( {std::make_shared< ColorConsoleSink >()} ),
+        mSinks(),
         mLoggerName(loggerName),
-        mGlobalLogLevel(LogLevel::INFO)
+        mGlobalLogLevel(LogLevel::NONE)
     {
     }
 
-    void Logger::log(const std::string& message, LogLevel level,
-                     const char* file, int line)
+    void Logger::logDebug(std::string_view message, const std::source_location location)
+    {
+        LogLevel level = LogLevel::DEBUG;
+
+        // Log
+        sinkIt(message, level, location);
+    }
+
+    void Logger::logInfo(std::string_view message, const std::source_location location)
+    {
+        LogLevel level = LogLevel::INFO;
+
+        // Log
+        sinkIt(message, level, location);
+    }
+
+    void Logger::logWarn(std::string_view message, const std::source_location location)
+    {
+        LogLevel level = LogLevel::WARN;
+
+        // Log
+        sinkIt(message, level, location);
+    }
+
+    void Logger::logError(std::string_view message, const std::source_location location)
+    {
+        LogLevel level = LogLevel::ERROR;
+
+        // Log
+        sinkIt(message, level, location);
+    }
+
+    void Logger::sinkIt(std::string_view message, LogLevel level, const std::source_location location)
     {
         bool result = false;
         for(const auto& sink : mSinks)
@@ -31,11 +54,8 @@ namespace Utility
             result = shouldLog(level, sink->getSinkLogLevel());
             if(result)
             {
-                // Formatter before here
-                // formatter->format(message, buffer)
-                sink->sinkData(message, level, file, line);
+                sink->sinkData(message, level, location);
             }
-
         }
     }
 
@@ -58,6 +78,22 @@ namespace Utility
         }
 
         return canLog;
+    }
+
+    void Logger::addSink(std::shared_ptr< LogSinksI > sink)
+    {
+        // Probably should do more checks here for potential issues that I can't think of
+        if(sink != nullptr)
+            mSinks.push_back(sink);
+    }
+
+    void Logger::addSinkList(sinkList list)
+    {
+        for(auto sink : list)
+        {
+            if(sink != nullptr)
+                mSinks.push_back(sink);
+        }
     }
 
     std::vector< LogSinksI* > Logger::getSinkReferences()

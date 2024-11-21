@@ -3,8 +3,12 @@
 #include "core/inc/State/StateStack.hpp"
 #include "core/inc/Configuration.hpp"
 
+#include "utility/inc/Logging/Logger.hpp"
+
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Time.hpp>
+
+#include <string>
 
 class Application
 {
@@ -30,4 +34,6 @@ class Application
 
         Core::StateStack mStateStack;
         std::shared_ptr<Core::ConfigurationI> mConfiguration;
+
+        std::shared_ptr< Utility::Logger > mAppLogger;
 };

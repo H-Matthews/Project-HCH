@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <source_location>
 
 namespace Utility
 {
@@ -17,10 +18,13 @@ namespace Utility
     class Logger 
     {
         public:
-            Logger();
+            Logger() = delete;
             Logger(const std::string& loggerName);
-            void log(const std::string& message, LogLevel level,
-                     const char* file, int line);
+
+            void logDebug(std::string_view message, const std::source_location location = std::source_location::current());
+            void logInfo(std::string_view message, const std::source_location location = std::source_location::current());
+            void logWarn(std::string_view message, const std::source_location location = std::source_location::current());
+            void logError(std::string_view message, const std::source_location location = std::source_location::current());
 
             bool shouldLog(LogLevel level, LogLevel sinkLevel);
 
@@ -30,7 +34,17 @@ namespace Utility
             inline void setLoggerName(const std::string& name) {mLoggerName = name; }
             inline const std::string& getLoggerName() const {return mLoggerName; }
 
+            // Inserts a single sink into mSinks
+            void addSink(std::shared_ptr< LogSinksI > sink);
+
+            // Insert multiple sinks into mSink
+            typedef std::vector< std::shared_ptr< LogSinksI > > sinkList;
+            void addSinkList(sinkList list);
+
             std::vector< LogSinksI* > getSinkReferences();
+
+        private:
+            void sinkIt(std::string_view message, LogLevel level, const std::source_location location);
 
         private:
             std::vector< std::shared_ptr< LogSinksI > > mSinks;

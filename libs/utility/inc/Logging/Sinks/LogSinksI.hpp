@@ -1,8 +1,9 @@
 #pragma once
 
-#include "utility/inc/Logging/CommonLog.hpp"
+#include "utility/inc/Logging/LogLevel.hpp"
 
 #include <string>
+#include <source_location>
 
 namespace Utility
 {
@@ -16,8 +17,7 @@ namespace Utility
     {
         public:
             ~LogSinksI() {}
-            virtual void sinkData(const std::string& message, LogLevel level,
-                                  const char* file, int line) = 0;
+            virtual void sinkData(std::string_view message, LogLevel level, const std::source_location location) = 0;
 
             inline void setSinkLogLevel(LogLevel level) { mLevel = level; }
             inline LogLevel getSinkLogLevel() { return mLevel; } 
