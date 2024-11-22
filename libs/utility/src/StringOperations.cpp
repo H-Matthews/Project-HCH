@@ -14,17 +14,17 @@ namespace Utility
             }
             case States::ID::Menu:
             {
-                sStream << "Menu State";
+                sStream << "Menu";
                 break;
             }
             case States::ID::Game:
             {
-                sStream << "Game State";
+                sStream << "Game";
                 break;
             }
             case States::ID::Pause:
             {
-                sStream << "Pause State";
+                sStream << "Pause";
                 break;
             }
         }
@@ -71,6 +71,11 @@ namespace Utility
 
         switch(identifier)
         {
+            case LogLevel::NONE:
+            {
+                sStream << "NONE";
+                break;
+            }
             case LogLevel::DEBUG:
             {
                 sStream << "DEBUG";

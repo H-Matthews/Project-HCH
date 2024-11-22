@@ -7,9 +7,9 @@
 
 namespace Utility
 {
-    TextFileSink::TextFileSink(const std::string& fileName, const std::string& outputDirectory, const std::string logExtension) :
-        mFileName(fileName),
+    TextFileSink::TextFileSink(const std::string& outputDirectory, const std::string& fileName, const std::string logExtension) :
         mOutputDirectory(outputDirectory),
+        mFileName(fileName),
         mLogExtension(logExtension)
     {
         // Build Path
@@ -24,6 +24,11 @@ namespace Utility
         mEntireFilePath = filePath.str();
     }
 
+    const std::string TextFileSink::getFilePath()
+    {
+        return mEntireFilePath;
+    }
+
     void TextFileSink::sinkData(std::string_view message, LogLevel level, const std::source_location location)
     {
         if(mFileHandle.is_open())
@@ -33,19 +38,20 @@ namespace Utility
             std::time_t nowTime = std::chrono::system_clock::to_time_t(now);
             std::tm now_tm = *std::localtime(&nowTime);
 
-            // Get LogLevel as String
             const std::string logLevelString = logLevelEnumToString(level);
-
-            // Build Header
-            mFileHandle << "[" << std::put_time(&now_tm, "%Y-%m-%d %H:%M:%S") << "] "
-                        << "[" << logLevelString << "]";
-
-            // Parse the file path for JUST the file NAME
             std::filesystem::path filePath(location.file_name());
 
-            mFileHandle << " [" << filePath.filename().string() << ":" << location.line() << "]";
+            // Build Header
+            // TimeStamp
+            mFileHandle << "[" << std::put_time(&now_tm, "%H:%M:%S") << "]";
 
-            // Write message and Flush
+            // File / Line Information
+            mFileHandle << " [" << filePath.filename().string() << ":" << location.line() << "]"; 
+
+            // LogLevel
+            mFileHandle << " [" << logLevelString << "]";
+
+            // Write message and flush the output
             mFileHandle << " " << message << std::endl;
         }
     }

@@ -1,6 +1,8 @@
 #include "utility/inc/Logging/LogRegistry.hpp"
+#include "utility/inc/Logging/Sinks/TextFileSink.hpp"
 
 #include<iostream>
+#include<sstream>
 
 namespace Utility
 {
@@ -30,16 +32,52 @@ namespace Utility
     {
         if(logger != nullptr)
         {
-            // Ensure output directory is set
-            if(mAppOutputDirectory != "")
-            {
-                // Hash String
-                std::size_t hashedString = mHash(logger->getLoggerName());
+            // Hash String
+            std::size_t hashedString = mHash(logger->getLoggerName());
+            bool hasTextSink = checkForTextSink(logger);
 
-                // Insert Logger
+            if(hasTextSink)
+            {
+                // Ensure output directory is set
+                if(mAppOutputDirectory != "")
+                    mRegistry.insert(std::make_pair(hashedString, logger));
+            }
+            else
+            {
                 mRegistry.insert(std::make_pair(hashedString, logger));
             }
+
+            auto cLogger = Utility::LogRegistry::instance()->getLogger("cLogger");
+            if(cLogger)
+            {
+                std::stringstream logStream;
+                logStream << "Registered Logger: " << logger->getLoggerName();
+                logStream << " at Global Loglevel: " << logger->getGlobalLogLevelAsString();
+
+                cLogger->logInfo(logStream.str());
+            }
         }
+    }
+
+    bool LogRegistry::checkForTextSink(std::shared_ptr< Logger > logger)
+    {
+        bool hasTextSink = false;
+
+        auto sinks = logger->getSinkReferences();
+        if(sinks.size() > 0 )
+        {
+            for(const auto& sink : sinks)
+            {
+                auto textSink = dynamic_cast< Utility::TextFileSink* > (sink);
+                if(textSink != nullptr)
+                    hasTextSink = true;
+
+                if(hasTextSink == true)
+                    break;
+            }
+        }
+
+        return hasTextSink;
     }
 
     std::shared_ptr< Logger > LogRegistry::getLogger(const std::string& fileName)
@@ -64,7 +102,7 @@ namespace Utility
     }
 
     const std::string LogRegistry::getAppOutputDir() const
-    {
+    {   
         return mAppOutputDirectory;
     }
 }

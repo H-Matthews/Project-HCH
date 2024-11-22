@@ -19,10 +19,10 @@
 const sf::Time Application::TimePerFrame = sf::seconds(1.0f / 120.0f);
 
 Application::Application(std::shared_ptr<Core::ConfigurationI> config) :
+    mAppLogger(std::make_shared<Utility::Logger>("Application")),
     mWindow(sf::VideoMode(640, 480), "Application Window", sf::Style::Close),
-    mStateStack(Core::State::SharedObjects(mWindow)),
-    mConfiguration(config),
-    mAppLogger(std::make_shared<Utility::Logger>("Application"))
+    mStateStack(Core::State::SharedObjects(mWindow, mAppLogger->getLoggerName())),
+    mConfiguration(config)
 {
 }
 
@@ -33,22 +33,22 @@ void Application::initialize()
     mConfiguration->loadSettings();
 
     // Configure Logging
-    // Create Sinks
+    // Configure Application Logger
     const std::string appOutputDir = Utility::LogRegistry::instance()->getAppOutputDir();
     std::shared_ptr< Utility::TextFileSink > textFileSink = nullptr;
     if(appOutputDir != "")
     {
-        textFileSink = std::make_shared< Utility::TextFileSink >(mAppLogger->getLoggerName(), appOutputDir, ".log");
+        textFileSink = std::make_shared< Utility::TextFileSink >( appOutputDir, mAppLogger->getLoggerName(), ".log");
         textFileSink->setSinkLogLevel(Utility::LogLevel::DEBUG);
     }
 
     auto colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >();
     colorConsoleSink->setSinkLogLevel(Utility::LogLevel::INFO);
 
-    mAppLogger->addSink(colorConsoleSink);
-    mAppLogger->addSink(textFileSink);
+    Utility::Logger::sinkList list = { colorConsoleSink, textFileSink };
+    mAppLogger->addSinkList(list);
 
-    // Finally, register logger with registry so we can get it from anywhere
+    // Finally, register logger with the registry so we can get it from anywhere
     Utility::LogRegistry::instance()->registerLogger(mAppLogger);
 
     // Initialize State Stack

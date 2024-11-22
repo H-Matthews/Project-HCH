@@ -3,6 +3,7 @@
 #include "core/inc/State/State.hpp"
 
 #include "utility/inc/StringOperations.hpp"
+#include "utility/inc/Logging/LogRegistry.hpp"
 
 #include <SFML/System/Time.hpp>
 
@@ -10,6 +11,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <sstream>
 
 namespace Core
 {
@@ -73,4 +75,12 @@ void Core::StateStack::registerState(States::ID stateID)
     {
         return std::unique_ptr<State>(new T(*this, identifierString, mSharedObjects));
     };
+
+    std::stringstream logStream;
+    auto appLogger = Utility::LogRegistry::instance()->getLogger(mSharedObjects.appLoggerName);
+    if(appLogger)
+    {
+        logStream << "Registered State: " << identifierString << " on the StateStack";
+        appLogger->logInfo(logStream.str());
+    }
 }

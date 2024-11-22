@@ -20,14 +20,6 @@ int main()
 
         Application game(config);
         game.initialize();
-
-        // Test Logs
-        auto appLogger = Utility::LogRegistry::instance()->getLogger("Application");
-        appLogger->logDebug("Log Message from MAIN!!!");
-        appLogger->logInfo("Log INFO MESSAGE FROM MAIN!!!!");
-        appLogger->logWarn("Log WARN from MAIN");
-        appLogger->logError("LOG ERROR from MAINNNN");
-
         //game.run();
     }
     catch(const std::exception& e)

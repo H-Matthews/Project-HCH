@@ -1,8 +1,9 @@
 #include "core/inc/State/State.hpp"
 #include "core/inc/State/StateStack.hpp"
 
- Core::State::SharedObjects::SharedObjects(sf::RenderWindow& window) :
- window(&window)
+ Core::State::SharedObjects::SharedObjects(sf::RenderWindow& window, std::string appLoggerName) :
+ window(&window),
+ appLoggerName(appLoggerName)
  {
  }
 

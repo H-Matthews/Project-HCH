@@ -36,6 +36,8 @@ namespace Utility
         private:
             LogRegistry();
 
+            bool checkForTextSink(std::shared_ptr< Logger > logger);
+
             // Static pointer to our object
             static std::shared_ptr< LogRegistry > mRegistryInstance;
 

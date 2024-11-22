@@ -1,4 +1,5 @@
 #include "utility/inc/Logging/Logger.hpp"
+#include "utility/inc/StringOperations.hpp"
 
 // Sinks Here
 #include "utility/inc/Logging/Sinks/ColorConsoleSink.hpp"
@@ -78,6 +79,13 @@ namespace Utility
         }
 
         return canLog;
+    }
+
+    const std::string Logger::getGlobalLogLevelAsString() const
+    {
+        const std::string loggerAsString = Utility::logLevelEnumToString(mGlobalLogLevel);
+
+        return loggerAsString;
     }
 
     void Logger::addSink(std::shared_ptr< LogSinksI > sink)

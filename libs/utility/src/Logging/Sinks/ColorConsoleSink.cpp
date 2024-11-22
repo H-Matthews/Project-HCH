@@ -21,22 +21,21 @@ namespace Utility
         std::time_t nowTime = std::chrono::system_clock::to_time_t(now);
         std::tm now_tm = *std::localtime(&nowTime);
 
-        // Get Correct ColorCode based on logLevel
         std::string colorCode = getColorCode(level);
-
-        // Get LogLevel as String
+        std::filesystem::path filePath(location.file_name());
         const std::string logLevelString = logLevelEnumToString(level);
 
         // Build Header
-        mOutputStream << colorCode << "[" << std::put_time(&now_tm, "%H:%M:%S") << "] "
-                  << "[" << logLevelString << "]";
+        // TimeStamp
+        mOutputStream << colorCode << "[" << std::put_time(&now_tm, "%H:%M:%S") << "]";
 
-        // Parse the file path for JUST the file NAME
-        std::filesystem::path filePath(location.file_name());
-
+        // File / Line Information
         mOutputStream << " [" << filePath.filename().string() << ":" << location.line() << "]"; 
 
-        // Write message, put text color back to default
+        // LogLevel
+        mOutputStream << " [" << logLevelString << "]";
+
+        // Write message, put text color back to default, and flush the output
         mOutputStream << " " << message << mDefaultColorCode << std::endl;
     }
 

@@ -30,6 +30,7 @@ namespace Utility
 
             inline void setGlobalLogLevel(LogLevel gLevel) { mGlobalLogLevel = gLevel; }
             inline LogLevel getGlobalLogLevel() const { return mGlobalLogLevel; }
+            const std::string getGlobalLogLevelAsString() const;
 
             inline void setLoggerName(const std::string& name) {mLoggerName = name; }
             inline const std::string& getLoggerName() const {return mLoggerName; }

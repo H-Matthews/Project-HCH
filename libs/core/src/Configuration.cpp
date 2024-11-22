@@ -13,13 +13,26 @@ namespace Core
     const std::string Configuration::OUTPUT_DIR_NAME = "output";
 
     Configuration::Configuration() :
+        mGlobalCLoggerName("cLogger"),
+        mGlobalCLogger(std::make_shared<Utility::Logger>(mGlobalCLoggerName)),
         mConfigDirPath(),
         mOutputDirPath()
     {
+        // Create and Configure a global Console logger
+        // This is for logging anything to the console primarily for debugging purposes
+        auto globalConsoleSink = std::make_shared< Utility::ColorConsoleSink >();
+        mGlobalCLogger->addSink(globalConsoleSink);
+        mGlobalCLogger->setGlobalLogLevel(Utility::LogLevel::DEBUG);
+
+        // Register GlobalLogger
+        Utility::LogRegistry::instance()->registerLogger(mGlobalCLogger);
     }
 
     void Configuration::initializeIteration()
     {
+        // Get GlobalLogger
+        auto cLogger = Utility::LogRegistry::instance()->getLogger("cLogger");
+
         // Build our Path to the output directory
         std::stringstream outputDirectoryPath;
 
@@ -27,36 +40,13 @@ namespace Core
         // It is an easy and consistent way to get Root file path
         outputDirectoryPath << PROJECT_DIR;
         outputDirectoryPath << "/" << OUTPUT_DIR_NAME;
-        std::cout << outputDirectoryPath.str() << std::endl;
 
-        // Check to see if Directory exists
-        if(std::filesystem::is_directory(outputDirectoryPath.str()))
-        {
-            int x;
-            /*
-            std::stringstream logMessage;
-            logMessage << "Output Directory Already Exists ";
-            logMessage << "Path:" << outputDirectoryPath.str();
-
-            LOG_INFO(mCLogger, logMessage.str());
-            */
-        }
-        else // IF NOT, create it
-        {
-            if( std::filesystem::create_directory(outputDirectoryPath.str()) )
+        // If directory DOES NOT exist, create it
+        if( !(std::filesystem::is_directory(outputDirectoryPath.str())) )
+        {   
+            if( !(std::filesystem::create_directory(outputDirectoryPath.str())) )
             {
-                int x;
-                /*
-                std::stringstream logMessage;
-                logMessage << "SUCCESSFULLY created output directory ";
-                logMessage << "Path:" << outputDirectoryPath.str();
-
-                LOG_INFO(mCLogger, logMessage.str());
-                */
-            }
-            else
-            {
-                throw std::filesystem::filesystem_error("Unable to create Output Directory", std::error_code());
+                throw std::filesystem::filesystem_error("Unable to create output Directory", std::error_code());
             }
         }
 
@@ -75,23 +65,17 @@ namespace Core
         mOutputDirPath = outputDirectoryPath.str();
 
         // Create directory
-        if( std::filesystem::create_directory(outputDirectoryPath.str()) )
-        {
-            // Set the Output Directory in the LogRegistry
-            Utility::LogRegistry::instance()->configureRegistry(mOutputDirPath);
-
-            /*
-            std::stringstream logMessage;
-            logMessage << "SUCCESSFULLY created run directory ";
-            logMessage << "Path:" << outputDirectoryPath.str();
-
-            LOG_INFO(mCLogger, logMessage.str());
-            */
-        }
-        else
+        if( !(std::filesystem::create_directory(outputDirectoryPath.str())) )
         {
             throw std::filesystem::filesystem_error("ERROR", std::error_code());
         }
+
+        // Set the Output Directory in the LogRegistry
+        Utility::LogRegistry::instance()->configureRegistry(mOutputDirPath);
+
+        std::stringstream logStream;
+        logStream << "Initialized Output Directory: " << mOutputDirPath;
+        cLogger->logInfo(logStream.str());
 
     }
 

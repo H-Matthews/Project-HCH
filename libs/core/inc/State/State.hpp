@@ -18,9 +18,10 @@ namespace Core
 
             struct SharedObjects
             {
-                SharedObjects(sf::RenderWindow& window);
+                SharedObjects(sf::RenderWindow& window, std::string appLoggerName);
 
                 sf::RenderWindow* window;
+                std::string appLoggerName;
             };
 
         public:

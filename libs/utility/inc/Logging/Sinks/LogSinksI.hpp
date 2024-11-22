@@ -4,6 +4,7 @@
 
 #include <string>
 #include <source_location>
+#include <memory>
 
 namespace Utility
 {
@@ -16,7 +17,7 @@ namespace Utility
     class LogSinksI 
     {
         public:
-            ~LogSinksI() {}
+            ~LogSinksI() = default;
             virtual void sinkData(std::string_view message, LogLevel level, const std::source_location location) = 0;
 
             inline void setSinkLogLevel(LogLevel level) { mLevel = level; }

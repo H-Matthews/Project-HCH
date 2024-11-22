@@ -29,11 +29,11 @@ class Application
     private:
         static const sf::Time TimePerFrame;
 
+        std::shared_ptr< Utility::Logger > mAppLogger;
         sf::RenderWindow mWindow;
         // TODO: Implement a Resource Container for Textures / Fonts
 
         Core::StateStack mStateStack;
         std::shared_ptr<Core::ConfigurationI> mConfiguration;
 
-        std::shared_ptr< Utility::Logger > mAppLogger;
 };
