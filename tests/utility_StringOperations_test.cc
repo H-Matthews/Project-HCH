@@ -12,16 +12,16 @@ TEST(Utility_StringOperations_StatesEnumToStr_Test, confirmInput)
   EXPECT_NE(Utility::statesEnumToString(States::ID::NONE), "NONE");
 
   // Case: Menu
-  EXPECT_EQ(Utility::statesEnumToString(States::ID::Menu), "Menu State");
-  EXPECT_NE(Utility::statesEnumToString(States::ID::Menu), "MENU STATE");
+  EXPECT_EQ(Utility::statesEnumToString(States::ID::Menu), "Menu");
+  EXPECT_NE(Utility::statesEnumToString(States::ID::Menu), "MENU");
 
   // Case: Game
-  EXPECT_EQ(Utility::statesEnumToString(States::ID::Game), "Game State");
-  EXPECT_NE(Utility::statesEnumToString(States::ID::Game), "GAME STATE");
+  EXPECT_EQ(Utility::statesEnumToString(States::ID::Game), "Game");
+  EXPECT_NE(Utility::statesEnumToString(States::ID::Game), "GAME");
 
   // Case: Pause
-  EXPECT_EQ(Utility::statesEnumToString(States::ID::Pause), "Pause State");
-  EXPECT_NE(Utility::statesEnumToString(States::ID::Pause), "PAUSE STATE");
+  EXPECT_EQ(Utility::statesEnumToString(States::ID::Pause), "Pause");
+  EXPECT_NE(Utility::statesEnumToString(States::ID::Pause), "PAUSE");
 }
 
 TEST(Utility_StringOperations_MessageEnumToStr_Test, confirmInput)
