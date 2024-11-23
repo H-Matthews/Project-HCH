@@ -12,7 +12,7 @@ namespace Utility
             void sinkData(std::string_view message, Utility::LogLevel level, const std::source_location location) override;
 
         private:
-            const std::string getColorCode(LogLevel level);
+            const std::string getColorCode(LogLevel level) const;
 
         private:
             std::ostream& mOutputStream;

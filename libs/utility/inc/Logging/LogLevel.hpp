@@ -15,5 +15,4 @@ namespace Utility
     };
 
     const std::string logLevelEnumToString(const LogLevel identifier);
-
 }

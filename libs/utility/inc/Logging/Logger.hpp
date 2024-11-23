@@ -2,10 +2,7 @@
 
 #include "utility/inc/Logging/Sinks/LogSinksI.hpp"
 
-#include <string>
 #include <vector>
-#include <memory>
-#include <source_location>
 
 namespace Utility
 {

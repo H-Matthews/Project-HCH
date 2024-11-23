@@ -10,9 +10,9 @@ namespace Utility
     {
         public:
             TextFileSink() = delete;
-            TextFileSink(const std::string& outputDirectory, const std::string& fileName, const std::string logExtension);
+            TextFileSink(const std::string& outputDirectory, const std::string& fileName, const std::string& logExtension);
 
-            const std::string getFilePath();
+            const std::string getFilePath() const;
 
             void sinkData(std::string_view message, LogLevel level, const std::source_location location) override;
 

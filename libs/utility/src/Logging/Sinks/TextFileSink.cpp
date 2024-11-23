@@ -1,13 +1,10 @@
 #include "utility/inc/Logging/Sinks/TextFileSink.hpp"
-#include "utility/inc/StringOperations.hpp"
 
-#include <filesystem>
-#include <sstream>
 #include <iostream>
 
 namespace Utility
 {
-    TextFileSink::TextFileSink(const std::string& outputDirectory, const std::string& fileName, const std::string logExtension) :
+    TextFileSink::TextFileSink(const std::string& outputDirectory, const std::string& fileName, const std::string& logExtension) :
         mOutputDirectory(outputDirectory),
         mFileName(fileName),
         mLogExtension(logExtension)
@@ -24,7 +21,7 @@ namespace Utility
         mEntireFilePath = filePath.str();
     }
 
-    const std::string TextFileSink::getFilePath()
+    const std::string TextFileSink::getFilePath() const
     {
         return mEntireFilePath;
     }

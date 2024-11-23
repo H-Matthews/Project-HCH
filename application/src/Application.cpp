@@ -15,7 +15,7 @@
 #include <iostream>
 
 
-const sf::Time Application::TimePerFrame = sf::seconds(1.0f / 120.0f);
+const sf::Time Application::TIME_PER_FRAME = sf::seconds(1.0f / 120.0f);
 
 Application::Application(std::shared_ptr<Core::ConfigurationI> config) :
     mAppLogger(std::make_shared<Utility::Logger>("Application")),
@@ -74,12 +74,12 @@ void Application::run()
         sf::Time elapsedTime = clock.restart();
         timeSinceLastUpdate += elapsedTime;
 
-        while(timeSinceLastUpdate > TimePerFrame)
+        while(timeSinceLastUpdate > TIME_PER_FRAME)
         {
-            timeSinceLastUpdate -= TimePerFrame;
+            timeSinceLastUpdate -= TIME_PER_FRAME;
 
             processInput();
-            update(TimePerFrame);
+            update(TIME_PER_FRAME);
 
             if(mStateStack.isEmpty())
             {

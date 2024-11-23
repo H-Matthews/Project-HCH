@@ -27,7 +27,7 @@ class Application
 
 
     private:
-        static const sf::Time TimePerFrame;
+        static const sf::Time TIME_PER_FRAME;
 
         std::shared_ptr< Utility::Logger > mAppLogger;
         sf::RenderWindow mWindow;

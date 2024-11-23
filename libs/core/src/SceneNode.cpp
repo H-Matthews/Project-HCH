@@ -1,20 +1,20 @@
 #include "core/inc/SceneNode.hpp"
 #include "assert.h"
 
-SceneNode::SceneNode() : mParent(nullptr)
+Core::SceneNode::SceneNode() : mParent(nullptr)
 {
 }
 
 // We are attaching a child to a pre-existing SceneNode
 // So, set the childs parent pointer to this 
 // Add the child to this nodes children container
-void SceneNode::attachChild(std::unique_ptr<SceneNode> child)
+void Core::SceneNode::attachChild(std::unique_ptr<SceneNode> child)
 {
     child->mParent = this;
     mChildren.push_back(std::move(child));
 }
 
-std::unique_ptr<SceneNode> SceneNode::detachChild(const SceneNode& node)
+std::unique_ptr<Core::SceneNode> Core::SceneNode::detachChild(const SceneNode& node)
 {    
     auto found = std::find_if(mChildren.begin(), mChildren.end(), 
     [&] (std::unique_ptr<SceneNode>& p) -> bool {return p.get() == &node; });
@@ -28,7 +28,7 @@ std::unique_ptr<SceneNode> SceneNode::detachChild(const SceneNode& node)
     return result;
 }
 
-void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const
+void Core::SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     states.transform *= getTransform();
 
@@ -36,12 +36,12 @@ void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const
     drawChildren(target, states);
 }
 
-void SceneNode::drawCurrent(sf::RenderTarget&, sf::RenderStates) const
+void Core::SceneNode::drawCurrent(sf::RenderTarget&, sf::RenderStates) const
 {
 	// Do nothing by default
 }
 
-void SceneNode::drawChildren(sf::RenderTarget& target, sf::RenderStates states) const
+void Core::SceneNode::drawChildren(sf::RenderTarget& target, sf::RenderStates states) const
 {
     for(const std::unique_ptr<SceneNode>& child : mChildren)
     {
@@ -49,17 +49,17 @@ void SceneNode::drawChildren(sf::RenderTarget& target, sf::RenderStates states) 
     }
 }
 
-void SceneNode::update(sf::Time timeStep)
+void Core::SceneNode::update(sf::Time timeStep)
 {
     updateCurrent(timeStep);
     updateChildren(timeStep);
 }
 
-void SceneNode::updateCurrent(sf::Time)
+void Core::SceneNode::updateCurrent(sf::Time)
 {
 }
 
-void SceneNode::updateChildren(sf::Time timeStep)
+void Core::SceneNode::updateChildren(sf::Time timeStep)
 {
     for(const std::unique_ptr<SceneNode>& child : mChildren)
     {
@@ -69,7 +69,7 @@ void SceneNode::updateChildren(sf::Time timeStep)
 
 // To compute Absolute Transform, we step up the class hierarchy and accumulate all relative 
 // transforms at each stage until we reach the root. 
-sf::Transform SceneNode::getWorldTransform() const
+sf::Transform Core::SceneNode::getWorldTransform() const
 {
     sf::Transform transform = sf::Transform::Identity;
 
@@ -82,7 +82,7 @@ sf::Transform SceneNode::getWorldTransform() const
     return transform;
 }
 
-sf::Vector2f SceneNode::getWorldPosition() const
+sf::Vector2f Core::SceneNode::getWorldPosition() const
 {
     return getWorldTransform() * sf::Vector2f();
 }

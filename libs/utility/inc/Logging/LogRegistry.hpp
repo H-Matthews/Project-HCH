@@ -11,7 +11,7 @@ namespace Utility
 
     /*
         Singleton Class Design
-        Contains a registry of loggers
+        Contains a registry of loggers. Once a logger is registered, it can be retrieved with getLogger
     */
     class LogRegistry
     {
@@ -28,7 +28,7 @@ namespace Utility
             // Associate Logger with hashed value, store in mRegistry
             void registerLogger(std::shared_ptr< Logger > logger);
 
-            // Get Logger
+            // If the Logger was NOT found, it returns a nullptr
             std::shared_ptr< Logger > getLogger(const std::string& fileName);
 
             const std::string getAppOutputDir() const;
