@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+#include <sstream>
+
 namespace Messages
 {
     enum class ID
@@ -8,4 +11,6 @@ namespace Messages
         PlayerActionMessage,
         EnemySpawnMessage
     };
+
+    const std::string messageIDEnumToString(const Messages::ID identifier);
 }

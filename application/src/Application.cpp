@@ -5,7 +5,6 @@
 
 #include "core/inc/State/State.hpp"
 
-// Logging
 #include "utility/inc/Logging/LogRegistry.hpp"
 #include "utility/inc/Logging/Sinks/ColorConsoleSink.hpp"
 #include "utility/inc/Logging/Sinks/TextFileSink.hpp"
@@ -32,28 +31,36 @@ void Application::initialize()
     mConfiguration->initializeIteration();
     mConfiguration->loadSettings();
 
-    // Configure Logging
     // Configure Application Logger
     const std::string appOutputDir = Utility::LogRegistry::instance()->getAppOutputDir();
-    std::shared_ptr< Utility::TextFileSink > textFileSink = nullptr;
-    if(appOutputDir != "")
-    {
-        textFileSink = std::make_shared< Utility::TextFileSink >( appOutputDir, mAppLogger->getLoggerName(), ".log");
-        textFileSink->setSinkLogLevel(Utility::LogLevel::DEBUG);
-    }
 
+    // Setup TextFileSink
+    auto textFileSink = std::make_shared< Utility::TextFileSink >( appOutputDir, mAppLogger->getLoggerName(), ".log" );
+    textFileSink->setSinkLogLevel(Utility::LogLevel::DEBUG);
+
+    // Setup colorConsoleSink
     auto colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >();
     colorConsoleSink->setSinkLogLevel(Utility::LogLevel::INFO);
 
+    // Add Sinks to Logger
     Utility::Logger::sinkList list = { colorConsoleSink, textFileSink };
     mAppLogger->addSinkList(list);
 
-    // Finally, register logger with the registry so we can get it from anywhere
+    // Register App Logger
     Utility::LogRegistry::instance()->registerLogger(mAppLogger);
 
     // Initialize State Stack
+    mStateStack.initializeLogger();
+
     registerStates();
     mStateStack.pushState(States::Menu);
+}
+
+void Application::registerStates()
+{
+    mStateStack.registerState<MenuState>(States::Menu);
+    mStateStack.registerState<GameState>(States::Game);
+    mStateStack.registerState<PauseState>(States::Pause);
 }
 
 void Application::run()
@@ -61,6 +68,7 @@ void Application::run()
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
+    mAppLogger->logInfo("Entering main RUN loop");
     while(mWindow.isOpen())
     {
         sf::Time elapsedTime = clock.restart();
@@ -74,11 +82,15 @@ void Application::run()
             update(TimePerFrame);
 
             if(mStateStack.isEmpty())
+            {
                 mWindow.close();
+                mAppLogger->logInfo("Closing Window....");
+            }
         }
 
         render();
     }
+    mAppLogger->logInfo("Exiting main RUN loop");
 }
 
 void Application::processInput()
@@ -109,11 +121,4 @@ void Application::render()
 
     mWindow.setView(mWindow.getDefaultView());
     mWindow.display();
-}
-
-void Application::registerStates()
-{
-    mStateStack.registerState<MenuState>(States::Menu);
-    mStateStack.registerState<GameState>(States::Game);
-    mStateStack.registerState<PauseState>(States::Pause);
 }

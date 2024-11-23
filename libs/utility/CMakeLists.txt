@@ -7,7 +7,7 @@ set(SRC src/Logging/LogRegistry.cpp
         src/Logging/Sinks/ColorConsoleSink.cpp
         src/Logging/Sinks/TextFileSink.cpp
         src/Logging/Logger.cpp
-        src/StringOperations.cpp )
+        src/Logging/LogLevel.cpp )
 
 set(INC inc/Logging/LogRegistry.hpp
         inc/Logging/Sinks/LogSinksI.hpp

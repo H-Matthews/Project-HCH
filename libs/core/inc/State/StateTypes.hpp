@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sstream>
+
 namespace States
 {
     enum ID
@@ -9,4 +11,6 @@ namespace States
         Game, 
         Pause
     };
+
+    const std::string statesEnumToString(const States::ID identifier);
 }

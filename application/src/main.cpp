@@ -2,12 +2,6 @@
 
 #include "core/inc/Configuration.hpp"
 
-// Logging Tests
-#include "utility/inc/Logging/LogRegistry.hpp"
-#include "utility/inc/Logging/Logger.hpp"
-#include "utility/inc/Logging/Sinks/ColorConsoleSink.hpp"
-#include "utility/inc/Logging/Sinks/TextFileSink.hpp"
-
 #include <iostream>
 #include <stdexcept>
 
@@ -20,7 +14,7 @@ int main()
 
         Application game(config);
         game.initialize();
-        //game.run();
+        game.run();
     }
     catch(const std::exception& e)
     {

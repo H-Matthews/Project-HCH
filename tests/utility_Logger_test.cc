@@ -199,6 +199,18 @@ TEST_F(UtilityLoggerTest, addSinkList)
     ASSERT_NE(colorConsoleSink2, nullptr);
 }
 
+/*
+    Test: getFilePath
+    Description: Ensure the function addSinkList properly returns the filePath associated with the textFileSink
+    Expectation: TextFileSink->getFilePath should be equal to the value given to the constructor
+*/
+TEST_F(UtilityLoggerTest, textFilePathTest)
+{
+    const std::string filePath = textFileSink->getFilePath();
+
+    EXPECT_EQ(filePath, "./testing_output/Utility_logger_test.log");
+}
+
 // BEGIN LOGLEVEL TESTING
 
 /*

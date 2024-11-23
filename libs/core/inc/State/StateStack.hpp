@@ -2,7 +2,6 @@
 
 #include "core/inc/State/State.hpp"
 
-#include "utility/inc/StringOperations.hpp"
 #include "utility/inc/Logging/LogRegistry.hpp"
 
 #include <SFML/System/Time.hpp>
@@ -43,6 +42,8 @@ namespace Core
 
             bool isEmpty() const;
 
+            void initializeLogger();
+
         private:
             std::unique_ptr<Core::State> createState(States::ID stateID);
             void applyPendingChanges();
@@ -56,10 +57,13 @@ namespace Core
             };
 
         private:
+            std::shared_ptr< Utility::Logger > mLogger;
+
             std::vector<std::unique_ptr<Core::State>> mStack;
             std::vector<pendingStateRequests> mPendingList;
             Core::State::SharedObjects mSharedObjects;
             std::map<States::ID, std::function<std::unique_ptr<Core::State>()>> mRegistry;
+
     };
 
 }
@@ -68,7 +72,7 @@ namespace Core
 template <typename T>
 void Core::StateStack::registerState(States::ID stateID)
 {
-    const std::string identifierString(Utility::statesEnumToString(stateID));
+    const std::string identifierString(States::statesEnumToString(stateID));
 
     // Stores a Lambda in mRegistry
     mRegistry[stateID] = [this, identifierString] ()
@@ -77,10 +81,7 @@ void Core::StateStack::registerState(States::ID stateID)
     };
 
     std::stringstream logStream;
-    auto appLogger = Utility::LogRegistry::instance()->getLogger(mSharedObjects.appLoggerName);
-    if(appLogger)
-    {
-        logStream << "Registered State: " << identifierString << " on the StateStack";
-        appLogger->logInfo(logStream.str());
-    }
+    logStream << "Registered State: " << identifierString << " on the StateStack";
+
+    mLogger->logInfo(logStream.str());
 }

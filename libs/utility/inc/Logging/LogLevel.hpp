@@ -1,5 +1,8 @@
 #pragma once
 
+#include <sstream>
+#include <string>
+
 namespace Utility
 {
     enum class LogLevel 
@@ -10,5 +13,7 @@ namespace Utility
         WARN,
         ERROR
     };
+
+    const std::string logLevelEnumToString(const LogLevel identifier);
 
 }

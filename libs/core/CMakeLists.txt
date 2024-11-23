@@ -9,8 +9,10 @@ set(SRC src/Messaging/Message.cpp
         src/Messaging/MessageNetwork.cpp
         src/Messaging/MessageNode.cpp
         src/Messaging/MessageNodeInfo.cpp
+        src/Messaging/MessageTypes.cpp
         src/State/State.cpp 
         src/State/StateStack.cpp
+        src/State/StateTypes.cpp
         src/SceneNode.cpp
         src/Configuration.cpp )
 

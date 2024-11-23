@@ -9,6 +9,10 @@
 
 namespace Core
 {
+    /*
+        This Class will setup all of the information that our Application requires to run
+        
+    */
     class Configuration : public ConfigurationI
     {
         public:
@@ -18,6 +22,9 @@ namespace Core
             void loadSettings() override;
 
             const std::string getOutDirPath();
+
+        private:
+            void initializeGlobalLogger();
 
         private:
             const std::string mGlobalCLoggerName;

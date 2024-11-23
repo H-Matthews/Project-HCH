@@ -18,21 +18,10 @@ namespace Core
         mConfigDirPath(),
         mOutputDirPath()
     {
-        // Create and Configure a global Console logger
-        // This is for logging anything to the console primarily for debugging purposes
-        auto globalConsoleSink = std::make_shared< Utility::ColorConsoleSink >();
-        mGlobalCLogger->addSink(globalConsoleSink);
-        mGlobalCLogger->setGlobalLogLevel(Utility::LogLevel::DEBUG);
-
-        // Register GlobalLogger
-        Utility::LogRegistry::instance()->registerLogger(mGlobalCLogger);
     }
 
     void Configuration::initializeIteration()
     {
-        // Get GlobalLogger
-        auto cLogger = Utility::LogRegistry::instance()->getLogger("cLogger");
-
         // Build our Path to the output directory
         std::stringstream outputDirectoryPath;
 
@@ -73,10 +62,28 @@ namespace Core
         // Set the Output Directory in the LogRegistry
         Utility::LogRegistry::instance()->configureRegistry(mOutputDirPath);
 
+        // Initialize the Global Console Logger
+        initializeGlobalLogger();
+
+        // Get GlobalLogger
+        auto cLogger = Utility::LogRegistry::instance()->getLogger("cLogger");
+
         std::stringstream logStream;
         logStream << "Initialized Output Directory: " << mOutputDirPath;
         cLogger->logInfo(logStream.str());
 
+    }
+
+    void Configuration::initializeGlobalLogger()
+    {
+        // Create and Configure a global Console logger
+        // This is for logging anything to the console primarily for debugging purposes
+        auto globalConsoleSink = std::make_shared< Utility::ColorConsoleSink >();
+        mGlobalCLogger->addSink(globalConsoleSink);
+        mGlobalCLogger->setGlobalLogLevel(Utility::LogLevel::DEBUG);
+
+        // Register GlobalLogger
+        Utility::LogRegistry::instance()->registerLogger(mGlobalCLogger);
     }
 
     void Configuration::loadSettings()
@@ -88,5 +95,6 @@ namespace Core
     {
         return mOutputDirPath;
     }
+
 
 }

@@ -32,6 +32,8 @@ namespace Core
             virtual bool update(sf::Time fixedTimeStep) = 0;
             virtual bool handleEvent(const sf::Event& event) = 0;
 
+            const std::string getStateAsString();
+
         protected:
             void requestStackPush(States::ID stateID);
             void requestStackPop();

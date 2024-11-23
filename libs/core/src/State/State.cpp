@@ -20,22 +20,27 @@
 
  void Core::State::requestStackPush(States::ID stateID)
  {
-    mStack->pushState(stateID);
+   mStack->pushState(stateID);
  }
 
  void Core::State::requestStackPop()
  {
-    mStack->popState();
+   mStack->popState();
  }
 
  void Core::State::requestStateClear()
  {
-    mStack->clearStates();
+   mStack->clearStates();
  }
 
  Core::State::SharedObjects Core::State::getSharedObjects() const
  {
-    return mSharedObjects;
+   return mSharedObjects;
+ }
+
+ const std::string Core::State::getStateAsString()
+ {
+   return mStateIdentifierString;
  }
  
 

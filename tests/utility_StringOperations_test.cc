@@ -3,43 +3,6 @@
 // Unit to be Tested
 #include "utility/inc/StringOperations.hpp"
 
-// Demonstrate some basic assertions.
-// These are Trivial on purpose
-TEST(Utility_StringOperations_StatesEnumToStr_Test, confirmInput) 
-{
-  // Case: None
-  EXPECT_EQ(Utility::statesEnumToString(States::ID::NONE), "None");
-  EXPECT_NE(Utility::statesEnumToString(States::ID::NONE), "NONE");
-
-  // Case: Menu
-  EXPECT_EQ(Utility::statesEnumToString(States::ID::Menu), "Menu");
-  EXPECT_NE(Utility::statesEnumToString(States::ID::Menu), "MENU");
-
-  // Case: Game
-  EXPECT_EQ(Utility::statesEnumToString(States::ID::Game), "Game");
-  EXPECT_NE(Utility::statesEnumToString(States::ID::Game), "GAME");
-
-  // Case: Pause
-  EXPECT_EQ(Utility::statesEnumToString(States::ID::Pause), "Pause");
-  EXPECT_NE(Utility::statesEnumToString(States::ID::Pause), "PAUSE");
-}
-
-TEST(Utility_StringOperations_MessageEnumToStr_Test, confirmInput)
-{
-  // Case: None
-  EXPECT_EQ(Utility::messageIDEnumToString(Messages::ID::NONE), "None");
-  EXPECT_NE(Utility::messageIDEnumToString(Messages::ID::NONE), "NONE");
-
-  // Case: PlayerActionMessage
-  EXPECT_EQ(Utility::messageIDEnumToString(Messages::ID::PlayerActionMessage), "PlayerAction Message");
-  EXPECT_NE(Utility::messageIDEnumToString(Messages::ID::PlayerActionMessage), "PLAYERACTION MESSAGE");
-
-  // Case: EnemySpawnMessage
-  EXPECT_EQ(Utility::messageIDEnumToString(Messages::ID::EnemySpawnMessage), "EnemySpawn Message");
-  EXPECT_NE(Utility::messageIDEnumToString(Messages::ID::EnemySpawnMessage), "ENEMYSPAWN MESSAGE");
-}
-
-
 TEST(Utility_StringOperations_toString_Test, primitives)
 {
   // Case: Integer

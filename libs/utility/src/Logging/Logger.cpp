@@ -1,5 +1,4 @@
 #include "utility/inc/Logging/Logger.hpp"
-#include "utility/inc/StringOperations.hpp"
 
 // Sinks Here
 #include "utility/inc/Logging/Sinks/ColorConsoleSink.hpp"
