@@ -27,9 +27,6 @@ namespace Core
             void initializeGlobalLogger();
 
         private:
-            const std::string mGlobalCLoggerName;
-            std::shared_ptr< Utility::Logger > mGlobalCLogger;
-
             // FilePath information
             std::string mConfigDirPath;
             static const std::string CONFIG_DIR_NAME;

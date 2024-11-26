@@ -2,54 +2,71 @@
 
 #include <iostream>
 
-namespace Utility
+const std::string Utility::TextFileSink::sinkIdentifier = "TextFileSink";
+
+Utility::TextFileSink::TextFileSink(const std::string& outputDirectory, 
+                            const std::string& fileName, 
+                            const std::string& logExtension,
+                            LogLevel level) :
+    LogSinksI(sinkIdentifier, level),
+    mOutputDirectory(outputDirectory),
+    mFileName(fileName),
+    mLogExtension(logExtension)
 {
-    TextFileSink::TextFileSink(const std::string& outputDirectory, const std::string& fileName, const std::string& logExtension) :
-        mOutputDirectory(outputDirectory),
-        mFileName(fileName),
-        mLogExtension(logExtension)
+    // Build Path
+    std::stringstream filePath;
+    filePath << outputDirectory << "/";
+    filePath << fileName << logExtension;
+
+    // Open File
+    mFileHandle.open(filePath.str(), std::ios::app);
+
+    // Store path 
+    mEntireFilePath = filePath.str();
+}
+
+const std::string Utility::TextFileSink::getFilePath() const
+{
+    return mEntireFilePath;
+}
+
+void Utility::TextFileSink::sinkData(std::string_view message, LogLevel level, const std::source_location location)
+{
+    if(mFileHandle.is_open())
     {
-        // Build Path
-        std::stringstream filePath;
-        filePath << outputDirectory << "/";
-        filePath << fileName << logExtension;
+        // Get Time Stamp
+        auto now = std::chrono::system_clock::now();
+        std::time_t nowTime = std::chrono::system_clock::to_time_t(now);
+        std::tm now_tm = *std::localtime(&nowTime);
 
-        // Open File
-        mFileHandle.open(filePath.str(), std::ios::app);
+        const std::string logLevelString = logLevelEnumToString(level);
+        std::filesystem::path filePath(location.file_name());
 
-        // Store path 
-        mEntireFilePath = filePath.str();
+        // Build Header
+        // TimeStamp
+        mFileHandle << "[" << std::put_time(&now_tm, "%H:%M:%S") << "]";
+
+        // File / Line Information
+        mFileHandle << " [" << filePath.filename().string() << ":" << location.line() << "]"; 
+
+        // LogLevel
+        mFileHandle << " [" << logLevelString << "]";
+
+        // Write message and flush the output
+        mFileHandle << " " << message << std::endl;
     }
+}
 
-    const std::string TextFileSink::getFilePath() const
-    {
-        return mEntireFilePath;
-    }
+std::shared_ptr< Utility::Logger > Utility::Factory::createTextFileLogger(const std::string& loggerName,
+                                                        const std::string& outputDirectory,
+                                                        const std::string& fileName, 
+                                                        const std::string& logExtension,
+                                                        LogLevel level)
+{
+    auto textFileSink = std::make_shared< Utility::TextFileSink >(outputDirectory, fileName, logExtension, level);
 
-    void TextFileSink::sinkData(std::string_view message, LogLevel level, const std::source_location location)
-    {
-        if(mFileHandle.is_open())
-        {
-            // Get Time Stamp
-            auto now = std::chrono::system_clock::now();
-            std::time_t nowTime = std::chrono::system_clock::to_time_t(now);
-            std::tm now_tm = *std::localtime(&nowTime);
+    auto logger = std::make_shared< Utility::Logger >(loggerName, textFileSink);
+    Utility::LogRegistry::instance()->registerLogger(logger);
 
-            const std::string logLevelString = logLevelEnumToString(level);
-            std::filesystem::path filePath(location.file_name());
-
-            // Build Header
-            // TimeStamp
-            mFileHandle << "[" << std::put_time(&now_tm, "%H:%M:%S") << "]";
-
-            // File / Line Information
-            mFileHandle << " [" << filePath.filename().string() << ":" << location.line() << "]"; 
-
-            // LogLevel
-            mFileHandle << " [" << logLevelString << "]";
-
-            // Write message and flush the output
-            mFileHandle << " " << message << std::endl;
-        }
-    }
+    return logger;
 }

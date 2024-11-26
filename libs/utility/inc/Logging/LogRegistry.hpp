@@ -31,12 +31,12 @@ namespace Utility
             // If the Logger was NOT found, it returns a nullptr
             std::shared_ptr< Logger > getLogger(const std::string& fileName);
 
+            std::shared_ptr< Logger > getGlobalLogger();
+
             const std::string getAppOutputDir() const;
 
         private:
             LogRegistry();
-
-            bool checkForTextSink(std::shared_ptr< Logger > logger);
 
             // Static pointer to our object
             static std::shared_ptr< LogRegistry > mRegistryInstance;

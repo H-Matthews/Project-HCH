@@ -11,16 +11,15 @@ const std::string Core::Configuration::CONFIG_DIR_NAME = "configs";
 const std::string Core::Configuration::OUTPUT_DIR_NAME = "output";
 
 Core::Configuration::Configuration() :
-    mGlobalCLoggerName("cLogger"),
-    mGlobalCLogger(std::make_shared<Utility::Logger>(mGlobalCLoggerName)),
     mConfigDirPath(),
     mOutputDirPath()
 {
+    // Establish the GlobalLogger and store in LogRegistry
+    Utility::createGlobalLogger();
 }
 
 void Core::Configuration::initializeIteration()
 {
-    // Build our Path to the output directory
     std::stringstream outputDirectoryPath;
 
     // PROJECT_DIR is defined in the CMakeList.txt file for this library
@@ -64,7 +63,7 @@ void Core::Configuration::initializeIteration()
     initializeGlobalLogger();
 
     // Get GlobalLogger
-    auto cLogger = Utility::LogRegistry::instance()->getLogger("cLogger");
+    auto cLogger = Utility::LogRegistry::instance()->getGlobalLogger();
 
     std::stringstream logStream;
     logStream << "Initialized Output Directory: " << mOutputDirPath;
@@ -74,14 +73,14 @@ void Core::Configuration::initializeIteration()
 
 void Core::Configuration::initializeGlobalLogger()
 {
-    // Create and Configure a global Console logger
-    // This is for logging anything to the console primarily for debugging purposes
-    auto globalConsoleSink = std::make_shared< Utility::ColorConsoleSink >();
-    mGlobalCLogger->addSink(globalConsoleSink);
-    mGlobalCLogger->setGlobalLogLevel(Utility::LogLevel::DEBUG);
+    // Get Global Logger
+    std::shared_ptr< Utility::Logger > cLogger = Utility::LogRegistry::instance()->getGlobalLogger();
 
-    // Register GlobalLogger
-    Utility::LogRegistry::instance()->registerLogger(mGlobalCLogger);
+    if(cLogger)
+    {
+        auto globalConsoleSink = std::make_shared< Utility::ColorConsoleSink >();
+        cLogger->addSink(globalConsoleSink);
+    }
 }
 
 void Core::Configuration::loadSettings()

@@ -29,20 +29,9 @@ void Utility::LogRegistry::registerLogger(std::shared_ptr< Utility::Logger > log
     {
         // Hash String
         std::size_t hashedString = mHash(logger->getLoggerName());
-        bool hasTextSink = checkForTextSink(logger);
+        mRegistry.insert(std::make_pair(hashedString, logger));
 
-        if(hasTextSink)
-        {
-            // Ensure output directory is set
-            if(mAppOutputDirectory != "")
-                mRegistry.insert(std::make_pair(hashedString, logger));
-        }
-        else
-        {
-            mRegistry.insert(std::make_pair(hashedString, logger));
-        }
-
-        auto cLogger = Utility::LogRegistry::instance()->getLogger("cLogger");
+        auto cLogger = this->getGlobalLogger();
         if(cLogger)
         {
             std::stringstream logStream;
@@ -51,28 +40,8 @@ void Utility::LogRegistry::registerLogger(std::shared_ptr< Utility::Logger > log
 
             cLogger->logInfo(logStream.str());
         }
+        
     }
-}
-
-bool Utility::LogRegistry::checkForTextSink(std::shared_ptr< Utility::Logger > logger)
-{
-    bool hasTextSink = false;
-
-    auto sinks = logger->getSinkReferences();
-    if(sinks.size() > 0 )
-    {
-        for(const auto& sink : sinks)
-        {
-            auto textSink = dynamic_cast< Utility::TextFileSink* > (sink);
-            if(textSink != nullptr)
-                hasTextSink = true;
-
-            if(hasTextSink == true)
-                break;
-        }
-    }
-
-    return hasTextSink;
 }
 
 std::shared_ptr< Utility::Logger > Utility::LogRegistry::getLogger(const std::string& fileName)
@@ -89,6 +58,21 @@ std::shared_ptr< Utility::Logger > Utility::LogRegistry::getLogger(const std::st
     textFileLogger = (*it).second;
     
     return textFileLogger;
+}
+
+std::shared_ptr< Utility::Logger > Utility::LogRegistry::getGlobalLogger()
+{
+    // Look for the global Logger in mRegistry
+    std::shared_ptr < Utility::Logger > globalLogger = nullptr;
+    for(const auto& [hashKey, logger] : mRegistry)
+    {
+        if(logger->getIsGlobalLogger())
+        {
+            globalLogger = logger;
+        }
+    }
+
+    return globalLogger;
 }
 
 const std::string Utility::LogRegistry::getAppOutputDir() const

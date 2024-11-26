@@ -5,7 +5,7 @@
 #include <cassert>
 
 Core::StateStack::StateStack(Core::State::SharedObjects sObjects) : 
-mLogger(std::make_shared< Utility::Logger >("StateStack")),
+mLogger(nullptr),
 mStack(),
 mPendingList(),
 mSharedObjects(sObjects),
@@ -67,16 +67,11 @@ bool Core::StateStack::isEmpty() const
 
 void Core::StateStack::initializeLogger()
 {
-    // Initialize Logger
+    // Create and Register
     const std::string outDirectory = Utility::LogRegistry::instance()->getAppOutputDir();
 
-    auto textFileSink = std::make_shared< Utility::TextFileSink >(outDirectory, "StateStack", ".log");
-    textFileSink->setSinkLogLevel(Utility::LogLevel::INFO);
-
-    mLogger->addSink(textFileSink);
-
-    // Register Logger
-    Utility::LogRegistry::instance()->registerLogger(mLogger);
+    mLogger = Utility::Factory::createTextFileLogger("StateStackLogger", outDirectory, "StateStack", 
+                                                     ".log", Utility::LogLevel::INFO);
 }
 
 std::unique_ptr<Core::State> Core::StateStack::createState(States::ID stateID)

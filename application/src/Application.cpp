@@ -18,9 +18,9 @@
 const sf::Time Application::TIME_PER_FRAME = sf::seconds(1.0f / 120.0f);
 
 Application::Application(std::shared_ptr<Core::ConfigurationI> config) :
-    mAppLogger(std::make_shared<Utility::Logger>("Application")),
+    mAppLogger(std::make_shared<Utility::Logger>("ApplicationLogger")),
     mWindow(sf::VideoMode(640, 480), "Application Window", sf::Style::Close),
-    mStateStack(Core::State::SharedObjects(mWindow, mAppLogger->getLoggerName())),
+    mStateStack(Core::State::SharedObjects(mWindow)),
     mConfiguration(config)
 {
 }
@@ -34,24 +34,23 @@ void Application::initialize()
     // Configure Application Logger
     const std::string appOutputDir = Utility::LogRegistry::instance()->getAppOutputDir();
 
-    // Setup TextFileSink
-    auto textFileSink = std::make_shared< Utility::TextFileSink >( appOutputDir, mAppLogger->getLoggerName(), ".log" );
-    textFileSink->setSinkLogLevel(Utility::LogLevel::DEBUG);
+    // Setup Sinks
+    auto textFileSink = std::make_shared< Utility::TextFileSink >( appOutputDir, 
+                                                                   "Application",
+                                                                   ".log",
+                                                                   Utility::LogLevel::DEBUG);
 
-    // Setup colorConsoleSink
-    auto colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >();
-    colorConsoleSink->setSinkLogLevel(Utility::LogLevel::INFO);
+    auto colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >(Utility::LogLevel::INFO);
 
     // Add Sinks to Logger
     Utility::Logger::sinkList list = { colorConsoleSink, textFileSink };
     mAppLogger->addSinkList(list);
 
-    // Register App Logger
+    // Register Application Logger
     Utility::LogRegistry::instance()->registerLogger(mAppLogger);
 
     // Initialize State Stack
     mStateStack.initializeLogger();
-
     registerStates();
     mStateStack.pushState(States::Menu);
 }

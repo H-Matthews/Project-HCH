@@ -4,7 +4,10 @@
 #include <iostream>
 
 
-Utility::ColorConsoleSink::ColorConsoleSink() :
+const std::string Utility::ColorConsoleSink::sinkIdentifier = "ColorConsoleSink";
+
+Utility::ColorConsoleSink::ColorConsoleSink(LogLevel level) :
+    LogSinksI(sinkIdentifier, level),
     mOutputStream(std::cout)
 {
 }
@@ -68,4 +71,15 @@ const std::string Utility::ColorConsoleSink::getColorCode(LogLevel level) const
     }
 
     return colorCode.str();
+}
+
+// Convenience function to create a logger that has the ColorConsoleSink
+std::shared_ptr< Utility::Logger > Utility::Factory::createColorConsoleLogger(const std::string& loggerName, LogLevel level)
+{
+    auto colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >(level);
+
+    auto logger = std::make_shared< Utility::Logger >(loggerName, colorConsoleSink);
+    Utility::LogRegistry::instance()->registerLogger(logger);
+
+    return logger;
 }

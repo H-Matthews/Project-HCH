@@ -1,10 +1,30 @@
 #include "utility/inc/Logging/Logger.hpp"
 
-// Constructor Sets the Logger Name
-Utility::Logger::Logger(const std::string& loggerName) :
+// Creates a logger with no sinks
+Utility::Logger::Logger(const std::string& loggerName, LogLevel level) :
     mSinks(),
     mLoggerName(loggerName),
-    mGlobalLogLevel(LogLevel::NONE)
+    mGlobalLogLevel(level) 
+{
+}
+
+// Creates a logger with a single sink
+Utility::Logger::Logger(const std::string& loggerName, 
+                        std::shared_ptr< LogSinksI > sink,
+                        LogLevel level) :
+    mSinks({ sink }),
+    mLoggerName(loggerName),
+    mGlobalLogLevel(level)
+{
+}
+
+// Creates a logger with a sinkList
+Utility::Logger::Logger(const std::string& loggerName, 
+                        Logger::sinkList sinks,
+                        LogLevel level) :
+    mSinks(sinks),
+    mLoggerName(loggerName),
+    mGlobalLogLevel(level)
 {
 }
 
@@ -52,7 +72,12 @@ void Utility::Logger::sinkIt(std::string_view message, LogLevel level, const std
     }
 }
 
-bool Utility::Logger::shouldLog(LogLevel level, LogLevel sinkLevel)
+void Utility::Logger::toggleGlobalLogger()
+{
+    mIsGlobalLogger = true;
+}
+
+bool Utility::Logger::shouldLog(LogLevel level, LogLevel sinkLevel) const
 {
     bool canLog = false;
 
@@ -106,4 +131,25 @@ std::vector< Utility::LogSinksI* > Utility::Logger::getSinkReferences()
     }
 
     return test;
+}
+
+bool Utility::Logger::getIsGlobalLogger() const
+{
+    return mIsGlobalLogger;
+}
+
+// NOT Apart of the class, but a friend
+void Utility::createGlobalLogger()
+{
+    static bool initialized = false;
+    if(!initialized)
+    {
+        initialized = true;
+
+        auto globalConsoleLogger = std::make_shared< Utility::Logger >("cLogger", Utility::LogLevel::DEBUG);
+        globalConsoleLogger->toggleGlobalLogger();
+
+        if(globalConsoleLogger)
+            Utility::LogRegistry::instance()->registerLogger(globalConsoleLogger);
+    }
 }

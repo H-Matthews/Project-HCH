@@ -25,18 +25,17 @@ class UtilityLoggerTest : public ::testing::Test
         
         void SetUp() override 
         {
-            logger_default = std::make_shared< Utility::Logger >("logger_default");
-            logger_oneSink = std::make_shared< Utility::Logger >("logger_oneSink");
-            logger_twoSinks = std::make_shared< Utility::Logger >("logger_twoSinks");
-
-            // Create and add sink to logger_default
+            // Create Sinks       
             colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >();
-            logger_oneSink->addSink(colorConsoleSink);
-
-            // Add Two sinks to logger_twoSinks
             textFileSink = std::make_shared< Utility::TextFileSink >("./testing_output", "Utility_logger_test", ".log");
-            logger_twoSinks->addSink(colorConsoleSink);
-            logger_twoSinks->addSink(textFileSink);
+
+            // Create SinkList for logger_twoSinks
+            Utility::Logger::sinkList list = { colorConsoleSink, textFileSink };
+
+            // Create Loggers
+            logger_default = std::make_shared< Utility::Logger >("logger_default");
+            logger_oneSink = std::make_shared< Utility::Logger >("logger_oneSink", colorConsoleSink);
+            logger_twoSinks = std::make_shared< Utility::Logger >("logger_twoSinks", list);
 
             // Hold couts buffer reference so we can restore later
             sBuf = std::cout.rdbuf();
@@ -54,6 +53,55 @@ class UtilityLoggerTest : public ::testing::Test
         }
 };
 
+/*
+    Factory Function Test
+*/
+TEST(UtilityLoggerTextFactoryTest, textFileFactory)
+{
+    auto textFileLogger = Utility::Factory::createTextFileLogger("textLogger", "./test", "file", ".log", Utility::LogLevel::DEBUG);
+    ASSERT_NE(textFileLogger, nullptr);
+
+    // Ensure it can be retrieved from the log registry
+    auto sameLogger = Utility::LogRegistry::instance()->getLogger("textLogger");
+    ASSERT_NE(sameLogger, nullptr);
+}
+
+/*
+    Factory Function Test
+*/
+TEST(UtilityLoggerConsoleFactoryTest, colorConsoleFactory)
+{
+    auto colorConsoleLogger = Utility::Factory::createColorConsoleLogger("consoleLogger");
+    ASSERT_NE(colorConsoleLogger, nullptr);
+
+    // Ensure it can be retrieved from the log registry
+    auto sameLogger = Utility::LogRegistry::instance()->getLogger("consoleLogger");
+    ASSERT_NE(sameLogger, nullptr);
+}
+
+/*
+    Global Logger Function Test
+    Expected Member Values
+    1. GlobalLogLevel -->LogLevel::DEBUG
+    2. Sinks --> None
+*/
+TEST_F(UtilityLoggerTest, globalLogger)
+{
+    // Create GlobalLogger
+    Utility::createGlobalLogger();
+
+    // Retrieve GlobalLogger
+    auto gLogger = Utility::LogRegistry::instance()->getGlobalLogger();
+    ASSERT_NE(gLogger, nullptr);
+
+    // GlobalLogLevel
+    EXPECT_EQ(gLogger->getGlobalLogLevel(), Utility::LogLevel::DEBUG);
+
+    // Ensure Sinks size is 0
+    sinks = gLogger->getSinkReferences();
+    ASSERT_EQ(sinks.size(), 0);
+}
+
 /* 
     Default Constuctor Test
     Expected Member Values
@@ -61,7 +109,7 @@ class UtilityLoggerTest : public ::testing::Test
     2. GlobalLogLevel --> LogLevel::NONE
     3. Sinks --> None
 */
-TEST_F(UtilityLoggerTest, defaultConstructor) 
+TEST_F(UtilityLoggerTest, constructorNoSinks) 
 {
     // Ensure logger is NOT NULL
     ASSERT_NE(logger_default, nullptr);
@@ -75,6 +123,18 @@ TEST_F(UtilityLoggerTest, defaultConstructor)
     // Ensure Sinks size is 0
     sinks = logger_default->getSinkReferences();
     ASSERT_EQ(sinks.size(), 0);
+}
+
+/* 
+    Default Constuctor Test
+    Expected Member Values
+    1. LoggerName --> "logger_default"
+    2. GlobalLogLevel --> LogLevel::NONE
+    3. Sinks --> None
+*/
+TEST_F(UtilityLoggerTest, constructorSink)
+{
+
 }
 
 /*

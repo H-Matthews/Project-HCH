@@ -81,7 +81,7 @@ void Core::StateStack::registerState(States::ID stateID)
     };
 
     std::stringstream logStream;
-    logStream << "Registered State: " << identifierString << " on the StateStack";
+    logStream << "Registered State: " << identifierString;
 
     mLogger->logInfo(logStream.str());
 }

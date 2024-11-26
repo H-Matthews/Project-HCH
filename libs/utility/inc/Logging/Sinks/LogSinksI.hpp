@@ -10,6 +10,9 @@
 
 namespace Utility
 {
+
+    class Logger;
+
     /* 
         Defines the Sink Interface. Conceptually a sink is the final destination of the log message.
         The terminology comes from the spdlog library.
@@ -26,8 +29,13 @@ namespace Utility
             inline LogLevel getSinkLogLevel() { return mLevel; } 
 
         protected:
+            inline LogSinksI(const std::string sinkIdentifier, LogLevel level = LogLevel::NONE) : 
+                mSinkIdentifier(sinkIdentifier),
+                mLevel(level) {};
+
             // Each Sink has a LogLevel. 
             // If its set to NONE, we use the global logger level
-            LogLevel mLevel = LogLevel::NONE;
+            const std::string mSinkIdentifier;
+            LogLevel mLevel;
     };
 }
