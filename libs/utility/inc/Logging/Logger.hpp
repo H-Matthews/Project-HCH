@@ -42,7 +42,7 @@ namespace Utility
             const std::string getGlobalLogLevelAsString() const;
 
             inline void setLoggerName(const std::string& name) {mLoggerName = name; }
-            inline const std::string& getLoggerName() const {return mLoggerName; }
+            inline const std::string& getLoggerName() const { return mLoggerName; }
 
             // Inserts a single sink into mSinks
             void addSink(std::shared_ptr< LogSinksI > sink);
@@ -52,7 +52,7 @@ namespace Utility
 
             std::vector< LogSinksI* > getSinkReferences();
 
-            bool getIsGlobalLogger() const;
+            inline bool getIsGlobalLogger() const { return mIsGlobalLogger; }
 
             // Define as a friend
             friend void createGlobalLogger();

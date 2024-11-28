@@ -5,6 +5,7 @@ std::shared_ptr< Utility::LogRegistry > Utility::LogRegistry::mRegistryInstance 
 
 Utility::LogRegistry::LogRegistry() :
     mRegistry(),
+    mHash(),
     mAppOutputDirectory("")
 {
 }
@@ -22,7 +23,7 @@ void Utility::LogRegistry::configureRegistry(const std::string outputDirPath)
     mAppOutputDirectory = outputDirPath;
 }
 
-// Create TextFile Logger with fileName
+// Creates a logger. The Key is the hashed logger name
 void Utility::LogRegistry::registerLogger(std::shared_ptr< Utility::Logger > logger)
 {
     if(logger != nullptr)
@@ -44,23 +45,24 @@ void Utility::LogRegistry::registerLogger(std::shared_ptr< Utility::Logger > log
     }
 }
 
+// IF the logger is NOT FOUND, it returns a nullptr
 std::shared_ptr< Utility::Logger > Utility::LogRegistry::getLogger(const std::string& fileName)
 {
-    std::shared_ptr< Logger > textFileLogger = nullptr;
+    std::shared_ptr< Logger > logger = nullptr;
 
-    // Hash String
     std::size_t hashedString = mHash(fileName);
 
-    // Look for hashedString in registry
+    // Find Logger
     std::map< std::size_t, std::shared_ptr< Utility::Logger > >::iterator it;
     it = mRegistry.find(hashedString);
 
-    textFileLogger = (*it).second;
+    logger = (*it).second;
     
-    return textFileLogger;
+    return logger;
 }
 
-std::shared_ptr< Utility::Logger > Utility::LogRegistry::getGlobalLogger()
+// IF the global logger is NOT FOUND, it returns a nullptr
+std::shared_ptr< Utility::Logger > Utility::LogRegistry::getGlobalLogger() const
 {
     // Look for the global Logger in mRegistry
     std::shared_ptr < Utility::Logger > globalLogger = nullptr;

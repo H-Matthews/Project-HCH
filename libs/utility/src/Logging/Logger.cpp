@@ -65,7 +65,7 @@ void Utility::Logger::sinkIt(std::string_view message, LogLevel level, const std
     bool result = false;
     for(const auto& sink : mSinks)
     {
-        // Determine if we can log this
+        // Ensure log levels are high enough to log
         result = shouldLog(level, sink->getSinkLogLevel());
         if(result)
             sink->sinkData(message, level, location);
@@ -77,6 +77,7 @@ void Utility::Logger::toggleGlobalLogger()
     mIsGlobalLogger = true;
 }
 
+// Ensures the log levels are high enough to log. Every log call goes through this check.
 bool Utility::Logger::shouldLog(LogLevel level, LogLevel sinkLevel) const
 {
     bool canLog = false;
@@ -131,11 +132,6 @@ std::vector< Utility::LogSinksI* > Utility::Logger::getSinkReferences()
     }
 
     return test;
-}
-
-bool Utility::Logger::getIsGlobalLogger() const
-{
-    return mIsGlobalLogger;
 }
 
 // NOT Apart of the class, but a friend
