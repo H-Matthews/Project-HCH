@@ -14,6 +14,8 @@ void Core::MessageNetwork::sendMessage(Message* message)
     std::unique_ptr<Message> clonedMessage = message->clone();
     mMessageQueue.push(std::move(clonedMessage));
 
+    
+
 }
 
 void Core::MessageNetwork::addSubscriber(const MessageNodeInfo& subscriber)

@@ -61,7 +61,7 @@ void Core::MessageNode::send(Message* message)
                   << mMessageNodeInfo.nodeName << std::endl;
     }
 
-    message = nullptr;
+    // message = nullptr;
 }
 
 void Core::MessageNode::onNotify(Message*)
