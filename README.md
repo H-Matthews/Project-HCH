@@ -2,6 +2,9 @@
 - Linux (Ubuntu)
 - Windows
 
+# Wiki
+For more insight into the project, see the [wiki](https://github.com/H-Matthews/Project-HCH/wiki)
+
 # Requirements
 Here you will find all of the necessary third party tools needed to build the application
 - Git
