@@ -28,7 +28,8 @@ sudo apt install \
     libflac-dev \
     libvorbis-dev \
     libgl1-mesa-dev \
-    libegl1-mesa-dev
+    libegl1-mesa-dev \
+    libfreetype-dev
 ```
 
 ## Build Process
