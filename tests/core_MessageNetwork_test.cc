@@ -172,5 +172,35 @@ TEST_F(CoreMessageNetworkTest, ReceiveMessage)
     
     // Ensure it has the upAction that we sent it
     ASSERT_EQ(myActionMessages[0], upAction);
+}
 
+TEST_F(CoreMessageNetworkTest, ReceiveMultipleMessages)
+{
+    // Ensure messageVector is empty
+    std::vector<Action> myActionMessages = subscriberOne->getMessageVector();
+
+    ASSERT_EQ(myActionMessages.size(), 0);
+
+    // Send messages to Network
+    Action upAction = Action::MOVE_UP;
+
+    int numIterations = 30;
+    for(int i = 0; i < numIterations; i++)
+    {
+        publisher->update(upAction);
+    }
+
+    // Send Messages to subscribers
+    testNetwork.notifySubscribers();
+
+    // Get Message vector again
+    myActionMessages = subscriberOne->getMessageVector();
+
+    // Ensure its size is equal to numIterations
+    ASSERT_EQ(myActionMessages.size(), numIterations);
+
+    for(const auto action : myActionMessages)
+    {
+        ASSERT_EQ(action, upAction);
+    }
 }
