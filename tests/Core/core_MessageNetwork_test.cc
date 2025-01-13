@@ -137,6 +137,8 @@ void TestSubscriberOne::onNotify(Core::Message* message)
 
 // END Helper Classes
 
+// BEGIN TESTING
+
 // Test Fixture
 class CoreMessageNetworkTest : public ::testing::Test 
 {
@@ -204,3 +206,6 @@ TEST_F(CoreMessageNetworkTest, ReceiveMultipleMessages)
         ASSERT_EQ(action, upAction);
     }
 }
+
+
+// END TESTING
