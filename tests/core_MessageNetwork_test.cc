@@ -35,7 +35,7 @@ class TestPublisher : public Core::MessageNode
         TestPublisher(Core::MessageNetwork* messageNetwork);
         void update(Action action);
 
-        std::unique_ptr<TestMessage> testMessage;
+        std::shared_ptr<TestMessage> testMessage;
 };
 
 TestPublisher::TestPublisher(Core::MessageNetwork* messageNetwork) :
@@ -45,7 +45,7 @@ TestPublisher::TestPublisher(Core::MessageNetwork* messageNetwork) :
     MessageNode::mMessageNodeInfo.nodeName = "PlayerActionPublisher";
 
     // Initialize Messages
-    testMessage = std::make_unique<TestMessage>(Messages::ID::PlayerActionMessage);
+    testMessage = std::make_shared<TestMessage>(Messages::ID::PlayerActionMessage);
 }
 
 void TestPublisher::update(Action action)
@@ -75,7 +75,7 @@ void TestPublisher::update(Action action)
     }
 
     if(testMessage->action != Action::NONE)
-        MessageNode::send(testMessage.get());
+        MessageNode::send(testMessage);
 }
 
 class TestSubscriberOne : public Core::MessageNode 

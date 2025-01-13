@@ -18,7 +18,7 @@ namespace Core
             void subscribeTo(Messages::ID subscribeMessageID);
             void notifyUnsubscribe(Messages::ID messageID);
             void registerSubscriberMessages();
-            void send(Message* message);
+            void send(std::shared_ptr<Message> message);
             virtual void onNotify(Message* message);
 
         private:

@@ -16,7 +16,7 @@ namespace Core
         public:
             MessageNetwork();
 
-            void sendMessage(Message* message);
+            void sendMessage(std::shared_ptr<Message> message);
 
             void addSubscriber(const MessageNodeInfo& subscriber);
             void insertUnsubscriber(const Messages::ID& mesasgeID, const std::string& nodeName);
@@ -28,7 +28,7 @@ namespace Core
         private:
             std::multimap< Messages::ID, MessageNodeInfo > mSubscriberList;
             std::multimap< Messages::ID, std::string > mUnsubscribeList;
-            std::queue< std::unique_ptr< Message > > mMessageQueue;
+            std::queue< std::shared_ptr< Message > > mMessageQueue;
     };
 
 }

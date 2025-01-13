@@ -46,7 +46,7 @@ void Core::MessageNode::registerSubscriberMessages()
     }
 }
 
-void Core::MessageNode::send(Message* message)
+void Core::MessageNode::send(std::shared_ptr<Message> message)
 { 
     message->setSender(mMessageNodeInfo.nodeName);
 

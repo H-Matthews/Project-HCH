@@ -8,14 +8,10 @@ Core::MessageNetwork::MessageNetwork() :
 {
 }
 
-void Core::MessageNetwork::sendMessage(Message* message)
+void Core::MessageNetwork::sendMessage(std::shared_ptr<Message> message)
 {
-    // Clone and put onto Queue
-    std::unique_ptr<Message> clonedMessage = message->clone();
-    mMessageQueue.push(std::move(clonedMessage));
-
-    
-
+    // Add to Queue
+    mMessageQueue.push(message);
 }
 
 void Core::MessageNetwork::addSubscriber(const MessageNodeInfo& subscriber)
