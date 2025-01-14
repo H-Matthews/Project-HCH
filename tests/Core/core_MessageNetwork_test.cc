@@ -149,6 +149,7 @@ class CoreMessageNetworkTest : public ::testing::Test
         
         void SetUp() override 
         {
+            testNetwork.initializeLogger();
             publisher = std::make_unique< TestPublisher >(&testNetwork);
             subscriberOne = std::make_unique< TestSubscriberOne >(&testNetwork);
         }
