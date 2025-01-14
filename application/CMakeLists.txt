@@ -2,11 +2,15 @@ cmake_minimum_required(VERSION 3.30)
 
 set(SRC src/main.cpp  
         src/Application.cpp 
+        src/PlayerInput.cpp
+        src/Messages/PlayerInputMessage.cpp 
         src/State/MenuState.cpp
         src/State/GameState.cpp
         src/State/PauseState.cpp )
 
-set(INC inc/Application.hpp 
+set(INC inc/Application.hpp
+        inc/PlayerInput.hpp
+        inc/Messages/PlayerInputMessage.hpp
         inc/State/MenuState.hpp 
         inc/State/GameState.hpp
         inc/State/PauseState.hpp )

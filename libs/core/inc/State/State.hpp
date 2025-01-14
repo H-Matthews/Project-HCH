@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/inc/State/StateTypes.hpp"
+#include "core/inc/Messaging/MessageNetwork.hpp"
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
@@ -18,9 +19,10 @@ namespace Core
 
             struct SharedObjects
             {
-                SharedObjects(sf::RenderWindow& window);
+                SharedObjects(sf::RenderWindow& window, Core::MessageNetwork& network);
 
                 sf::RenderWindow* window;
+                Core::MessageNetwork* network;
             };
 
         public:

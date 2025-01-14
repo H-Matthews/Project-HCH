@@ -1,8 +1,11 @@
 #include "core/inc/Messaging/MessageNetwork.hpp"
 
+#include "utility/inc/Logging/Sinks/TextFileSink.hpp"
+
 #include <iostream>
 
 Core::MessageNetwork::MessageNetwork() :
+    mLogger(nullptr),
     mSubscriberList(),
     mMessageQueue()
 {
@@ -10,16 +13,26 @@ Core::MessageNetwork::MessageNetwork() :
 
 void Core::MessageNetwork::sendMessage(std::shared_ptr<Message> message)
 {
+    std::stringstream logStream;
+    logStream << "[Sending Message] Sender: " << message->getSenderName() << " MessageID: " << message->getStringMessageID();
+    mLogger->logDebug(logStream.str());
+
     // Add to Queue
     mMessageQueue.push(message);
 }
 
 void Core::MessageNetwork::addSubscriber(const MessageNodeInfo& subscriber)
 {
+    std::stringstream logStream;
+    logStream << "[Adding Subscriber] Subscriber: " << subscriber.nodeName << " Topics: ";
+
     for(const auto& IDs : subscriber.subscriptions)
     {
+        logStream << messageIDEnumToString(IDs) << " ";
         mSubscriberList.insert(std::make_pair(IDs, subscriber));
     }
+
+    mLogger->logDebug(logStream.str());
 }
 
 void Core::MessageNetwork::insertUnsubscriber(const Messages::ID& messageID, const std::string& nodeName)
@@ -42,38 +55,54 @@ void Core::MessageNetwork::insertUnsubscriber(const Messages::ID& messageID, con
 
 void Core::MessageNetwork::notifySubscribers()
 {
+    std::stringstream logStream;
+
     Messages::ID messageID;
 
     while( !mMessageQueue.empty())
     {
         messageID = mMessageQueue.front().get()->getMessageID();
+        logStream << "[Disseminating]";
+        logStream << " Message: " << messageIDEnumToString(messageID);
+        logStream << " Subscriber(s): ";
 
         for(auto it = mSubscriberList.lower_bound(messageID),
             end = mSubscriberList.upper_bound(messageID); it != end; ++it)
         {
-            // Potentially Dangerous... If the subscriber attempts to use 
-            // this object in anyway after popping the message from the queue
-            // it will result in a segfault as the Queue owns the memory for messages
-            // Not going to clone everytime as that is not necessary, if the message needs to live 
-            // after popping from the Queue, the subscriber needs to clone the message
+            logStream << it->second.nodeName << " ";
+
+            // Disseminate Message
             it->second.callback(mMessageQueue.front().get());
         }
+
+        mLogger->logDebug(logStream.str());
+        logStream.str("");
+
         mMessageQueue.pop();
     }  
 
     // Unsubscribe if there are any to unsubscribe to
-    unSubscribe();
+    if(!mUnsubscribeList.empty())
+        unSubscribe();
 }
 
 void Core::MessageNetwork::unSubscribe()
 {
+    std::stringstream logStream;
     for(const auto& unsubscriber : mUnsubscribeList)
     {
+        logStream.str("");
+        logStream << "[Unsubscribing]";
+
         for(auto it = mSubscriberList.lower_bound(unsubscriber.first),
             end = mSubscriberList.upper_bound(unsubscriber.first); it != end;)
         {
             if(it->second.nodeName == unsubscriber.second)
             {
+                logStream << " Message: " << messageIDEnumToString(unsubscriber.first);
+                logStream << " Node: " << unsubscriber.second;
+                mLogger->logDebug(logStream.str());
+
                 mSubscriberList.erase(it++);
                 break;
             }
@@ -84,4 +113,14 @@ void Core::MessageNetwork::unSubscribe()
         }
     }
     mUnsubscribeList.clear();
+}
+
+void Core::MessageNetwork::initializeLogger()
+{
+    // Create and Register
+    const std::string outDirectory = Utility::LogRegistry::instance()->getAppOutputDir();
+
+    mLogger = Utility::Factory::createTextFileLogger("MessageNetworkLogger", outDirectory, "MessageNetwork", 
+                                                     ".log", Utility::LogLevel::DEBUG);
+    mLogger->logInfo("Logger Initialized");
 }

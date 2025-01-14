@@ -3,6 +3,8 @@
 #include "core/inc/Messaging/Message.hpp"
 #include "core/inc/Messaging/MessageNodeInfo.hpp"
 
+#include "utility/inc/Logging/LogRegistry.hpp"
+
 #include <string>
 #include <queue>
 #include <map>
@@ -22,10 +24,14 @@ namespace Core
             void insertUnsubscriber(const Messages::ID& mesasgeID, const std::string& nodeName);
             void notifySubscribers();
 
+            void initializeLogger();
+
         private:
             void unSubscribe();
 
         private:
+            std::shared_ptr< Utility::Logger > mLogger;
+
             std::multimap< Messages::ID, MessageNodeInfo > mSubscriberList;
             std::multimap< Messages::ID, std::string > mUnsubscribeList;
             std::queue< std::shared_ptr< Message > > mMessageQueue;

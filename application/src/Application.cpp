@@ -18,9 +18,11 @@
 const sf::Time Application::TIME_PER_FRAME = sf::seconds(1.0f / 120.0f);
 
 Application::Application(std::shared_ptr<Core::ConfigurationI> config) :
+    mNetwork(),
+    mPlayerInput(&mNetwork),
     mAppLogger(std::make_shared<Utility::Logger>("ApplicationLogger")),
     mWindow(sf::VideoMode(640, 480), "Application Window", sf::Style::Close),
-    mStateStack(Core::State::SharedObjects(mWindow)),
+    mStateStack(Core::State::SharedObjects(mWindow, mNetwork)),
     mConfiguration(config)
 {
 }
@@ -53,6 +55,9 @@ void Application::initialize()
     mStateStack.initializeLogger();
     registerStates();
     mStateStack.pushState(States::Menu);
+
+    // Initialize Network
+    mNetwork.initializeLogger();
 }
 
 void Application::registerStates()
@@ -86,7 +91,6 @@ void Application::run()
                 mAppLogger->logInfo("Closing Window....");
             }
         }
-
         render();
     }
     mAppLogger->logInfo("Exiting main RUN loop");

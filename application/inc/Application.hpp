@@ -1,7 +1,10 @@
 #pragma once
 
+#include "application/inc/PlayerInput.hpp"
+
 #include "core/inc/State/StateStack.hpp"
 #include "core/inc/Configuration.hpp"
+#include "core/inc/Messaging/MessageNetwork.hpp"
 
 #include "utility/inc/Logging/Logger.hpp"
 
@@ -28,6 +31,9 @@ class Application
 
     private:
         static const sf::Time TIME_PER_FRAME;
+
+        Core::MessageNetwork mNetwork;
+        PlayerInput mPlayerInput;
 
         std::shared_ptr< Utility::Logger > mAppLogger;
         sf::RenderWindow mWindow;

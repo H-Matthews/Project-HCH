@@ -37,7 +37,6 @@ void Core::MessageNode::registerSubscriberMessages()
 {
     if(!mMessageNodeInfo.subscriptions.empty())
     {
-        std::cout << "Registering Subscriber: " << mMessageNodeInfo.nodeName << std::endl;
         mMessageNetwork->addSubscriber(mMessageNodeInfo);
     }
     else
@@ -52,7 +51,6 @@ void Core::MessageNode::send(std::shared_ptr<Message> message)
 
     if( message->getMessageID() != Messages::ID::NONE)
     {
-        std::cout << "Publishing Message. Sender: " << mMessageNodeInfo.nodeName << std::endl;
         mMessageNetwork->sendMessage(message);
     }
     else
