@@ -6,4 +6,4 @@ output
 .cache
 .idea
 .vs
-.vscode
+.vscode/settings.json

@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.30)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/app)
-
 set(SRC src/main.cpp  
         src/Application.cpp 
         src/State/MenuState.cpp

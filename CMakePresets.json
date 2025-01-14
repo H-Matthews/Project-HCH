@@ -6,7 +6,7 @@
             "displayName": "Debug-unix Config",
             "description": "Debug build using Unix Makefiles",
             "generator": "Unix Makefiles",
-            "binaryDir": "${sourceDir}/build",
+            "binaryDir": "${sourceDir}/build/Debug",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             }
@@ -17,7 +17,7 @@
             "displayName": "Release-unix Config",
             "description": "Release build using Unix Makefiles",
             "generator": "Unix Makefiles",
-            "binaryDir": "${sourceDir}/build",
+            "binaryDir": "${sourceDir}/build/Release",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
