@@ -6,7 +6,6 @@
 #include <filesystem>
 #include <iostream>
 
-
 const std::string Core::Configuration::CONFIG_DIR_NAME = "configs";
 const std::string Core::Configuration::OUTPUT_DIR_NAME = "output";
 
@@ -14,8 +13,8 @@ Core::Configuration::Configuration() :
     mConfigDirPath(),
     mOutputDirPath()
 {
-    // Establish the GlobalLogger and store in LogRegistry
-    Utility::createGlobalLogger();
+    if constexpr (Utility::CAN_LOG)
+        Utility::createGlobalLogger();
 }
 
 void Core::Configuration::initializeIteration()
@@ -59,15 +58,18 @@ void Core::Configuration::initializeIteration()
     // Set the Output Directory in the LogRegistry
     Utility::LogRegistry::instance()->configureRegistry(mOutputDirPath);
 
-    // Initialize the Global Console Logger
-    initializeGlobalLogger();
+    if constexpr (Utility::CAN_LOG)
+    {
+        // Initialize the Global Console Logger
+        initializeGlobalLogger();
 
-    // Get GlobalLogger
-    auto cLogger = Utility::LogRegistry::instance()->getGlobalLogger();
+        // Get GlobalLogger
+        auto cLogger = Utility::LogRegistry::instance()->getGlobalLogger();
 
-    std::stringstream logStream;
-    logStream << "Initialized Output Directory: " << mOutputDirPath;
-    cLogger->logInfo(logStream.str());
+        std::string logMessage;
+        logMessage += "Initialized Output Directory: " + mOutputDirPath;
+        cLogger->logInfo(logMessage);
+    }
 
 }
 

@@ -80,8 +80,10 @@ void Core::StateStack::registerState(States::ID stateID)
         return std::unique_ptr<State>(new T(*this, identifierString, mSharedObjects));
     };
 
-    std::stringstream logStream;
-    logStream << "Registered State: " << identifierString;
-
-    mLogger->logInfo(logStream.str());
+    if constexpr (Utility::CAN_LOG)
+    {
+        std::string logMessage;
+        logMessage += "Registered State: " + identifierString;
+        mLogger->logInfo(logMessage);
+    }
 }

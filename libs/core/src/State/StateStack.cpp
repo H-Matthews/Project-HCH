@@ -84,33 +84,40 @@ std::unique_ptr<Core::State> Core::StateStack::createState(States::ID stateID)
 
 void Core::StateStack::applyPendingChanges()
 {
-    std::stringstream logStream;
+    std::string logMessage;
 
     for( Core::StateStack::pendingStateRequests change: mPendingList)
     {
-        logStream.str("");
-        logStream.clear();
-
-        logStream << "State Transition --> ";
+        logMessage.clear();
+        logMessage += "State Transition --> ";
         switch(change.action)
         {
             case Push:
-                logStream << "Pushing State: " << States::statesEnumToString(change.stateID);
-                mLogger->logInfo(logStream.str());
+                if constexpr (Utility::CAN_LOG)
+                {
+                    logMessage += "Pushing State: " + States::statesEnumToString(change.stateID);
+                    mLogger->logInfo(logMessage);
+                }
 
                 mStack.push_back(createState(change.stateID));
                 break;
 
             case Pop:
-                logStream << "Removing State: " << mStack[mStack.size() - 1]->getStateAsString();
-                mLogger->logInfo(logStream.str());
+                if constexpr (Utility::CAN_LOG)
+                {
+                    logMessage += "Removing State: " + mStack[mStack.size() - 1]->getStateAsString();
+                    mLogger->logInfo(logMessage);
+                }
 
                 mStack.pop_back();
                 break;
 
             case Clear:
-                logStream << "Clearing the Stack";
-                mLogger->logInfo(logStream.str());
+                if constexpr (Utility::CAN_LOG)
+                {
+                    logMessage += "Clearing the Stack";
+                    mLogger->logInfo(logMessage);
+                }
                 
                 mStack.clear();
                 break;

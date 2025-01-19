@@ -33,31 +33,15 @@ void Application::initialize()
     mConfiguration->initializeIteration();
     mConfiguration->loadSettings();
 
-    // Configure Application Logger
-    const std::string appOutputDir = Utility::LogRegistry::instance()->getAppOutputDir();
-
-    // Setup Sinks
-    auto textFileSink = std::make_shared< Utility::TextFileSink >( appOutputDir, 
-                                                                   "Application",
-                                                                   ".log",
-                                                                   Utility::LogLevel::DEBUG);
-
-    auto colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >(Utility::LogLevel::INFO);
-
-    // Add Sinks to Logger
-    Utility::Logger::sinkList list = { colorConsoleSink, textFileSink };
-    mAppLogger->addSinkList(list);
-
-    // Register Application Logger
-    Utility::LogRegistry::instance()->registerLogger(mAppLogger);
+    if constexpr (Utility::CAN_LOG)
+    {
+        initializeApplicationLogger();
+        initializeCoreLoggers();
+    }
 
     // Initialize State Stack
-    mStateStack.initializeLogger();
     registerStates();
     mStateStack.pushState(States::Menu);
-
-    // Initialize Network
-    mNetwork.initializeLogger();
 }
 
 void Application::registerStates()
@@ -72,7 +56,9 @@ void Application::run()
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
-    mAppLogger->logInfo("Entering main RUN loop");
+    if constexpr (Utility::CAN_LOG)
+        mAppLogger->logInfo("Entering main RUN loop");
+
     while(mWindow.isOpen())
     {
         sf::Time elapsedTime = clock.restart();
@@ -88,12 +74,16 @@ void Application::run()
             if(mStateStack.isEmpty())
             {
                 mWindow.close();
-                mAppLogger->logInfo("Closing Window....");
+
+                if constexpr (Utility::CAN_LOG)
+                    mAppLogger->logInfo("Closing Window....");
             }
         }
         render();
     }
-    mAppLogger->logInfo("Exiting main RUN loop");
+
+    if constexpr (Utility::CAN_LOG)
+        mAppLogger->logInfo("Exiting main RUN loop");
 }
 
 void Application::processInput()
@@ -124,4 +114,31 @@ void Application::render()
 
     mWindow.setView(mWindow.getDefaultView());
     mWindow.display();
+}
+
+void Application::initializeApplicationLogger()
+{
+    // Configure Application Logger
+    const std::string appOutputDir = Utility::LogRegistry::instance()->getAppOutputDir();
+
+    // Setup Sinks
+    auto textFileSink = std::make_shared< Utility::TextFileSink >( appOutputDir, 
+                                                                   "Application",
+                                                                   ".log",
+                                                                   Utility::LogLevel::DEBUG);
+
+    auto colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >(Utility::LogLevel::INFO);
+
+    // Add Sinks to Logger
+    Utility::Logger::sinkList list = { colorConsoleSink, textFileSink };
+    mAppLogger->addSinkList(list);
+
+    // Register Application Logger
+    Utility::LogRegistry::instance()->registerLogger(mAppLogger);
+}
+
+void Application::initializeCoreLoggers()
+{
+    mStateStack.initializeLogger();
+    mNetwork.initializeLogger();
 }

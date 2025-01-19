@@ -28,6 +28,9 @@ class Application
         void update(sf::Time fixedTimeStep);
         void render();
 
+        void initializeApplicationLogger();
+        void initializeCoreLoggers();
+
 
     private:
         static const sf::Time TIME_PER_FRAME;

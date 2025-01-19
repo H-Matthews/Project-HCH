@@ -13,9 +13,12 @@ Core::MessageNetwork::MessageNetwork() :
 
 void Core::MessageNetwork::sendMessage(std::shared_ptr<Message> message)
 {
-    std::stringstream logStream;
-    logStream << "[Sending Message] Sender: " << message->getSenderName() << " MessageID: " << message->getStringMessageID();
-    mLogger->logDebug(logStream.str());
+    if constexpr (Utility::CAN_LOG)
+    {
+        std::string logMessage("[Sending Message] Sender: " + message->getSenderName() + 
+                            " MessageID: " + message->getStringMessageID());
+        mLogger->logDebug(logMessage);
+    }
 
     // Add to Queue
     mMessageQueue.push(message);
@@ -23,16 +26,17 @@ void Core::MessageNetwork::sendMessage(std::shared_ptr<Message> message)
 
 void Core::MessageNetwork::addSubscriber(const MessageNodeInfo& subscriber)
 {
-    std::stringstream logStream;
-    logStream << "[Adding Subscriber] Subscriber: " << subscriber.nodeName << " Topics: ";
-
+    std::string logMessage("[Adding Subscriber] Subscriber: " + subscriber.nodeName + " Topics: ");
     for(const auto& IDs : subscriber.subscriptions)
     {
-        logStream << messageIDEnumToString(IDs) << " ";
+        logMessage += messageIDEnumToString(IDs) + " ";
+
         mSubscriberList.insert(std::make_pair(IDs, subscriber));
     }
 
-    mLogger->logDebug(logStream.str());
+    if constexpr (Utility::CAN_LOG)
+        mLogger->logDebug(logMessage);
+        
 }
 
 void Core::MessageNetwork::insertUnsubscriber(const Messages::ID& messageID, const std::string& nodeName)
@@ -55,28 +59,31 @@ void Core::MessageNetwork::insertUnsubscriber(const Messages::ID& messageID, con
 
 void Core::MessageNetwork::notifySubscribers()
 {
-    std::stringstream logStream;
-
+    std::string logMessage;
     Messages::ID messageID;
 
     while( !mMessageQueue.empty())
     {
         messageID = mMessageQueue.front().get()->getMessageID();
-        logStream << "[Disseminating]";
-        logStream << " Message: " << messageIDEnumToString(messageID);
-        logStream << " Subscriber(s): ";
+
+        if constexpr (Utility::CAN_LOG)
+            logMessage += "[Publishing] Message: " + messageIDEnumToString(messageID) + " Subscriber(s): ";
 
         for(auto it = mSubscriberList.lower_bound(messageID),
             end = mSubscriberList.upper_bound(messageID); it != end; ++it)
         {
-            logStream << it->second.nodeName << " ";
+            if constexpr (Utility::CAN_LOG)
+                logMessage += it->second.nodeName + " ";
 
-            // Disseminate Message
+            // Publish Message
             it->second.callback(mMessageQueue.front().get());
         }
 
-        mLogger->logDebug(logStream.str());
-        logStream.str("");
+        if constexpr (Utility::CAN_LOG)
+        {
+            mLogger->logDebug(logMessage);
+            logMessage.clear();
+        }
 
         mMessageQueue.pop();
     }  
@@ -88,20 +95,22 @@ void Core::MessageNetwork::notifySubscribers()
 
 void Core::MessageNetwork::unSubscribe()
 {
-    std::stringstream logStream;
+    std::string logMessage;
     for(const auto& unsubscriber : mUnsubscribeList)
     {
-        logStream.str("");
-        logStream << "[Unsubscribing]";
+        logMessage += "[Unsubscribing]";
 
         for(auto it = mSubscriberList.lower_bound(unsubscriber.first),
             end = mSubscriberList.upper_bound(unsubscriber.first); it != end;)
         {
             if(it->second.nodeName == unsubscriber.second)
             {
-                logStream << " Message: " << messageIDEnumToString(unsubscriber.first);
-                logStream << " Node: " << unsubscriber.second;
-                mLogger->logDebug(logStream.str());
+                if constexpr (Utility::CAN_LOG)
+                {
+                    logMessage += " Message: " + messageIDEnumToString(unsubscriber.first);
+                    logMessage += " Node: " + unsubscriber.second;
+                    mLogger->logDebug(logMessage);
+                }
 
                 mSubscriberList.erase(it++);
                 break;
@@ -122,5 +131,7 @@ void Core::MessageNetwork::initializeLogger()
 
     mLogger = Utility::Factory::createTextFileLogger("MessageNetworkLogger", outDirectory, "MessageNetwork", 
                                                      ".log", Utility::LogLevel::DEBUG);
-    mLogger->logInfo("Logger Initialized");
+                                                     
+    if constexpr (Utility::CAN_LOG)
+        mLogger->logInfo("Logger Initialized");
 }
