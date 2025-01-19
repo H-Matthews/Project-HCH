@@ -24,9 +24,14 @@ else()
 endif()
 
 set_target_properties(hch PROPERTIES FOLDER "application")
+
+# Linker Options
 target_link_libraries(hch PRIVATE sfml-graphics core utility)
-target_include_directories(hch PUBLIC ${PROJECT_SOURCE_DIR} ${LIBS_INC_DIR})
+
+# Compiler Options
 target_compile_features(hch PRIVATE cxx_std_20)
+target_compile_definitions(hch PRIVATE "$<$<CONFIG:DEBUG>:APP_DEBUG>")
+target_include_directories(hch PUBLIC ${PROJECT_SOURCE_DIR} ${LIBS_INC_DIR})
 
 if(WIN32)
     add_custom_command(

@@ -7,6 +7,12 @@
 
 namespace Utility
 {
+
+    #ifdef APP_DEBUG
+        constexpr bool CAN_LOG(true);
+    #else 
+        constexpr bool CAN_LOG(false);
+    #endif
     /* 
         Main Logger Class
         A sink is the logging strategy that this logger will use. You can configure more than one. See more, LogSinksI.hpp
