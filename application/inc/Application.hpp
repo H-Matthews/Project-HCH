@@ -1,6 +1,6 @@
 #pragma once
 
-#include "application/inc/PlayerInput.hpp"
+#include "application/inc/KeyBindings.hpp"
 
 #include "core/inc/State/StateStack.hpp"
 #include "core/inc/Configuration.hpp"
@@ -35,14 +35,13 @@ class Application
     private:
         static const sf::Time TIME_PER_FRAME;
 
-        Core::MessageNetwork mNetwork;
-        PlayerInput mPlayerInput;
-
         std::shared_ptr< Utility::Logger > mAppLogger;
         sf::RenderWindow mWindow;
         // TODO: Implement a Resource Container for Textures / Fonts
 
-        Core::StateStack mStateStack;
         std::shared_ptr<Core::ConfigurationI> mConfiguration;
+        Core::StateStack mStateStack;
+        Core::MessageNetwork mNetwork;
+        KeyBindings mPlayerKeyBindings;
 
 };

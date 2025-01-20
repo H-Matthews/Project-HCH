@@ -4,7 +4,6 @@
 
 #include <sstream>
 #include <filesystem>
-#include <iostream>
 
 const std::string Core::Configuration::CONFIG_DIR_NAME = "configs";
 const std::string Core::Configuration::OUTPUT_DIR_NAME = "output";

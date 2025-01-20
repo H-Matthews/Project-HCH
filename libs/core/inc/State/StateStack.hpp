@@ -10,7 +10,6 @@
 #include <functional>
 #include <map>
 #include <memory>
-#include <sstream>
 
 namespace Core
 {

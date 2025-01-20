@@ -18,12 +18,12 @@
 const sf::Time Application::TIME_PER_FRAME = sf::seconds(1.0f / 120.0f);
 
 Application::Application(std::shared_ptr<Core::ConfigurationI> config) :
-    mNetwork(),
-    mPlayerInput(&mNetwork),
     mAppLogger(std::make_shared<Utility::Logger>("ApplicationLogger")),
     mWindow(sf::VideoMode(640, 480), "Application Window", sf::Style::Close),
+    mConfiguration(config),
     mStateStack(Core::State::SharedObjects(mWindow, mNetwork)),
-    mConfiguration(config)
+    mNetwork(),
+    mPlayerKeyBindings()
 {
 }
 
