@@ -32,7 +32,7 @@ target_link_libraries(hch PRIVATE sfml-graphics core utility)
 # Compiler Options
 target_compile_features(hch PRIVATE cxx_std_20)
 target_compile_definitions(hch PRIVATE "$<$<CONFIG:DEBUG>:APP_DEBUG>")
-target_include_directories(hch PUBLIC ${PROJECT_SOURCE_DIR} ${LIBS_INC_DIR})
+target_include_directories(hch PUBLIC ${PROJECT_SOURCE_DIR} ${LIBS_INC_DIR} ${SFML_INC_DIR})
 
 if(WIN32)
     add_custom_command(
