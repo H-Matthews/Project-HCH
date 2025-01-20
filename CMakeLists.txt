@@ -42,8 +42,8 @@ FetchContent_MakeAvailable(SFML)
 set(LIBS_INC_DIR ${PROJECT_SOURCE_DIR}/libs)
 set(APP_INC_DIR ${PROJECT_SOURCE_DIR})
 
-set(SFML_INC_DIR ${PROJECT_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE}/_deps/sfml-src/include)
-set(GTEST_INC_DIR ${PROJECT_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE}/_deps/googletest-src/googletest/include)
+set(SFML_INC_DIR ${PROJECT_SOURCE_DIR}/build/_deps/sfml-src/include)
+set(GTEST_INC_DIR ${PROJECT_SOURCE_DIR}/build/_deps/googletest-src/googletest/include)
 
 add_subdirectory(tests)
 add_subdirectory(libs/core)
