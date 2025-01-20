@@ -7,7 +7,7 @@ set(DEPENDENT_SRC ${APP_SRC}/KeyBindings.cpp)
 
 # Build a dependency library for the source code files in the application directory
 add_library(dependencies_lib OBJECT ${DEPENDENT_SRC} )
-target_include_directories(dependencies_lib PRIVATE ${APP_INC_DIR})
+target_include_directories(dependencies_lib PRIVATE ${APP_INC_DIR} ${SFML_INC_DIR} )
 
 # Glob all Test files and compile a binary for each
 file(GLOB TEST_SRC_FILES 
@@ -19,7 +19,7 @@ foreach(_test_file ${TEST_SRC_FILES})
   get_filename_component(_test_name ${_test_file} NAME_WE)
   add_executable(${_test_name} ${_test_file} $<TARGET_OBJECTS:dependencies_lib>)
   set_target_properties(${_test_name} PROPERTIES FOLDER "tests")
-  target_include_directories(${_test_name} PUBLIC ${LIBS_INC_DIR} ${APP_INC_DIR})
+  target_include_directories(${_test_name} PUBLIC ${LIBS_INC_DIR} ${APP_INC_DIR} ${SFML_INC_DIR})
   target_link_libraries(${_test_name} GTest::gtest_main utility core utility)
   target_compile_features(${_test_name} PRIVATE cxx_std_20)
 
