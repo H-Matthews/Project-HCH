@@ -37,7 +37,8 @@ PlayerAction KeyBindings::getAssignedAction(sf::Keyboard::Key key) const
 }
 
 // Real time actions are typically gameplay related actions
-// Such as movement, or attacking
+// such as movement, or attacking. They will require 
+// the key to be pressed down at that moment
 bool KeyBindings::isRealTimeAction(PlayerAction action)
 {
     bool isRealTimeAction = false;

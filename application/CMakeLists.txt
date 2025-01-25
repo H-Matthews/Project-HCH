@@ -24,6 +24,7 @@ else()
   target_compile_options(hch PRIVATE -Wall -Wextra -Wpedantic )
 endif()
 
+# Allows Visual Studio to create a folder for the source
 set_target_properties(hch PROPERTIES FOLDER "application")
 
 # Linker Options

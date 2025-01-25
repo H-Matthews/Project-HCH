@@ -28,7 +28,9 @@ set(INC inc/Messaging/Message.hpp
 
 add_library(core STATIC ${SRC} ${INC})
 
+# Allows Visual Studio to create a folder for the source
 set_target_properties(core PROPERTIES FOLDER "core")
+
 target_compile_definitions(core PRIVATE PROJECT_DIR="${PROJECT_DIR}")
 target_include_directories(core PUBLIC ${SFML_INC_DIR} ${LIBS_INC_DIR})
 target_compile_features(core PRIVATE cxx_std_20)

@@ -19,7 +19,9 @@ set(INC inc/Logging/LogRegistry.hpp
 
 add_library(utility STATIC ${SRC} ${INC})
 
+# Allows Visual Studio to create a folder for the source
 set_target_properties(utility PROPERTIES FOLDER "utility")
+
 target_include_directories(utility PUBLIC ${SFML_INC_DIR} ${LIBS_INC_DIR})
 target_compile_features(utility PRIVATE cxx_std_20)
 target_compile_definitions(utility PRIVATE "$<$<CONFIG:DEBUG>:APP_DEBUG>")

@@ -6,7 +6,7 @@ set(APP_SRC ${PROJECT_SOURCE_DIR}/application/src )
 set(DEPENDENT_SRC ${APP_SRC}/KeyBindings.cpp)
 
 # Build a dependency library for the source code files in the application directory
-add_library(dependencies_lib OBJECT ${DEPENDENT_SRC} )
+add_library(dependencies_lib STATIC ${DEPENDENT_SRC} )
 target_include_directories(dependencies_lib PRIVATE ${APP_INC_DIR} ${SFML_INC_DIR} )
 
 # Glob all Test files and compile a binary for each
