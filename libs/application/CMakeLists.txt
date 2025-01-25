@@ -23,6 +23,8 @@ add_library(application STATIC ${SRC} ${INC})
 # Allows Visual Studio to create a folder for the source
 set_target_properties(application PROPERTIES FOLDER "application")
 
+target_link_libraries(application PRIVATE sfml-graphics sfml-window sfml-system core utility)
+
 target_compile_definitions(application PRIVATE PROJECT_DIR="${PROJECT_DIR}")
 target_include_directories(application PUBLIC ${SFML_INC_DIR} ${LIBS_INC_DIR})
 target_compile_features(application PRIVATE cxx_std_20)

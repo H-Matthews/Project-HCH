@@ -16,7 +16,7 @@ endif()
 set_target_properties(${BINARY_NAME} PROPERTIES FOLDER "application")
 
 # Linker Options
-target_link_libraries(${BINARY_NAME} PRIVATE application core utility sfml-graphics)
+target_link_libraries(${BINARY_NAME} PRIVATE application)
 
 # Compiler Options
 target_compile_features(${BINARY_NAME} PRIVATE cxx_std_20)
