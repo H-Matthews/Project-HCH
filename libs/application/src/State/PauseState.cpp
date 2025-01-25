@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-PauseState::PauseState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) : 
+Application::PauseState::PauseState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) : 
 State(stack, stateIdentifier, sharedObjects)
 {
     std::cout << "Creating PauseState " << std::endl;
@@ -15,7 +15,7 @@ State(stack, stateIdentifier, sharedObjects)
     std::cout << "Escape: Return to Game " << std::endl;
 }
 
-void PauseState::draw()
+void Application::PauseState::draw()
 {
     // Draw Game related things to window here
 
@@ -23,12 +23,12 @@ void PauseState::draw()
     sf::RenderWindow& window = *getSharedObjects().window;
 }
 
-bool PauseState::update(sf::Time fixedTimeStep)
+bool Application::PauseState::update(sf::Time fixedTimeStep)
 {
     return false;
 }
 
-bool PauseState::handleEvent(const sf::Event& event)
+bool Application::PauseState::handleEvent(const sf::Event& event)
 {
     if(event.type != sf::Event::KeyPressed)
         return false;

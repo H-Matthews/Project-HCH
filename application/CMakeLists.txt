@@ -1,43 +1,31 @@
 cmake_minimum_required(VERSION 3.30)
 
-set(SRC src/main.cpp  
-        src/Application.cpp 
-        src/KeyBindings.cpp
-        src/Messages/PlayerInputMessage.cpp 
-        src/State/MenuState.cpp
-        src/State/GameState.cpp
-        src/State/PauseState.cpp )
+set(SRC main.cpp)
 
-set(INC inc/Application.hpp
-        inc/KeyBindings.hpp
-        inc/PlayerAction.hpp
-        inc/Messages/PlayerInputMessage.hpp
-        inc/State/MenuState.hpp 
-        inc/State/GameState.hpp
-        inc/State/PauseState.hpp )
+set(BINARY_NAME ${PROJECT_NAME} )
 
-add_executable(hch ${SRC} ${INC})
+add_executable(${BINARY_NAME} ${SRC} )
 
 if(MSVC)
-  target_compile_options(hch PRIVATE /W4 )
+  target_compile_options(${BINARY_NAME} PRIVATE /W4 )
 else()
-  target_compile_options(hch PRIVATE -Wall -Wextra -Wpedantic )
+  target_compile_options(${BINARY_NAME} PRIVATE -Wall -Wextra -Wpedantic )
 endif()
 
 # Allows Visual Studio to create a folder for the source
-set_target_properties(hch PROPERTIES FOLDER "application")
+set_target_properties(${BINARY_NAME} PROPERTIES FOLDER "application")
 
 # Linker Options
-target_link_libraries(hch PRIVATE sfml-graphics core utility)
+target_link_libraries(${BINARY_NAME} PRIVATE application core utility sfml-graphics)
 
 # Compiler Options
-target_compile_features(hch PRIVATE cxx_std_20)
-target_compile_definitions(hch PRIVATE "$<$<CONFIG:DEBUG>:APP_DEBUG>")
-target_include_directories(hch PUBLIC ${PROJECT_SOURCE_DIR} ${LIBS_INC_DIR} ${SFML_INC_DIR})
+target_compile_features(${BINARY_NAME} PRIVATE cxx_std_20)
+target_compile_definitions(${BINARY_NAME} PRIVATE "$<$<CONFIG:DEBUG>:APP_DEBUG>")
+target_include_directories(${BINARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR} ${LIBS_INC_DIR} ${SFML_INC_DIR})
 
 if(WIN32)
     add_custom_command(
-        TARGET hch
+        TARGET ${BINARY_NAME}
         COMMENT "Copy OpenAL DLL"
         PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:hch>
         VERBATIM)

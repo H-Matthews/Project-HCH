@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-GameState::GameState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) : 
+Application::GameState::GameState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) : 
 State(stack, stateIdentifier, sharedObjects)
 {
     std::cout << "Creating GameState " << std::endl;
@@ -13,7 +13,7 @@ State(stack, stateIdentifier, sharedObjects)
     std::cout << "Escape: Return To Menu State " << std::endl;
 }
 
-void GameState::draw()
+void Application::GameState::draw()
 {
     // Draw Game related things to window here
 
@@ -23,12 +23,12 @@ void GameState::draw()
     // This will be just mWorld.draw() later
 }
 
-bool GameState::update(sf::Time fixedTimeStep)
+bool Application::GameState::update(sf::Time fixedTimeStep)
 {
     return true;
 }
 
-bool GameState::handleEvent(const sf::Event& event)
+bool Application::GameState::handleEvent(const sf::Event& event)
 {
     if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return)
     {

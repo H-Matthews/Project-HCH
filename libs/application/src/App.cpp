@@ -1,4 +1,4 @@
-#include "application/inc/Application.hpp"
+#include "application/inc/App.hpp"
 #include "application/inc/State/MenuState.hpp"
 #include "application/inc/State/GameState.hpp"
 #include "application/inc/State/PauseState.hpp"
@@ -15,11 +15,11 @@
 #include <iostream>
 
 
-const sf::Time Application::TIME_PER_FRAME = sf::seconds(1.0f / 120.0f);
+const sf::Time Application::App::TIME_PER_FRAME = sf::seconds(1.0f / 120.0f);
 
-Application::Application(std::shared_ptr<Core::ConfigurationI> config) :
-    mAppLogger(std::make_shared<Utility::Logger>("ApplicationLogger")),
-    mWindow(sf::VideoMode(640, 480), "Application Window", sf::Style::Close),
+Application::App::App(std::shared_ptr<Core::ConfigurationI> config) :
+    mAppLogger(std::make_shared<Utility::Logger>("AppLogger")),
+    mWindow(sf::VideoMode(640, 480), "App Window", sf::Style::Close),
     mConfiguration(config),
     mStateStack(Core::State::SharedObjects(mWindow, mNetwork)),
     mNetwork(),
@@ -27,15 +27,15 @@ Application::Application(std::shared_ptr<Core::ConfigurationI> config) :
 {
 }
 
-void Application::initialize()
+void Application::App::initialize()
 {
-    // Configure Application
+    // Configure App
     mConfiguration->initializeIteration();
     mConfiguration->loadSettings();
 
     if constexpr (Utility::CAN_LOG)
     {
-        initializeApplicationLogger();
+        initializeAppLogger();
         initializeCoreLoggers();
     }
 
@@ -44,14 +44,14 @@ void Application::initialize()
     mStateStack.pushState(States::Menu);
 }
 
-void Application::registerStates()
+void Application::App::registerStates()
 {
-    mStateStack.registerState<MenuState>(States::Menu);
-    mStateStack.registerState<GameState>(States::Game);
-    mStateStack.registerState<PauseState>(States::Pause);
+    mStateStack.registerState<Application::MenuState>(States::Menu);
+    mStateStack.registerState<Application::GameState>(States::Game);
+    mStateStack.registerState<Application::PauseState>(States::Pause);
 }
 
-void Application::run()
+void Application::App::run()
 {
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -86,7 +86,7 @@ void Application::run()
         mAppLogger->logInfo("Exiting main RUN loop");
 }
 
-void Application::processInput()
+void Application::App::processInput()
 {
     sf::Event event;
 
@@ -101,12 +101,12 @@ void Application::processInput()
 
 }
 
-void Application::update(sf::Time fixedTimeStep)
+void Application::App::update(sf::Time fixedTimeStep)
 {
     mStateStack.update(fixedTimeStep);
 }
 
-void Application::render()
+void Application::App::render()
 {
     mWindow.clear();
 
@@ -116,14 +116,14 @@ void Application::render()
     mWindow.display();
 }
 
-void Application::initializeApplicationLogger()
+void Application::App::initializeAppLogger()
 {
-    // Configure Application Logger
+    // Configure App Logger
     const std::string appOutputDir = Utility::LogRegistry::instance()->getAppOutputDir();
 
     // Setup Sinks
     auto textFileSink = std::make_shared< Utility::TextFileSink >( appOutputDir, 
-                                                                   "Application",
+                                                                   "App",
                                                                    ".log",
                                                                    Utility::LogLevel::DEBUG);
 
@@ -133,11 +133,11 @@ void Application::initializeApplicationLogger()
     Utility::Logger::sinkList list = { colorConsoleSink, textFileSink };
     mAppLogger->addSinkList(list);
 
-    // Register Application Logger
+    // Register App Logger
     Utility::LogRegistry::instance()->registerLogger(mAppLogger);
 }
 
-void Application::initializeCoreLoggers()
+void Application::App::initializeCoreLoggers()
 {
     mStateStack.initializeLogger();
     mNetwork.initializeLogger();

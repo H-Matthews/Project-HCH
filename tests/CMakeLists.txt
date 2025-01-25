@@ -2,13 +2,6 @@ cmake_minimum_required(VERSION 3.30)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/tests)
 
-set(APP_SRC ${PROJECT_SOURCE_DIR}/application/src )
-set(DEPENDENT_SRC ${APP_SRC}/KeyBindings.cpp)
-
-# Build a dependency library for the source code files in the application directory
-add_library(dependencies_lib STATIC ${DEPENDENT_SRC} )
-target_include_directories(dependencies_lib PRIVATE ${APP_INC_DIR} ${SFML_INC_DIR} )
-
 # Glob all Test files and compile a binary for each
 file(GLOB TEST_SRC_FILES 
       ${PROJECT_SOURCE_DIR}/tests/Core/*.cc
@@ -17,10 +10,10 @@ file(GLOB TEST_SRC_FILES
       
 foreach(_test_file ${TEST_SRC_FILES})
   get_filename_component(_test_name ${_test_file} NAME_WE)
-  add_executable(${_test_name} ${_test_file} $<TARGET_OBJECTS:dependencies_lib>)
+  add_executable(${_test_name} ${_test_file})
   set_target_properties(${_test_name} PROPERTIES FOLDER "tests")
   target_include_directories(${_test_name} PUBLIC ${LIBS_INC_DIR} ${APP_INC_DIR} ${SFML_INC_DIR})
-  target_link_libraries(${_test_name} GTest::gtest_main utility core utility)
+  target_link_libraries(${_test_name} GTest::gtest_main utility core utility application)
   target_compile_features(${_test_name} PRIVATE cxx_std_20)
 
   # CTest 

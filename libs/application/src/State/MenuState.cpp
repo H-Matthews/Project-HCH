@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-MenuState::MenuState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) :
+Application::MenuState::MenuState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) :
 State(stack, stateIdentifier, sharedObjects)
 {
     std::cout << "Creating MenuState " << std::endl;
@@ -13,7 +13,7 @@ State(stack, stateIdentifier, sharedObjects)
     std::cout << "Escape: Closes Program " << std::endl;
 }
 
-void MenuState::draw()
+void Application::MenuState::draw()
 {
     // Draw Menu related things to window here
 
@@ -24,12 +24,12 @@ void MenuState::draw()
     //window.draw(mBackgroundSprite);
 }
 
-bool MenuState::update(sf::Time fixedTimeStep)
+bool Application::MenuState::update(sf::Time fixedTimeStep)
 {
     return true;
 }
 
-bool MenuState::handleEvent(const sf::Event& event)
+bool Application::MenuState::handleEvent(const sf::Event& event)
 {
     if( event.type != sf::Event::KeyPressed)
         return false;

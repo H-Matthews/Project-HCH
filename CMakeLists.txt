@@ -40,7 +40,6 @@ FetchContent_MakeAvailable(SFML)
 
 # Include Directories 
 set(LIBS_INC_DIR ${PROJECT_SOURCE_DIR}/libs)
-set(APP_INC_DIR ${PROJECT_SOURCE_DIR})
 
 set(SFML_INC_DIR ${PROJECT_SOURCE_DIR}/build/_deps/sfml-src/include)
 set(GTEST_INC_DIR ${PROJECT_SOURCE_DIR}/build/_deps/googletest-src/googletest/include)
@@ -48,4 +47,5 @@ set(GTEST_INC_DIR ${PROJECT_SOURCE_DIR}/build/_deps/googletest-src/googletest/in
 add_subdirectory(tests)
 add_subdirectory(libs/core)
 add_subdirectory(libs/utility)
+add_subdirectory(libs/application)
 add_subdirectory(application)

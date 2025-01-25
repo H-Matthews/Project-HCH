@@ -1,6 +1,6 @@
 #include "application/inc/KeyBindings.hpp"
 
-KeyBindings::KeyBindings()
+Application::KeyBindings::KeyBindings()
 {
     // Set Initial Keys
     mKeyBindings[sf::Keyboard::A] = PlayerAction::MOVE_LEFT;
@@ -10,7 +10,7 @@ KeyBindings::KeyBindings()
     mKeyBindings[sf::Keyboard::Space] = PlayerAction::JUMP;
 }
 
-void KeyBindings::assignKey(PlayerAction action, sf::Keyboard::Key key)
+void Application::KeyBindings::assignKey(PlayerAction action, sf::Keyboard::Key key)
 {
     // Remove the action from other keybindings if necessary
     for(auto iterator = mKeyBindings.begin(); iterator != mKeyBindings.end(); )
@@ -25,7 +25,7 @@ void KeyBindings::assignKey(PlayerAction action, sf::Keyboard::Key key)
     mKeyBindings[key] = action;
 }
 
-PlayerAction KeyBindings::getAssignedAction(sf::Keyboard::Key key) const
+Application::PlayerAction Application::KeyBindings::getAssignedAction(sf::Keyboard::Key key) const
 {
     PlayerAction action = PlayerAction::NONE;
     auto found = mKeyBindings.find(key);
@@ -39,7 +39,7 @@ PlayerAction KeyBindings::getAssignedAction(sf::Keyboard::Key key) const
 // Real time actions are typically gameplay related actions
 // such as movement, or attacking. They will require 
 // the key to be pressed down at that moment
-bool KeyBindings::isRealTimeAction(PlayerAction action)
+bool Application::KeyBindings::isRealTimeAction(PlayerAction action)
 {
     bool isRealTimeAction = false;
 

@@ -1,0 +1,50 @@
+#pragma once
+
+#include "application/inc/KeyBindings.hpp"
+
+#include "core/inc/State/StateStack.hpp"
+#include "core/inc/Configuration.hpp"
+#include "core/inc/Messaging/MessageNetwork.hpp"
+
+#include "utility/inc/Logging/Logger.hpp"
+
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/System/Time.hpp>
+
+#include <string>
+
+namespace Application
+{
+    class App
+    {
+        public:
+            App(std::shared_ptr<Core::ConfigurationI> config);
+            void initialize();
+            void run();
+
+        private:
+            // Registers States in StateStack mRegistry
+            void registerStates();
+
+            void processInput();
+            void update(sf::Time fixedTimeStep);
+            void render();
+
+            void initializeAppLogger();
+            void initializeCoreLoggers();
+
+
+        private:
+            static const sf::Time TIME_PER_FRAME;
+
+            std::shared_ptr< Utility::Logger > mAppLogger;
+            sf::RenderWindow mWindow;
+            // TODO: Implement a Resource Container for Textures / Fonts
+
+            std::shared_ptr<Core::ConfigurationI> mConfiguration;
+            Core::StateStack mStateStack;
+            Core::MessageNetwork mNetwork;
+            Application::KeyBindings mPlayerKeyBindings;
+
+    };
+}
