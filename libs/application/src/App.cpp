@@ -27,10 +27,12 @@ Application::App::App(std::shared_ptr<Core::ConfigurationI> config) :
 {
 }
 
-void Application::App::initialize()
+bool Application::App::initialize()
 {
+    bool initialized = true;
+
     // Configure App
-    mConfiguration->initializeIteration();
+    initialized = mConfiguration->initializeIteration();
     mConfiguration->loadSettings();
 
     if constexpr (Utility::CAN_LOG)
@@ -42,6 +44,8 @@ void Application::App::initialize()
     // Initialize State Stack
     registerStates();
     mStateStack.pushState(States::Menu);
+
+    return initialized;
 }
 
 void Application::App::registerStates()

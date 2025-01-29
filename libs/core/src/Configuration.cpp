@@ -10,27 +10,42 @@ const std::string Core::Configuration::OUTPUT_DIR_NAME = "output";
 
 Core::Configuration::Configuration() :
     mConfigDirPath(),
-    mOutputDirPath()
+    mOutputDirPath(),
+    mProjectDirectory(PROJECT_DIR)
 {
     if constexpr (Utility::CAN_LOG)
         Utility::createGlobalLogger();
 }
 
-void Core::Configuration::initializeIteration()
+bool Core::Configuration::initializeIteration()
 {
-    std::stringstream outputDirectoryPath;
+    bool initialized = true;
 
-    // PROJECT_DIR is defined in the CMakeList.txt file for this library
-    // It is an easy and consistent way to get Root file path
-    outputDirectoryPath << PROJECT_DIR;
-    outputDirectoryPath << "/" << OUTPUT_DIR_NAME;
+    if constexpr (Utility::CAN_LOG)
+        initializeGlobalLogger();
+
+    initialized = initializeOutputDirectory();
+    initialized = initializeConfigDirectory();
+
+    if(Utility::CAN_LOG && !initialized)
+        Utility::LogRegistry::instance()->getGlobalLogger()->logError("Application FAILED Configuration Initialization");
+
+    return initialized;
+}
+
+bool Core::Configuration::initializeOutputDirectory()
+{
+    bool initOutputDir = true;
+
+    std::stringstream outputDirectoryPath;
+    outputDirectoryPath << mProjectDirectory << "/" << OUTPUT_DIR_NAME;
 
     // If directory DOES NOT exist, create it
     if( !(std::filesystem::is_directory(outputDirectoryPath.str())) )
     {   
         if( !(std::filesystem::create_directory(outputDirectoryPath.str())) )
         {
-            throw std::filesystem::filesystem_error("Unable to create output Directory", std::error_code());
+            initOutputDir = false;
         }
     }
 
@@ -50,26 +65,36 @@ void Core::Configuration::initializeIteration()
 
     // Create directory
     if( !(std::filesystem::create_directory(outputDirectoryPath.str())) )
-    {
-        throw std::filesystem::filesystem_error("ERROR", std::error_code());
-    }
+        initOutputDir = false;
 
     // Set the Output Directory in the LogRegistry
     Utility::LogRegistry::instance()->configureRegistry(mOutputDirPath);
 
-    if constexpr (Utility::CAN_LOG)
+    return initOutputDir;
+}
+
+bool Core::Configuration::initializeConfigDirectory()
+{
+    bool initConfigDir = true;
+
+    std::stringstream configDirectoryPath;
+
+    configDirectoryPath << mProjectDirectory << "/" << CONFIG_DIR_NAME;
+    mConfigDirPath = configDirectoryPath.str();
+
+    if( !(std::filesystem::is_directory(mConfigDirPath)) )
     {
-        // Initialize the Global Console Logger
-        initializeGlobalLogger();
+        initConfigDir = false;
 
-        // Get GlobalLogger
-        auto cLogger = Utility::LogRegistry::instance()->getGlobalLogger();
+        if constexpr (Utility::CAN_LOG)
+        {
+            // Log to Global Logger
+            Utility::LogRegistry::instance()->getGlobalLogger()->logError("Config Directory WAS NOT FOUND --> " + mConfigDirPath );
+        }
 
-        std::string logMessage;
-        logMessage += "Initialized Output Directory: " + mOutputDirPath;
-        cLogger->logInfo(logMessage);
     }
 
+    return initConfigDir;
 }
 
 void Core::Configuration::initializeGlobalLogger()
@@ -81,6 +106,10 @@ void Core::Configuration::initializeGlobalLogger()
     {
         auto globalConsoleSink = std::make_shared< Utility::ColorConsoleSink >();
         cLogger->addSink(globalConsoleSink);
+
+        std::string logMessage;
+        logMessage += "Initialized Global Logger: " + mOutputDirPath;
+        cLogger->logInfo(logMessage);
     }
 }
 

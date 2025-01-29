@@ -5,7 +5,6 @@
 #include "utility/inc/Logging/Sinks/ColorConsoleSink.hpp"
 
 #include <string>
-#include <memory>
 
 namespace Core
 {
@@ -18,7 +17,7 @@ namespace Core
         public:
             Configuration();
 
-            void initializeIteration() override;
+            bool initializeIteration() override;
             void loadSettings() override;
 
             const std::string getOutDirPath();
@@ -26,13 +25,19 @@ namespace Core
             ~Configuration() {}
 
         private:
+            bool initializeOutputDirectory();
+            bool initializeConfigDirectory();
+
             void initializeGlobalLogger();
 
         private:
             // FilePath information
             std::string mConfigDirPath;
             static const std::string CONFIG_DIR_NAME;
+
             std::string mOutputDirPath;
             static const std::string OUTPUT_DIR_NAME;
+
+            std::string mProjectDirectory;
     };
 }
