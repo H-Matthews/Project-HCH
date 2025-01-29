@@ -17,6 +17,8 @@ namespace Utility
 
             void sinkData(std::string_view message, Utility::LogLevel level, const std::source_location location) override;
 
+            ~ColorConsoleSink() {}
+
         private:
             const std::string getColorCode(LogLevel level) const;
 
@@ -31,8 +33,6 @@ namespace Utility
             const std::string mDefaultColorCode = "\033[0m";    // Reset
     };
 
-
-    
      namespace Factory
      {
         // Convenience function

@@ -22,6 +22,8 @@ namespace Utility
 
             void sinkData(std::string_view message, LogLevel level, const std::source_location location) override;
 
+            ~TextFileSink() {}
+
         private:
             std::string mOutputDirectory;
             std::string mFileName;

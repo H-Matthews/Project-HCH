@@ -22,11 +22,12 @@ namespace Utility
     class LogSinksI 
     {
         public:
-            ~LogSinksI() = default;
             virtual void sinkData(std::string_view message, LogLevel level, const std::source_location location) = 0;
 
             inline void setSinkLogLevel(LogLevel level) { mLevel = level; }
             inline LogLevel getSinkLogLevel() { return mLevel; } 
+
+            virtual ~LogSinksI() {}
 
         protected:
             inline LogSinksI(const std::string sinkIdentifier, LogLevel level = LogLevel::NONE) : 

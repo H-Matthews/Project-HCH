@@ -23,6 +23,8 @@ namespace Core
 
             const std::string getOutDirPath();
 
+            ~Configuration() {}
+
         private:
             void initializeGlobalLogger();
 

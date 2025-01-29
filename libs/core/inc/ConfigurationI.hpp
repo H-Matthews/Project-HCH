@@ -9,6 +9,8 @@ namespace Core
             virtual void initializeIteration() = 0;
 
             virtual void loadSettings() = 0;
+
+            virtual ~ConfigurationI() {}
     };
     
 }
