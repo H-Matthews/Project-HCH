@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.30)
 project(utilLibrary LANGUAGES CXX)
 
 
+set(LIBRARY_NAME "utility")
 
 set(SRC src/Logging/LogRegistry.cpp 
         src/Logging/Sinks/ColorConsoleSink.cpp
@@ -17,11 +18,18 @@ set(INC inc/Logging/LogRegistry.hpp
         inc/StringOperations.hpp
         inc/Logging/LogLevel.hpp )
 
-add_library(utility STATIC ${SRC} ${INC})
+add_library(${LIBRARY_NAME} STATIC ${SRC} ${INC})
+
+# Turns warnings ON
+if(MSVC)
+  target_compile_options(${LIBRARY_NAME} PRIVATE /W4 )
+else()
+  target_compile_options(${LIBRARY_NAME} PRIVATE -Wall -Wextra -Wpedantic )
+endif()
 
 # Allows Visual Studio to create a folder for the source
-set_target_properties(utility PROPERTIES FOLDER "utility")
+set_target_properties(${LIBRARY_NAME} PROPERTIES FOLDER ${LIBRARY_NAME})
 
-target_include_directories(utility PUBLIC ${SFML_INC_DIR} ${LIBS_INC_DIR})
-target_compile_features(utility PRIVATE cxx_std_20)
-target_compile_definitions(utility PRIVATE "$<$<CONFIG:DEBUG>:APP_DEBUG>")
+target_include_directories(${LIBRARY_NAME} PUBLIC ${SFML_INC_DIR} ${LIBS_INC_DIR})
+target_compile_features(${LIBRARY_NAME} PRIVATE cxx_std_20)
+target_compile_definitions(${LIBRARY_NAME} PRIVATE "$<$<CONFIG:DEBUG>:APP_DEBUG>")

@@ -6,12 +6,6 @@ set(BINARY_NAME ${PROJECT_NAME} )
 
 add_executable(${BINARY_NAME} ${SRC} )
 
-if(MSVC)
-  target_compile_options(${BINARY_NAME} PRIVATE /W4 )
-else()
-  target_compile_options(${BINARY_NAME} PRIVATE -Wall -Wextra -Wpedantic )
-endif()
-
 # Allows Visual Studio to create a folder for the source
 set_target_properties(${BINARY_NAME} PROPERTIES FOLDER "application")
 
