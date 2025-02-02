@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 // Defines our Configuration Interface
 namespace Core
 {
@@ -7,8 +9,6 @@ namespace Core
     {
         public:
             virtual bool initializeIteration() = 0;
-
-            virtual void loadSettings() = 0;
 
             virtual ~ConfigurationI() {}
     };

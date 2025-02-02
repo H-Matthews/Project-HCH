@@ -31,9 +31,9 @@ bool Application::App::initialize()
 {
     bool initialized = true;
 
-    // Configure App
     initialized = mConfiguration->initializeIteration();
-    mConfiguration->loadSettings();
+
+    if(!initialized) { return initialized; }
 
     if constexpr (Utility::CAN_LOG)
     {

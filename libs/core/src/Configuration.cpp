@@ -2,86 +2,59 @@
 
 #include "utility/inc/Logging/LogRegistry.hpp"
 
-#include <sstream>
+#include <string>
 #include <filesystem>
 
-const std::string Core::Configuration::CONFIG_DIR_NAME = "configs";
 const std::string Core::Configuration::OUTPUT_DIR_NAME = "output";
 
-Core::Configuration::Configuration() :
+Core::Configuration::Configuration(const std::string& configDirectory) :
     mConfigDirPath(),
+    mConfigDirName(configDirectory),
     mOutputDirPath(),
+    mConfigParserMap(),
     mProjectDirectory(PROJECT_DIR)
 {
     if constexpr (Utility::CAN_LOG)
+    {
         Utility::createGlobalLogger();
+        initializeGlobalLogger();
+    }
+
+    initializeParsers();
 }
 
 bool Core::Configuration::initializeIteration()
 {
     bool initialized = true;
 
-    if constexpr (Utility::CAN_LOG)
-        initializeGlobalLogger();
+    initialized = initializeConfigDirectory();
+    if(!initialized) { return initialized; }
 
     initialized = initializeOutputDirectory();
-    initialized = initializeConfigDirectory();
-
-    if(Utility::CAN_LOG && !initialized)
-        Utility::LogRegistry::instance()->getGlobalLogger()->logError("Application FAILED Configuration Initialization");
 
     return initialized;
 }
 
-bool Core::Configuration::initializeOutputDirectory()
+void Core::Configuration::initializeParsers()
 {
-    bool initOutputDir = true;
+    // Create Parsers here
+    std::string parserNameID("IniParser");
+    std::string parserExt(".ini");
+    mConfigParserMap.insert(std::make_pair(parserNameID, std::make_unique<Core::IniParser>(parserNameID, parserExt) ));
 
-    std::stringstream outputDirectoryPath;
-    outputDirectoryPath << mProjectDirectory << "/" << OUTPUT_DIR_NAME;
-
-    // If directory DOES NOT exist, create it
-    if( !(std::filesystem::is_directory(outputDirectoryPath.str())) )
-    {   
-        if( !(std::filesystem::create_directory(outputDirectoryPath.str())) )
-        {
-            initOutputDir = false;
-        }
-    }
-
-    // Get Time in a broken down structure
-    auto now = std::chrono::system_clock::now();
-    std::time_t nowTime = std::chrono::system_clock::to_time_t(now);
-    std::tm now_tm = *std::localtime(&nowTime);
-
-    // Create folderName
-    std::stringstream folderName;
-    folderName << "App_";
-    folderName << std::put_time(&now_tm, "%Y-%m-%d_%H-%M-%S");
-
-    // Add folderName to already existing output directory path
-    outputDirectoryPath << "/" << folderName.str();
-    mOutputDirPath = outputDirectoryPath.str();
-
-    // Create directory
-    if( !(std::filesystem::create_directory(outputDirectoryPath.str())) )
-        initOutputDir = false;
-
-    // Set the Output Directory in the LogRegistry
-    Utility::LogRegistry::instance()->configureRegistry(mOutputDirPath);
-
-    return initOutputDir;
+    return;
 }
 
 bool Core::Configuration::initializeConfigDirectory()
 {
     bool initConfigDir = true;
 
-    std::stringstream configDirectoryPath;
+    std::string configDirectoryPath;
 
-    configDirectoryPath << mProjectDirectory << "/" << CONFIG_DIR_NAME;
-    mConfigDirPath = configDirectoryPath.str();
+    configDirectoryPath += mProjectDirectory + "/" + mConfigDirName;
+    mConfigDirPath = configDirectoryPath;
 
+    // Check to see if directory is valid
     if( !(std::filesystem::is_directory(mConfigDirPath)) )
     {
         initConfigDir = false;
@@ -95,6 +68,64 @@ bool Core::Configuration::initializeConfigDirectory()
     }
 
     return initConfigDir;
+}
+
+// The following field needs to be read in by CONFIG file
+// 1. OUTPUT_DIR_NAME
+bool Core::Configuration::initializeOutputDirectory()
+{
+    bool initOutputDir = true;
+
+    std::string outputDirectoryPath;
+    outputDirectoryPath += mProjectDirectory + "/" + OUTPUT_DIR_NAME;
+
+    // Creates the "output" directory 
+    if( !(std::filesystem::is_directory(outputDirectoryPath)) )
+    {
+        if( !(std::filesystem::create_directory(outputDirectoryPath)) )
+        {
+            initOutputDir = false;
+
+            if constexpr (Utility::CAN_LOG)
+            {
+                // Log to Global Logger
+                Utility::LogRegistry::instance()->getGlobalLogger()->logError("Could NOT create output DIRECTORY --> " + outputDirectoryPath);
+            }
+
+        }
+    }
+
+    // Get Time in a broken down structure
+    auto now = std::chrono::system_clock::now();
+    std::time_t nowTime = std::chrono::system_clock::to_time_t(now);
+    std::tm now_tm = *std::localtime(&nowTime);
+
+    // Creates the folder name for the current iteration
+    std::stringstream folderName;
+    folderName << "App_";
+    folderName << std::put_time(&now_tm, "%Y-%m-%d_%H-%M-%S");
+
+    // Add folderName to already existing output directory path
+    outputDirectoryPath += "/" + folderName.str();
+    mOutputDirPath = outputDirectoryPath;
+
+    // Creates the "App_" directory with the current time
+    if( !(std::filesystem::create_directory(mOutputDirPath)) )
+    {
+        initOutputDir = false;
+
+        if constexpr (Utility::CAN_LOG)
+        {
+            // Log to Global Logger
+            Utility::LogRegistry::instance()->getGlobalLogger()->logError("Could NOT create output APP_ DIRECTORY --> " + mOutputDirPath);
+        }
+
+    }
+
+    // Set the Output Directory in the LogRegistry
+    Utility::LogRegistry::instance()->configureRegistry(mOutputDirPath);
+
+    return initOutputDir;
 }
 
 void Core::Configuration::initializeGlobalLogger()
@@ -111,11 +142,8 @@ void Core::Configuration::initializeGlobalLogger()
         logMessage += "Initialized Global Logger: " + mOutputDirPath;
         cLogger->logInfo(logMessage);
     }
-}
 
-void Core::Configuration::loadSettings()
-{
-    // TODO: Define how we will read data into the program (ini?, JSON?)
+    return;
 }
 
 const std::string Core::Configuration::getOutDirPath()

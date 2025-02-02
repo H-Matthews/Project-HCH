@@ -5,7 +5,7 @@
 int main()
 {
 
-    auto config = std::make_shared<Core::Configuration>();
+    auto config = std::make_shared<Core::Configuration>("configs");
 
     Application::App game(config);
     if(game.initialize())
