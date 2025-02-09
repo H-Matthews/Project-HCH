@@ -1,9 +1,9 @@
 #pragma once
 
-#include "core/inc/ConfigurationI.hpp"
 #include "utility/inc/Logging/Logger.hpp"
 #include "utility/inc/Logging/Sinks/ColorConsoleSink.hpp"
 
+#include "core/inc/ConfigurationI.hpp"
 #include "core/inc/IniParser.hpp"
 #include "core/inc/ParserTypes.hpp"
 

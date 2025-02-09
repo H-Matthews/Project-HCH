@@ -59,17 +59,20 @@ void Core::Configuration::parseConfigs()
         if(fileStream.is_open())
         {
             if constexpr (Utility::CAN_LOG)
-            {
-                std::string logString;
-                logString = "Parsing File: " + filePath;
-                Utility::LogRegistry::instance()->getGlobalLogger()->logDebug(logString);
-            }
+                Utility::LogRegistry::instance()->getGlobalLogger()->logDebug("Parsing File: " + filePath);
 
             // Parse File
             auto fileExtensionIT = mFileExtensionToIDMap.find(file.mFileExtension);
             mParsers[fileExtensionIT->second]->parseFile(fileStream);
         }
+        else
+        {
+            if constexpr (Utility::CAN_LOG)
+                Utility::LogRegistry::instance()->getGlobalLogger()->logWarn("Could NOT Parse File: " + filePath +
+                    " File would not open");
+        }
 
+        fileStream.close();
     }
 
 
