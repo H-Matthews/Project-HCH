@@ -134,7 +134,7 @@ void Core::Configuration::initializeConfigFiles()
 
         // IF the file extension exists, then that implies that we registered a parser to that extension
         // Add to vector
-        FileInformation fileInfo(filePath.stem(), filePath.extension().string());
+        FileInformation fileInfo(filePath.stem().string(), filePath.extension().string());
         mConfigFiles.push_back(fileInfo);
     }
 
