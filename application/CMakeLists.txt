@@ -7,7 +7,7 @@ set(BINARY_NAME ${PROJECT_NAME} )
 add_executable(${BINARY_NAME} ${SRC} )
 
 # Allows Visual Studio to create a folder for the source
-set_target_properties(${BINARY_NAME} PROPERTIES FOLDER "application")
+set_target_properties(${BINARY_NAME} PROPERTIES FOLDER ${BINARY_NAME})
 
 # Linker Options
 target_link_libraries(${BINARY_NAME} PRIVATE application)
