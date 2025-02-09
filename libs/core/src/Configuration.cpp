@@ -4,6 +4,8 @@
 
 #include <string>
 #include <filesystem>
+#include <cassert>
+#include <iostream>
 
 const std::string Core::Configuration::OUTPUT_DIR_NAME = "output";
 const std::string Core::Configuration::CONFIG_DIR_NAME = "configs";
@@ -12,7 +14,10 @@ const std::string Core::Configuration::MAIN_FILE_NAME = "base.ini";
 Core::Configuration::Configuration() :
     mConfigDirPath(),
     mOutputDirPath(),
-    mConfigParserMap(),
+    mConfigFiles(),
+    mFileExtensionToIDMap(),
+    mParserRegistry(),
+    mParsers(),
     mProjectDirectory(PROJECT_DIR)
 {
     if constexpr (Utility::CAN_LOG)
@@ -26,20 +31,47 @@ Core::Configuration::Configuration() :
 
 void Core::Configuration::initializeParsers()
 {
-    // Populate ParserTypes to Parser extension map
-    mParserTypeToExtensionMap.insert(std::make_pair(Core::ParserType::INI, "ini"));
-    mParserTypeToExtensionMap.insert(std::make_pair(Core::ParserType::JSON, "json"));
-
-    // Create Parsers here
-    std::string parserNameID("IniParser");
-    std::string parserExt("ini");
-    mConfigParserMap.insert(std::make_pair(parserNameID, std::make_unique<Core::IniParser>(parserNameID, parserExt) ));
+    // Register Parsers
+    registerParser<Core::IniParser>(Parsers::ID::INI);
 
     return;
 }
 
+std::unique_ptr<Core::Parser> Core::Configuration::createParser(Parsers::ID parserID)
+{
+    auto found = mParserRegistry.find(parserID);
+    assert(found != mParserRegistry.end());
+
+    return found->second();
+}
+
 void Core::Configuration::parseConfigs()
 {
+    std::string filePath;
+    std::ifstream fileStream;
+    for(const auto& file : mConfigFiles)
+    {
+        filePath = "";
+        filePath = mConfigDirPath + "/" + file.mFileName + file.mFileExtension;
+
+        // Open File
+        fileStream.open(filePath, std::ifstream::in);
+        if(fileStream.is_open())
+        {
+            if constexpr (Utility::CAN_LOG)
+            {
+                std::string logString;
+                logString = "Parsing File: " + filePath;
+                Utility::LogRegistry::instance()->getGlobalLogger()->logDebug(logString);
+            }
+
+            // Parse File
+            auto fileExtensionIT = mFileExtensionToIDMap.find(file.mFileExtension);
+            mParsers[fileExtensionIT->second]->parseFile(fileStream);
+        }
+
+    }
+
 
     return;
 }
@@ -78,6 +110,52 @@ void Core::Configuration::initializeConfigDirectory()
     }
 
     initializeConfigFiles();
+}
+
+void Core::Configuration::initializeConfigFiles()
+{
+    for(const auto& fileEntry : std::filesystem::directory_iterator(mConfigDirPath))
+    {
+        std::filesystem::path filePath(fileEntry.path());
+
+        // Ensure file extension is in MAP
+        const std::string fileExtensionStr = filePath.extension();
+        if(mFileExtensionToIDMap.find(fileExtensionStr) == mFileExtensionToIDMap.end())
+        {
+            if constexpr (Utility::CAN_LOG)
+                Utility::LogRegistry::instance()->getGlobalLogger()->logWarn("Unknown File Extension: " +
+                    fileExtensionStr + " File: " + filePath.filename().string() + " will NOT be parsed");
+
+            if(filePath.filename().string() == MAIN_FILE_NAME)
+                throw std::filesystem::filesystem_error("Unknown Base file extension: " + fileExtensionStr, std::error_code());
+
+            continue;
+        }
+
+        // IF the file extension exists, then that implies that we registered a parser to that extension
+        // Add to vector
+        FileInformation fileInfo(filePath.stem(), filePath.extension());
+        mConfigFiles.push_back(fileInfo);
+    }
+
+    // Create Parser Objects
+    for(const auto& file : mConfigFiles)
+    {
+        // Ensure File Extension is registered to a parser
+        // At this point it should be
+        auto fileExtensionIT = mFileExtensionToIDMap.find(file.mFileExtension);
+        if(fileExtensionIT == mFileExtensionToIDMap.end())
+            continue;
+
+        // Ensure Parser has NOT been created already
+        auto parserIT = mParsers.find(fileExtensionIT->second);
+        if(parserIT != mParsers.end())
+            continue;
+
+        // Create Parser
+        mParsers[fileExtensionIT->second] = createParser(fileExtensionIT->second);
+    }
+    return;
 }
 
 // The following field needs to be read in by CONFIG file
@@ -124,12 +202,6 @@ void Core::Configuration::initializeOutputDirectory()
 
     // Set the Output Directory in the LogRegistry
     Utility::LogRegistry::instance()->configureRegistry(mOutputDirPath);
-}
-
-void Core::Configuration::initializeConfigFiles()
-{
-
-    return;
 }
 
 void Core::Configuration::initializeGlobalLogger()

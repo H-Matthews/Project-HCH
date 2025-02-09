@@ -2,15 +2,12 @@
 
 #include "utility/inc/Logging/LogRegistry.hpp"
 
-Core::IniParser::IniParser(const std::string& nameID, const std::string& fileExtension) :
-    ParserI(nameID, fileExtension)
+Core::IniParser::IniParser(const std::string parserIdentifierString) :
+    Parser(parserIdentifierString)
 {
 }
 
-bool Core::IniParser::parseFile(std::ifstream& fileStream)
+void Core::IniParser::parseFile(std::ifstream& fileStream)
 {
-    bool returnStatus = false;
-
-    if( !(fileStream.is_open()))
-        return returnStatus;
+    return;
 }

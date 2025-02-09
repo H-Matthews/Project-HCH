@@ -82,7 +82,7 @@ void Core::StateStack::registerState(States::ID stateID)
     if constexpr (Utility::CAN_LOG)
     {
         std::string logMessage;
-        logMessage += "Registered State: " + identifierString;
+        logMessage = "Registered State: " + identifierString;
         mLogger->logInfo(logMessage);
     }
 }

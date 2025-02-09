@@ -8,9 +8,9 @@
  }
 
  Core::State::State(StateStack& stack, std::string stateIdentifier, SharedObjects sObjects) :
- mStack(&stack),
- mStateIdentifierString(stateIdentifier),
- mSharedObjects(sObjects)
+    mStack(&stack),
+    mStateIdentifierString(stateIdentifier),
+    mSharedObjects(sObjects)
  {
  }
 

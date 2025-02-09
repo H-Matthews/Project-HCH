@@ -17,6 +17,7 @@ set(SRC src/Messaging/Message.cpp
         src/State/StateTypes.cpp
         src/SceneNode.cpp
         src/Configuration.cpp
+        src/ParserTypes.cpp
         src/IniParser.cpp )
 
 set(INC inc/Messaging/Message.hpp
@@ -28,7 +29,7 @@ set(INC inc/Messaging/Message.hpp
         inc/SceneNode.hpp
         inc/Configuration.hpp
         inc/ConfigurationI.hpp
-        inc/ParserI.hpp
+        inc/Parser.hpp
         inc/ParserTypes.hpp
         inc/IniParser.hpp )
 

@@ -18,17 +18,18 @@ const sf::Time Application::App::TIME_PER_FRAME = sf::seconds(1.0f / 120.0f);
 
 Application::App::App(std::shared_ptr<Core::ConfigurationI> config) :
     mAppLogger(std::make_shared<Utility::Logger>("AppLogger")),
-    mWindow(sf::VideoMode(640, 480), "App Window", sf::Style::Close),
     mConfiguration(config),
-    mStateStack(Core::State::SharedObjects(mWindow, mNetwork)),
     mNetwork(),
-    mPlayerKeyBindings()
+    mPlayerKeyBindings(),
+    mWindow(sf::VideoMode(640, 480), "App Window", sf::Style::Close),
+    mStateStack(Core::State::SharedObjects(mWindow, mNetwork))
 {
 }
 
 void Application::App::initialize()
 {
     mConfiguration->initializeIteration();
+    mConfiguration->parseConfigs();
 
     if constexpr (Utility::CAN_LOG)
     {

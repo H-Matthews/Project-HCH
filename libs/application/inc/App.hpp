@@ -38,13 +38,13 @@ namespace Application
             static const sf::Time TIME_PER_FRAME;
 
             std::shared_ptr< Utility::Logger > mAppLogger;
-            sf::RenderWindow mWindow;
             // TODO: Implement a Resource Container for Textures / Fonts
-
+            
             std::shared_ptr<Core::ConfigurationI> mConfiguration;
-            Core::StateStack mStateStack;
             Core::MessageNetwork mNetwork;
             Application::KeyBindings mPlayerKeyBindings;
+            sf::RenderWindow mWindow;
+            Core::StateStack mStateStack;
 
     };
 }

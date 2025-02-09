@@ -1,11 +1,15 @@
 #pragma once
 
+#include <string>
 
-namespace Core
+namespace Parsers
 {
-    enum class ParserType
+    enum class ID
     {
-        INI = 0,
+        NONE = 0,
+        INI,
         JSON
     };
+
+    const std::string parserEnumsToString(const Parsers::ID identifier);
 }

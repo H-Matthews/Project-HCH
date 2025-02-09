@@ -1,15 +1,15 @@
 #pragma once
 
-#include "core/inc/ParserI.hpp"
+#include "core/inc/Parser.hpp"
 
 
 namespace Core
 {
-    class IniParser : public ParserI
+    class IniParser : public Parser
     {
         public:
-            IniParser(const std::string& nameID, const std::string& fileExtension);
+            IniParser(const std::string parserIdentifierString);
 
-            bool parseFile(std::ifstream& fileStream) override;
+            void parseFile(std::ifstream& fileStream) override;
     };
 }
