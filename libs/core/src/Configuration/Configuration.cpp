@@ -1,4 +1,4 @@
-#include "core/inc/Configuration.hpp"
+#include "core/inc/Configuration/Configuration.hpp"
 
 #include "utility/inc/Logging/LogRegistry.hpp"
 

@@ -1,4 +1,4 @@
-#include "core/inc/ParserTypes.hpp"
+#include "core/inc/Configuration/Parsers/ParserTypes.hpp"
 
 // IMPORTANT The string MUST match the file extension EXACTLY
 const std::string Parsers::parserEnumsToString(const Parsers::ID identifier)

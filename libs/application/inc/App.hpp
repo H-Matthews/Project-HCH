@@ -3,7 +3,7 @@
 #include "application/inc/KeyBindings.hpp"
 
 #include "core/inc/State/StateStack.hpp"
-#include "core/inc/Configuration.hpp"
+#include "core/inc/Configuration/Configuration.hpp"
 #include "core/inc/Messaging/MessageNetwork.hpp"
 
 #include "utility/inc/Logging/Logger.hpp"

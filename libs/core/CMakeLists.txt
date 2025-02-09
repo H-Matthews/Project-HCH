@@ -16,9 +16,10 @@ set(SRC src/Messaging/Message.cpp
         src/State/StateStack.cpp
         src/State/StateTypes.cpp
         src/SceneNode.cpp
-        src/Configuration.cpp
-        src/ParserTypes.cpp
-        src/IniParser.cpp )
+        src/Configuration/Configuration.cpp
+        src/Configuration/Parsers/ParserTypes.cpp
+        src/Configuration/Parsers/IniParser.cpp
+        src/Configuration/Parsers/JsonParser.cpp )
 
 set(INC inc/Messaging/Message.hpp
         inc/Messaging/MessageNetwork.hpp
@@ -27,11 +28,12 @@ set(INC inc/Messaging/Message.hpp
         inc/State/State.hpp 
         inc/State/StateStack.hpp
         inc/SceneNode.hpp
-        inc/Configuration.hpp
-        inc/ConfigurationI.hpp
-        inc/Parser.hpp
-        inc/ParserTypes.hpp
-        inc/IniParser.hpp )
+        inc/Configuration/Configuration.hpp
+        inc/Configuration/ConfigurationI.hpp
+        inc/Configuration/Parsers/Parser.hpp
+        inc/Configuration/Parsers/ParserTypes.hpp
+        inc/Configuration/Parsers/IniParser.hpp
+        inc/Configuration/Parsers/JsonParser.hpp )
 
 add_library(${LIBRARY_NAME} STATIC ${SRC} ${INC})
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/inc/Parser.hpp"
+#include "core/inc/Configuration/Parsers/Parser.hpp"
 
 
 namespace Core

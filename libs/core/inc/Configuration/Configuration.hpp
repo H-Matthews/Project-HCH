@@ -1,11 +1,12 @@
 #pragma once
 
-#include "utility/inc/Logging/Logger.hpp"
 #include "utility/inc/Logging/Sinks/ColorConsoleSink.hpp"
 
-#include "core/inc/ConfigurationI.hpp"
-#include "core/inc/IniParser.hpp"
-#include "core/inc/ParserTypes.hpp"
+#include "core/inc/Configuration/ConfigurationI.hpp"
+
+#include "core/inc/Configuration/Parsers/IniParser.hpp"
+#include "core/inc/Configuration/Parsers/JsonParser.hpp"
+#include "core/inc/Configuration/Parsers/ParserTypes.hpp"
 
 #include <string>
 #include <functional>
