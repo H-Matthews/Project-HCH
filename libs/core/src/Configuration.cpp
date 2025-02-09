@@ -119,7 +119,7 @@ void Core::Configuration::initializeConfigFiles()
         std::filesystem::path filePath(fileEntry.path());
 
         // Ensure file extension is in MAP
-        const std::string fileExtensionStr = filePath.extension();
+        const std::string fileExtensionStr = filePath.extension().string();
         if(mFileExtensionToIDMap.find(fileExtensionStr) == mFileExtensionToIDMap.end())
         {
             if constexpr (Utility::CAN_LOG)
@@ -134,7 +134,7 @@ void Core::Configuration::initializeConfigFiles()
 
         // IF the file extension exists, then that implies that we registered a parser to that extension
         // Add to vector
-        FileInformation fileInfo(filePath.stem(), filePath.extension());
+        FileInformation fileInfo(filePath.stem(), filePath.extension().string());
         mConfigFiles.push_back(fileInfo);
     }
 
