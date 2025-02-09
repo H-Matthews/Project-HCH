@@ -19,7 +19,7 @@ namespace Application
     {
         public:
             App(std::shared_ptr<Core::ConfigurationI> config);
-            bool initialize();
+            void initialize();
             void run();
 
         private:

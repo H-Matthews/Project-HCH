@@ -44,22 +44,15 @@ void Core::Configuration::parseConfigs()
     return;
 }
 
-bool Core::Configuration::initializeIteration()
+void Core::Configuration::initializeIteration()
 {
-    bool initialized = true;
+    initializeConfigDirectory();
 
-    initialized = initializeConfigDirectory();
-    if(!initialized) { return initialized; }
-
-    initialized = initializeOutputDirectory();
-
-    return initialized;
+    initializeOutputDirectory();
 }
 
-bool Core::Configuration::initializeConfigDirectory()
+void Core::Configuration::initializeConfigDirectory()
 {
-    bool initConfigDir = true;
-
     std::string configDirectoryPath;
 
     configDirectoryPath += mProjectDirectory + "/" + CONFIG_DIR_NAME;
@@ -68,38 +61,29 @@ bool Core::Configuration::initializeConfigDirectory()
     // Check to see if directory is valid
     if( !(std::filesystem::is_directory(mConfigDirPath)) )
     {
-        initConfigDir = false;
-
         if constexpr (Utility::CAN_LOG)
-        {
-            // Log to Global Logger
-            Utility::LogRegistry::instance()->getGlobalLogger()->logError("Config Directory WAS NOT FOUND --> " + mConfigDirPath );
-        }
+           Utility::LogRegistry::instance()->getGlobalLogger()->logError("Config Directory WAS NOT FOUND --> " + mConfigDirPath );
+
+        throw std::filesystem::filesystem_error("Config directory: " + mConfigDirPath + " could not be found", std::error_code());
     }
 
-    // See if Root file exists
-    if(!(std::filesystem::is_regular_file(mConfigDirPath + "/" + MAIN_FILE_NAME)))
+    // See if base file exists
+    if( !(std::filesystem::is_regular_file(mConfigDirPath + "/" + MAIN_FILE_NAME)))
     {
-        initConfigDir = false;
-
         if constexpr (Utility::CAN_LOG)
-        {
             Utility::LogRegistry::instance()->getGlobalLogger()->logError("Root Config File WAS NOT FOUND --> " 
                 + mConfigDirPath + "/" + MAIN_FILE_NAME);
-        }
+
+        throw std::filesystem::filesystem_error("Main config file: " + MAIN_FILE_NAME + " could not be found", std::error_code());
     }
 
     initializeConfigFiles();
-
-    return initConfigDir;
 }
 
 // The following field needs to be read in by CONFIG file
 // 1. OUTPUT_DIR_NAME
-bool Core::Configuration::initializeOutputDirectory()
+void Core::Configuration::initializeOutputDirectory()
 {
-    bool initOutputDir = true;
-
     std::string outputDirectoryPath;
     outputDirectoryPath += mProjectDirectory + "/" + OUTPUT_DIR_NAME;
 
@@ -108,14 +92,10 @@ bool Core::Configuration::initializeOutputDirectory()
     {
         if( !(std::filesystem::create_directory(outputDirectoryPath)) )
         {
-            initOutputDir = false;
-
             if constexpr (Utility::CAN_LOG)
-            {
-                // Log to Global Logger
                 Utility::LogRegistry::instance()->getGlobalLogger()->logError("Could NOT create output DIRECTORY --> " + outputDirectoryPath);
-            }
 
+            throw std::filesystem::filesystem_error("Output Directory: " + outputDirectoryPath + " could NOT be created", std::error_code());
         }
     }
 
@@ -136,20 +116,14 @@ bool Core::Configuration::initializeOutputDirectory()
     // Creates the "App_" directory with the current time
     if( !(std::filesystem::create_directory(mOutputDirPath)) )
     {
-        initOutputDir = false;
-
         if constexpr (Utility::CAN_LOG)
-        {
-            // Log to Global Logger
             Utility::LogRegistry::instance()->getGlobalLogger()->logError("Could NOT create output APP_ DIRECTORY --> " + mOutputDirPath);
-        }
 
+        throw std::filesystem::filesystem_error("APP_ Directory: " + mOutputDirPath + " could NOT be created", std::error_code());
     }
 
     // Set the Output Directory in the LogRegistry
     Utility::LogRegistry::instance()->configureRegistry(mOutputDirPath);
-
-    return initOutputDir;
 }
 
 void Core::Configuration::initializeConfigFiles()

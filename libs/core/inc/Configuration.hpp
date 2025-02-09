@@ -24,7 +24,7 @@ namespace Core
 
             void parseConfigs() override;
 
-            bool initializeIteration() override;
+            void initializeIteration() override;
 
             const std::string getOutDirPath();
 
@@ -33,8 +33,8 @@ namespace Core
         private:
             void initializeParsers();
 
-            bool initializeConfigDirectory();
-            bool initializeOutputDirectory();
+            void initializeConfigDirectory();
+            void initializeOutputDirectory();
             void initializeConfigFiles();
 
             void initializeGlobalLogger();

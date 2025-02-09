@@ -8,7 +8,7 @@ namespace Core
     class ConfigurationI
     {
         public:
-            virtual bool initializeIteration() = 0;
+            virtual void initializeIteration() = 0;
 
             virtual void parseConfigs() = 0;
 
