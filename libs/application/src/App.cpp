@@ -5,7 +5,6 @@
 
 #include "core/inc/State/State.hpp"
 
-#include "utility/inc/Logging/LogRegistry.hpp"
 #include "utility/inc/Logging/Sinks/ColorConsoleSink.hpp"
 #include "utility/inc/Logging/Sinks/TextFileSink.hpp"
 

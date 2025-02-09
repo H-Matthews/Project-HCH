@@ -29,6 +29,7 @@ set(INC inc/Messaging/Message.hpp
         inc/Configuration.hpp
         inc/ConfigurationI.hpp
         inc/ParserI.hpp
+        inc/ParserTypes.hpp
         inc/IniParser.hpp )
 
 add_library(${LIBRARY_NAME} STATIC ${SRC} ${INC})

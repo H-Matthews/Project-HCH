@@ -6,10 +6,11 @@
 #include <filesystem>
 
 const std::string Core::Configuration::OUTPUT_DIR_NAME = "output";
+const std::string Core::Configuration::CONFIG_DIR_NAME = "configs";
+const std::string Core::Configuration::MAIN_FILE_NAME = "base.ini";
 
-Core::Configuration::Configuration(const std::string& configDirectory) :
+Core::Configuration::Configuration() :
     mConfigDirPath(),
-    mConfigDirName(configDirectory),
     mOutputDirPath(),
     mConfigParserMap(),
     mProjectDirectory(PROJECT_DIR)
@@ -21,6 +22,26 @@ Core::Configuration::Configuration(const std::string& configDirectory) :
     }
 
     initializeParsers();
+}
+
+void Core::Configuration::initializeParsers()
+{
+    // Populate ParserTypes to Parser extension map
+    mParserTypeToExtensionMap.insert(std::make_pair(Core::ParserType::INI, "ini"));
+    mParserTypeToExtensionMap.insert(std::make_pair(Core::ParserType::JSON, "json"));
+
+    // Create Parsers here
+    std::string parserNameID("IniParser");
+    std::string parserExt("ini");
+    mConfigParserMap.insert(std::make_pair(parserNameID, std::make_unique<Core::IniParser>(parserNameID, parserExt) ));
+
+    return;
+}
+
+void Core::Configuration::parseConfigs()
+{
+
+    return;
 }
 
 bool Core::Configuration::initializeIteration()
@@ -35,23 +56,13 @@ bool Core::Configuration::initializeIteration()
     return initialized;
 }
 
-void Core::Configuration::initializeParsers()
-{
-    // Create Parsers here
-    std::string parserNameID("IniParser");
-    std::string parserExt(".ini");
-    mConfigParserMap.insert(std::make_pair(parserNameID, std::make_unique<Core::IniParser>(parserNameID, parserExt) ));
-
-    return;
-}
-
 bool Core::Configuration::initializeConfigDirectory()
 {
     bool initConfigDir = true;
 
     std::string configDirectoryPath;
 
-    configDirectoryPath += mProjectDirectory + "/" + mConfigDirName;
+    configDirectoryPath += mProjectDirectory + "/" + CONFIG_DIR_NAME;
     mConfigDirPath = configDirectoryPath;
 
     // Check to see if directory is valid
@@ -64,8 +75,21 @@ bool Core::Configuration::initializeConfigDirectory()
             // Log to Global Logger
             Utility::LogRegistry::instance()->getGlobalLogger()->logError("Config Directory WAS NOT FOUND --> " + mConfigDirPath );
         }
-
     }
+
+    // See if Root file exists
+    if(!(std::filesystem::is_regular_file(mConfigDirPath + "/" + MAIN_FILE_NAME)))
+    {
+        initConfigDir = false;
+
+        if constexpr (Utility::CAN_LOG)
+        {
+            Utility::LogRegistry::instance()->getGlobalLogger()->logError("Root Config File WAS NOT FOUND --> " 
+                + mConfigDirPath + "/" + MAIN_FILE_NAME);
+        }
+    }
+
+    initializeConfigFiles();
 
     return initConfigDir;
 }
@@ -126,6 +150,12 @@ bool Core::Configuration::initializeOutputDirectory()
     Utility::LogRegistry::instance()->configureRegistry(mOutputDirPath);
 
     return initOutputDir;
+}
+
+void Core::Configuration::initializeConfigFiles()
+{
+
+    return;
 }
 
 void Core::Configuration::initializeGlobalLogger()

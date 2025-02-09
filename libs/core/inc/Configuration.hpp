@@ -5,6 +5,7 @@
 #include "utility/inc/Logging/Sinks/ColorConsoleSink.hpp"
 
 #include "core/inc/IniParser.hpp"
+#include "core/inc/ParserTypes.hpp"
 
 #include <string>
 #include <map>
@@ -13,13 +14,15 @@ namespace Core
 {
     /*
         Configuration sets up the Config Directory, Output Directory, and contains the parsers that will parse config files.
-        The Configuration class is responsible for handing each parser the correct file based on its file extension.
+        The Configuration class is responsible for handing each parser the correct file stream based on its file extension.
         Files that lack extensions are ignored
     */
     class Configuration : public ConfigurationI
     {
         public:
-            Configuration(const std::string& configDirectory);
+            Configuration();
+
+            void parseConfigs() override;
 
             bool initializeIteration() override;
 
@@ -32,19 +35,22 @@ namespace Core
 
             bool initializeConfigDirectory();
             bool initializeOutputDirectory();
+            void initializeConfigFiles();
 
             void initializeGlobalLogger();
 
         private:
             // FilePath information
             std::string mConfigDirPath;
-            std::string mConfigDirName;
+            static const std::string CONFIG_DIR_NAME;
 
             std::string mOutputDirPath;
             static const std::string OUTPUT_DIR_NAME;
+            static const std::string MAIN_FILE_NAME;
 
             // Key is the string name identifier of parser
             std::map< std::string, std::unique_ptr<Core::ParserI> > mConfigParserMap;
+            std::map< Core::ParserType, std::string > mParserTypeToExtensionMap;
 
             std::string mProjectDirectory;
     };

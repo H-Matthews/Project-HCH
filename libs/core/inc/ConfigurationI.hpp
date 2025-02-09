@@ -10,6 +10,8 @@ namespace Core
         public:
             virtual bool initializeIteration() = 0;
 
+            virtual void parseConfigs() = 0;
+
             virtual ~ConfigurationI() {}
     };
     

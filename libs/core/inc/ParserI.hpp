@@ -11,9 +11,7 @@ namespace Core
         public:
             inline ParserI(const std::string nameIdentifier, const std::string fileExtension) :
                 mNameIdentifier(nameIdentifier),
-                mFileExtension(fileExtension)
-            {
-            }
+                mFileExtension(fileExtension) {}
 
             virtual bool parseFile(std::ifstream& fileStream) = 0;
 
