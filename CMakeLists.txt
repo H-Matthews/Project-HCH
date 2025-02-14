@@ -42,11 +42,9 @@ FetchContent_MakeAvailable(SFML)
 
 # Determine build type depending on generator used
 if(CMAKE_CONFIGURATION_TYPES)
-    message("Multi-configuration generator")
-    set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "My multi config types" FORCE)
+    set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Multi config types" FORCE)
     set(CONFIG_TYPE "")
-else()
-    message("Single-configuration generator")
+else() # Single Generator
     set(CONFIG_TYPE ${CMAKE_BUILD_TYPE})
 endif()
 

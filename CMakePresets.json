@@ -2,8 +2,8 @@
     "version": 3,
     "configurePresets": [
         {
-            "name": "debug-unix",
-            "displayName": "Debug-unix Config",
+            "name": "debug-unix_makefiles",
+            "displayName": "Debug-unix_makefiles",
             "description": "Debug build using Unix Makefiles",
             "generator": "Unix Makefiles",
             "binaryDir": "${sourceDir}/build/Debug",
@@ -13,8 +13,8 @@
         },
 
         {
-            "name": "release-unix",
-            "displayName": "Release-unix Config",
+            "name": "release-unix_makefiles",
+            "displayName": "Release-unix_makefiles",
             "description": "Release build using Unix Makefiles",
             "generator": "Unix Makefiles",
             "binaryDir": "${sourceDir}/build/Release",
@@ -40,12 +40,12 @@
     ],
     "buildPresets": [
         {
-            "name": "debug-unix",
-            "configurePreset": "debug-unix"
+            "name": "debug-unix_makefiles",
+            "configurePreset": "debug-unix_makefiles"
         },
         {
-            "name": "release-unix",
-            "configurePreset": "release-unix"
+            "name": "release-unix_makefiles",
+            "configurePreset": "release-unix_makefiles"
         },
         {
             "name": "windows-VS22",

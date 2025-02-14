@@ -8,7 +8,7 @@ For more insight into the project, see the [wiki](https://github.com/H-Matthews/
 # Requirements
 Here you will find all of the necessary third party tools needed to build the application
 - Git
-- CMake
+- CMake (at least 3.30)
 
 ## Windows Dependencies
 - Visual Studio 2022 / 2019
@@ -35,20 +35,24 @@ sudo apt install \
 ## Build Process
 The following commands are expecting you to be in the top level of the project
 ### Linux
-#### Command Line (Normal Way)
-```
-mkdir build
-cd build
-cmake ../
-cmake --build .
-```
+Best way to build without issues are to use the configured presets that already exist.
+
+Presets:
+1. debug-unix_makefiles
+    - Debug build using Unix Makefiles Generator
+2. release-unix_makefiles
+    - Release build using Unix Makefiles Generator
+3. windows-VS22
+    - Build using Visual Studio 2022 multi generator
+4. windows-VS19
+    - Build using Visual Studio 2019 multi generator
 
 #### Command Line (CMake Presets) RECOMMENDED
 ```
 cmake --list-presets # Gives you a list of optional Config presets
-cmake --preset debug-unix
+cmake --preset debug-unix_makefiles
 cmake --build --list-presets # Gives you a list of optional build presets
-cmake --build --preset debug-unix
+cmake --build --preset debug-unix_makefiles
 ```
 
 #### VSCode CMake Integration
@@ -57,7 +61,9 @@ cmake --build --preset debug-unix
 2. [CMake Tools Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools)
 
 ##### Building in VSCode
-With the above extensions installed in VSCode, you should have the necessary CMake commands
+With the above extensions installed in VSCode, you should have the necessary CMake commands. 
+
+NOTE: When building in VSCode, you are using the presets that reside in CMakePresets.json
 
 In VSCode open the command pallete with ```Ctrl+Shift+P ``` Type CMake for a list of the CMake extension commands. Look for ```CMake:Select Configure Preset``` choose the configuration setting you would like to build (Debug | Release). Next open the command pallete again and look for ```CMake:Build``` This will build the project and create the executable.
 When running, you need to make sure you select the correct launch configuration. In the RUN AND DEBUG panel, If you configured with the Release option, ensure you are running with the Release launch config. Then, select the Play button in the panel, OR press 'F5'.
