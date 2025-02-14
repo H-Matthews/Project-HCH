@@ -34,15 +34,24 @@ void Core::StateStack::draw()
     }
 }
 
-void Core::StateStack::handleEvent(const sf::Event& event)
+void Core::StateStack::handleKeyPressed(const sf::Event::KeyPressed& keyPressed)
 {
+    // Depending on Event Type, Call different function
     for(auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr)
     {
-        if(!(*itr)->handleEvent(event))
+        if(!(*itr)->handleKeyPressed(keyPressed))
             break;
     }
+}
 
-    applyPendingChanges();
+void Core::StateStack::handleMouseMoved(const sf::Event::MouseMoved& mouseMoved)
+{
+    // Depending on Event Type, Call different function
+    for(auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr)
+    {
+        if(!(*itr)->handleMouseMoved(mouseMoved))
+            break;
+    }
 }
 
 void Core::StateStack::pushState(States::ID stateID)

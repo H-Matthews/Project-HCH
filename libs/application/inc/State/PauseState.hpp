@@ -12,10 +12,6 @@ namespace Application
             virtual void draw();
 
             virtual bool update(sf::Time fixedTimeStep);
-            virtual bool handleEvent(const sf::Event& event);
-
-
-        private:
-            sf::Sprite mBackgroundSprite;
+            bool handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) override;
     };
 }

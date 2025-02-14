@@ -31,7 +31,8 @@ namespace Core
 
             virtual void draw() = 0;
             virtual bool update(sf::Time fixedTimeStep) = 0;
-            virtual bool handleEvent(const sf::Event& event) = 0;
+            virtual bool handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) = 0;
+            virtual bool handleMouseMoved(const sf::Event::MouseMoved&) { return true; }
 
             const std::string getStateAsString();
 

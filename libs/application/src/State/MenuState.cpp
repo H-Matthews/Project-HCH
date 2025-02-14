@@ -3,7 +3,7 @@
 #include <iostream>
 
 Application::MenuState::MenuState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) :
-State(stack, stateIdentifier, sharedObjects)
+    State(stack, stateIdentifier, sharedObjects)
 {
     std::cout << "Creating MenuState " << std::endl;
     
@@ -29,26 +29,28 @@ bool Application::MenuState::update(sf::Time fixedTimeStep)
     return true;
 }
 
-bool Application::MenuState::handleEvent(const sf::Event& event)
+bool Application::MenuState::handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent)
 {
-    if( event.type != sf::Event::KeyPressed)
-        return false;
-
-    if(event.key.code == sf::Keyboard::G)
+    if(keyPressedEvent.scancode == sf::Keyboard::Scancode::G)
     {
-        std::cout << "Handling Events in MenuState. You Pressed the G key " << std::endl;
+        std::cout << "Handling Events in Menustate. You Pressed the G Key " << std::endl;
     }
-
-    else if(event.key.code == sf::Keyboard::Return)
+    else if(keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter)
     {
         requestStackPop();
         requestStackPush(States::Game);
     }
-
-    else if(event.key.code == sf::Keyboard::Escape)
+    else if(keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape)
     {
         requestStackPop();
     }
+
+    return true;
+}
+
+bool Application::MenuState::handleMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent)
+{
+    std::cout << "Moved the mouse in Menu State " << std::endl;
 
     return true;
 }

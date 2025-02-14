@@ -3,14 +3,14 @@
 Application::KeyBindings::KeyBindings()
 {
     // Set Initial Keys
-    mKeyBindings[sf::Keyboard::A] = PlayerAction::MOVE_LEFT;
-    mKeyBindings[sf::Keyboard::D] = PlayerAction::MOVE_RIGHT;
-    mKeyBindings[sf::Keyboard::S] = PlayerAction::MOVE_DOWN;
-    mKeyBindings[sf::Keyboard::W] = PlayerAction::MOVE_UP;
-    mKeyBindings[sf::Keyboard::Space] = PlayerAction::JUMP;
+    mKeyBindings[sf::Keyboard::Scan::A] = PlayerAction::MOVE_LEFT;
+    mKeyBindings[sf::Keyboard::Scan::D] = PlayerAction::MOVE_RIGHT;
+    mKeyBindings[sf::Keyboard::Scan::S] = PlayerAction::MOVE_DOWN;
+    mKeyBindings[sf::Keyboard::Scan::W] = PlayerAction::MOVE_UP;
+    mKeyBindings[sf::Keyboard::Scan::Space] = PlayerAction::JUMP;
 }
 
-void Application::KeyBindings::assignKey(PlayerAction action, sf::Keyboard::Key key)
+void Application::KeyBindings::assignKey(PlayerAction action, sf::Keyboard::Scan scanCode)
 {
     // Remove the action from other keybindings if necessary
     for(auto iterator = mKeyBindings.begin(); iterator != mKeyBindings.end(); )
@@ -22,13 +22,13 @@ void Application::KeyBindings::assignKey(PlayerAction action, sf::Keyboard::Key 
     }
 
     // Insert new Binding
-    mKeyBindings[key] = action;
+    mKeyBindings[scanCode] = action;
 }
 
-Application::PlayerAction Application::KeyBindings::getAssignedAction(sf::Keyboard::Key key) const
+Application::PlayerAction Application::KeyBindings::getAssignedAction(sf::Keyboard::Scan scanCode) const
 {
     PlayerAction action = PlayerAction::NONE;
-    auto found = mKeyBindings.find(key);
+    auto found = mKeyBindings.find(scanCode);
 
     if(found != mKeyBindings.end())
         action = found->second;

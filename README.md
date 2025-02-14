@@ -18,18 +18,17 @@ In order to build the application, the CMake script will first pull SFML from gi
 
 On Ubuntu, 
 ```
-sudo apt update
-sudo apt install \
+sudo apt update sudo apt install \
     libxrandr-dev \
     libxcursor-dev \
+    libxi-dev \
     libudev-dev \
-    libfreetype-dev \
-    libopenal-dev \
     libflac-dev \
-    libvorbis-dev \
+    libvorbis-dev \ 
     libgl1-mesa-dev \
     libegl1-mesa-dev \
-    libfreetype-dev
+    libdrm-dev \
+    libgbm-dev
 ```
 
 ## Build Process

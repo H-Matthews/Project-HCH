@@ -12,6 +12,7 @@
 #include <SFML/System/Time.hpp>
 
 #include <string>
+#include <functional>
 
 namespace Application
 {

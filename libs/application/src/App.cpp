@@ -21,7 +21,7 @@ Application::App::App(std::shared_ptr<Core::ConfigurationI> config) :
     mConfiguration(config),
     mNetwork(),
     mPlayerKeyBindings(),
-    mWindow(sf::VideoMode(640, 480), "App Window", sf::Style::Close),
+    mWindow(sf::VideoMode( {640, 480 } ), "App Window", sf::Style::Close),
     mStateStack(Core::State::SharedObjects(mWindow, mNetwork))
 {
 }
@@ -57,6 +57,7 @@ void Application::App::run()
     if constexpr (Utility::CAN_LOG)
         mAppLogger->logInfo("Entering main RUN loop");
 
+
     while(mWindow.isOpen())
     {
         sf::Time elapsedTime = clock.restart();
@@ -86,16 +87,13 @@ void Application::App::run()
 
 void Application::App::processInput()
 {
-    sf::Event event;
-
-    while(mWindow.pollEvent(event))
-    {
-        // TODO: Forward ALL events to PlayerInput Class
-        mStateStack.handleEvent(event);
-
-        if(event.type == sf::Event::Closed)
-            mWindow.close();
-    }
+    // SFMLs Window Class will detect events and then call these functions if the event matches
+    // When needed, Add Event Subtypes here
+    mWindow.handleEvents(
+        [this](const sf::Event::Closed&) { mWindow.close(); },
+        [this](const sf::Event::KeyPressed& keyPressedEvent) { mStateStack.handleKeyPressed(keyPressedEvent); },
+        [this](const sf::Event::MouseMoved& mouseMovedEvent) { mStateStack.handleMouseMoved(mouseMovedEvent); }
+    );
 
 }
 

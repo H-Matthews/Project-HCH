@@ -3,7 +3,7 @@
 #include <iostream>
 
 Application::GameState::GameState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) : 
-State(stack, stateIdentifier, sharedObjects)
+    State(stack, stateIdentifier, sharedObjects)
 {
     std::cout << "Creating GameState " << std::endl;
 
@@ -28,19 +28,18 @@ bool Application::GameState::update(sf::Time fixedTimeStep)
     return true;
 }
 
-bool Application::GameState::handleEvent(const sf::Event& event)
+bool Application::GameState::handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent)
 {
-    if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return)
-    {
-        std::cout << "Handling Events in GameState. You Pressed the Enter key " << std::endl;
-    }
 
-    if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P)
+    if(keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter)
+    {
+        std::cout << "Handling Events in GameState. You prseed the enter key " << std::endl;
+    }
+    else if(keyPressedEvent.scancode == sf::Keyboard::Scancode::P)
     {
         requestStackPush(States::Pause);
     }
-
-    if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+    else if(keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape)
     {
         requestStackPop();
         requestStackPush(States::Menu);

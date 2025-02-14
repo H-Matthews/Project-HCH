@@ -33,7 +33,9 @@ namespace Core
 
             void update(sf::Time fixedTimeStep);
             void draw();
-            void handleEvent(const sf::Event& event);
+
+            void handleKeyPressed(const sf::Event::KeyPressed& keyPressed);
+            void handleMouseMoved(const sf::Event::MouseMoved& mouseMoved);
 
             void pushState(States::ID stateID);
             void popState();

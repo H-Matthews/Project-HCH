@@ -13,12 +13,12 @@ namespace Application
         public:
             KeyBindings();
 
-            void assignKey(PlayerAction action, sf::Keyboard::Key key);
-            PlayerAction getAssignedAction(sf::Keyboard::Key key) const;
+            void assignKey(PlayerAction action, sf::Keyboard::Scan scanCode);
+            PlayerAction getAssignedAction(sf::Keyboard::Scan scanCode) const;
 
         private:
             static bool isRealTimeAction(PlayerAction action);
 
-            std::map<sf::Keyboard::Key, PlayerAction> mKeyBindings;
+            std::map<sf::Keyboard::Scan, PlayerAction> mKeyBindings;
     };
 }

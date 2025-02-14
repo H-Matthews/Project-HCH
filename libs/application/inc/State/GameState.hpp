@@ -11,6 +11,6 @@ namespace Application
 
             virtual void draw();
             virtual bool update(sf::Time fixedTimeStep);
-            virtual bool handleEvent(const sf::Event& event);
+            bool handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) override;
     };
 }
