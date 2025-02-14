@@ -50,7 +50,5 @@ bool Application::MenuState::handleKeyPressed(const sf::Event::KeyPressed& keyPr
 
 bool Application::MenuState::handleMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent)
 {
-    std::cout << "Moved the mouse in Menu State " << std::endl;
-
     return true;
 }

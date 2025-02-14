@@ -18,7 +18,7 @@ In order to build the application, the CMake script will first pull SFML from gi
 
 On Ubuntu, 
 ```
-sudo apt update sudo apt install \
+sudo apt update && sudo apt install \
     libxrandr-dev \
     libxcursor-dev \
     libxi-dev \
