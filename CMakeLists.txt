@@ -44,15 +44,18 @@ FetchContent_MakeAvailable(SFML)
 if(CMAKE_CONFIGURATION_TYPES)
     message("Multi-configuration generator")
     set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "My multi config types" FORCE)
+    set(CONFIG_TYPE "")
 else()
     message("Single-configuration generator")
     set(CONFIG_TYPE ${CMAKE_BUILD_TYPE})
-    message (${CONFIG_TYPE})
 endif()
 
+# This changes depending on Single VS Multi generator
+set(BUILD_DIRECTORY "${PROJECT_SOURCE_DIR}/build/${CONFIG_TYPE}")
+
 # Dependency Include Directories
-set(SFML_INC_DIR ${PROJECT_SOURCE_DIR}/build/_deps/sfml-src/include)
-set(GTEST_INC_DIR ${PROJECT_SOURCE_DIR}/build/_deps/googletest-src/googletest/include)
+set(SFML_INC_DIR ${BUILD_DIRECTORY}/_deps/sfml-src/include)
+set(GTEST_INC_DIR ${BUILD_DIRECTORY}/_deps/googletest-src/googletest/include)
 
 # Include Directories
 set(LIBS_INC_DIR ${PROJECT_SOURCE_DIR}/libs)
