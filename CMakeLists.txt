@@ -3,6 +3,8 @@ project(Project-HCH LANGUAGES CXX)
 
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
+enable_language(C CXX)
+
 # GoogleTest requires at least C++14
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -38,11 +40,22 @@ FetchContent_Declare(SFML
     GIT_TAG 2.6.x)
 FetchContent_MakeAvailable(SFML)
 
-# Include Directories 
-set(LIBS_INC_DIR ${PROJECT_SOURCE_DIR}/libs)
+# Determine build type depending on generator used
+if(CMAKE_CONFIGURATION_TYPES)
+    message("Multi-configuration generator")
+    set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "My multi config types" FORCE)
+else()
+    message("Single-configuration generator")
+    set(CONFIG_TYPE ${CMAKE_BUILD_TYPE})
+    message (${CONFIG_TYPE})
+endif()
 
+# Dependency Include Directories
 set(SFML_INC_DIR ${PROJECT_SOURCE_DIR}/build/_deps/sfml-src/include)
 set(GTEST_INC_DIR ${PROJECT_SOURCE_DIR}/build/_deps/googletest-src/googletest/include)
+
+# Include Directories
+set(LIBS_INC_DIR ${PROJECT_SOURCE_DIR}/libs)
 
 add_subdirectory(tests)
 add_subdirectory(libs/core)
