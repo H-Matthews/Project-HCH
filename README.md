@@ -75,3 +75,12 @@ cmake --list-presets # Gives you a list of optional config presets
 cmake --preset windows-VS22
 ```
 Creates the .sln file in the build directory
+
+## Running Unit Tests
+The GTest binaries get output to the ./bin/tests
+To run a binary, simply navigate to that directory and execute it. 
+
+Command to run ALL GTests
+```
+ctest --test-dir ./build --output-on-failure
+```
