@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.30)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/tests)
-
 # Glob all Test files and compile a binary for each
 file(GLOB TEST_SRC_FILES 
       ${PROJECT_SOURCE_DIR}/tests/Core/*.cc
@@ -20,12 +18,4 @@ foreach(_test_file ${TEST_SRC_FILES})
   add_test(NAME ${_test_name} 
            COMMAND ${_test_name})
   set_tests_properties(${_test_name} PROPERTIES TIMEOUT 5)
-
-  if(WIN32)
-    add_custom_command(
-        TARGET ${_test_name}
-        COMMENT "Copy OpenAL DLL"
-        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:${_test_name}>
-        VERBATIM)
-  endif()
 endforeach()
