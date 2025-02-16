@@ -17,7 +17,7 @@ namespace Core
         private:
             std::unordered_map<std::string, sf::Texture> textureMap;
             std::unordered_map<std::string, sf::Font> fontMap;
-    }
+    };
 
 
 }

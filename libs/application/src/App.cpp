@@ -30,6 +30,7 @@ void Application::App::initialize()
 {
     mConfiguration->initializeIteration();
     mConfiguration->parseConfigs();
+    mGameAssetContainer.initializeTextures();
 
     if constexpr (Utility::CAN_LOG)
     {

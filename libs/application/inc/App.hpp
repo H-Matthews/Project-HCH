@@ -5,6 +5,7 @@
 #include "core/inc/State/StateStack.hpp"
 #include "core/inc/Configuration/Configuration.hpp"
 #include "core/inc/Messaging/MessageNetwork.hpp"
+#include "core/inc/GameAssetContainer/GameAssetContainer.hpp"
 
 #include "utility/inc/Logging/Logger.hpp"
 
@@ -40,7 +41,8 @@ namespace Application
 
             std::shared_ptr< Utility::Logger > mAppLogger;
             // TODO: Implement a Resource Container for Textures / Fonts
-            
+
+            Core::GameAssetContainer mGameAssetContainer;
             std::shared_ptr<Core::ConfigurationI> mConfiguration;
             Core::MessageNetwork mNetwork;
             Application::KeyBindings mPlayerKeyBindings;
