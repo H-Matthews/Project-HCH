@@ -3,6 +3,6 @@
 
 Application::PlayerInputMessage::PlayerInputMessage(const Messages::ID messageID) :
     Message(messageID, "PlayerActionMessage"),
-    action(Action::NONE)
+    action(PlayerAction::NONE)
 {
 }

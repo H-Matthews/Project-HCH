@@ -7,14 +7,18 @@ set(PROJECT_DIR "${CMAKE_SOURCE_DIR}")
 set(LIBRARY_NAME "application")
 
 set(SRC src/App.cpp
+        src/GameWorld.cpp
         src/KeyBindings.cpp
+        src/PlayerInputPublisher.cpp
         src/State/GameState.cpp
         src/State/MenuState.cpp
         src/State/PauseState.cpp
         src/Messages/PlayerInputMessage.cpp)
 
 set(INC inc/App.hpp
+        inc/GameWorld.hpp
         inc/KeyBindings.hpp
+        inc/PlayerInputPublisher.hpp
         inc/State/GameState.hpp
         inc/State/MenuState.hpp
         inc/State/PauseState.hpp

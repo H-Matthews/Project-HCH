@@ -3,8 +3,15 @@
 #include <iostream>
 
 Application::GameState::GameState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) : 
-    State(stack, stateIdentifier, sharedObjects)
+    State(stack, stateIdentifier, sharedObjects),
+    mNetwork(*sharedObjects.network),
+    mGameWorld(*sharedObjects.window),
+    mKeyBindings(),
+    mPlayerPublisher(sharedObjects.network, mKeyBindings)
 {
+
+
+
     std::cout << "Creating GameState " << std::endl;
 
     std::cout << "Controls: --------------------------------" << std::endl;
@@ -15,25 +22,28 @@ Application::GameState::GameState(Core::StateStack& stack, std::string stateIden
 
 void Application::GameState::draw()
 {
-    // Draw Game related things to window here
-
-    // Retrieve window from sharedObjects struct
-    sf::RenderWindow& window = *getSharedObjects().window;
-
+    mGameWorld.draw();
     // This will be just mWorld.draw() later
 }
 
 bool Application::GameState::update(sf::Time fixedTimeStep)
 {
+    // Disseminate Messages
+    mNetwork.notifySubscribers();
+
+    mGameWorld.update(fixedTimeStep);
+
     return true;
 }
 
 bool Application::GameState::handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent)
 {
+    // Game Input Handling
+    mPlayerPublisher.handleKeyPressed(keyPressedEvent);
 
     if(keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter)
     {
-        std::cout << "Handling Events in GameState. You prseed the enter key " << std::endl;
+        std::cout << "Handling Events in GameState. You pressed the enter key " << std::endl;
     }
     else if(keyPressedEvent.scancode == sf::Keyboard::Scancode::P)
     {
