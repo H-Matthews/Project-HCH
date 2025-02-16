@@ -4,14 +4,18 @@
 
 #include "core/inc/Messaging/MessageNode.hpp"
 
-#include "application/inc/Messages/PlayerInputMessage.hpp"
+#include "application/inc/MessageNetwork/Messages/PlayerInputMessage.hpp"
 #include "application/inc/KeyBindings.hpp"
 
 namespace Application
 {
 
-    /* Publishes the following Messages:
-        1. PlayerInputMessage
+    /*
+        Publishes the following Messages:
+            1. PlayerInput Message
+
+        The Publisher has keyBindings that it references when receiving a keyPressedEvent
+        IF the sf::Scancode is registered to an action in the keyBindings, then we Publisher a Playerinput message
     */
     class PlayerInputPublisher : public Core::MessageNode
     {

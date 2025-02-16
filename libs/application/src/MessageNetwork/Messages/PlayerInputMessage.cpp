@@ -1,8 +1,8 @@
-#include "application/inc/Messages/PlayerInputMessage.hpp"
+#include "application/inc/MessageNetwork/Messages/PlayerInputMessage.hpp"
 
 
 Application::PlayerInputMessage::PlayerInputMessage(const Messages::ID messageID) :
     Message(messageID, "PlayerActionMessage"),
-    action(PlayerAction::NONE)
+    action(Actions::Player::NONE)
 {
 }

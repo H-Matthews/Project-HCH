@@ -8,6 +8,6 @@ namespace Application
     struct PlayerInputMessage : public Core::Message
     {
         PlayerInputMessage(const Messages::ID messageID);
-        PlayerAction action;
+        Actions::Player action;
     };
 }

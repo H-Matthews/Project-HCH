@@ -1,7 +1,7 @@
 #pragma once
 
 #include "application/inc/GameWorld.hpp"
-#include "application/inc/PlayerInputPublisher.hpp"
+#include "application/inc/MessageNetwork/Publishers/PlayerInputPublisher.hpp"
 
 #include "core/inc/State/State.hpp"
 

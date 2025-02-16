@@ -5,13 +5,10 @@
 Application::GameState::GameState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) : 
     State(stack, stateIdentifier, sharedObjects),
     mNetwork(*sharedObjects.network),
-    mGameWorld(*sharedObjects.window),
+    mGameWorld(*sharedObjects.window, sharedObjects.network),
     mKeyBindings(),
     mPlayerPublisher(sharedObjects.network, mKeyBindings)
 {
-
-
-
     std::cout << "Creating GameState " << std::endl;
 
     std::cout << "Controls: --------------------------------" << std::endl;
@@ -23,7 +20,6 @@ Application::GameState::GameState(Core::StateStack& stack, std::string stateIden
 void Application::GameState::draw()
 {
     mGameWorld.draw();
-    // This will be just mWorld.draw() later
 }
 
 bool Application::GameState::update(sf::Time fixedTimeStep)

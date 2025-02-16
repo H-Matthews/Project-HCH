@@ -1,4 +1,6 @@
-#include "application/inc/PlayerInputPublisher.hpp"
+#include "application/inc/MessageNetwork/Publishers/PlayerInputPublisher.hpp"
+
+#include <iostream>
 
 Application::PlayerInputPublisher::PlayerInputPublisher(Core::MessageNetwork* network, Application::KeyBindings keyBindings) :
     Core::MessageNode(network),
@@ -13,13 +15,11 @@ Application::PlayerInputPublisher::PlayerInputPublisher(Core::MessageNetwork* ne
 
 void Application::PlayerInputPublisher::handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent)
 {
-    PlayerAction action = mKeyBindings.getAssignedAction(keyPressedEvent.scancode);
+    Actions::Player playerAction = mKeyBindings.getAssignedAction(keyPressedEvent.scancode);
 
-    if(action == PlayerAction::NONE)
-    {
+    if(playerAction == Actions::Player::NONE)
         return;
-    }
 
-    mPlayerActionMessage->action = mKeyBindings.getAssignedAction(keyPressedEvent.scancode);
+    mPlayerActionMessage->action = playerAction;
     MessageNode::send(mPlayerActionMessage);
 }

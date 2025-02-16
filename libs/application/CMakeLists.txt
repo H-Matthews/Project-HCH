@@ -9,20 +9,26 @@ set(LIBRARY_NAME "application")
 set(SRC src/App.cpp
         src/GameWorld.cpp
         src/KeyBindings.cpp
-        src/PlayerInputPublisher.cpp
+        src/MessageNetwork/Publishers/PlayerInputPublisher.cpp
+        src/MessageNetwork/Messages/PlayerInputMessage.cpp
+        src/PlayerAction.cpp
+        src/Entity.cpp
+        src/Player.cpp
         src/State/GameState.cpp
         src/State/MenuState.cpp
-        src/State/PauseState.cpp
-        src/Messages/PlayerInputMessage.cpp)
+        src/State/PauseState.cpp)
 
 set(INC inc/App.hpp
         inc/GameWorld.hpp
         inc/KeyBindings.hpp
-        inc/PlayerInputPublisher.hpp
+        inc/MessageNetwork/Publishers/PlayerInputPublisher.hpp
+        inc/MessageNetwork/Messages/PlayerInputMessage.hpp
+        inc/PlayerAction.hpp
+        inc/Entity.hpp
+        inc/Player.hpp
         inc/State/GameState.hpp
         inc/State/MenuState.hpp
-        inc/State/PauseState.hpp
-        inc/Messages/PlayerInputMessage.hpp)
+        inc/State/PauseState.hpp)
 
 add_library(${LIBRARY_NAME} STATIC ${SRC} ${INC})
 

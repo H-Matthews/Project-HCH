@@ -6,6 +6,8 @@
 #include "core/inc/SceneNode.hpp"
 #include "core/inc/Messaging/MessageNetwork.hpp"
 
+#include "application/inc/Player.hpp"
+
 namespace Application
 {
     enum Layer
@@ -19,7 +21,7 @@ namespace Application
     class GameWorld
     {
         public:
-            explicit GameWorld(sf::RenderWindow& window);
+            explicit GameWorld(sf::RenderWindow& window, Core::MessageNetwork* network);
     
             void update(sf::Time fixedTimeStep);
             void draw();
@@ -29,9 +31,12 @@ namespace Application
     
         private:
             sf::RenderWindow& mWindow;
+            Core::MessageNetwork* mNetwork;
     
             Core::SceneNode mSceneGraph;
             std::array<Core::SceneNode*, LayerCount> mSceneLayers;
+
+            Player* mPlayer;
     
     };
 }

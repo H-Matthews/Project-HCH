@@ -5,9 +5,14 @@
 
 Core::MessageNode::MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName) :
     mMessageNetwork(messageNetwork),
-    mMessageNodeInfo(messageNodeName)
+    mMessageNodeInfo(messageNodeName),
+    mNetworkLogger()
 {   
     mMessageNodeInfo.callback = this->getNotifyFunc();
+
+    // Get Logger
+    if constexpr (Utility::CAN_LOG)
+        mNetworkLogger = Utility::LogRegistry::instance()->getLogger("MessageNetworkLogger");
 }
 
 Core::MessageNode::MessageNode(MessageNetwork* messageNetwork) :

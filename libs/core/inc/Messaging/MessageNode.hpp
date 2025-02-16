@@ -1,6 +1,8 @@
 #pragma once
 
 #include "core/inc/Messaging/MessageNodeInfo.hpp"
+#include "utility/inc/Logging/Logger.hpp"
+#include "utility/inc/Logging/LogRegistry.hpp"
 
 #include <functional>
 
@@ -29,6 +31,8 @@ namespace Core
 
         protected:
             MessageNodeInfo mMessageNodeInfo;
+
+            std::shared_ptr<Utility::Logger> mNetworkLogger;
     };
 
 }
