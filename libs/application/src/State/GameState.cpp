@@ -32,7 +32,7 @@ bool Application::GameState::update(sf::Time fixedTimeStep)
 bool Application::GameState::handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent)
 {
     // Handle Event based Key Presses
-    //mPlayerPublisher.handleKeyPressed(keyPressedEvent);
+    mPlayerPublisher.handleKeyPressed(keyPressedEvent);
 
     if(keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter)
     {
@@ -56,6 +56,8 @@ bool Application::GameState::handleRealTimeInput()
     // Handle RealTime Input KeyPresses
     // Usually movement based
     mPlayerPublisher.handleRealTimeInput();
+
+    return true;
 }
 
 Application::GameState::~GameState()
