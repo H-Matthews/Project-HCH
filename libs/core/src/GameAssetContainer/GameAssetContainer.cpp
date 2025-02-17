@@ -15,20 +15,9 @@ bool Core::GameAssetContainer::initializeTextures()
 
 bool Core::GameAssetContainer::initializeFonts()
 {
-/*
-    sf::Font tempFont;
-
-    //TODO Bug Creates undefined reference:
-    
-    if(!tempFont.openFromFile("../../../gameAssets/fonts/arial.tff")){
-        //TODO dd logging here for failed font load.
+    if(!loadFont("arial")){
         return false;
     }
-    
-    //TODO Add logging here for completed font load.
-    fontMap.insert({"arial" , tempFont});
-    */
-
     return true;
 }
 
@@ -37,16 +26,16 @@ sf::Texture* Core::GameAssetContainer::getTexture(std::string selectionString)
     return textureMap[selectionString];
 }
 
-std::unordered_map<std::string, sf::Font> Core::GameAssetContainer::getFontMap()
+sf::Font* Core::GameAssetContainer::getFont(std::string fontName)
 {
-    return fontMap;
+    return fontMap[fontName];
 }
 
 bool Core::GameAssetContainer::loadTexture(std::string spriteName)
 {
     sf::Texture *tempTexture = new sf::Texture;
 
-    std::string texturePath = filePath + spriteName + ".png";
+    std::string texturePath = filePath + "textures/" + spriteName + ".png";
 
     if(!tempTexture->loadFromFile(texturePath)){
         //TODO Add logging here for failed texture load.
@@ -58,9 +47,32 @@ bool Core::GameAssetContainer::loadTexture(std::string spriteName)
 
 }
 
+bool Core::GameAssetContainer::loadFont(std::string fontName)
+{
+    /*
+    //TODO Undefined reference to OpenFromFile for some weird reasoning.
+    sf::Font *tempFont = new sf::Font;
+
+    std::string fontPath = filePath + "fonts/" + fontName + ".png";
+
+    if(!tempFont->openFromFile(fontPath)){
+        //TODO Add logging here for failed texture load.
+        return false;
+    }
+    //Add logging here for completed texture load.
+    fontMap.insert({fontName ,tempFont});
+        */
+    return true;
+}
+
 Core::GameAssetContainer::~GameAssetContainer()
 {
+    //delete all texturePointers
     for(auto const& valuePair : textureMap){
+        delete valuePair.second;
+    }
+    //delete all fontPointers
+    for(auto const& valuePair : fontMap){
         delete valuePair.second;
     }
 }

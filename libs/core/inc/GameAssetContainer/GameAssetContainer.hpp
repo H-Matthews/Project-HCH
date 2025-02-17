@@ -12,13 +12,14 @@ namespace Core
             bool initializeFonts();
 
             sf::Texture* getTexture(std::string);
-            std::unordered_map<std::string, sf::Font> getFontMap();
+            sf::Font* getFont(std::string);
             ~GameAssetContainer();
         private:
-            std::string filePath = "../../../gameAssets/textures/";
+            std::string filePath = "../../../gameAssets/";
             bool loadTexture(std::string);
+            bool loadFont(std::string);
             std::unordered_map<std::string, sf::Texture*> textureMap;
-            std::unordered_map<std::string, sf::Font> fontMap;
+            std::unordered_map<std::string, sf::Font*> fontMap;
 
     };
 
