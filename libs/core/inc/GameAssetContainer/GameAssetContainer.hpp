@@ -10,12 +10,13 @@ namespace Core
         public:
             bool initializeTextures();
             bool initializeFonts();
+            sf::Texture tempTexture;
 
-            std::unordered_map<std::string, sf::Texture> getTextureMap();
+            sf::Texture* getTexture(std::string);
             std::unordered_map<std::string, sf::Font> getFontMap();
 
         private:
-            std::unordered_map<std::string, sf::Texture> textureMap;
+            std::unordered_map<std::string, sf::Texture*> textureMap;
             std::unordered_map<std::string, sf::Font> fontMap;
     };
 
