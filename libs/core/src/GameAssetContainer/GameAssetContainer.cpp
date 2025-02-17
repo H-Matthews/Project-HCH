@@ -1,20 +1,15 @@
 #include "core/inc/GameAssetContainer/GameAssetContainer.hpp"
 
+
 bool Core::GameAssetContainer::initializeTextures()
 {
-    //TODO Issues:
-    //All of variables pointers should be shared pointers if possible.
-    //I think the main problem here is that when this function goes out of scope, the tempTexture
-    //variable goes out of scope causing the pointer variable to be lost.
-    sf::Texture tempTexture;
-    
-    if(!tempTexture.loadFromFile("../../../gameAssets/textures/playerSprite.png")){
-        //TODO Add logging here for failed texture load.
+    //TODO add logging
+    if(!loadTexture("playerSprite")){
         return false;
     }
-    //Add logging here for completed texture load.
-    textureMap.insert({"playerSprite" ,&tempTexture});
-    
+    if(!loadTexture("enemySprite")){
+        return false;
+    }
     return true;
 }
 
@@ -45,4 +40,27 @@ sf::Texture* Core::GameAssetContainer::getTexture(std::string selectionString)
 std::unordered_map<std::string, sf::Font> Core::GameAssetContainer::getFontMap()
 {
     return fontMap;
+}
+
+bool Core::GameAssetContainer::loadTexture(std::string spriteName)
+{
+    sf::Texture *tempTexture = new sf::Texture;
+
+    std::string texturePath = filePath + spriteName + ".png";
+
+    if(!tempTexture->loadFromFile(texturePath)){
+        //TODO Add logging here for failed texture load.
+        return false;
+    }
+    //Add logging here for completed texture load.
+    textureMap.insert({spriteName ,tempTexture});
+    return true;
+
+}
+
+Core::GameAssetContainer::~GameAssetContainer()
+{
+    for(auto const& valuePair : textureMap){
+        delete valuePair.second;
+    }
 }
