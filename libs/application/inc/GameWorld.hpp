@@ -6,7 +6,7 @@
 #include "core/inc/SceneNode.hpp"
 #include "core/inc/Messaging/MessageNetwork.hpp"
 
-#include "application/inc/Player.hpp"
+#include "application/inc/PlayerNode.hpp"
 
 namespace Application
 {
@@ -21,22 +21,23 @@ namespace Application
     class GameWorld
     {
         public:
-            explicit GameWorld(sf::RenderWindow& window, Core::MessageNetwork* network);
+            explicit GameWorld(sf::RenderWindow& window, Core::MessageNetwork& gameNetwork);
     
             void update(sf::Time fixedTimeStep);
             void draw();
     
         private:
-            void buildScene();
+            void buildSceneGraph();
+            void correctPlayerVelocity();
     
         private:
             sf::RenderWindow& mWindow;
-            Core::MessageNetwork* mNetwork;
+            Core::MessageNetwork& mGameNetwork;
     
             Core::SceneNode mSceneGraph;
             std::array<Core::SceneNode*, LayerCount> mSceneLayers;
 
-            Player* mPlayer;
+            PlayerNode* mPlayer;
     
     };
 }

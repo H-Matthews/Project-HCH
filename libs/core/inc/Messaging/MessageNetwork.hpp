@@ -26,6 +26,7 @@ namespace Core
 
             void initializeLogger();
 
+            void shutdownNetwork();
         private:
             void unSubscribe();
 

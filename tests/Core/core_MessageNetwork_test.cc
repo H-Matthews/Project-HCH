@@ -32,13 +32,13 @@ TestMessage::TestMessage(const Messages::ID messageID ) :
 class TestPublisher : public Core::MessageNode
 {
     public:
-        TestPublisher(Core::MessageNetwork* messageNetwork);
+        TestPublisher(Core::MessageNetwork& messageNetwork);
         void update(Action action);
 
         std::shared_ptr<TestMessage> testMessage;
 };
 
-TestPublisher::TestPublisher(Core::MessageNetwork* messageNetwork) :
+TestPublisher::TestPublisher(Core::MessageNetwork& messageNetwork) :
     Core::MessageNode(messageNetwork),
     testMessage()
 {
@@ -84,7 +84,7 @@ class TestSubscriberOne : public Core::MessageNode
         std::vector<Action> messageVector;
 
     public:
-        TestSubscriberOne(Core::MessageNetwork* messageNetwork);
+        TestSubscriberOne(Core::MessageNetwork& messageNetwork);
 
         std::vector<Action> getMessageVector();
 
@@ -92,7 +92,7 @@ class TestSubscriberOne : public Core::MessageNode
         void onNotify(Core::Message* message) override;
 };
 
-TestSubscriberOne::TestSubscriberOne(Core::MessageNetwork* messageNetwork) :
+TestSubscriberOne::TestSubscriberOne(Core::MessageNetwork& messageNetwork) :
     MessageNode(messageNetwork, "TestComponentSubOne")
 {
     MessageNode::subscribeTo(Messages::ID::PlayerActionMessage);
@@ -149,8 +149,8 @@ class CoreMessageNetworkTest : public ::testing::Test
         
         void SetUp() override 
         {
-            publisher = std::make_unique< TestPublisher >(&testNetwork);
-            subscriberOne = std::make_unique< TestSubscriberOne >(&testNetwork);
+            publisher = std::make_unique< TestPublisher >(testNetwork);
+            subscriberOne = std::make_unique< TestSubscriberOne >(testNetwork);
         }
 };
 

@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-Core::MessageNode::MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName) :
+Core::MessageNode::MessageNode(MessageNetwork& messageNetwork, const std::string& messageNodeName) :
     mMessageNetwork(messageNetwork),
     mMessageNodeInfo(messageNodeName),
     mNetworkLogger()
@@ -15,7 +15,7 @@ Core::MessageNode::MessageNode(MessageNetwork* messageNetwork, const std::string
         mNetworkLogger = Utility::LogRegistry::instance()->getLogger("MessageNetworkLogger");
 }
 
-Core::MessageNode::MessageNode(MessageNetwork* messageNetwork) :
+Core::MessageNode::MessageNode(MessageNetwork& messageNetwork) :
     mMessageNetwork(messageNetwork),
     mMessageNodeInfo("")
 {
@@ -35,14 +35,14 @@ void Core::MessageNode::subscribeTo(Messages::ID subscribeMessageID)
 // the subscriber as intended
 void Core::MessageNode::notifyUnsubscribe(Messages::ID messageID)
 {
-    mMessageNetwork->insertUnsubscriber(messageID, mMessageNodeInfo.nodeName);
+    mMessageNetwork.insertUnsubscriber(messageID, mMessageNodeInfo.nodeName);
 }
 
 void Core::MessageNode::registerSubscriberMessages()
 {
     if(!mMessageNodeInfo.subscriptions.empty())
     {
-        mMessageNetwork->addSubscriber(mMessageNodeInfo);
+        mMessageNetwork.addSubscriber(mMessageNodeInfo);
     }
     else
     {
@@ -56,7 +56,7 @@ void Core::MessageNode::send(std::shared_ptr<Message> message)
 
     if( message->getMessageID() != Messages::ID::NONE)
     {
-        mMessageNetwork->sendMessage(message);
+        mMessageNetwork.sendMessage(message);
     }
     else
     {

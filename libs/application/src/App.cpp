@@ -89,12 +89,14 @@ void Application::App::processInput()
 {
     // SFMLs Window Class will detect events and then call these functions if the event matches
     // When needed, Add Event Subtypes here
+
     mWindow.handleEvents(
         [this](const sf::Event::Closed&) { mWindow.close(); },
         [this](const sf::Event::KeyPressed& keyPressedEvent) { mStateStack.handleKeyPressed(keyPressedEvent); },
         [this](const sf::Event::MouseMoved& mouseMovedEvent) { mStateStack.handleMouseMoved(mouseMovedEvent); }
     );
 
+    mStateStack.handleRealTimeInput();
 }
 
 void Application::App::update(sf::Time fixedTimeStep)

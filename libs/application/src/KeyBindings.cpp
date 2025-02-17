@@ -36,6 +36,11 @@ Actions::Player Application::KeyBindings::getAssignedAction(sf::Keyboard::Scan s
     return action;
 }
 
+const std::map<sf::Keyboard::Scan, Actions::Player>& Application::KeyBindings::getKeyBindings()
+{
+    return mKeyBindings;
+}
+
 // Real time actions are typically gameplay related actions
 // such as movement, or attacking. They will require 
 // the key to be pressed down at that moment

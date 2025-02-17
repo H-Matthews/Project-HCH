@@ -6,3 +6,8 @@ Application::PlayerInputMessage::PlayerInputMessage(const Messages::ID messageID
     action(Actions::Player::NONE)
 {
 }
+
+Application::PlayerInputMessage* Application::PlayerInputMessage::clone() const
+{
+    return new PlayerInputMessage(*this);
+}

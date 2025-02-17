@@ -13,7 +13,7 @@ set(SRC src/App.cpp
         src/MessageNetwork/Messages/PlayerInputMessage.cpp
         src/PlayerAction.cpp
         src/Entity.cpp
-        src/Player.cpp
+        src/PlayerNode.cpp
         src/State/GameState.cpp
         src/State/MenuState.cpp
         src/State/PauseState.cpp)
@@ -25,7 +25,7 @@ set(INC inc/App.hpp
         inc/MessageNetwork/Messages/PlayerInputMessage.hpp
         inc/PlayerAction.hpp
         inc/Entity.hpp
-        inc/Player.hpp
+        inc/PlayerNode.hpp
         inc/State/GameState.hpp
         inc/State/MenuState.hpp
         inc/State/PauseState.hpp)

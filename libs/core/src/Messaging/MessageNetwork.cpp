@@ -135,3 +135,12 @@ void Core::MessageNetwork::initializeLogger()
     if constexpr (Utility::CAN_LOG)
         mLogger->logInfo("Logger Initialized");
 }
+
+void Core::MessageNetwork::shutdownNetwork()
+{
+    mSubscriberList.clear();
+    mUnsubscribeList.clear();
+
+    // This "clears" the Queue
+    mMessageQueue = {};
+}

@@ -15,9 +15,11 @@ namespace Application
             virtual void draw();
             virtual bool update(sf::Time fixedTimeStep);
             bool handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) override;
+            bool handleRealTimeInput() override;
 
+            ~GameState();
         private:
-            Core::MessageNetwork& mNetwork;
+            Core::MessageNetwork& mGameNetwork;
 
             Application::GameWorld mGameWorld;
             Application::KeyBindings mKeyBindings;

@@ -21,9 +21,9 @@ Core::Message::~Message()
 {
 }
 
-std::unique_ptr<Core::Message> Core::Message::clone() const
+Core::Message* Core::Message::clone() const
 {
-    return std::make_unique<Message>(*this);
+    return new Message(*this);
 }
 
 void Core::Message::setSender(const std::string& sender)

@@ -13,8 +13,8 @@ namespace Core
     class MessageNode 
     {
         public:
-            MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName);
-            MessageNode(MessageNetwork* messageNetwork);
+            MessageNode(MessageNetwork& messageNetwork, const std::string& messageNodeName);
+            MessageNode(MessageNetwork& messageNetwork);
 
         protected:
             void subscribeTo(Messages::ID subscribeMessageID);
@@ -27,7 +27,7 @@ namespace Core
             std::function<void (Message*)> getNotifyFunc();
 
         private:
-            MessageNetwork* mMessageNetwork;
+            MessageNetwork& mMessageNetwork;
 
         protected:
             MessageNodeInfo mMessageNodeInfo;

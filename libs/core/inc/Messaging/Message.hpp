@@ -25,7 +25,7 @@ namespace Core
 
         public:
             virtual ~Message();
-            virtual std::unique_ptr<Message> clone() const;
+            virtual Message* clone() const;
 
             void setSender(const std::string& sender);
 

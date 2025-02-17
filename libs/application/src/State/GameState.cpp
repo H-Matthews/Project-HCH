@@ -4,10 +4,10 @@
 
 Application::GameState::GameState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) : 
     State(stack, stateIdentifier, sharedObjects),
-    mNetwork(*sharedObjects.network),
-    mGameWorld(*sharedObjects.window, sharedObjects.network),
+    mGameNetwork(*sharedObjects.network),
+    mGameWorld(*sharedObjects.window, mGameNetwork),
     mKeyBindings(),
-    mPlayerPublisher(sharedObjects.network, mKeyBindings)
+    mPlayerPublisher(mGameNetwork, mKeyBindings)
 {
     std::cout << "Creating GameState " << std::endl;
 
@@ -24,9 +24,6 @@ void Application::GameState::draw()
 
 bool Application::GameState::update(sf::Time fixedTimeStep)
 {
-    // Disseminate Messages
-    mNetwork.notifySubscribers();
-
     mGameWorld.update(fixedTimeStep);
 
     return true;
@@ -34,8 +31,8 @@ bool Application::GameState::update(sf::Time fixedTimeStep)
 
 bool Application::GameState::handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent)
 {
-    // Game Input Handling
-    mPlayerPublisher.handleKeyPressed(keyPressedEvent);
+    // Handle Event based Key Presses
+    //mPlayerPublisher.handleKeyPressed(keyPressedEvent);
 
     if(keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter)
     {
@@ -52,4 +49,18 @@ bool Application::GameState::handleKeyPressed(const sf::Event::KeyPressed& keyPr
     }
     
     return true;
+}
+
+bool Application::GameState::handleRealTimeInput()
+{
+    // Handle RealTime Input KeyPresses
+    // Usually movement based
+    mPlayerPublisher.handleRealTimeInput();
+}
+
+Application::GameState::~GameState()
+{
+    // Any objects that persist over different States such as MessageNetwork, will need to 
+    // cleanup their resources
+    mGameNetwork.shutdownNetwork();
 }

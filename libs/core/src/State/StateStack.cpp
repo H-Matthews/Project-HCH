@@ -54,6 +54,16 @@ void Core::StateStack::handleMouseMoved(const sf::Event::MouseMoved& mouseMoved)
     }
 }
 
+void Core::StateStack::handleRealTimeInput()
+{
+    // Depending on Event Type, Call different function
+    for(auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr)
+    {
+        if(!(*itr)->handleRealTimeInput())
+            break;
+    }
+}
+
 void Core::StateStack::pushState(States::ID stateID)
 {
     mPendingList.push_back(pendingStateRequests(Push, stateID));

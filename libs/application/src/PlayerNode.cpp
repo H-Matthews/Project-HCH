@@ -1,8 +1,6 @@
-#include "application/inc/Player.hpp"
+#include "application/inc/PlayerNode.hpp"
 
-#include <iostream>
-
-Application::Player::Player(Core::MessageNetwork* network) :
+Application::PlayerNode::PlayerNode(Core::MessageNetwork& network) :
     MessageNode(network, "Player"),
     circleShape(50.f)
 {
@@ -14,19 +12,19 @@ Application::Player::Player(Core::MessageNetwork* network) :
     circleShape.setFillColor(sf::Color(100, 250, 50));
 
     circleShape.setPosition( {10.f, 50.f} );
-    std::cout << circleShape.getPosition().x << " " << circleShape.getPosition().y << std::endl;
 }
 
-void Application::Player::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
+void Application::PlayerNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(circleShape, states);
 }
 
-void Application::Player::onNotify(Core::Message* message)
+void Application::PlayerNode::onNotify(Core::Message* message)
 {
     PlayerInputMessage* playerInput = dynamic_cast<PlayerInputMessage*>( message );
     if(playerInput)
     {
+        sf::Vector2f playerVector(0.f, 0.f);
         // Determine Action and Apply movement
         switch(playerInput->action)
         {
@@ -36,22 +34,22 @@ void Application::Player::onNotify(Core::Message* message)
             }
             case Actions::Player::MOVE_UP:
             {
-                this->accelerate(0.f, 200.f);
+                playerVector.y -= speed;
                 break;
             }
             case Actions::Player::MOVE_DOWN:
             {
-                this->accelerate(0.f, -200.f);
+                playerVector.y += speed;
                 break;
             }
             case Actions::Player::MOVE_LEFT:
             {
-                this->accelerate(-200.f, 0.f);
+                playerVector.x -= speed;
                 break;
             }
             case Actions::Player::MOVE_RIGHT:
             {
-                this->accelerate(200.f, 0.f);
+                playerVector.x += speed;
                 break;
             }
             case Actions::Player::JUMP:
@@ -59,5 +57,7 @@ void Application::Player::onNotify(Core::Message* message)
                 break;
             }
         }
+
+        this->accelerate(playerVector);
     }
 }
