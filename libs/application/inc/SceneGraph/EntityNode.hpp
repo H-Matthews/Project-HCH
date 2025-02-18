@@ -4,7 +4,7 @@
 
 namespace Application
 {
-    class Entity : public Core::SceneNode
+    class EntityNode : public Core::SceneNode
     {
         public:
             void setVelocity(const sf::Vector2f velocity);

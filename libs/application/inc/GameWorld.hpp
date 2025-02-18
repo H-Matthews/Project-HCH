@@ -6,7 +6,7 @@
 #include "core/inc/SceneNode.hpp"
 #include "core/inc/Messaging/MessageNetwork.hpp"
 
-#include "application/inc/PlayerNode.hpp"
+#include "application/inc/SceneGraph/PlayerNode.hpp"
 
 namespace Application
 {

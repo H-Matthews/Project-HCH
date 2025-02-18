@@ -12,8 +12,8 @@ set(SRC src/App.cpp
         src/MessageNetwork/Publishers/PlayerInputPublisher.cpp
         src/MessageNetwork/Messages/PlayerInputMessage.cpp
         src/PlayerAction.cpp
-        src/Entity.cpp
-        src/PlayerNode.cpp
+        src/SceneGraph/EntityNode.cpp
+        src/SceneGraph/PlayerNode.cpp
         src/State/GameState.cpp
         src/State/MenuState.cpp
         src/State/PauseState.cpp)
@@ -24,8 +24,8 @@ set(INC inc/App.hpp
         inc/MessageNetwork/Publishers/PlayerInputPublisher.hpp
         inc/MessageNetwork/Messages/PlayerInputMessage.hpp
         inc/PlayerAction.hpp
-        inc/Entity.hpp
-        inc/PlayerNode.hpp
+        inc/SceneGraph/EntityNode.hpp
+        inc/SceneGraph/PlayerNode.hpp
         inc/State/GameState.hpp
         inc/State/MenuState.hpp
         inc/State/PauseState.hpp)

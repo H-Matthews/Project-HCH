@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "application/inc/Entity.hpp"
+#include "application/inc/SceneGraph/EntityNode.hpp"
 #include "application/inc/MessageNetwork/Messages/PlayerInputMessage.hpp"
 
 #include "core/inc/Messaging/MessageNode.hpp"
@@ -10,7 +10,7 @@
 namespace Application
 {
     // Player is a subscriber to the PlayerInput Message
-    class PlayerNode : public Application::Entity, public Core::MessageNode
+    class PlayerNode : public Application::EntityNode, public Core::MessageNode
     {
         public:
             PlayerNode(Core::MessageNetwork& network);

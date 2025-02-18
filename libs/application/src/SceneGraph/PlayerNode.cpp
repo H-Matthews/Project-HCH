@@ -1,4 +1,4 @@
-#include "application/inc/PlayerNode.hpp"
+#include "application/inc/SceneGraph/PlayerNode.hpp"
 
 Application::PlayerNode::PlayerNode(Core::MessageNetwork& network) :
     MessageNode(network, "Player"),
