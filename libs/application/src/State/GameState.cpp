@@ -7,7 +7,7 @@ Application::GameState::GameState(Core::StateStack& stack, std::string stateIden
     mGameNetwork(*sharedObjects.network),
     mGameWorld(*sharedObjects.window, mGameNetwork),
     mKeyBindings(),
-    mPlayerPublisher(mGameNetwork, mKeyBindings)
+    mPlayerInputPublisher(mGameNetwork, mKeyBindings)
 {
     std::cout << "Creating GameState " << std::endl;
 
@@ -32,7 +32,7 @@ bool Application::GameState::update(sf::Time fixedTimeStep)
 bool Application::GameState::handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent)
 {
     // Handle Event based Key Presses
-    mPlayerPublisher.handleKeyPressed(keyPressedEvent);
+    mPlayerInputPublisher.handleKeyPressed(keyPressedEvent);
 
     if(keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter)
     {
@@ -55,7 +55,7 @@ bool Application::GameState::handleRealTimeInput()
 {
     // Handle RealTime Input KeyPresses
     // Usually movement based
-    mPlayerPublisher.handleRealTimeInput();
+    mPlayerInputPublisher.handleRealTimeInput();
 
     return true;
 }

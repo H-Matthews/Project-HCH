@@ -21,6 +21,8 @@ namespace Core
             void sendMessage(std::shared_ptr<Message> message);
 
             void addSubscriber(const MessageNodeInfo& subscriber);
+            bool isDuplicateSubscriber(const Messages::ID key, const std::string& nodeName);
+
             void insertUnsubscriber(const Messages::ID& mesasgeID, const std::string& nodeName);
             void notifySubscribers();
 

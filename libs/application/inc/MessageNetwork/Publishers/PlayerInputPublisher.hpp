@@ -24,10 +24,14 @@ namespace Application
     
             void handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent);
             void handleRealTimeInput();
+
+            std::shared_ptr<Application::PlayerInputMessage> getMessage(std::size_t index);
     
         private:
             Application::KeyBindings mKeyBindings;
 
-            std::unique_ptr<Application::PlayerInputMessage> mPlayerActionMessage;
+            std::vector< std::shared_ptr<Application::PlayerInputMessage> > mPlayerActionMessages;
+            std::shared_ptr<Application::PlayerInputMessage> mPlayerEventMessage;
+            static const int VECTOR_MESSAGE_SIZE;
     };
 }

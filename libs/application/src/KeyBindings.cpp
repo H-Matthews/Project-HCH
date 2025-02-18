@@ -54,7 +54,6 @@ bool Application::KeyBindings::isRealTimeAction(Actions::Player action)
         case Actions::Player::MOVE_UP:
         case Actions::Player::MOVE_LEFT:
         case Actions::Player::MOVE_RIGHT:
-        case Actions::Player::JUMP:
             isRealTimeAction = true;
             break;
         default:

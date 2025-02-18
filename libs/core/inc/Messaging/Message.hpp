@@ -25,7 +25,7 @@ namespace Core
 
         public:
             virtual ~Message();
-            virtual Message* clone() const;
+            virtual Message* clone() const = 0;
 
             void setSender(const std::string& sender);
 

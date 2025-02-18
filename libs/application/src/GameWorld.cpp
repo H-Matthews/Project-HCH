@@ -53,6 +53,7 @@ void Application::GameWorld::buildSceneGraph()
     mPlayer = mainPlayer.get();
     mSceneLayers[Entity]->attachChild(std::move(mainPlayer));
 
+    // Attach two more Shapes to the mainPlayer to demonstrate the Scene Graph
 
     return;
 }

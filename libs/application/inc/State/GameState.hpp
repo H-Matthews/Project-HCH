@@ -23,7 +23,7 @@ namespace Application
 
             Application::GameWorld mGameWorld;
             Application::KeyBindings mKeyBindings;
-            Application::PlayerInputPublisher mPlayerPublisher;
+            Application::PlayerInputPublisher mPlayerInputPublisher;
 
     };
 }

@@ -20,6 +20,7 @@ class TestMessage : public Core::Message
 {
     public:
         TestMessage(const Messages::ID messageID );
+        TestMessage* clone() const override;
         Action action;
 };
 
@@ -27,6 +28,11 @@ TestMessage::TestMessage(const Messages::ID messageID ) :
     Message( messageID, "PlayerActionMessage"),
     action(Action::NONE)
 {
+}
+
+TestMessage* TestMessage::clone() const
+{
+    return new TestMessage(*this);
 }
 
 class TestPublisher : public Core::MessageNode

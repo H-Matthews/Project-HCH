@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/inc/Messaging/Message.hpp"
+
 #include "application/inc/PlayerAction.hpp"
 
 namespace Application
