@@ -1,4 +1,5 @@
 #include "application/inc/GameWorld.hpp"
+#include "application/inc/SceneGraph/SquareNode.hpp"
 
 #include <cmath>
 
@@ -51,9 +52,17 @@ void Application::GameWorld::buildSceneGraph()
     // Attach Player to Entity Layer
     std::unique_ptr<PlayerNode> mainPlayer(new PlayerNode(mGameNetwork));
     mPlayer = mainPlayer.get();
+    mPlayer->setPosition( {320.f, 240.f} );
     mSceneLayers[Entity]->attachChild(std::move(mainPlayer));
 
     // Attach two more Shapes to the mainPlayer to demonstrate the Scene Graph
+    std::unique_ptr<SquareNode> rightSquare(new SquareNode());
+    rightSquare->setPosition( {40.f, 20.f} );
+    mPlayer->attachChild(std::move(rightSquare));
+
+    std::unique_ptr<SquareNode> leftSquare(new SquareNode());
+    leftSquare->setPosition( {-70.f, 20.f} );
+    mPlayer->attachChild(std::move(leftSquare));
 
     return;
 }

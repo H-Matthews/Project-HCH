@@ -14,6 +14,7 @@ set(SRC src/App.cpp
         src/PlayerAction.cpp
         src/SceneGraph/EntityNode.cpp
         src/SceneGraph/PlayerNode.cpp
+        src/SceneGraph/SquareNode.cpp
         src/State/GameState.cpp
         src/State/MenuState.cpp
         src/State/PauseState.cpp)
@@ -26,6 +27,7 @@ set(INC inc/App.hpp
         inc/PlayerAction.hpp
         inc/SceneGraph/EntityNode.hpp
         inc/SceneGraph/PlayerNode.hpp
+        inc/SceneGraph/SquareNode.hpp
         inc/State/GameState.hpp
         inc/State/MenuState.hpp
         inc/State/PauseState.hpp)

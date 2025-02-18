@@ -2,7 +2,7 @@
 
 Application::PlayerNode::PlayerNode(Core::MessageNetwork& network) :
     MessageNode(network, "Player"),
-    circleShape(50.f)
+    circleShape(30.f)
 {
     // Set Subscriber Information
     MessageNode::subscribeTo(Messages::ID::PlayerActionMessage);
@@ -11,7 +11,8 @@ Application::PlayerNode::PlayerNode(Core::MessageNetwork& network) :
     // set the shape color to green
     circleShape.setFillColor(sf::Color(100, 250, 50));
 
-    circleShape.setPosition( {10.f, 50.f} );
+    sf::FloatRect bounds = circleShape.getLocalBounds();
+    circleShape.setOrigin({bounds.size.x, bounds.size.y});
 }
 
 void Application::PlayerNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
