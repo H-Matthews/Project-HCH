@@ -57,6 +57,11 @@ void Utility::TextFileSink::sinkData(std::string_view message, LogLevel level, c
     }
 }
 
+void Utility::TextFileSink::sinkData(std::string_view formattedMessage)
+{
+    mFileHandle << formattedMessage << std::endl;
+}
+
 std::shared_ptr< Utility::Logger > Utility::Factory::createTextFileLogger(const std::string& loggerName,
                                                         const std::string& outputDirectory,
                                                         const std::string& fileName, 

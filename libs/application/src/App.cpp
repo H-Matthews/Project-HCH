@@ -3,15 +3,11 @@
 #include "application/inc/State/GameState.hpp"
 #include "application/inc/State/PauseState.hpp"
 
-#include "core/inc/State/State.hpp"
-
 #include "utility/inc/Logging/Sinks/ColorConsoleSink.hpp"
 #include "utility/inc/Logging/Sinks/TextFileSink.hpp"
+#include "utility/inc/Logging/KeyValueFormatter.hpp"
 
 #include <SFML/Graphics.hpp>
-
-#include <filesystem>
-#include <iostream>
 
 
 const sf::Time Application::App::TIME_PER_FRAME = sf::seconds(1.0f / 120.0f);
@@ -130,6 +126,8 @@ void Application::App::initializeAppLogger()
     // Add Sinks to Logger
     Utility::Logger::sinkList list = { colorConsoleSink, textFileSink };
     mAppLogger->addSinkList(list);
+
+    mAppLogger->addFormatter(std::make_unique<Utility::KeyValueFormatter>());
 
     // Register App Logger
     Utility::LogRegistry::instance()->registerLogger(mAppLogger);

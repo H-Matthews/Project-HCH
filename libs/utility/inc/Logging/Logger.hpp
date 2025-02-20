@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utility/inc/Logging/Sinks/LogSinksI.hpp"
+#include "utility/inc/Logging/FormatterI.hpp"
 #include "utility/inc/Logging/LogRegistry.hpp"
 
 #include <vector>
@@ -53,6 +54,9 @@ namespace Utility
             // Inserts a single sink into mSinks
             void addSink(std::shared_ptr< LogSinksI > sink);
 
+            // Set the formatter type
+            void addFormatter(std::unique_ptr< FormatterI > formatter);
+
             // Insert multiple sinks into mSink
             void addSinkList(sinkList list);
 
@@ -69,6 +73,7 @@ namespace Utility
 
         private:
             std::vector< std::shared_ptr< LogSinksI > > mSinks;
+            std::unique_ptr<FormatterI> mFormatter;
             std::string mLoggerName;
             LogLevel mGlobalLogLevel;
 

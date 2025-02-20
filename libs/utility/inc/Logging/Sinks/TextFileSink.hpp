@@ -21,6 +21,7 @@ namespace Utility
             const std::string getFilePath() const;
 
             void sinkData(std::string_view message, LogLevel level, const std::source_location location) override;
+            void sinkData(std::string_view formattedMessage) override;
 
             ~TextFileSink() {}
 

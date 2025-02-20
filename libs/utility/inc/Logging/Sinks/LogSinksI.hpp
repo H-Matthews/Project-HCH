@@ -23,6 +23,7 @@ namespace Utility
     {
         public:
             virtual void sinkData(std::string_view message, LogLevel level, const std::source_location location) = 0;
+            virtual void sinkData(std::string_view) {}
 
             inline void setSinkLogLevel(LogLevel level) { mLevel = level; }
             inline LogLevel getSinkLogLevel() { return mLevel; } 

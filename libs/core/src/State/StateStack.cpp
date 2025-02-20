@@ -1,6 +1,7 @@
 #include "core/inc/State/StateStack.hpp"
 
 #include "utility/inc/Logging/Sinks/TextFileSink.hpp"
+#include "utility/inc/Logging/KeyValueFormatter.hpp"
 
 #include <cassert>
 
@@ -91,6 +92,7 @@ void Core::StateStack::initializeLogger()
 
     mLogger = Utility::Factory::createTextFileLogger("StateStackLogger", outDirectory, "StateStack", 
                                                      ".log", Utility::LogLevel::INFO);
+    mLogger->addFormatter(std::make_unique<Utility::KeyValueFormatter>());
 }
 
 std::unique_ptr<Core::State> Core::StateStack::createState(States::ID stateID)
