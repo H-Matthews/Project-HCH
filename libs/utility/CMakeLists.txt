@@ -14,10 +14,10 @@ set(SRC src/Logging/LogRegistry.cpp
 
 set(INC inc/Logging/LogRegistry.hpp
         inc/Logging/Logger.hpp
-        inc/Logging/Sinks/LogSinksI.hpp
+        inc/Logging/Sinks/LogSink.hpp
         inc/Logging/Sinks/ColorConsoleSink.hpp
         inc/Logging/Sinks/TextFileSink.hpp
-        inc/Logging/Formatters/FormatterI.hpp
+        inc/Logging/Formatters/LogFormatter.hpp
         inc/Logging/Formatters/KeyValueFormatter.hpp
         inc/Logging/Formatters/DefaultFormatter.hpp
         inc/Logging/LogLevel.hpp
