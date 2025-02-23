@@ -41,38 +41,38 @@ void Utility::ColorConsoleSink::insertColorCodes(std::string& message, std::stri
 
 const std::string Utility::ColorConsoleSink::getColorCode(LogLevel level) const
 {
-    std::stringstream colorCode;
+    std::string colorCode;
     switch (level)
     {
         // ANSI Color Codes
         case LogLevel::DEBUG:
         {
-            colorCode << mDebugColorCode;      // Blue 
+            colorCode = mDebugColorCode;      // Blue 
             break;
         }
         case LogLevel::INFO:
         {
-            colorCode << mInfoColorCode;       // Green
+            colorCode = mInfoColorCode;       // Green
             break;
         }
         case LogLevel::WARN:
         {
-            colorCode << mWarningColorCode;    // Yellow 
+            colorCode = mWarningColorCode;    // Yellow 
             break;
         }
         case LogLevel::ERROR:
         {
-            colorCode << mErrorColorCode;      // Red
+            colorCode = mErrorColorCode;      // Red
             break;
         }
         default:
         {
-            colorCode << mDefaultColorCode;    // Reset
+            colorCode = mDefaultColorCode;    // Reset
             break;
         }
     }
 
-    return colorCode.str();
+    return colorCode;
 }
 
 // Convenience function to create a logger that has the ColorConsoleSink

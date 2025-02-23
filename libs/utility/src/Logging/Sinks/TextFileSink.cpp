@@ -3,6 +3,8 @@
 #include "utility/inc/Logging/LogRegistry.hpp"
 #include "utility/inc/Logging/Formatters/KeyValueFormatter.hpp"
 
+#include <sstream>
+
 const std::string Utility::TextFileSink::sinkIdentifier = "TextFileSink";
 
 Utility::TextFileSink::TextFileSink(const std::string& outputDirectory, 
