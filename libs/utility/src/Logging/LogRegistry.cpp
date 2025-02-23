@@ -1,5 +1,7 @@
 #include "utility/inc/Logging/LogRegistry.hpp"
 
+#include <sstream>
+
 std::shared_ptr< Utility::LogRegistry > Utility::LogRegistry::mRegistryInstance = nullptr;
 
 Utility::LogRegistry::LogRegistry() :
