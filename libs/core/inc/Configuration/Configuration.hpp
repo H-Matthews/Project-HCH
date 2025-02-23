@@ -92,7 +92,7 @@ void Core::Configuration::registerParser(Parsers::ID parserID)
     mFileExtensionToIDMap[identifierString] = parserID;
 
     // Stores a Lambda in mParserRegistry
-    mParserRegistry[parserID] = [this, identifierString] ()
+    mParserRegistry[parserID] = [identifierString] ()
     {
         return std::unique_ptr<Parser>(new T(identifierString));
     };
