@@ -9,6 +9,9 @@ namespace Core
 {
     class MessageNetwork;
 
+    /**
+     * Message is the Base class for all Messaging types that go onto the MessageNetwork
+     */
     class Message
     {
         public:

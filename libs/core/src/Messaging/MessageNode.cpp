@@ -1,11 +1,11 @@
 #include "core/inc/Messaging/MessageNode.hpp"
 #include "core/inc/Messaging/MessageNetwork.hpp"
 
-#include <iostream>
 
 Core::MessageNode::MessageNode(MessageNetwork& messageNetwork, const std::string& messageNodeName, NodeType nodeType) :
     mMessageNetwork(messageNetwork),
-    mMessageNodeInfo(messageNodeName, this->getNotifyFunc()),
+    mNodeName(messageNodeName),
+    mCallback(this->getNotifyFunc()),
     mNodeType(nodeType),
     mNetworkLogger()
 {   
@@ -18,18 +18,18 @@ Core::MessageNode::MessageNode(MessageNetwork& messageNetwork, const std::string
     {
         case NodeType::PUBLISHER:
         {
-            mMessageNetwork.registerPublisherNode(mMessageNodeInfo.nodeName);
+            mMessageNetwork.registerPublisherNode(mNodeName);
             break;
         }
         case NodeType::SUBSCRIBER:
         {
-            mMessageNetwork.registerSubscriberNode(mMessageNodeInfo.nodeName, mMessageNodeInfo.callback);
+            mMessageNetwork.registerSubscriberNode(mNodeName, mCallback);
             break;
         }
         case NodeType::SUB_AND_PUB:
         {
-            mMessageNetwork.registerPublisherNode(mMessageNodeInfo.nodeName);
-            mMessageNetwork.registerSubscriberNode(mMessageNodeInfo.nodeName, mMessageNodeInfo.callback);
+            mMessageNetwork.registerPublisherNode(mNodeName);
+            mMessageNetwork.registerSubscriberNode(mNodeName, mCallback);
             break;
         }
     }
@@ -45,18 +45,18 @@ void Core::MessageNode::addTopic(Messages::ID messageID)
     {
         case Core::NodeType::PUBLISHER:
         {
-            mMessageNetwork.addPublisherTopic(mMessageNodeInfo.nodeName, messageID);
+            mMessageNetwork.addPublisherTopic(mNodeName, messageID);
             break;
         }
         case Core::NodeType::SUBSCRIBER:
         {
-            mMessageNetwork.addSubscriberTopic(mMessageNodeInfo.nodeName, messageID);
+            mMessageNetwork.addSubscriberTopic(mNodeName, messageID);
             break;
         }
         case Core::NodeType::SUB_AND_PUB:
         {
-            mMessageNetwork.addPublisherTopic(mMessageNodeInfo.nodeName, messageID);
-            mMessageNetwork.addSubscriberTopic(mMessageNodeInfo.nodeName, messageID);
+            mMessageNetwork.addPublisherTopic(mNodeName, messageID);
+            mMessageNetwork.addSubscriberTopic(mNodeName, messageID);
             break;
         }
     }
@@ -66,13 +66,13 @@ void Core::MessageNode::addTopic(Messages::ID messageID)
 
 void Core::MessageNode::addSubscriberTopic(Messages::ID messageID)
 {
-    mMessageNetwork.addSubscriberTopic(mMessageNodeInfo.nodeName, messageID);
+    mMessageNetwork.addSubscriberTopic(mNodeName, messageID);
 
     return;
 }
 void Core::MessageNode::addPublisherTopic(Messages::ID messageID)
 {
-    mMessageNetwork.addPublisherTopic(mMessageNodeInfo.nodeName, messageID);
+    mMessageNetwork.addPublisherTopic(mNodeName, messageID);
 
     return;
 }
@@ -86,18 +86,18 @@ void Core::MessageNode::removeTopic(Messages::ID messageID)
     {
         case Core::NodeType::PUBLISHER:
         {
-            mMessageNetwork.addPublisherTopic(mMessageNodeInfo.nodeName, messageID);
+            mMessageNetwork.addPublisherTopic(mNodeName, messageID);
             break;
         }
         case Core::NodeType::SUBSCRIBER:
         {
-            mMessageNetwork.addSubscriberTopic(mMessageNodeInfo.nodeName, messageID);
+            mMessageNetwork.addSubscriberTopic(mNodeName, messageID);
             break;
         }
         case Core::NodeType::SUB_AND_PUB:
         {
-            mMessageNetwork.addPublisherTopic(mMessageNodeInfo.nodeName, messageID);
-            mMessageNetwork.addSubscriberTopic(mMessageNodeInfo.nodeName, messageID);
+            mMessageNetwork.addPublisherTopic(mNodeName, messageID);
+            mMessageNetwork.addSubscriberTopic(mNodeName, messageID);
             break;
         }
     }
@@ -105,20 +105,56 @@ void Core::MessageNode::removeTopic(Messages::ID messageID)
 
 void Core::MessageNode::removeSubscriberTopic(Messages::ID messageID)
 {
-    mMessageNetwork.removeTopicFromSubscriber(mMessageNodeInfo.nodeName, messageID);
+    mMessageNetwork.removeTopicFromSubscriber(mNodeName, messageID);
 
     return;
 }
 void Core::MessageNode::removePublisherTopic(Messages::ID messageID)
 {
-    mMessageNetwork.removeTopicFromPublisher(mMessageNodeInfo.nodeName, messageID);
+    mMessageNetwork.removeTopicFromPublisher(mNodeName, messageID);
+
+    return;
+}
+
+void Core::MessageNode::unRegisterNode()
+{
+    switch(mNodeType)
+    {
+        case Core::NodeType::PUBLISHER:
+        {
+            mMessageNetwork.unRegisterPublisherNode(mNodeName);
+            break;
+        }
+        case Core::NodeType::SUBSCRIBER:
+        {
+            mMessageNetwork.unRegisterSubscriberNode(mNodeName);
+            break;
+        }
+        case Core::NodeType::SUB_AND_PUB:
+        {
+            mMessageNetwork.unRegisterPublisherNode(mNodeName);
+            mMessageNetwork.unRegisterSubscriberNode(mNodeName);
+            break;
+        }
+    }
+    return;
+}
+void Core::MessageNode::unRegisterSubscriberNode()
+{
+    mMessageNetwork.unRegisterSubscriberNode(mNodeName);
+
+    return;
+}
+void Core::MessageNode::unRegisterpublisherNode()
+{
+    mMessageNetwork.unRegisterPublisherNode(mNodeName);
 
     return;
 }
 
 void Core::MessageNode::publish(std::shared_ptr<Message> message)
 { 
-    message->setSender(mMessageNodeInfo.nodeName);
+    message->setSender(mNodeName);
 
     if( message->getMessageID() != Messages::ID::NONE)
     {
@@ -126,15 +162,17 @@ void Core::MessageNode::publish(std::shared_ptr<Message> message)
     }
     else
     {
-        std::cout << "Did not send message because there is no Topic associated with NodeID: "
-                  << mMessageNodeInfo.nodeName << std::endl;
+        if constexpr(Utility::CAN_LOG)
+            mNetworkLogger->logError("Could not Publisher message from Node " + message->getSenderName() +
+                " due to no topic being associated with Message");
     }
 }
 
 void Core::MessageNode::onNotify(Message*)
 {
-    std::cout << "Calling default method ---> MessageNode::onNotify(Message)... This message is intended for "
-              << mMessageNodeInfo.nodeName << std::endl;
+    if constexpr(Utility::CAN_LOG)
+        mNetworkLogger->logError("onNotify(Message) IS NOT implemented for Node " 
+            + mNodeName);
 }
 
 std::function<void (Core::Message*)> Core::MessageNode::getNotifyFunc()

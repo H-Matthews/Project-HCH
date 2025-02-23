@@ -1,14 +1,15 @@
 #pragma once
 
-#include "core/inc/Messaging/MessageNodeInfo.hpp"
 #include "utility/inc/Logging/Logger.hpp"
 #include "utility/inc/Logging/LogRegistry.hpp"
 
-#include <functional>
+#include "core/inc/Messaging/MessageTypes.hpp"
+
 
 namespace Core
 {
     class MessageNetwork;
+    class Message;
 
     enum class NodeType
     {
@@ -17,6 +18,10 @@ namespace Core
         SUB_AND_PUB
     };
 
+    /**
+     * MessageNode is a base class for Publisher and Subscriber Nodes. The class registers the node onto the 
+     * Network object given in the constructor and facilitates communication to the Network.
+     */
     class MessageNode 
     {
         public:
@@ -31,6 +36,10 @@ namespace Core
             void removeSubscriberTopic(Messages::ID messageID);
             void removePublisherTopic(Messages::ID messageID);
 
+            void unRegisterNode();
+            void unRegisterSubscriberNode();
+            void unRegisterpublisherNode();
+
             void publish(std::shared_ptr<Message> message);
             virtual void onNotify(Message* message);
 
@@ -41,7 +50,8 @@ namespace Core
             MessageNetwork& mMessageNetwork;
 
         protected:
-            MessageNodeInfo mMessageNodeInfo;
+            std::string mNodeName;
+            std::function<void (Message*) > mCallback;
             NodeType mNodeType;
 
             std::shared_ptr<Utility::Logger> mNetworkLogger;

@@ -1,10 +1,12 @@
 #pragma once
 
 #include <string>
-#include <sstream>
 
 namespace Messages
 {
+    /**
+     * Defines application specific Message IDs
+     */
     enum class ID
     {
         NONE = 0,
