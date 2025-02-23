@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utility/inc/Logging/Sinks/ColorConsoleSink.hpp"
+#include "utility/inc/Logging/LogRegistry.hpp"
 
 #include "core/inc/Configuration/ConfigurationI.hpp"
 

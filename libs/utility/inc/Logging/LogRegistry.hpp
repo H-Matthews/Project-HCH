@@ -2,24 +2,28 @@
 
 #include "utility/inc/Logging/Logger.hpp"
 
-#include <functional> // Hash
+#include <functional>
 #include <map>
 #include <memory>
 
 namespace Utility 
 {
 
-    /*
-        Singleton Class Design
-        Defines a registry of loggers.
-    */
+    class Logger;
+
+    /**
+     * LogRegistry is a Singleton that defines a registry of loggers
+     * When creating a core Logger, it should be registered into this registry
+     * 
+     * NOTE: There is a Global Logger defined in the registry that is used for printing output
+     * to the Console when debugging. This should be utilized over using std::cout, due to formatting benefits
+     */
     class LogRegistry
     {
         public:
             // Delete the Copy Constructor
             LogRegistry(const LogRegistry& obj) = delete;
 
-            // GetInstance
             static std::shared_ptr< LogRegistry > instance();
 
             // Configure the Applications output directory 

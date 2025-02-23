@@ -1,9 +1,10 @@
 #include "utility/inc/Logging/Logger.hpp"
 
+#include "utility/inc/Logging/LogRegistry.hpp"
+
 // Creates a logger with no sinks
 Utility::Logger::Logger(const std::string& loggerName, LogLevel level) :
     mSinks(),
-    mFormatter(),
     mLoggerName(loggerName),
     mGlobalLogLevel(level) 
 {
@@ -11,7 +12,7 @@ Utility::Logger::Logger(const std::string& loggerName, LogLevel level) :
 
 // Creates a logger with a single sink
 Utility::Logger::Logger(const std::string& loggerName, 
-                        std::shared_ptr< LogSinksI > sink,
+                        std::shared_ptr< LogSink > sink,
                         LogLevel level) :
     mSinks({ sink }),
     mLoggerName(loggerName),
@@ -70,15 +71,7 @@ void Utility::Logger::sinkIt(std::string_view message, LogLevel level, const std
         result = shouldLog(level, sink->getSinkLogLevel());
         if(result)
         {
-            if(mFormatter)
-            {
-                std::string formattedMessage = mFormatter->format(std::string(message), level, location);
-                sink->sinkData(formattedMessage);
-            }
-            else 
-            {
-                sink->sinkData(message, level, location);
-            }
+            sink->sinkData(message, level, location);
         }
     }
 }
@@ -117,20 +110,11 @@ const std::string Utility::Logger::getGlobalLogLevelAsString() const
     return loggerAsString;
 }
 
-void Utility::Logger::addSink(std::shared_ptr< LogSinksI > sink)
+void Utility::Logger::addSink(std::shared_ptr< LogSink > sink)
 {
     // Probably should do more checks here for potential issues that I can't think of
     if(sink != nullptr)
         mSinks.push_back(sink);
-}
-
-// Warning, we are moving the argument to this function into class variable
-void Utility::Logger::addFormatter(std::unique_ptr< FormatterI > formatter)
-{
-    if(formatter)
-    {
-        mFormatter = std::move(formatter);
-    }
 }
 
 void Utility::Logger::addSinkList(sinkList list)
@@ -142,9 +126,9 @@ void Utility::Logger::addSinkList(sinkList list)
     }
 }
 
-std::vector< Utility::LogSinksI* > Utility::Logger::getSinkReferences()
+std::vector< Utility::LogSink* > Utility::Logger::getSinkReferences()
 {
-    std::vector< LogSinksI* > test;
+    std::vector< LogSink* > test;
 
     for(const auto& sink : mSinks)
     {

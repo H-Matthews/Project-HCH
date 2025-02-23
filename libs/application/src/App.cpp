@@ -5,7 +5,7 @@
 
 #include "utility/inc/Logging/Sinks/ColorConsoleSink.hpp"
 #include "utility/inc/Logging/Sinks/TextFileSink.hpp"
-#include "utility/inc/Logging/KeyValueFormatter.hpp"
+#include "utility/inc/Logging/Formatters/KeyValueFormatter.hpp"
 
 #include <SFML/Graphics.hpp>
 
@@ -126,8 +126,6 @@ void Application::App::initializeAppLogger()
     // Add Sinks to Logger
     Utility::Logger::sinkList list = { colorConsoleSink, textFileSink };
     mAppLogger->addSinkList(list);
-
-    mAppLogger->addFormatter(std::make_unique<Utility::KeyValueFormatter>());
 
     // Register App Logger
     Utility::LogRegistry::instance()->registerLogger(mAppLogger);

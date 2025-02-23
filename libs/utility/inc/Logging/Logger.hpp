@@ -1,36 +1,35 @@
 #pragma once
 
-#include "utility/inc/Logging/Sinks/LogSinksI.hpp"
-#include "utility/inc/Logging/FormatterI.hpp"
-#include "utility/inc/Logging/LogRegistry.hpp"
+#include "utility/inc/Logging/Sinks/LogSink.hpp"
 
 #include <vector>
 
 namespace Utility
 {
 
+    // APP_DEBUG is defined by the CMake build
     #ifdef APP_DEBUG
         constexpr bool CAN_LOG(true);
     #else 
         constexpr bool CAN_LOG(false);
     #endif
-    /* 
-        Main Logger Class
-        A sink is the logging strategy that this logger will use. You can configure more than one. See more, LogSinksI.hpp
-        Global Log Level pertains to this entire Logger. You can specify a Log Level in each Sink to exclude 
-        specific log levels.
-        Each Logger is registered into a Logger Registry. This allows us to get the logger from any class
-    */
+
+    /**
+     * Main Logger Class
+     * 
+     * Loggers require Sinks to be attached in order to log a message
+     * A logger with no defined sinks will not log messages
+     */
     class Logger 
     {
         public:
-            typedef std::vector< std::shared_ptr< LogSinksI > > sinkList;
+            typedef std::vector< std::shared_ptr< LogSink > > sinkList;
 
             Logger() = delete;
             Logger(const std::string& loggerName, Utility::LogLevel level = Utility::LogLevel::NONE);
 
             Logger(const std::string& loggerName, 
-                   std::shared_ptr< Utility::LogSinksI > sink,
+                   std::shared_ptr< Utility::LogSink > sink,
                    Utility::LogLevel level = Utility::LogLevel::NONE);
 
             Logger(const std::string& loggerName, 
@@ -52,15 +51,12 @@ namespace Utility
             inline const std::string& getLoggerName() const { return mLoggerName; }
 
             // Inserts a single sink into mSinks
-            void addSink(std::shared_ptr< LogSinksI > sink);
-
-            // Set the formatter type
-            void addFormatter(std::unique_ptr< FormatterI > formatter);
+            void addSink(std::shared_ptr< LogSink > sink);
 
             // Insert multiple sinks into mSink
             void addSinkList(sinkList list);
 
-            std::vector< LogSinksI* > getSinkReferences();
+            std::vector< LogSink* > getSinkReferences();
 
             inline bool getIsGlobalLogger() const { return mIsGlobalLogger; }
 
@@ -72,8 +68,7 @@ namespace Utility
             void toggleGlobalLogger();
 
         private:
-            std::vector< std::shared_ptr< LogSinksI > > mSinks;
-            std::unique_ptr<FormatterI> mFormatter;
+            std::vector< std::shared_ptr< LogSink > > mSinks;
             std::string mLoggerName;
             LogLevel mGlobalLogLevel;
 

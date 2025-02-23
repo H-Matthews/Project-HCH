@@ -1,40 +1,42 @@
 #include "utility/inc/Logging/Sinks/ColorConsoleSink.hpp"
 
-#include <chrono>
-#include <iostream>
+#include "utility/inc/Logging/LogRegistry.hpp"
+#include "utility/inc/Logging/Formatters/DefaultFormatter.hpp"
 
+#include <iostream>
 
 const std::string Utility::ColorConsoleSink::sinkIdentifier = "ColorConsoleSink";
 
 Utility::ColorConsoleSink::ColorConsoleSink(LogLevel level) :
-    LogSinksI(sinkIdentifier, level),
+    LogSink(sinkIdentifier, std::make_unique<DefaultFormatter>(), level),
     mOutputStream(std::cout)
 {
 }
 
 void Utility::ColorConsoleSink::sinkData(std::string_view message, LogLevel level, const std::source_location location)
 {
-    // Get Time Stamp
-    auto now = std::chrono::system_clock::now();
-    std::time_t nowTime = std::chrono::system_clock::to_time_t(now);
-    std::tm now_tm = *std::localtime(&nowTime);
+    if(mFormatter)
+    {
+        std::string formattedMessage = mFormatter->format(std::string(message), level, location);
 
-    std::string colorCode = getColorCode(level);
-    std::filesystem::path filePath(location.file_name());
-    const std::string logLevelString = logLevelEnumToString(level);
+        const std::string colorCode = getColorCode(level);
+        insertColorCodes(formattedMessage, colorCode);
 
-    // Build Header
-    // TimeStamp
-    mOutputStream << colorCode << "[" << std::put_time(&now_tm, "%H:%M:%S") << "]";
+        // Write Log
+        mOutputStream << formattedMessage << std::endl;
+    }
+    else
+    {
+        LogRegistry::instance()->getGlobalLogger()->logError("Logger: " + LogSink::mSinkIdentifier + " DOES NOT have a formatter");
+    }
 
-    // File / Line Information
-    mOutputStream << " [" << filePath.filename().string() << ":" << location.line() << "]"; 
+}
 
-    // LogLevel
-    mOutputStream << " [" << logLevelString << "]";
-
-    // Write message, put text color back to default, and flush the output
-    mOutputStream << " " << message << mDefaultColorCode << std::endl;
+void Utility::ColorConsoleSink::insertColorCodes(std::string& message, std::string colorCode)
+{
+    // Insert color codes into message
+    message.insert(0, colorCode);
+    message.insert(message.size(), mDefaultColorCode);
 }
 
 const std::string Utility::ColorConsoleSink::getColorCode(LogLevel level) const
@@ -74,7 +76,7 @@ const std::string Utility::ColorConsoleSink::getColorCode(LogLevel level) const
 }
 
 // Convenience function to create a logger that has the ColorConsoleSink
-std::shared_ptr< Utility::Logger > Utility::Factory::createColorConsoleLogger(const std::string& loggerName, LogLevel level)
+std::shared_ptr< Utility::Logger > Utility::createColorConsoleLogger(const std::string& loggerName, LogLevel level)
 {
     auto colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >(level);
 

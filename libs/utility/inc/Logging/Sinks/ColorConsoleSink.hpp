@@ -1,14 +1,16 @@
 #pragma once
 
 #include "utility/inc/Logging/Logger.hpp"
-#include "utility/inc/Logging/Sinks/LogSinksI.hpp"
 
 namespace Utility 
 {
-    /*
-        This class inserts the ANSI color codes into the buffer before logging
-    */
-    class ColorConsoleSink : public LogSinksI
+
+    /**
+     * ColorConsoleSink writes output to std::cout, and inserts ANSI color codes into the buffer.
+     * 
+     * NOTE: If the terminal does not support ANSI codes, then the output will be gibberish
+     */
+    class ColorConsoleSink : public LogSink
     {
         static const std::string sinkIdentifier;
 
@@ -20,6 +22,8 @@ namespace Utility
             ~ColorConsoleSink() {}
 
         private:
+            void insertColorCodes(std::string& message, std::string colorCode);
+
             const std::string getColorCode(LogLevel level) const;
 
         private:
@@ -33,10 +37,7 @@ namespace Utility
             const std::string mDefaultColorCode = "\033[0m";    // Reset
     };
 
-     namespace Factory
-     {
-        // Convenience function
-        // Creates Logger with the necessary Sink. Registers with LogRegistry
-        std::shared_ptr< Utility::Logger > createColorConsoleLogger(const std::string& loggerName, LogLevel level = LogLevel::NONE);
-     }
+    // Convenience function
+    // Creates Logger with the necessary Sink. Registers with LogRegistry
+    std::shared_ptr< Utility::Logger > createColorConsoleLogger(const std::string& loggerName, LogLevel level = LogLevel::NONE);
 }
