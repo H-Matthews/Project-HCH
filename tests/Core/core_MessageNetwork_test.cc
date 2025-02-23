@@ -45,10 +45,10 @@ class TestPublisher : public Core::MessageNode
 };
 
 TestPublisher::TestPublisher(Core::MessageNetwork& messageNetwork) :
-    Core::MessageNode(messageNetwork),
+    Core::MessageNode(messageNetwork, "PlayerAction Publisher", Core::NodeType::PUBLISHER),
     testMessage()
 {
-    MessageNode::mMessageNodeInfo.nodeName = "PlayerActionPublisher";
+    MessageNode::addTopic(Messages::ID::PlayerActionMessage);
 
     // Initialize Messages
     testMessage = std::make_shared<TestMessage>(Messages::ID::PlayerActionMessage);
@@ -81,7 +81,7 @@ void TestPublisher::update(Action action)
     }
 
     if(testMessage->action != Action::NONE)
-        MessageNode::send(testMessage);
+        MessageNode::publish(testMessage);
 }
 
 class TestSubscriberOne : public Core::MessageNode 
@@ -99,10 +99,9 @@ class TestSubscriberOne : public Core::MessageNode
 };
 
 TestSubscriberOne::TestSubscriberOne(Core::MessageNetwork& messageNetwork) :
-    MessageNode(messageNetwork, "TestComponentSubOne")
+    MessageNode(messageNetwork, "TestComponentSubOne", Core::NodeType::SUBSCRIBER)
 {
-    MessageNode::subscribeTo(Messages::ID::PlayerActionMessage);
-    MessageNode::registerSubscriberMessages();
+    MessageNode::addTopic(Messages::ID::PlayerActionMessage);
 }
 
 std::vector<Action> TestSubscriberOne::getMessageVector()

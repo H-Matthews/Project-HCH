@@ -1,12 +1,11 @@
 #include "application/inc/SceneGraph/PlayerNode.hpp"
 
 Application::PlayerNode::PlayerNode(Core::MessageNetwork& network) :
-    MessageNode(network, "Player"),
+    Core::MessageNode(network, "Player Controller", Core::NodeType::SUBSCRIBER),
     circleShape(30.f)
 {
-    // Set Subscriber Information
-    MessageNode::subscribeTo(Messages::ID::PlayerActionMessage);
-    MessageNode::registerSubscriberMessages();
+    // Set Subscriber Topics
+    MessageNode::addTopic(Messages::ID::PlayerActionMessage);
 
     // set the shape color to green
     circleShape.setFillColor(sf::Color(100, 250, 50));

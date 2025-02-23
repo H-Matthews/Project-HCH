@@ -14,7 +14,7 @@ namespace Core
         std::string nodeName;
         std::set< Messages::ID > subscriptions;
         std::function<void (Message*) > callback;
-        MessageNodeInfo(const std::string& name);
+        MessageNodeInfo(const std::string& name, std::function<void (Message*) > func);
     };
 
 }

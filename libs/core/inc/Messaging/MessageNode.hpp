@@ -10,17 +10,28 @@ namespace Core
 {
     class MessageNetwork;
 
+    enum class NodeType
+    {
+        SUBSCRIBER = 0,
+        PUBLISHER,
+        SUB_AND_PUB
+    };
+
     class MessageNode 
     {
         public:
-            MessageNode(MessageNetwork& messageNetwork, const std::string& messageNodeName);
-            MessageNode(MessageNetwork& messageNetwork);
+            MessageNode(MessageNetwork& messageNetwork, const std::string& messageNodeName, NodeType nodeType);
 
         protected:
-            void subscribeTo(Messages::ID subscribeMessageID);
-            void notifyUnsubscribe(Messages::ID messageID);
-            void registerSubscriberMessages();
-            void send(std::shared_ptr<Message> message);
+            void addTopic(Messages::ID messageID);
+            void addSubscriberTopic(Messages::ID messageID);
+            void addPublisherTopic(Messages::ID messageID);
+
+            void removeTopic(Messages::ID messageID);
+            void removeSubscriberTopic(Messages::ID messageID);
+            void removePublisherTopic(Messages::ID messageID);
+
+            void publish(std::shared_ptr<Message> message);
             virtual void onNotify(Message* message);
 
         private:
@@ -31,6 +42,7 @@ namespace Core
 
         protected:
             MessageNodeInfo mMessageNodeInfo;
+            NodeType mNodeType;
 
             std::shared_ptr<Utility::Logger> mNetworkLogger;
     };
