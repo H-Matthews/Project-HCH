@@ -1,13 +1,15 @@
 #pragma once
 
 #include "utility/inc/Logging/Logger.hpp"
-#include "utility/inc/Logging/Sinks/LogSinksI.hpp"
 
 #include <fstream>
 
 namespace Utility
 {
-    class TextFileSink : public LogSinksI
+    /**
+     * TextFileSink writes output to a specific file
+     */
+    class TextFileSink : public LogSink
     {
         static const std::string sinkIdentifier;
 
@@ -21,7 +23,6 @@ namespace Utility
             const std::string getFilePath() const;
 
             void sinkData(std::string_view message, LogLevel level, const std::source_location location) override;
-            void sinkData(std::string_view formattedMessage) override;
 
             ~TextFileSink() {}
 
@@ -34,16 +35,11 @@ namespace Utility
             std::ofstream mFileHandle;
     };
 
-    
-
-    namespace Factory
-    {
-        // Convenience function
-        // Creates Logger with the necessary Sink. Registers with LogRegistry
-        std::shared_ptr< Utility::Logger > createTextFileLogger(const std::string& loggerName,
-                                                                const std::string& outputDirectory,
-                                                                const std::string& fileName, 
-                                                                const std::string& logExtension,
-                                                                LogLevel level = LogLevel::NONE);
-    }
+    // Convenience function
+    // Creates Logger with the necessary Sink. Registers with LogRegistry
+    std::shared_ptr< Utility::Logger > createTextFileLogger(const std::string& loggerName,
+                                                            const std::string& outputDirectory,
+                                                            const std::string& fileName,
+                                                            const std::string& logExtension,
+                                                            LogLevel level = LogLevel::NONE);
 }

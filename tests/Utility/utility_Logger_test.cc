@@ -2,8 +2,10 @@
 
 // Unit to be Tested
 #include "utility/inc/Logging/Logger.hpp"
+#include "utility/inc/Logging/LogRegistry.hpp"
 #include "utility/inc/Logging/Sinks/ColorConsoleSink.hpp"
 #include "utility/inc/Logging/Sinks/TextFileSink.hpp"
+#include "utility/inc/Logging/Formatters/KeyValueFormatter.hpp"
 
 // Test Fixture
 class UtilityLoggerTest : public ::testing::Test 
@@ -21,7 +23,7 @@ class UtilityLoggerTest : public ::testing::Test
         std::shared_ptr< Utility::TextFileSink > textFileSink;
         std::shared_ptr< Utility::ColorConsoleSink > colorConsoleSink;
 
-        std::vector< Utility::LogSinksI* > sinks;
+        std::vector< Utility::LogSink* > sinks;
         
         void SetUp() override 
         {
@@ -58,7 +60,7 @@ class UtilityLoggerTest : public ::testing::Test
 */
 TEST(UtilityLoggerTextFactoryTest, textFileFactory)
 {
-    auto textFileLogger = Utility::Factory::createTextFileLogger("textLogger", "./test", "file", ".log", Utility::LogLevel::DEBUG);
+    auto textFileLogger = Utility::createTextFileLogger("textLogger", "./test", "file", ".log", Utility::LogLevel::DEBUG);
     ASSERT_NE(textFileLogger, nullptr);
 
     // Ensure it can be retrieved from the log registry
@@ -71,7 +73,7 @@ TEST(UtilityLoggerTextFactoryTest, textFileFactory)
 */
 TEST(UtilityLoggerConsoleFactoryTest, colorConsoleFactory)
 {
-    auto colorConsoleLogger = Utility::Factory::createColorConsoleLogger("consoleLogger");
+    auto colorConsoleLogger = Utility::createColorConsoleLogger("consoleLogger");
     ASSERT_NE(colorConsoleLogger, nullptr);
 
     // Ensure it can be retrieved from the log registry
@@ -624,4 +626,26 @@ TEST_F(UtilityLoggerTest, logError_ConsoleLogger_Test)
     logger_oneSink->logError("This is a test");
     EXPECT_NE(mBuffer.str().find("[ERROR]"), std::string::npos);
     EXPECT_NE(mBuffer.str().find("This is a test"), std::string::npos);
+}
+
+TEST_F(UtilityLoggerTest, swapFormatter_Test)
+{
+    ASSERT_NE(logger_oneSink, nullptr);
+
+    // Local Scope
+    {
+        auto sinks = logger_twoSinks->getSinkReferences();
+        for(const auto& sink : sinks)
+        {
+            sink->setFormatter(std::make_unique<Utility::KeyValueFormatter>());
+        }   
+    }
+
+    auto updatedSinks = logger_twoSinks->getSinkReferences();
+    for(const auto& updatedSink : updatedSinks)
+    {
+        Utility::LogFormatter* currentFormatter = updatedSink->getFormatter();
+        Utility::KeyValueFormatter* keyValueFormatter = dynamic_cast<Utility::KeyValueFormatter*>( currentFormatter );
+        ASSERT_NE(keyValueFormatter, nullptr);
+    }
 }

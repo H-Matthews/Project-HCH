@@ -1,11 +1,11 @@
-#include "utility/inc/Logging/KeyValueFormatter.hpp"
+#include "utility/inc/Logging/Formatters/KeyValueFormatter.hpp"
 
 #include <iomanip>
 #include <iostream>
 #include <chrono>
 
 Utility::KeyValueFormatter::KeyValueFormatter() :
-    FormatterI("KeyValue")
+    LogFormatter("KeyValue")
 {
 }
 
@@ -13,7 +13,7 @@ std::string Utility::KeyValueFormatter::format(std::string message, LogLevel lev
 {
     std::stringstream tempBuffer;
 
-    // FILE
+    // BEGIN FORMATTING
 
     tempBuffer << "{ \n\t";
 

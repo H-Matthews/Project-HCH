@@ -1,5 +1,6 @@
 #include "utility/inc/Logging/LogRegistry.hpp"
-#include "utility/inc/Logging/Sinks/TextFileSink.hpp"
+
+#include <sstream>
 
 std::shared_ptr< Utility::LogRegistry > Utility::LogRegistry::mRegistryInstance = nullptr;
 
@@ -69,9 +70,7 @@ std::shared_ptr< Utility::Logger > Utility::LogRegistry::getGlobalLogger() const
     for(const auto& [hashKey, logger] : mRegistry)
     {
         if(logger->getIsGlobalLogger())
-        {
             globalLogger = logger;
-        }
     }
 
     return globalLogger;

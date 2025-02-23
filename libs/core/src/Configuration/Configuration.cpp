@@ -2,10 +2,8 @@
 
 #include "utility/inc/Logging/LogRegistry.hpp"
 
-#include <string>
-#include <filesystem>
 #include <cassert>
-#include <iostream>
+#include <sstream>
 
 const std::string Core::Configuration::OUTPUT_DIR_NAME = "output";
 const std::string Core::Configuration::CONFIG_DIR_NAME = "configs";
