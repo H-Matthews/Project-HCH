@@ -10,16 +10,16 @@ namespace Application
 {
     class KeyBindings
     {
-        public:
-            KeyBindings();
+      public:
+        KeyBindings();
 
-            void assignKey(Actions::Player action, sf::Keyboard::Scan scanCode);
-            Actions::Player getAssignedAction(sf::Keyboard::Scan scanCode) const;
+        void assignKey( Actions::Player action, sf::Keyboard::Scan scanCode );
+        Actions::Player getAssignedAction( sf::Keyboard::Scan scanCode ) const;
 
-            const std::map<sf::Keyboard::Scan, Actions::Player>& getKeyBindings();
-            static bool isRealTimeAction(Actions::Player action);
+        const std::map< sf::Keyboard::Scan, Actions::Player >& getKeyBindings();
+        static bool isRealTimeAction( Actions::Player action );
 
-        private:
-            std::map<sf::Keyboard::Scan, Actions::Player> mKeyBindings;
+      private:
+        std::map< sf::Keyboard::Scan, Actions::Player > mKeyBindings;
     };
 }

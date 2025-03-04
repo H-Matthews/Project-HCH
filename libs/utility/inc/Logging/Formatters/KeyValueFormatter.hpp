@@ -20,12 +20,12 @@ namespace Utility
      */
     class KeyValueFormatter : public LogFormatter
     {
-        public:
-            KeyValueFormatter();
+      public:
+        KeyValueFormatter();
 
-            // From FormatterI
-            std::string format(std::string message, LogLevel level, const std::source_location location) override;
+        // From FormatterI
+        std::string format( std::string message, LogLevel level, const std::source_location location ) override;
     };
 
-    const std::string keysEnumToString(const Keys identifier);
+    const std::string keysEnumToString( const Keys identifier );
 }

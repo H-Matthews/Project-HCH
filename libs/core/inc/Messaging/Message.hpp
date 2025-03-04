@@ -14,33 +14,32 @@ namespace Core
      */
     class Message
     {
-        public:
+      public:
+        struct Info
+        {
+            Messages::ID messageID;
+            std::string stringMessageID;
+            std::string sender;
 
-            struct Info 
-            {
-                Messages::ID messageID;
-                std::string stringMessageID;
-                std::string sender;
+            Info();
+            Info( Messages::ID messageID, const std::string& stringMessageID );
+        };
 
-                Info();
-                Info(Messages::ID messageID, const std::string& stringMessageID);
-            };
+      public:
+        virtual ~Message();
+        virtual Message* clone() const = 0;
 
-        public:
-            virtual ~Message();
-            virtual Message* clone() const = 0;
+        void setSender( const std::string& sender );
 
-            void setSender(const std::string& sender);
+        std::string getSenderName() const;
+        Messages::ID getMessageID() const;
+        const std::string& getStringMessageID() const;
 
-            std::string getSenderName() const;
-            Messages::ID getMessageID() const;
-            const std::string& getStringMessageID() const;
-        
-        protected:
-            Message(const Messages::ID messageID, const std::string& stringMessageID );
+      protected:
+        Message( const Messages::ID messageID, const std::string& stringMessageID );
 
-        protected:
-            Info mMessageInfo;
-    };  
+      protected:
+        Info mMessageInfo;
+    };
 
 }

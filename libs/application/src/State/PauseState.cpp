@@ -5,8 +5,9 @@
 
 #include <iostream>
 
-Application::PauseState::PauseState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) : 
-    State(stack, stateIdentifier, sharedObjects)
+Application::PauseState::PauseState(
+    Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects ) :
+    State( stack, stateIdentifier, sharedObjects )
 {
     std::cout << "Creating PauseState " << std::endl;
 
@@ -23,24 +24,24 @@ void Application::PauseState::draw()
     sf::RenderWindow& window = *getSharedObjects().window;
 }
 
-bool Application::PauseState::update(sf::Time fixedTimeStep)
+bool Application::PauseState::update( sf::Time fixedTimeStep )
 {
     return false;
 }
 
-bool Application::PauseState::handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent)
+bool Application::PauseState::handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent )
 {
 
     // Pops the Pause State, returning to the GameState
-    if(keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape)
+    if ( keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape )
     {
         requestStackPop();
     }
-    else if(keyPressedEvent.scancode == sf::Keyboard::Scancode::Backspace)
+    else if ( keyPressedEvent.scancode == sf::Keyboard::Scancode::Backspace )
     {
         // Remove all states and push Menu
         requestStateClear();
-        requestStackPush(States::Menu);
+        requestStackPush( States::Menu );
     }
 
     return false;

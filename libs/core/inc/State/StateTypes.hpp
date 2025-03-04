@@ -8,9 +8,9 @@ namespace States
     {
         NONE = 0,
         Menu,
-        Game, 
+        Game,
         Pause
     };
 
-    const std::string statesEnumToString(const States::ID identifier);
+    const std::string statesEnumToString( const States::ID identifier );
 }

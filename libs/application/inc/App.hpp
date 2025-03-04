@@ -18,34 +18,32 @@ namespace Application
 {
     class App
     {
-        public:
-            App(std::shared_ptr<Core::ConfigurationI> config);
-            void initialize();
-            void run();
+      public:
+        App( std::shared_ptr< Core::ConfigurationI > config );
+        void initialize();
+        void run();
 
-        private:
-            // Registers States in StateStack mRegistry
-            void registerStates();
+      private:
+        // Registers States in StateStack mRegistry
+        void registerStates();
 
-            void processInput();
-            void update(sf::Time fixedTimeStep);
-            void render();
+        void processInput();
+        void update( sf::Time fixedTimeStep );
+        void render();
 
-            void initializeAppLogger();
-            void initializeCoreLoggers();
+        void initializeAppLogger();
+        void initializeCoreLoggers();
 
+      private:
+        static const sf::Time TIME_PER_FRAME;
 
-        private:
-            static const sf::Time TIME_PER_FRAME;
+        std::shared_ptr< Utility::Logger > mAppLogger;
+        // TODO: Implement a Resource Container for Textures / Fonts
 
-            std::shared_ptr< Utility::Logger > mAppLogger;
-            // TODO: Implement a Resource Container for Textures / Fonts
-            
-            std::shared_ptr<Core::ConfigurationI> mConfiguration;
-            Core::MessageNetwork mNetwork;
-            Application::KeyBindings mPlayerKeyBindings;
-            sf::RenderWindow mWindow;
-            Core::StateStack mStateStack;
-
+        std::shared_ptr< Core::ConfigurationI > mConfiguration;
+        Core::MessageNetwork mNetwork;
+        Application::KeyBindings mPlayerKeyBindings;
+        sf::RenderWindow mWindow;
+        Core::StateStack mStateStack;
     };
 }

@@ -15,19 +15,21 @@ namespace Core
     struct SubscriberNodeInfo
     {
         std::string mNodename;
-        std::function<void (Message*) > mCallback;
+        std::function< void( Message* ) > mCallback;
 
-        SubscriberNodeInfo(const std::string& nodeName, std::function<void (Message*) > func) : 
-            mNodename(nodeName),
-            mCallback(func) {}
+        SubscriberNodeInfo( const std::string& nodeName, std::function< void( Message* ) > func ) :
+            mNodename( nodeName ),
+            mCallback( func )
+        {}
     };
 
     struct PublisherNodeInfo
     {
         std::string mNodeName;
 
-        PublisherNodeInfo(const std::string& nodeName) : 
-            mNodeName(nodeName) {}
+        PublisherNodeInfo( const std::string& nodeName ) :
+            mNodeName( nodeName )
+        {}
     };
 
     /**
@@ -37,51 +39,52 @@ namespace Core
      */
     class MessageNetwork
     {
-        public:
-            MessageNetwork();
+      public:
+        MessageNetwork();
 
-            void notifySubscribers();
+        void notifySubscribers();
 
-            void initializeLogger();
-            void shutdownNetwork();
-        private:
+        void initializeLogger();
+        void shutdownNetwork();
 
-            void registerSubscriberNode(const std::string& nodeName, std::function<void (Message*) > callback);
-            void registerPublisherNode(const std::string& nodeName);
+      private:
+        void registerSubscriberNode( const std::string& nodeName, std::function< void( Message* ) > callback );
+        void registerPublisherNode( const std::string& nodeName );
 
-            void addSubscriberTopic(const std::string& nodeName, Messages::ID messageID);
-            void addPublisherTopic(const std::string& nodeName, Messages::ID messageID);
+        void addSubscriberTopic( const std::string& nodeName, Messages::ID messageID );
+        void addPublisherTopic( const std::string& nodeName, Messages::ID messageID );
 
-            void unRegisterSubscriberNode(const std::string& nodeName);
-            void unRegisterPublisherNode(const std::string& nodeName);
+        void unRegisterSubscriberNode( const std::string& nodeName );
+        void unRegisterPublisherNode( const std::string& nodeName );
 
-            // These functions do not Immediately remove the topics from each Node. It puts the request into the
-            // data structures mPendingPublisherRequests & mPendingSubscriberRequests
-            // The function addressPendingRequests does the actual removal
-            void removeTopicFromPublisher(const std::string& nodeName, Messages::ID messageID);
-            void removeTopicFromSubscriber(const std::string& nodeName, Messages::ID messageID);
+        // These functions do not Immediately remove the topics from each Node. It puts the request into the
+        // data structures mPendingPublisherRequests & mPendingSubscriberRequests
+        // The function addressPendingRequests does the actual removal
+        void removeTopicFromPublisher( const std::string& nodeName, Messages::ID messageID );
+        void removeTopicFromSubscriber( const std::string& nodeName, Messages::ID messageID );
 
-            void publishMessage(std::shared_ptr<Message> message);
+        void publishMessage( std::shared_ptr< Message > message );
 
-            void addressPendingRequests();
-        private:
-            std::queue< std::shared_ptr< Message > > mMessageQueue;
+        void addressPendingRequests();
 
-            std::map< std::size_t, std::set< Messages::ID > > mSubscriberNodes;
-            std::map< std::size_t, std::set< Messages::ID > > mPublisherNodes;
+      private:
+        std::queue< std::shared_ptr< Message > > mMessageQueue;
 
-            // Used for storing information about the Publisher / Subscriber Node
-            std::map< std::size_t, SubscriberNodeInfo > mSubscriberRecords;
-            std::map< std::size_t, PublisherNodeInfo > mPublisherRecords;
-            
-            std::map< std::size_t, std::set< Messages::ID > > mPendingPublisherRequests;
-            std::map< std::size_t, std::set< Messages::ID > > mPendingSubscriberRequests;
+        std::map< std::size_t, std::set< Messages::ID > > mSubscriberNodes;
+        std::map< std::size_t, std::set< Messages::ID > > mPublisherNodes;
 
-            std::hash< std::string > mHash;
-            std::shared_ptr< Utility::Logger > mLogger;
+        // Used for storing information about the Publisher / Subscriber Node
+        std::map< std::size_t, SubscriberNodeInfo > mSubscriberRecords;
+        std::map< std::size_t, PublisherNodeInfo > mPublisherRecords;
 
-        public:
-            friend class Core::MessageNode;
+        std::map< std::size_t, std::set< Messages::ID > > mPendingPublisherRequests;
+        std::map< std::size_t, std::set< Messages::ID > > mPendingSubscriberRequests;
+
+        std::hash< std::string > mHash;
+        std::shared_ptr< Utility::Logger > mLogger;
+
+      public:
+        friend class Core::MessageNode;
     };
 
 }

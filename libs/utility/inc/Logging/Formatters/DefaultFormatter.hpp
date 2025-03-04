@@ -10,10 +10,10 @@ namespace Utility
      */
     class DefaultFormatter : public LogFormatter
     {
-        public:
-            DefaultFormatter();
+      public:
+        DefaultFormatter();
 
-            // From FormatterI
-            std::string format(std::string message, LogLevel level, const std::source_location location) override;
+        // From FormatterI
+        std::string format( std::string message, LogLevel level, const std::source_location location ) override;
     };
 }

@@ -19,19 +19,19 @@ namespace Application
     */
     class PlayerInputPublisher : public Core::MessageNode
     {
-        public:
-            PlayerInputPublisher(Core::MessageNetwork& network, Application::KeyBindings keyBindings);
-    
-            void handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent);
-            void handleRealTimeInput();
+      public:
+        PlayerInputPublisher( Core::MessageNetwork& network, Application::KeyBindings keyBindings );
 
-            std::shared_ptr<Application::PlayerInputMessage> getMessage(std::size_t index);
-    
-        private:
-            Application::KeyBindings mKeyBindings;
+        void handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent );
+        void handleRealTimeInput();
 
-            std::vector< std::shared_ptr<Application::PlayerInputMessage> > mPlayerActionMessages;
-            std::shared_ptr<Application::PlayerInputMessage> mPlayerEventMessage;
-            static const int VECTOR_MESSAGE_SIZE;
+        std::shared_ptr< Application::PlayerInputMessage > getMessage( std::size_t index );
+
+      private:
+        Application::KeyBindings mKeyBindings;
+
+        std::vector< std::shared_ptr< Application::PlayerInputMessage > > mPlayerActionMessages;
+        std::shared_ptr< Application::PlayerInputMessage > mPlayerEventMessage;
+        static const int VECTOR_MESSAGE_SIZE;
     };
 }

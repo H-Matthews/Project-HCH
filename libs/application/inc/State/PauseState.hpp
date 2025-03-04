@@ -4,14 +4,14 @@
 
 namespace Application
 {
-    class PauseState : public Core::State 
+    class PauseState : public Core::State
     {
-        public:
-            PauseState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects);
+      public:
+        PauseState( Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects );
 
-            virtual void draw();
+        virtual void draw();
 
-            virtual bool update(sf::Time fixedTimeStep);
-            bool handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) override;
+        virtual bool update( sf::Time fixedTimeStep );
+        bool handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent ) override;
     };
 }

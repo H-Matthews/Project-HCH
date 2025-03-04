@@ -16,39 +16,44 @@ namespace Core
 
     class State
     {
-        public:
+      public:
+        struct SharedObjects
+        {
+            SharedObjects( sf::RenderWindow& window, Core::MessageNetwork& network );
 
-            struct SharedObjects
-            {
-                SharedObjects(sf::RenderWindow& window, Core::MessageNetwork& network);
+            sf::RenderWindow* window;
+            Core::MessageNetwork* network;
+        };
 
-                sf::RenderWindow* window;
-                Core::MessageNetwork* network;
-            };
+      public:
+        State( StateStack& stack, std::string mStateIdentifierString, SharedObjects sObjects );
+        virtual ~State();
 
-        public:
-            State(StateStack& stack, std::string mStateIdentifierString, SharedObjects sObjects);
-            virtual ~State();
+        virtual void draw() = 0;
+        virtual bool update( sf::Time fixedTimeStep ) = 0;
+        virtual bool handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent ) = 0;
+        virtual bool handleMouseMoved( const sf::Event::MouseMoved& )
+        {
+            return false;
+        }
+        virtual bool handleRealTimeInput()
+        {
+            return false;
+        }
 
-            virtual void draw() = 0;
-            virtual bool update(sf::Time fixedTimeStep) = 0;
-            virtual bool handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) = 0;
-            virtual bool handleMouseMoved(const sf::Event::MouseMoved&) { return false; }
-            virtual bool handleRealTimeInput() { return false; }
+        const std::string getStateAsString();
 
-            const std::string getStateAsString();
+      protected:
+        void requestStackPush( States::ID stateID );
+        void requestStackPop();
+        void requestStateClear();
 
-        protected:
-            void requestStackPush(States::ID stateID);
-            void requestStackPop();
-            void requestStateClear();
+        SharedObjects getSharedObjects() const;
 
-            SharedObjects getSharedObjects() const;
-
-        private:
-            StateStack* mStack;
-            std::string mStateIdentifierString;
-            SharedObjects mSharedObjects;
+      private:
+        StateStack* mStack;
+        std::string mStateIdentifierString;
+        SharedObjects mSharedObjects;
     };
 
 }

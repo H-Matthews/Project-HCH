@@ -1,4 +1,11 @@
 {
+    "editor.indentSize": "tabSize",
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "editor.defaultFormatter": "ms-vscode.cpptools",
+    "editor.formatOnSave": true,
+    "C_Cpp.formatting": "clangFormat",
+
     "files.associations": {
         "any": "cpp",
         "array": "cpp",
@@ -71,10 +78,8 @@
         "thread": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
-    },
-
-    "editor.indentSize": "tabSize",
-    "editor.insertSpaces": true,
-    "editor.detectIndentation": false
+        "variant": "cpp",
+        "ranges": "cpp",
+        "valarray": "cpp"
+    }
 }

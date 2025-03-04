@@ -2,12 +2,11 @@
 
 #include "utility/inc/Logging/LogRegistry.hpp"
 
-Core::JsonParser::JsonParser(const std::string parserIdentifierString) :
-    Parser(parserIdentifierString)
-{
-}
+Core::JsonParser::JsonParser( const std::string parserIdentifierString ) :
+    Parser( parserIdentifierString )
+{}
 
-void Core::JsonParser::parseFile(std::ifstream& fileStream)
+void Core::JsonParser::parseFile( std::ifstream& fileStream )
 {
     return;
 }
