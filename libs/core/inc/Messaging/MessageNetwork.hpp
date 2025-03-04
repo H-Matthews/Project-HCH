@@ -64,8 +64,6 @@ namespace Core
             void publishMessage(std::shared_ptr<Message> message);
 
             void addressPendingRequests();
-
-            void shutdownNetwork();
         private:
             std::queue< std::shared_ptr< Message > > mMessageQueue;
 
