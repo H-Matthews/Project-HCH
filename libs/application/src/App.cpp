@@ -31,7 +31,7 @@ void Application::App::initialize()
 {
     mConfiguration->initializeIteration();
     mConfiguration->parseConfigs();
-
+    
     mGameAssetContainer.initializeTextures();
     mGameAssetContainer.initializeFonts();
 

@@ -35,7 +35,6 @@ namespace Application
             void initializeAppLogger();
             void initializeCoreLoggers();
 
-
         private:
             static const sf::Time TIME_PER_FRAME;
 

@@ -1,13 +1,11 @@
 #include "core/inc/GameAssetContainer/GameAssetContainer.hpp"
 
-
 bool Core::GameAssetContainer::initializeTextures()
 {
-    //TODO add logging
-    if(!loadTexture("playerSprite")){
+    if(!loadTexture("playerSprite", "../../../gameAssets/textures/playerSprite.png")){
         return false;
     }
-    if(!loadTexture("enemySprite")){
+    if(!loadTexture("enemySprite", "../../../gameAssets/textures/enemySprite.png")){
         return false;
     }
     return true;
@@ -15,16 +13,16 @@ bool Core::GameAssetContainer::initializeTextures()
 
 bool Core::GameAssetContainer::initializeFonts()
 {
-    if(!loadFont("arial")){
+    if(!loadFont("arial", "../../../gameAssets/fonts/arial.ttf")){
         return false;
     }
-    if(!loadFont("nasty")){
+    if(!loadFont("nasty", "../../../gameAssets/fonts/nasty.ttf")){
         return false;
     }
     return true;
 }
 
-//TODO make getTexture and getFont faster by avoiding string compare
+//TODO maybe make string selection and ENUM for consistency
 std::shared_ptr<sf::Texture> Core::GameAssetContainer::getTexture(std::string selectionString)
 {
     return textureMap[selectionString];
@@ -35,36 +33,28 @@ std::shared_ptr<sf::Font> Core::GameAssetContainer::getFont(std::string fontName
     return fontMap[fontName];
 }
 
-bool Core::GameAssetContainer::loadTexture(std::string spriteName)
+bool Core::GameAssetContainer::loadTexture(std::string spriteName, std::string filePath)
 {
-    std::shared_ptr<sf::Texture> tempTexture(new sf::Texture);
+    std::shared_ptr<sf::Texture> tempTexture(std::make_shared<sf::Texture>());
 
-    std::string texturePath = filePath + "textures/" + spriteName + ".png";
-
-    if(!tempTexture->loadFromFile(texturePath)){
-        //TODO Add logging here for failed texture load./
+    if(!tempTexture->loadFromFile(filePath)){
         return false;
     }
-    //Add logging here for completed texture load.
-    textureMap.insert({spriteName ,tempTexture});
-    return true;
 
+    textureMap.insert({spriteName ,tempTexture});
+
+    return true;
 }
 
-bool Core::GameAssetContainer::loadFont(std::string fontName)
+bool Core::GameAssetContainer::loadFont(std::string fontName, std::string filePath)
 {
-    
-    std::shared_ptr<sf::Font> tempFont(new sf::Font);
+    std::shared_ptr<sf::Font> tempFont(std::make_shared<sf::Font>());
 
-    std::string fontPath = filePath + "fonts/" + fontName + ".ttf";
-
-    if(!tempFont->openFromFile(fontPath)){
-        //TODO Add logging here for failed texture load.
+    if(!tempFont->openFromFile(filePath)){
         return false;
     }
-    //Add logging here for completed texture load.
+
     fontMap.insert({fontName ,tempFont});
         
     return true;
 }
-
