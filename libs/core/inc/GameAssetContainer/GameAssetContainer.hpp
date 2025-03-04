@@ -10,12 +10,12 @@ namespace Core
         public:
             bool initializeTextures();
             bool initializeFonts();
-            std::shared_ptr<sf::Texture> getTexture(std::string);
-            std::shared_ptr<sf::Font> getFont(std::string);
+            std::shared_ptr<sf::Texture> getTexture(const std::string &textureName);
+            std::shared_ptr<sf::Font> getFont(const std::string &fontName);
             
         private:
-            bool loadTexture(std::string, std::string);
-            bool loadFont(std::string, std::string);
+            bool loadTexture(const std::string &spriteName, const std::string &filePath);
+            bool loadFont(const std::string &fontName, const std::string &filePath);
             std::unordered_map<std::string, std::shared_ptr<sf::Texture>> textureMap;
             std::unordered_map<std::string, std::shared_ptr<sf::Font>> fontMap;
 

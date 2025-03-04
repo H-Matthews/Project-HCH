@@ -23,19 +23,19 @@ bool Core::GameAssetContainer::initializeFonts()
 }
 
 //TODO maybe make string selection and ENUM for consistency
-std::shared_ptr<sf::Texture> Core::GameAssetContainer::getTexture(std::string selectionString)
+std::shared_ptr<sf::Texture> Core::GameAssetContainer::getTexture(const std::string &textureName)
 {
-    return textureMap[selectionString];
+    return textureMap[textureName];
 }
 
-std::shared_ptr<sf::Font> Core::GameAssetContainer::getFont(std::string fontName)
+std::shared_ptr<sf::Font> Core::GameAssetContainer::getFont(const std::string &fontName)
 {
     return fontMap[fontName];
 }
 
-bool Core::GameAssetContainer::loadTexture(std::string spriteName, std::string filePath)
+bool Core::GameAssetContainer::loadTexture(const std::string &spriteName, const std::string &filePath)
 {
-    std::shared_ptr<sf::Texture> tempTexture(std::make_shared<sf::Texture>());
+    auto tempTexture(std::make_shared<sf::Texture>());
 
     if(!tempTexture->loadFromFile(filePath)){
         return false;
@@ -46,9 +46,9 @@ bool Core::GameAssetContainer::loadTexture(std::string spriteName, std::string f
     return true;
 }
 
-bool Core::GameAssetContainer::loadFont(std::string fontName, std::string filePath)
+bool Core::GameAssetContainer::loadFont(const std::string &fontName, const std::string &filePath)
 {
-    std::shared_ptr<sf::Font> tempFont(std::make_shared<sf::Font>());
+    auto tempFont(std::make_shared<sf::Font>());
 
     if(!tempFont->openFromFile(filePath)){
         return false;
