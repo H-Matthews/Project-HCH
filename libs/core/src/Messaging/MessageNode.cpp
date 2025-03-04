@@ -1,76 +1,178 @@
 #include "core/inc/Messaging/MessageNode.hpp"
 #include "core/inc/Messaging/MessageNetwork.hpp"
 
-#include <iostream>
 
-Core::MessageNode::MessageNode(MessageNetwork& messageNetwork, const std::string& messageNodeName) :
+Core::MessageNode::MessageNode(MessageNetwork& messageNetwork, const std::string& messageNodeName, NodeType nodeType) :
     mMessageNetwork(messageNetwork),
-    mMessageNodeInfo(messageNodeName),
+    mNodeName(messageNodeName),
+    mCallback(this->getNotifyFunc()),
+    mNodeType(nodeType),
     mNetworkLogger()
 {   
-    mMessageNodeInfo.callback = this->getNotifyFunc();
-
     // Get Logger
     if constexpr (Utility::CAN_LOG)
         mNetworkLogger = Utility::LogRegistry::instance()->getLogger("MessageNetworkLogger");
-}
 
-Core::MessageNode::MessageNode(MessageNetwork& messageNetwork) :
-    mMessageNetwork(messageNetwork),
-    mMessageNodeInfo("")
-{
-}
-
-void Core::MessageNode::subscribeTo(Messages::ID subscribeMessageID)
-{
-    auto result = mMessageNodeInfo.subscriptions.insert(subscribeMessageID);
-
-    if(!result.second)
-        std::cout << "Already Subscribed to that Message " << std::endl;
-}
-
-// Notifys messageNetwork that we would like to unSubscribe from a message
-// It will evaulate the request at the end of MessageNetwork::notifySubscribers()
-// This ensures the messages that were sent in the middle of the loop still gets sent to 
-// the subscriber as intended
-void Core::MessageNode::notifyUnsubscribe(Messages::ID messageID)
-{
-    mMessageNetwork.insertUnsubscriber(messageID, mMessageNodeInfo.nodeName);
-}
-
-void Core::MessageNode::registerSubscriberMessages()
-{
-    if(!mMessageNodeInfo.subscriptions.empty())
+    // Register Node
+    switch(mNodeType)
     {
-        mMessageNetwork.addSubscriber(mMessageNodeInfo);
+        case NodeType::PUBLISHER:
+        {
+            mMessageNetwork.registerPublisherNode(mNodeName);
+            break;
+        }
+        case NodeType::SUBSCRIBER:
+        {
+            mMessageNetwork.registerSubscriberNode(mNodeName, mCallback);
+            break;
+        }
+        case NodeType::SUB_AND_PUB:
+        {
+            mMessageNetwork.registerPublisherNode(mNodeName);
+            mMessageNetwork.registerSubscriberNode(mNodeName, mCallback);
+            break;
+        }
     }
-    else
+
+}
+
+// ONLY use this function if the node is BOTH a publisher and subscriber
+// AND you wish to subscribe to the topic as a subscriber and publisher
+// OTHERWISE, use the other functions addSubscriberTopic, addPublisherTopic
+void Core::MessageNode::addTopic(Messages::ID messageID)
+{
+    switch(mNodeType)
     {
-        std::cout << mMessageNodeInfo.nodeName << " has not set any messages to subscribe to " << std::endl;
+        case Core::NodeType::PUBLISHER:
+        {
+            mMessageNetwork.addPublisherTopic(mNodeName, messageID);
+            break;
+        }
+        case Core::NodeType::SUBSCRIBER:
+        {
+            mMessageNetwork.addSubscriberTopic(mNodeName, messageID);
+            break;
+        }
+        case Core::NodeType::SUB_AND_PUB:
+        {
+            mMessageNetwork.addPublisherTopic(mNodeName, messageID);
+            mMessageNetwork.addSubscriberTopic(mNodeName, messageID);
+            break;
+        }
+    }
+
+   return;
+}
+
+void Core::MessageNode::addSubscriberTopic(Messages::ID messageID)
+{
+    mMessageNetwork.addSubscriberTopic(mNodeName, messageID);
+
+    return;
+}
+void Core::MessageNode::addPublisherTopic(Messages::ID messageID)
+{
+    mMessageNetwork.addPublisherTopic(mNodeName, messageID);
+
+    return;
+}
+
+// ONLY use this function if the node is BOTH a publisher and subscriber
+// AND you wish to subscribe to the topic as a subscriber and publisher
+// OTHERWISE, use the other functions addSubscriberTopic, addPublisherTopic
+void Core::MessageNode::removeTopic(Messages::ID messageID)
+{
+    switch(mNodeType)
+    {
+        case Core::NodeType::PUBLISHER:
+        {
+            mMessageNetwork.addPublisherTopic(mNodeName, messageID);
+            break;
+        }
+        case Core::NodeType::SUBSCRIBER:
+        {
+            mMessageNetwork.addSubscriberTopic(mNodeName, messageID);
+            break;
+        }
+        case Core::NodeType::SUB_AND_PUB:
+        {
+            mMessageNetwork.addPublisherTopic(mNodeName, messageID);
+            mMessageNetwork.addSubscriberTopic(mNodeName, messageID);
+            break;
+        }
     }
 }
 
-void Core::MessageNode::send(std::shared_ptr<Message> message)
+void Core::MessageNode::removeSubscriberTopic(Messages::ID messageID)
+{
+    mMessageNetwork.removeTopicFromSubscriber(mNodeName, messageID);
+
+    return;
+}
+void Core::MessageNode::removePublisherTopic(Messages::ID messageID)
+{
+    mMessageNetwork.removeTopicFromPublisher(mNodeName, messageID);
+
+    return;
+}
+
+void Core::MessageNode::unRegisterNode()
+{
+    switch(mNodeType)
+    {
+        case Core::NodeType::PUBLISHER:
+        {
+            mMessageNetwork.unRegisterPublisherNode(mNodeName);
+            break;
+        }
+        case Core::NodeType::SUBSCRIBER:
+        {
+            mMessageNetwork.unRegisterSubscriberNode(mNodeName);
+            break;
+        }
+        case Core::NodeType::SUB_AND_PUB:
+        {
+            mMessageNetwork.unRegisterPublisherNode(mNodeName);
+            mMessageNetwork.unRegisterSubscriberNode(mNodeName);
+            break;
+        }
+    }
+    return;
+}
+void Core::MessageNode::unRegisterSubscriberNode()
+{
+    mMessageNetwork.unRegisterSubscriberNode(mNodeName);
+
+    return;
+}
+void Core::MessageNode::unRegisterpublisherNode()
+{
+    mMessageNetwork.unRegisterPublisherNode(mNodeName);
+
+    return;
+}
+
+void Core::MessageNode::publish(std::shared_ptr<Message> message)
 { 
-    message->setSender(mMessageNodeInfo.nodeName);
+    message->setSender(mNodeName);
 
     if( message->getMessageID() != Messages::ID::NONE)
     {
-        mMessageNetwork.sendMessage(message);
+        mMessageNetwork.publishMessage(message);
     }
     else
     {
-        std::cout << "Did not send message because there is no Topic associated with NodeID: "
-                  << mMessageNodeInfo.nodeName << std::endl;
+        if constexpr(Utility::CAN_LOG)
+            mNetworkLogger->logError("Could not Publisher message from Node " + message->getSenderName() +
+                " due to no topic being associated with Message");
     }
-
-    // message = nullptr;
 }
 
 void Core::MessageNode::onNotify(Message*)
 {
-    std::cout << "Calling default method ---> MessageNode::onNotify(Message)... This message is intended for "
-              << mMessageNodeInfo.nodeName << std::endl;
+    if constexpr(Utility::CAN_LOG)
+        mNetworkLogger->logError("onNotify(Message) IS NOT implemented for Node " 
+            + mNodeName);
 }
 
 std::function<void (Core::Message*)> Core::MessageNode::getNotifyFunc()

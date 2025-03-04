@@ -5,12 +5,13 @@
 const int Application::PlayerInputPublisher::VECTOR_MESSAGE_SIZE = 10;
 
 Application::PlayerInputPublisher::PlayerInputPublisher(Core::MessageNetwork& network, Application::KeyBindings keyBindings) :
-    Core::MessageNode(network),
+    Core::MessageNode(network, "PlayerInput Pub", Core::NodeType::PUBLISHER),
     mKeyBindings(keyBindings),
     mPlayerActionMessages(),
     mPlayerEventMessage(std::make_shared<PlayerInputMessage>(Messages::ID::PlayerActionMessage))
 {
-    MessageNode::mMessageNodeInfo.nodeName = "PlayerInputPublisher";
+    // Add Topic to publish to
+    addTopic(Messages::ID::PlayerActionMessage);
 
     // Allocate Memory up front so that we don't have to create messages during the game loop
     mPlayerActionMessages.reserve(VECTOR_MESSAGE_SIZE);
@@ -32,7 +33,7 @@ void Application::PlayerInputPublisher::handleKeyPressed(const sf::Event::KeyPre
         return;
 
     mPlayerEventMessage->action = playerAction;
-    MessageNode::send(mPlayerEventMessage);
+    MessageNode::publish(mPlayerEventMessage);
 }
 
 /*
@@ -53,7 +54,7 @@ void Application::PlayerInputPublisher::handleRealTimeInput()
             std::shared_ptr<PlayerInputMessage> message(getMessage(keyCounter++));
 
             message->action = pair.second;
-            MessageNode::send(message);
+            MessageNode::publish(message);
         }
     }
 }
@@ -61,7 +62,7 @@ void Application::PlayerInputPublisher::handleRealTimeInput()
 /*
     This function retrieves a message pointer. The index retrieves the next Message in the vector that we allocated
     This is required since the number of messages we send in one update loop is tied to how many keys we are currently pressing down
-    Meaning we can currently press down 10 keys and we will send 10 distinct messages in a single frame. 
+    Meaning, if we press down 10 keys at once, we will send 10 distinct messages in a single frame
 */
 std::shared_ptr<Application::PlayerInputMessage> Application::PlayerInputPublisher::getMessage(std::size_t index)
 {

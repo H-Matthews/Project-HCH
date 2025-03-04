@@ -1,43 +1,87 @@
 #pragma once
 
 #include "core/inc/Messaging/Message.hpp"
-#include "core/inc/Messaging/MessageNodeInfo.hpp"
+#include "core/inc/Messaging/MessageNode.hpp"
 
 #include "utility/inc/Logging/LogRegistry.hpp"
 
-#include <string>
 #include <queue>
 #include <map>
-#include <memory>
+#include <set>
 
 namespace Core
 {
 
+    struct SubscriberNodeInfo
+    {
+        std::string mNodename;
+        std::function<void (Message*) > mCallback;
+
+        SubscriberNodeInfo(const std::string& nodeName, std::function<void (Message*) > func) : 
+            mNodename(nodeName),
+            mCallback(func) {}
+    };
+
+    struct PublisherNodeInfo
+    {
+        std::string mNodeName;
+
+        PublisherNodeInfo(const std::string& nodeName) : 
+            mNodeName(nodeName) {}
+    };
+
+    /**
+     * MessageNetwork defines a basic Pub / Sub system. This class contains the data structures that operate
+     * as the "network"
+     * NOTE: Not Thread safe
+     */
     class MessageNetwork
     {
         public:
             MessageNetwork();
 
-            void sendMessage(std::shared_ptr<Message> message);
-
-            void addSubscriber(const MessageNodeInfo& subscriber);
-            bool isDuplicateSubscriber(const Messages::ID key, const std::string& nodeName);
-
-            void insertUnsubscriber(const Messages::ID& mesasgeID, const std::string& nodeName);
             void notifySubscribers();
 
             void initializeLogger();
-
             void shutdownNetwork();
         private:
-            void unSubscribe();
 
+            void registerSubscriberNode(const std::string& nodeName, std::function<void (Message*) > callback);
+            void registerPublisherNode(const std::string& nodeName);
+
+            void addSubscriberTopic(const std::string& nodeName, Messages::ID messageID);
+            void addPublisherTopic(const std::string& nodeName, Messages::ID messageID);
+
+            void unRegisterSubscriberNode(const std::string& nodeName);
+            void unRegisterPublisherNode(const std::string& nodeName);
+
+            // These functions do not Immediately remove the topics from each Node. It puts the request into the
+            // data structures mPendingPublisherRequests & mPendingSubscriberRequests
+            // The function addressPendingRequests does the actual removal
+            void removeTopicFromPublisher(const std::string& nodeName, Messages::ID messageID);
+            void removeTopicFromSubscriber(const std::string& nodeName, Messages::ID messageID);
+
+            void publishMessage(std::shared_ptr<Message> message);
+
+            void addressPendingRequests();
         private:
+            std::queue< std::shared_ptr< Message > > mMessageQueue;
+
+            std::map< std::size_t, std::set< Messages::ID > > mSubscriberNodes;
+            std::map< std::size_t, std::set< Messages::ID > > mPublisherNodes;
+
+            // Used for storing information about the Publisher / Subscriber Node
+            std::map< std::size_t, SubscriberNodeInfo > mSubscriberRecords;
+            std::map< std::size_t, PublisherNodeInfo > mPublisherRecords;
+            
+            std::map< std::size_t, std::set< Messages::ID > > mPendingPublisherRequests;
+            std::map< std::size_t, std::set< Messages::ID > > mPendingSubscriberRequests;
+
+            std::hash< std::string > mHash;
             std::shared_ptr< Utility::Logger > mLogger;
 
-            std::multimap< Messages::ID, MessageNodeInfo > mSubscriberList;
-            std::multimap< Messages::ID, std::string > mUnsubscribeList;
-            std::queue< std::shared_ptr< Message > > mMessageQueue;
+        public:
+            friend class Core::MessageNode;
     };
 
 }
