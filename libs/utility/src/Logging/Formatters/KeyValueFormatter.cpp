@@ -5,11 +5,11 @@
 #include <chrono>
 
 Utility::KeyValueFormatter::KeyValueFormatter() :
-    LogFormatter("KeyValue")
-{
-}
+    LogFormatter( "KeyValue" )
+{}
 
-std::string Utility::KeyValueFormatter::format(std::string message, LogLevel level, const std::source_location location)
+std::string Utility::KeyValueFormatter::format(
+    std::string message, LogLevel level, const std::source_location location )
 {
     std::stringstream tempBuffer;
 
@@ -18,27 +18,27 @@ std::string Utility::KeyValueFormatter::format(std::string message, LogLevel lev
     tempBuffer << "{ \n\t";
 
     // Key: File
-    tempBuffer << "\"" << keysEnumToString(Keys::FILE) << "\"" << ":" << location.file_name() << "\n\t";
+    tempBuffer << "\"" << keysEnumToString( Keys::FILE ) << "\"" << ":" << location.file_name() << "\n\t";
 
     // Key: Line
-    tempBuffer << "\"" << keysEnumToString(Keys::LINE) << "\"" << ":" << location.line() << "\n\t";
+    tempBuffer << "\"" << keysEnumToString( Keys::LINE ) << "\"" << ":" << location.line() << "\n\t";
 
     // Key: Function
-    tempBuffer << "\"" << keysEnumToString(Keys::FUNCTION) << "\"" << ":" << location.function_name() << "\n\t";
+    tempBuffer << "\"" << keysEnumToString( Keys::FUNCTION ) << "\"" << ":" << location.function_name() << "\n\t";
 
     // Key: Message
-    tempBuffer << "\"" << keysEnumToString(Keys::MESSAGE) << "\"" << ":" << message << "\n\t";
+    tempBuffer << "\"" << keysEnumToString( Keys::MESSAGE ) << "\"" << ":" << message << "\n\t";
 
     // Key: Log Level
-    tempBuffer << "\"" << keysEnumToString(Keys::LOG_LEVEL) << "\"" << ":" << logLevelEnumToString(level) << "\n\t";
+    tempBuffer << "\"" << keysEnumToString( Keys::LOG_LEVEL ) << "\"" << ":" << logLevelEnumToString( level ) << "\n\t";
 
     // Get Time Stamp
     auto now = std::chrono::system_clock::now();
-    std::time_t nowTime = std::chrono::system_clock::to_time_t(now);
-    std::tm now_tm = *std::localtime(&nowTime);
+    std::time_t nowTime = std::chrono::system_clock::to_time_t( now );
+    std::tm now_tm = *std::localtime( &nowTime );
 
     // Key: Time
-    tempBuffer << "\"" << keysEnumToString(Keys::TIME) << "\"" << ":" << std::put_time(&now_tm, "%H:%M:%S") << "\n";
+    tempBuffer << "\"" << keysEnumToString( Keys::TIME ) << "\"" << ":" << std::put_time( &now_tm, "%H:%M:%S" ) << "\n";
 
     // END
     tempBuffer << "},";
@@ -46,11 +46,11 @@ std::string Utility::KeyValueFormatter::format(std::string message, LogLevel lev
     return tempBuffer.str();
 }
 
-const std::string Utility::keysEnumToString(const Keys identifier)
+const std::string Utility::keysEnumToString( const Keys identifier )
 {
     std::string buffer;
 
-    switch(identifier)
+    switch ( identifier )
     {
         case Keys::FILE:
         {
@@ -76,7 +76,6 @@ const std::string Utility::keysEnumToString(const Keys identifier)
         {
             buffer = "loglevel";
             break;
-
         }
         case Keys::MESSAGE:
         {

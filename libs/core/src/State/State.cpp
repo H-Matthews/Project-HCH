@@ -1,26 +1,23 @@
 #include "core/inc/State/State.hpp"
 #include "core/inc/State/StateStack.hpp"
 
-Core::State::SharedObjects::SharedObjects(sf::RenderWindow& window, Core::MessageNetwork& network) :
-    window(&window),
-    network(&network)
-{
-}
+Core::State::SharedObjects::SharedObjects( sf::RenderWindow& window, Core::MessageNetwork& network ) :
+    window( &window ),
+    network( &network )
+{}
 
-Core::State::State(StateStack& stack, std::string stateIdentifier, SharedObjects sObjects) :
-    mStack(&stack),
-    mStateIdentifierString(stateIdentifier),
-    mSharedObjects(sObjects)
-{  
-}
+Core::State::State( StateStack& stack, std::string stateIdentifier, SharedObjects sObjects ) :
+    mStack( &stack ),
+    mStateIdentifierString( stateIdentifier ),
+    mSharedObjects( sObjects )
+{}
 
 Core::State::~State()
-{
-}
+{}
 
-void Core::State::requestStackPush(States::ID stateID)
+void Core::State::requestStackPush( States::ID stateID )
 {
-    mStack->pushState(stateID);
+    mStack->pushState( stateID );
 }
 
 void Core::State::requestStackPop()
@@ -42,4 +39,3 @@ const std::string Core::State::getStateAsString()
 {
     return mStateIdentifierString;
 }
-

@@ -1,11 +1,10 @@
 #include "core/inc/State/StateTypes.hpp"
 
-
-const std::string States::statesEnumToString(const States::ID identifier)
+const std::string States::statesEnumToString( const States::ID identifier )
 {
     std::stringstream sStream;
 
-    switch(identifier)
+    switch ( identifier )
     {
         case States::ID::NONE:
         {

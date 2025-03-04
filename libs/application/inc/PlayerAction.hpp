@@ -15,5 +15,5 @@ namespace Actions
         JUMP,
     };
 
-    const std::string playerActionsEnumToString(const Actions::Player identifier);
+    const std::string playerActionsEnumToString( const Actions::Player identifier );
 }

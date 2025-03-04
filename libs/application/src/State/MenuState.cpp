@@ -2,11 +2,11 @@
 
 #include <iostream>
 
-Application::MenuState::MenuState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) :
-    State(stack, stateIdentifier, sharedObjects)
+Application::MenuState::MenuState( Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects ) :
+    State( stack, stateIdentifier, sharedObjects )
 {
     std::cout << "Creating MenuState " << std::endl;
-    
+
     std::cout << "Controls: --------------------------------" << std::endl;
     std::cout << "G: Print message" << std::endl;
     std::cout << "Enter: Transitions to GameState" << std::endl;
@@ -20,27 +20,27 @@ void Application::MenuState::draw()
     // Retrieve window from sharedObjects struct
     sf::RenderWindow& window = *getSharedObjects().window;
 
-    window.setView(window.getDefaultView());
-    //window.draw(mBackgroundSprite);
+    window.setView( window.getDefaultView() );
+    // window.draw(mBackgroundSprite);
 }
 
-bool Application::MenuState::update(sf::Time fixedTimeStep)
+bool Application::MenuState::update( sf::Time fixedTimeStep )
 {
     return true;
 }
 
-bool Application::MenuState::handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent)
+bool Application::MenuState::handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent )
 {
-    if(keyPressedEvent.scancode == sf::Keyboard::Scancode::G)
+    if ( keyPressedEvent.scancode == sf::Keyboard::Scancode::G )
     {
         std::cout << "Handling Events in Menustate. You Pressed the G Key " << std::endl;
     }
-    else if(keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter)
+    else if ( keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter )
     {
         requestStackPop();
-        requestStackPush(States::Game);
+        requestStackPush( States::Game );
     }
-    else if(keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape)
+    else if ( keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape )
     {
         requestStackPop();
     }
@@ -48,7 +48,7 @@ bool Application::MenuState::handleKeyPressed(const sf::Event::KeyPressed& keyPr
     return true;
 }
 
-bool Application::MenuState::handleMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent)
+bool Application::MenuState::handleMouseMoved( const sf::Event::MouseMoved& mouseMovedEvent )
 {
     return true;
 }

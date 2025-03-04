@@ -11,5 +11,5 @@ namespace Parsers
         JSON
     };
 
-    const std::string parserEnumsToString(const Parsers::ID identifier);
+    const std::string parserEnumsToString( const Parsers::ID identifier );
 }

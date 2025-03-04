@@ -1,0 +1,57 @@
+# C/C++ Code Style Settings
+
+Language: Cpp
+AccessModifierOffset: -2
+AlignAfterOpenBracket: DontAlign
+AlignOperands: true
+AllowShortBlocksOnASingleLine: Never
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+BracedInitializerIndentWidth: 2
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: true
+  AfterClass: true
+  AfterStruct: true
+  AfterControlStatement: Always
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: true
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+BreakConstructorInitializers: AfterColon
+ColumnLimit: 120
+CompactNamespaces: false
+ContinuationIndentWidth: 4
+Cpp11BracedListStyle: false
+FixNamespaceComments: false
+IndentCaseBlocks: false
+IndentCaseLabels: true
+IndentWidth: 4
+IncludeBlocks: Preserve
+NamespaceIndentation: All
+PackConstructorInitializers: Never
+PointerAlignment: Left
+SortIncludes: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpacesInAngles: Always
+SpacesInParens: Custom
+SpacesInParensOptions:
+  ExceptDoubleParentheses: false
+  InConditionalStatements: false
+  InCStyleCasts: false
+  InEmptyParentheses: false
+  Other: true
+SpacesInSquareBrackets: true
+Standard: c++20
+TabWidth: 4
+UseTab: Never

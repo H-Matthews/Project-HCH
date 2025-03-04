@@ -6,18 +6,17 @@ namespace Application
 {
     class EntityNode : public Core::SceneNode
     {
-        public:
-            void setVelocity(const sf::Vector2f velocity);
-            void setVelocity(const float vx, const float vy);
+      public:
+        void setVelocity( const sf::Vector2f velocity );
+        void setVelocity( const float vx, const float vy );
 
-            void accelerate(sf::Vector2f velocity);
-            void accelerate(float vx, float vy);
-            
-            sf::Vector2f getVelocity() const;
+        void accelerate( sf::Vector2f velocity );
+        void accelerate( float vx, float vy );
 
-        private:
-            sf::Vector2f mVelocity;
-            virtual void updateCurrent(sf::Time timeStep) override;
-    
+        sf::Vector2f getVelocity() const;
+
+      private:
+        sf::Vector2f mVelocity;
+        virtual void updateCurrent( sf::Time timeStep ) override;
     };
 }

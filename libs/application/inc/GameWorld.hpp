@@ -17,27 +17,25 @@ namespace Application
         LayerCount
     };
 
-
     class GameWorld
     {
-        public:
-            explicit GameWorld(sf::RenderWindow& window, Core::MessageNetwork& gameNetwork);
-    
-            void update(sf::Time fixedTimeStep);
-            void draw();
-    
-        private:
-            void buildSceneGraph();
-            void correctPlayerVelocity();
-    
-        private:
-            sf::RenderWindow& mWindow;
-            Core::MessageNetwork& mGameNetwork;
-    
-            Core::SceneNode mSceneGraph;
-            std::array<Core::SceneNode*, LayerCount> mSceneLayers;
+      public:
+        explicit GameWorld( sf::RenderWindow& window, Core::MessageNetwork& gameNetwork );
 
-            PlayerNode* mPlayer;
-    
+        void update( sf::Time fixedTimeStep );
+        void draw();
+
+      private:
+        void buildSceneGraph();
+        void correctPlayerVelocity();
+
+      private:
+        sf::RenderWindow& mWindow;
+        Core::MessageNetwork& mGameNetwork;
+
+        Core::SceneNode mSceneGraph;
+        std::array< Core::SceneNode*, LayerCount > mSceneLayers;
+
+        PlayerNode* mPlayer;
     };
 }

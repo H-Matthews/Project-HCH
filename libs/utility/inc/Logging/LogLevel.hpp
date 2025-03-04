@@ -4,7 +4,7 @@
 
 namespace Utility
 {
-    enum class LogLevel 
+    enum class LogLevel
     {
         NONE = 0,
         DEBUG,
@@ -13,5 +13,5 @@ namespace Utility
         ERROR
     };
 
-    const std::string logLevelEnumToString(const LogLevel identifier);
+    const std::string logLevelEnumToString( const LogLevel identifier );
 }

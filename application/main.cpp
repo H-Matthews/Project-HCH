@@ -10,13 +10,13 @@ int main()
 
     try
     {
-        auto config = std::make_shared<Core::Configuration>();
+        auto config = std::make_shared< Core::Configuration >();
 
-        Application::App game(config);
+        Application::App game( config );
         game.initialize();
         game.run();
     }
-    catch(const std::exception& e)
+    catch ( const std::exception& e )
     {
         std::cerr << "EXCEPTION: " << e.what() << std::endl;
     }

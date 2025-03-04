@@ -1,11 +1,10 @@
 #include "application/inc/PlayerAction.hpp"
 
-
-const std::string Actions::playerActionsEnumToString(const Actions::Player identifier)
+const std::string Actions::playerActionsEnumToString( const Actions::Player identifier )
 {
     std::stringstream sStream;
 
-    switch(identifier)
+    switch ( identifier )
     {
         case Actions::Player::NONE:
         {
