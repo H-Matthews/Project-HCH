@@ -12,6 +12,7 @@ Core::Message::Info::Info(const Messages::ID messageID, const std::string& strin
     sender("")
 {
 }
+
 Core::Message::Message(const Messages::ID messageID, const std::string& stringMessageID) :
     mMessageInfo(messageID, stringMessageID)
 {
@@ -19,11 +20,6 @@ Core::Message::Message(const Messages::ID messageID, const std::string& stringMe
 
 Core::Message::~Message()
 {
-}
-
-std::unique_ptr<Core::Message> Core::Message::clone() const
-{
-    return std::make_unique<Message>(*this);
 }
 
 void Core::Message::setSender(const std::string& sender)

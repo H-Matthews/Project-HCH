@@ -27,16 +27,43 @@ void Core::MessageNetwork::sendMessage(std::shared_ptr<Message> message)
 void Core::MessageNetwork::addSubscriber(const MessageNodeInfo& subscriber)
 {
     std::string logMessage("[Adding Subscriber] Subscriber: " + subscriber.nodeName + " Topics: ");
-    for(const auto& IDs : subscriber.subscriptions)
+    for(const auto& ID : subscriber.subscriptions)
     {
-        logMessage += messageIDEnumToString(IDs) + " ";
+        std::string messageID = messageIDEnumToString(ID);
+        logMessage += messageID + " ";
 
-        mSubscriberList.insert(std::make_pair(IDs, subscriber));
+        if(isDuplicateSubscriber(ID, subscriber.nodeName))
+        {
+            if constexpr(Utility::CAN_LOG)
+                mLogger->logError("Attempted to add duplicate Subscriber. Subscriber: " + subscriber.nodeName + 
+                    " MessageID: " + messageID);
+        }
+        else
+        {
+            mSubscriberList.insert(std::make_pair(ID, subscriber));
+        }
     }
 
     if constexpr (Utility::CAN_LOG)
         mLogger->logDebug(logMessage);
         
+}
+
+bool Core::MessageNetwork::isDuplicateSubscriber(const Messages::ID key, const std::string& node)
+{
+    bool isDuplicate = false;
+
+    auto rangeIT = mSubscriberList.equal_range(key);
+    for(auto keyIT = rangeIT.first; keyIT != rangeIT.second; ++keyIT)
+    {
+        if(keyIT->second.nodeName == node)
+        {
+            isDuplicate = true;
+            break;
+        }
+    }
+
+    return isDuplicate;
 }
 
 void Core::MessageNetwork::insertUnsubscriber(const Messages::ID& messageID, const std::string& nodeName)
@@ -134,4 +161,13 @@ void Core::MessageNetwork::initializeLogger()
                                                      
     if constexpr (Utility::CAN_LOG)
         mLogger->logInfo("Logger Initialized");
+}
+
+void Core::MessageNetwork::shutdownNetwork()
+{
+    mSubscriberList.clear();
+    mUnsubscribeList.clear();
+
+    // This "clears" the Queue
+    mMessageQueue = {};
 }

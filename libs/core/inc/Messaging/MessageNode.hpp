@@ -1,6 +1,8 @@
 #pragma once
 
 #include "core/inc/Messaging/MessageNodeInfo.hpp"
+#include "utility/inc/Logging/Logger.hpp"
+#include "utility/inc/Logging/LogRegistry.hpp"
 
 #include <functional>
 
@@ -11,8 +13,8 @@ namespace Core
     class MessageNode 
     {
         public:
-            MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName);
-            MessageNode(MessageNetwork* messageNetwork);
+            MessageNode(MessageNetwork& messageNetwork, const std::string& messageNodeName);
+            MessageNode(MessageNetwork& messageNetwork);
 
         protected:
             void subscribeTo(Messages::ID subscribeMessageID);
@@ -25,10 +27,12 @@ namespace Core
             std::function<void (Message*)> getNotifyFunc();
 
         private:
-            MessageNetwork* mMessageNetwork;
+            MessageNetwork& mMessageNetwork;
 
         protected:
             MessageNodeInfo mMessageNodeInfo;
+
+            std::shared_ptr<Utility::Logger> mNetworkLogger;
     };
 
 }

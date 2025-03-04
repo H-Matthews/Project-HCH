@@ -3,7 +3,11 @@
 #include <iostream>
 
 Application::GameState::GameState(Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects) : 
-    State(stack, stateIdentifier, sharedObjects)
+    State(stack, stateIdentifier, sharedObjects),
+    mGameNetwork(*sharedObjects.network),
+    mGameWorld(*sharedObjects.window, mGameNetwork),
+    mKeyBindings(),
+    mPlayerInputPublisher(mGameNetwork, mKeyBindings)
 {
     std::cout << "Creating GameState " << std::endl;
 
@@ -15,25 +19,24 @@ Application::GameState::GameState(Core::StateStack& stack, std::string stateIden
 
 void Application::GameState::draw()
 {
-    // Draw Game related things to window here
-
-    // Retrieve window from sharedObjects struct
-    sf::RenderWindow& window = *getSharedObjects().window;
-
-    // This will be just mWorld.draw() later
+    mGameWorld.draw();
 }
 
 bool Application::GameState::update(sf::Time fixedTimeStep)
 {
+    mGameWorld.update(fixedTimeStep);
+
     return true;
 }
 
 bool Application::GameState::handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent)
 {
+    // Handle Event based Key Presses
+    mPlayerInputPublisher.handleKeyPressed(keyPressedEvent);
 
     if(keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter)
     {
-        std::cout << "Handling Events in GameState. You prseed the enter key " << std::endl;
+        std::cout << "Handling Events in GameState. You pressed the enter key " << std::endl;
     }
     else if(keyPressedEvent.scancode == sf::Keyboard::Scancode::P)
     {
@@ -46,4 +49,20 @@ bool Application::GameState::handleKeyPressed(const sf::Event::KeyPressed& keyPr
     }
     
     return true;
+}
+
+bool Application::GameState::handleRealTimeInput()
+{
+    // Handle RealTime Input KeyPresses
+    // Usually movement based
+    mPlayerInputPublisher.handleRealTimeInput();
+
+    return true;
+}
+
+Application::GameState::~GameState()
+{
+    // Any objects that persist over different States such as MessageNetwork, will need to 
+    // cleanup their resources
+    mGameNetwork.shutdownNetwork();
 }

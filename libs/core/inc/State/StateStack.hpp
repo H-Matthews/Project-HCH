@@ -36,6 +36,7 @@ namespace Core
 
             void handleKeyPressed(const sf::Event::KeyPressed& keyPressed);
             void handleMouseMoved(const sf::Event::MouseMoved& mouseMoved);
+            void handleRealTimeInput();
 
             void pushState(States::ID stateID);
             void popState();
