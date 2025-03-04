@@ -2,36 +2,36 @@
 
 const std::string Utility::logLevelEnumToString(const LogLevel identifier)
 {
-    std::stringstream sStream;
+    std::string tempString;
 
         switch(identifier)
         {
             case LogLevel::NONE:
             {
-                sStream << "NONE";
+                tempString = "NONE";
                 break;
             }
             case LogLevel::DEBUG:
             {
-                sStream << "DEBUG";
+                tempString = "DEBUG";
                 break;
             }
             case LogLevel::INFO:
             {
-                sStream << "INFO";
+                tempString = "INFO";
                 break;
             }
             case LogLevel::WARN:
             {
-                sStream << "WARN";
+                tempString = "WARN";
                 break;
             }
             case LogLevel::ERROR:
             {
-                sStream << "ERROR";
+                tempString = "ERROR";
                 break;
             }
         }
 
-        return sStream.str();
+        return tempString;
 }

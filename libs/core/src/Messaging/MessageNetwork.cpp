@@ -1,6 +1,7 @@
 #include "core/inc/Messaging/MessageNetwork.hpp"
 
 #include "utility/inc/Logging/Sinks/TextFileSink.hpp"
+#include "utility/inc/Logging/Formatters/KeyValueFormatter.hpp"
 
 #include <iostream>
 
@@ -156,7 +157,7 @@ void Core::MessageNetwork::initializeLogger()
     // Create and Register
     const std::string outDirectory = Utility::LogRegistry::instance()->getAppOutputDir();
 
-    mLogger = Utility::Factory::createTextFileLogger("MessageNetworkLogger", outDirectory, "MessageNetwork", 
+    mLogger = Utility::createTextFileLogger("MessageNetworkLogger", outDirectory, "MessageNetwork", 
                                                      ".log", Utility::LogLevel::DEBUG);
                                                      
     if constexpr (Utility::CAN_LOG)
