@@ -13,6 +13,7 @@ namespace Core
 
             std::shared_ptr<sf::Texture> getTexture(std::string);
             sf::Font* getFont(std::string);
+            
             ~GameAssetContainer();
         private:
             std::string filePath = "../../../gameAssets/";

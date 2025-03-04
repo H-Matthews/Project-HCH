@@ -125,7 +125,24 @@ void Application::App::render()
 
     mWindow.draw(tempRect);
     mWindow.draw(tempRect2);
+
+
+
+
+    //sf::Font tempArial("../../../gameAssets/fonts/arial.ttf");
+    sf::Text tempText(*mGameAssetContainer.getFont("arial"));
+    //sf::Text tempText(tempArial);
+    tempText.setString("Beautiful Cameron");
+    tempText.setCharacterSize(24);
+    tempText.setFillColor(sf::Color::Black);
+    mWindow.draw(tempText);
     //end block--------------------------------------------
+
+
+
+
+
+
 
 
     mStateStack.draw();

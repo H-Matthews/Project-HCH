@@ -39,7 +39,7 @@ bool Core::GameAssetContainer::loadTexture(std::string spriteName)
     std::string texturePath = filePath + "textures/" + spriteName + ".png";
 
     if(!tempTexture->loadFromFile(texturePath)){
-        /TODO Add logging here for failed texture load./
+        //TODO Add logging here for failed texture load./
         return false;
     }
     //Add logging here for completed texture load.
@@ -50,11 +50,10 @@ bool Core::GameAssetContainer::loadTexture(std::string spriteName)
 
 bool Core::GameAssetContainer::loadFont(std::string fontName)
 {
-    /*
-    //TODO Undefined reference to OpenFromFile for some weird reasoning.
+    
     sf::Font *tempFont = new sf::Font;
 
-    std::string fontPath = filePath + "fonts/" + fontName + ".png";
+    std::string fontPath = filePath + "fonts/" + fontName + ".ttf";
 
     if(!tempFont->openFromFile(fontPath)){
         //TODO Add logging here for failed texture load.
@@ -62,7 +61,7 @@ bool Core::GameAssetContainer::loadFont(std::string fontName)
     }
     //Add logging here for completed texture load.
     fontMap.insert({fontName ,tempFont});
-        */
+        
     return true;
 }
 
