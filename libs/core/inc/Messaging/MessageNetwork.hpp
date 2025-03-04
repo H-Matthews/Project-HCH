@@ -65,6 +65,7 @@ namespace Core
 
             void addressPendingRequests();
 
+            void shutdownNetwork();
         private:
             std::queue< std::shared_ptr< Message > > mMessageQueue;
 
