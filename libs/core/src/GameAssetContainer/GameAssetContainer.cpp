@@ -18,6 +18,9 @@ bool Core::GameAssetContainer::initializeFonts()
     if(!loadFont("arial")){
         return false;
     }
+    if(!loadFont("nasty")){
+        return false;
+    }
     return true;
 }
 
@@ -27,7 +30,7 @@ std::shared_ptr<sf::Texture> Core::GameAssetContainer::getTexture(std::string se
     return textureMap[selectionString];
 }
 
-sf::Font* Core::GameAssetContainer::getFont(std::string fontName)
+std::shared_ptr<sf::Font> Core::GameAssetContainer::getFont(std::string fontName)
 {
     return fontMap[fontName];
 }
@@ -51,7 +54,7 @@ bool Core::GameAssetContainer::loadTexture(std::string spriteName)
 bool Core::GameAssetContainer::loadFont(std::string fontName)
 {
     
-    sf::Font *tempFont = new sf::Font;
+    std::shared_ptr<sf::Font> tempFont(new sf::Font);
 
     std::string fontPath = filePath + "fonts/" + fontName + ".ttf";
 
@@ -65,11 +68,3 @@ bool Core::GameAssetContainer::loadFont(std::string fontName)
     return true;
 }
 
-Core::GameAssetContainer::~GameAssetContainer()
-{
-
-    //delete all fontPointers
-    for(auto const& valuePair : fontMap){
-        delete valuePair.second;
-    }
-}

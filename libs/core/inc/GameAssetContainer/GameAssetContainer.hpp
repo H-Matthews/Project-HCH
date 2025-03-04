@@ -10,19 +10,15 @@ namespace Core
         public:
             bool initializeTextures();
             bool initializeFonts();
-
             std::shared_ptr<sf::Texture> getTexture(std::string);
-            sf::Font* getFont(std::string);
+            std::shared_ptr<sf::Font> getFont(std::string);
             
-            ~GameAssetContainer();
         private:
             std::string filePath = "../../../gameAssets/";
             bool loadTexture(std::string);
             bool loadFont(std::string);
             std::unordered_map<std::string, std::shared_ptr<sf::Texture>> textureMap;
-            std::unordered_map<std::string, sf::Font*> fontMap;
+            std::unordered_map<std::string, std::shared_ptr<sf::Font>> fontMap;
 
     };
-
-
 }

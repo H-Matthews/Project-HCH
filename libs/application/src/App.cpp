@@ -110,40 +110,35 @@ void Application::App::render()
 {
     mWindow.clear(sf::Color::Blue);
 
-    //TODO delete this block--------------------------------------------
+    //TODO delete this test block--------------------------------------------
     sf::RectangleShape tempRect;
     tempRect.setFillColor(sf::Color::Red);
     tempRect.setPosition(sf::Vector2f(100,100));
     tempRect.setSize(sf::Vector2f(100,100));
     tempRect.setTexture(mGameAssetContainer.getTexture("playerSprite").get());
+    mWindow.draw(tempRect);
 
     sf::RectangleShape tempRect2;
     tempRect2.setFillColor(sf::Color::Red);
-    tempRect2.setPosition(sf::Vector2f(200,200));
+    tempRect2.setPosition(sf::Vector2f(400,100));
     tempRect2.setSize(sf::Vector2f(100,100));
     tempRect2.setTexture(mGameAssetContainer.getTexture("enemySprite").get());
-
-    mWindow.draw(tempRect);
     mWindow.draw(tempRect2);
 
-
-
-
-    //sf::Font tempArial("../../../gameAssets/fonts/arial.ttf");
     sf::Text tempText(*mGameAssetContainer.getFont("arial"));
-    //sf::Text tempText(tempArial);
     tempText.setString("Beautiful Cameron");
     tempText.setCharacterSize(24);
     tempText.setFillColor(sf::Color::Black);
+    tempText.setPosition({100.f,200.f});
     mWindow.draw(tempText);
+
+    sf::Text tempText2(*mGameAssetContainer.getFont("nasty"));
+    tempText2.setString("Evil Harrison");
+    tempText2.setCharacterSize(24);
+    tempText2.setFillColor(sf::Color::Black);
+    tempText2.setPosition({400.f,200.f});
+    mWindow.draw(tempText2);
     //end block--------------------------------------------
-
-
-
-
-
-
-
 
     mStateStack.draw();
 
