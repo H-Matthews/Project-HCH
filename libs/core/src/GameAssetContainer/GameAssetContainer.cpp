@@ -21,7 +21,8 @@ bool Core::GameAssetContainer::initializeFonts()
     return true;
 }
 
-sf::Texture* Core::GameAssetContainer::getTexture(std::string selectionString)
+//TODO make getTexture and getFont faster by avoiding string compare
+std::shared_ptr<sf::Texture> Core::GameAssetContainer::getTexture(std::string selectionString)
 {
     return textureMap[selectionString];
 }
@@ -33,12 +34,12 @@ sf::Font* Core::GameAssetContainer::getFont(std::string fontName)
 
 bool Core::GameAssetContainer::loadTexture(std::string spriteName)
 {
-    sf::Texture *tempTexture = new sf::Texture;
+    std::shared_ptr<sf::Texture> tempTexture(new sf::Texture);
 
     std::string texturePath = filePath + "textures/" + spriteName + ".png";
 
     if(!tempTexture->loadFromFile(texturePath)){
-        //TODO Add logging here for failed texture load.
+        /TODO Add logging here for failed texture load./
         return false;
     }
     //Add logging here for completed texture load.
@@ -67,10 +68,7 @@ bool Core::GameAssetContainer::loadFont(std::string fontName)
 
 Core::GameAssetContainer::~GameAssetContainer()
 {
-    //delete all texturePointers
-    for(auto const& valuePair : textureMap){
-        delete valuePair.second;
-    }
+
     //delete all fontPointers
     for(auto const& valuePair : fontMap){
         delete valuePair.second;

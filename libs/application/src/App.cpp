@@ -22,7 +22,8 @@ Application::App::App(std::shared_ptr<Core::ConfigurationI> config) :
     mNetwork(),
     mPlayerKeyBindings(),
     mWindow(sf::VideoMode( {640, 480 } ), "App Window", sf::Style::Close),
-    mStateStack(Core::State::SharedObjects(mWindow, mNetwork))
+    mStateStack(Core::State::SharedObjects(mWindow, mNetwork)),
+    mGameAssetContainer()
 {
 }
 
@@ -30,7 +31,9 @@ void Application::App::initialize()
 {
     mConfiguration->initializeIteration();
     mConfiguration->parseConfigs();
+
     mGameAssetContainer.initializeTextures();
+    mGameAssetContainer.initializeFonts();
 
     if constexpr (Utility::CAN_LOG)
     {
@@ -105,7 +108,25 @@ void Application::App::update(sf::Time fixedTimeStep)
 
 void Application::App::render()
 {
-    mWindow.clear();
+    mWindow.clear(sf::Color::Blue);
+
+    //TODO delete this block--------------------------------------------
+    sf::RectangleShape tempRect;
+    tempRect.setFillColor(sf::Color::Red);
+    tempRect.setPosition(sf::Vector2f(100,100));
+    tempRect.setSize(sf::Vector2f(100,100));
+    tempRect.setTexture(mGameAssetContainer.getTexture("playerSprite").get());
+
+    sf::RectangleShape tempRect2;
+    tempRect2.setFillColor(sf::Color::Red);
+    tempRect2.setPosition(sf::Vector2f(200,200));
+    tempRect2.setSize(sf::Vector2f(100,100));
+    tempRect2.setTexture(mGameAssetContainer.getTexture("enemySprite").get());
+
+    mWindow.draw(tempRect);
+    mWindow.draw(tempRect2);
+    //end block--------------------------------------------
+
 
     mStateStack.draw();
 

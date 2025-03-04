@@ -42,12 +42,12 @@ namespace Application
             std::shared_ptr< Utility::Logger > mAppLogger;
             // TODO: Implement a Resource Container for Textures / Fonts
 
-            Core::GameAssetContainer mGameAssetContainer;
             std::shared_ptr<Core::ConfigurationI> mConfiguration;
             Core::MessageNetwork mNetwork;
             Application::KeyBindings mPlayerKeyBindings;
             sf::RenderWindow mWindow;
             Core::StateStack mStateStack;
+            Core::GameAssetContainer mGameAssetContainer;
 
     };
 }
