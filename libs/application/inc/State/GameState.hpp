@@ -1,6 +1,6 @@
 #pragma once
 
-#include "application/inc/GameWorld.hpp"
+#include "application/inc/Scene/Scene.hpp"
 #include "application/inc/MessageNetwork/Publishers/PlayerInputPublisher.hpp"
 
 #include "core/inc/State/State.hpp"
@@ -22,7 +22,7 @@ namespace Application
       private:
         Core::MessageNetwork& mGameNetwork;
 
-        Application::GameWorld mGameWorld;
+        Application::Scene mScene;
         Application::KeyBindings mKeyBindings;
         Application::PlayerInputPublisher mPlayerInputPublisher;
     };

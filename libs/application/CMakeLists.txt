@@ -7,27 +7,39 @@ set(PROJECT_DIR "${CMAKE_SOURCE_DIR}")
 set(LIBRARY_NAME "application")
 
 set(SRC src/App.cpp
-        src/GameWorld.cpp
         src/KeyBindings.cpp
         src/MessageNetwork/Publishers/PlayerInputPublisher.cpp
         src/MessageNetwork/Messages/PlayerInputMessage.cpp
         src/PlayerAction.cpp
-        src/SceneGraph/EntityNode.cpp
-        src/SceneGraph/PlayerNode.cpp
-        src/SceneGraph/SquareNode.cpp
+        src/Scene/Scene.cpp
+        src/Scene/ECS/Components/Sprite.cpp
+        src/Scene/ECS/Components/PlayerInput.cpp
+        src/Scene/ECS/Systems/BaseSystem.cpp
+        src/Scene/ECS/Systems/RenderSystem.cpp
+        src/Scene/ECS/Systems/PlayerMovementSystem.cpp
+        src/Scene/ECS/Systems/PlayerInputSystem.cpp
+        src/Scene/ECS/Entity.cpp
+        src/Scene/ECS/EntityManager.cpp
         src/State/GameState.cpp
         src/State/MenuState.cpp
         src/State/PauseState.cpp)
 
 set(INC inc/App.hpp
-        inc/GameWorld.hpp
         inc/KeyBindings.hpp
         inc/MessageNetwork/Publishers/PlayerInputPublisher.hpp
         inc/MessageNetwork/Messages/PlayerInputMessage.hpp
         inc/PlayerAction.hpp
-        inc/SceneGraph/EntityNode.hpp
-        inc/SceneGraph/PlayerNode.hpp
-        inc/SceneGraph/SquareNode.hpp
+        inc/Scene/Scene.hpp
+        inc/Scene/ECS/Components/Components.hpp
+        inc/Scene/ECS/Components/Sprite.hpp
+        inc/Scene/ECS/Components/PlayerInput.hpp
+        inc/Scene/ECS/Systems/Systems.hpp
+        inc/Scene/ECS/Systems/BaseSystem.hpp
+        inc/Scene/ECS/Systems/RenderSystem.hpp
+        inc/Scene/ECS/Systems/PlayerMovementSystem.hpp
+        inc/Scene/ECS/Systems/PlayerInputSystem.hpp
+        inc/Scene/ECS/Entity.hpp
+        inc/Scene/ECS/EntityManager.hpp
         inc/State/GameState.hpp
         inc/State/MenuState.hpp
         inc/State/PauseState.hpp)
