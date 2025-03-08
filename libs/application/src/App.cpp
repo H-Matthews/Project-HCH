@@ -115,14 +115,14 @@ void Application::App::render()
     tempRect.setFillColor(sf::Color::Red);
     tempRect.setPosition(sf::Vector2f(100,100));
     tempRect.setSize(sf::Vector2f(100,100));
-    tempRect.setTexture(mGameAssetContainer.getTexture("playerSprite").get());
+    tempRect.setTexture(mGameAssetContainer.getTexture("playerSprite"));
     mWindow.draw(tempRect);
 
     sf::RectangleShape tempRect2;
     tempRect2.setFillColor(sf::Color::Red);
     tempRect2.setPosition(sf::Vector2f(400,100));
     tempRect2.setSize(sf::Vector2f(100,100));
-    tempRect2.setTexture(mGameAssetContainer.getTexture("enemySprite").get());
+    tempRect2.setTexture(mGameAssetContainer.getTexture("enemySprite"));
     mWindow.draw(tempRect2);
 
     sf::Text tempText(*mGameAssetContainer.getFont("arial"));
