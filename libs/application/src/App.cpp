@@ -22,8 +22,7 @@ Application::App::App(std::shared_ptr<Core::ConfigurationI> config) :
     mNetwork(),
     mPlayerKeyBindings(),
     mWindow(sf::VideoMode( {640, 480 } ), "App Window", sf::Style::Close),
-    mStateStack(Core::State::SharedObjects(mWindow, mNetwork)),
-    mGameAssetContainer()
+    mStateStack(Core::State::SharedObjects(mWindow, mNetwork))
 {
 }
 
@@ -31,9 +30,6 @@ void Application::App::initialize()
 {
     mConfiguration->initializeIteration();
     mConfiguration->parseConfigs();
-    
-    mGameAssetContainer.initializeTextures();
-    mGameAssetContainer.initializeFonts();
 
     if constexpr (Utility::CAN_LOG)
     {
@@ -108,37 +104,7 @@ void Application::App::update(sf::Time fixedTimeStep)
 
 void Application::App::render()
 {
-    mWindow.clear(sf::Color::Blue);
-
-    //TODO delete this test block--------------------------------------------
-    sf::RectangleShape tempRect;
-    tempRect.setFillColor(sf::Color::Red);
-    tempRect.setPosition(sf::Vector2f(100,100));
-    tempRect.setSize(sf::Vector2f(100,100));
-    tempRect.setTexture(mGameAssetContainer.getTexture(Core::GameAssetType::PLAYER_TEXTURE));
-    mWindow.draw(tempRect);
-
-    sf::RectangleShape tempRect2;
-    tempRect2.setFillColor(sf::Color::Red);
-    tempRect2.setPosition(sf::Vector2f(400,100));
-    tempRect2.setSize(sf::Vector2f(100,100));
-    tempRect2.setTexture(mGameAssetContainer.getTexture(Core::GameAssetType::ENEMY_TEXTURE));
-    mWindow.draw(tempRect2);
-
-    sf::Text tempText(*mGameAssetContainer.getFont(Core::GameAssetType::ARIAL_FONT));
-    tempText.setString("Beautiful Cameron");
-    tempText.setCharacterSize(24);
-    tempText.setFillColor(sf::Color::Black);
-    tempText.setPosition({100.f,200.f});
-    mWindow.draw(tempText);
-
-    sf::Text tempText2(*mGameAssetContainer.getFont(Core::GameAssetType::NASTY_FONT));
-    tempText2.setString("Evil Harrison");
-    tempText2.setCharacterSize(24);
-    tempText2.setFillColor(sf::Color::Black);
-    tempText2.setPosition({400.f,200.f});
-    mWindow.draw(tempText2);
-    //end block--------------------------------------------
+    mWindow.clear();
 
     mStateStack.draw();
 

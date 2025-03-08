@@ -46,7 +46,5 @@ namespace Application
             Application::KeyBindings mPlayerKeyBindings;
             sf::RenderWindow mWindow;
             Core::StateStack mStateStack;
-            Core::GameAssetContainer mGameAssetContainer;
-
     };
 }
