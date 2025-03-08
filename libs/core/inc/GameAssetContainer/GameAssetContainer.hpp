@@ -5,19 +5,26 @@
 
 namespace Core
 {
+    enum class GameAssetType {
+        PLAYER_TEXTURE = 1,
+        ENEMY_TEXTURE = 2,
+        ARIAL_FONT = 3,
+        NASTY_FONT = 4
+    };
+
     class GameAssetContainer{
 
         public:
             bool initializeTextures();
             bool initializeFonts();
-            const sf::Texture* getTexture(const std::string &textureName);
-            const sf::Font* getFont(const std::string &fontName);
+            const sf::Texture* getTexture(GameAssetType textureName);
+            const sf::Font* getFont(GameAssetType fontName);
             
         private:
-            bool loadTexture(const std::string &spriteName, const std::string &filePath);
-            bool loadFont(const std::string &fontName, const std::string &filePath);
-            std::unordered_map<std::string, std::unique_ptr<sf::Texture>> textureMap;
-            std::unordered_map<std::string, std::unique_ptr<sf::Font>> fontMap;
+            bool loadTexture(GameAssetType spriteName, const std::string &filePath);
+            bool loadFont(GameAssetType fontName, const std::string &filePath);
+            std::unordered_map<GameAssetType, std::unique_ptr<sf::Texture>> textureMap;
+            std::unordered_map<GameAssetType, std::unique_ptr<sf::Font>> fontMap;
 
     };
 }

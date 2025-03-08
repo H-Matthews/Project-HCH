@@ -2,10 +2,10 @@
 
 bool Core::GameAssetContainer::initializeTextures()
 {
-    if(!loadTexture("playerSprite", "../../../gameAssets/textures/playerSprite.png")){
+    if(!loadTexture(GameAssetType::PLAYER_TEXTURE, "../../../gameAssets/textures/playerSprite.png")){
         return false;
     }
-    if(!loadTexture("enemySprite", "../../../gameAssets/textures/enemySprite.png")){
+    if(!loadTexture(GameAssetType::ENEMY_TEXTURE, "../../../gameAssets/textures/enemySprite.png")){
         return false;
     }
     return true;
@@ -13,27 +13,26 @@ bool Core::GameAssetContainer::initializeTextures()
 
 bool Core::GameAssetContainer::initializeFonts()
 {
-    if(!loadFont("arial", "../../../gameAssets/fonts/arial.ttf")){
+    if(!loadFont(GameAssetType::ARIAL_FONT, "../../../gameAssets/fonts/arial.ttf")){
         return false;
     }
-    if(!loadFont("nasty", "../../../gameAssets/fonts/nasty.ttf")){
+    if(!loadFont(GameAssetType::NASTY_FONT, "../../../gameAssets/fonts/nasty.ttf")){
         return false;
     }
     return true;
 }
 
-//TODO maybe make string selection and ENUM for consistency
-const sf::Texture* Core::GameAssetContainer::getTexture(const std::string &textureName)
+const sf::Texture* Core::GameAssetContainer::getTexture(GameAssetType textureName)
 {
     return textureMap[textureName].get();
 }
 
-const sf::Font* Core::GameAssetContainer::getFont(const std::string &fontName)
+const sf::Font* Core::GameAssetContainer::getFont(GameAssetType fontName)
 {
     return fontMap[fontName].get();
 }
 
-bool Core::GameAssetContainer::loadTexture(const std::string &spriteName, const std::string &filePath)
+bool Core::GameAssetContainer::loadTexture(GameAssetType textureName, const std::string &filePath)
 {
     auto tempTexture(std::make_unique<sf::Texture>());
 
@@ -41,12 +40,12 @@ bool Core::GameAssetContainer::loadTexture(const std::string &spriteName, const 
         return false;
     }
 
-    textureMap.insert({spriteName, std::move(tempTexture)});
+    textureMap.insert({textureName, std::move(tempTexture)});
 
     return true;
 }
 
-bool Core::GameAssetContainer::loadFont(const std::string &fontName, const std::string &filePath)
+bool Core::GameAssetContainer::loadFont(GameAssetType fontName, const std::string &filePath)
 {
     auto tempFont(std::make_unique<sf::Font>());
 
