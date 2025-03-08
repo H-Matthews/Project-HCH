@@ -1,9 +1,11 @@
 #pragma once
 
+#include <string>
+#include <sstream>
 
-namespace Application
+namespace Actions
 {
-    enum class PlayerAction
+    enum class Player
     {
         NONE = 0,
         MOVE_LEFT,
@@ -12,4 +14,6 @@ namespace Application
         MOVE_UP,
         JUMP,
     };
+
+    const std::string playerActionsEnumToString( const Actions::Player identifier );
 }

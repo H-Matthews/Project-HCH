@@ -6,27 +6,20 @@ Core::Message::Info::Info()
     messageID = Messages::ID::NONE;
 }
 
-Core::Message::Info::Info(const Messages::ID messageID, const std::string& stringMessageID) :
-    messageID(messageID),
-    stringMessageID(stringMessageID),
-    sender("")
-{
-}
-Core::Message::Message(const Messages::ID messageID, const std::string& stringMessageID) :
-    mMessageInfo(messageID, stringMessageID)
-{
-}
+Core::Message::Info::Info( const Messages::ID messageID, const std::string& stringMessageID ) :
+    messageID( messageID ),
+    stringMessageID( stringMessageID ),
+    sender( "" )
+{}
+
+Core::Message::Message( const Messages::ID messageID, const std::string& stringMessageID ) :
+    mMessageInfo( messageID, stringMessageID )
+{}
 
 Core::Message::~Message()
-{
-}
+{}
 
-std::unique_ptr<Core::Message> Core::Message::clone() const
-{
-    return std::make_unique<Message>(*this);
-}
-
-void Core::Message::setSender(const std::string& sender)
+void Core::Message::setSender( const std::string& sender )
 {
     mMessageInfo.sender = sender;
 }

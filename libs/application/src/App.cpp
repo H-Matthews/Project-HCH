@@ -3,35 +3,29 @@
 #include "application/inc/State/GameState.hpp"
 #include "application/inc/State/PauseState.hpp"
 
-#include "core/inc/State/State.hpp"
-
 #include "utility/inc/Logging/Sinks/ColorConsoleSink.hpp"
 #include "utility/inc/Logging/Sinks/TextFileSink.hpp"
+#include "utility/inc/Logging/Formatters/KeyValueFormatter.hpp"
 
 #include <SFML/Graphics.hpp>
 
-#include <filesystem>
-#include <iostream>
+const sf::Time Application::App::TIME_PER_FRAME = sf::seconds( 1.0f / 120.0f );
 
-
-const sf::Time Application::App::TIME_PER_FRAME = sf::seconds(1.0f / 120.0f);
-
-Application::App::App(std::shared_ptr<Core::ConfigurationI> config) :
-    mAppLogger(std::make_shared<Utility::Logger>("AppLogger")),
-    mConfiguration(config),
+Application::App::App( std::shared_ptr< Core::ConfigurationI > config ) :
+    mAppLogger( std::make_shared< Utility::Logger >( "AppLogger" ) ),
+    mConfiguration( config ),
     mNetwork(),
     mPlayerKeyBindings(),
-    mWindow(sf::VideoMode( {640, 480 } ), "App Window", sf::Style::Close),
-    mStateStack(Core::State::SharedObjects(mWindow, mNetwork))
-{
-}
+    mWindow( sf::VideoMode( { 640, 480 } ), "App Window", sf::Style::Close ),
+    mStateStack( Core::State::SharedObjects( mWindow, mNetwork ) )
+{}
 
 void Application::App::initialize()
 {
     mConfiguration->initializeIteration();
     mConfiguration->parseConfigs();
 
-    if constexpr (Utility::CAN_LOG)
+    if constexpr ( Utility::CAN_LOG )
     {
         initializeAppLogger();
         initializeCoreLoggers();
@@ -39,14 +33,14 @@ void Application::App::initialize()
 
     // Initialize State Stack
     registerStates();
-    mStateStack.pushState(States::Menu);
+    mStateStack.pushState( States::Menu );
 }
 
 void Application::App::registerStates()
 {
-    mStateStack.registerState<Application::MenuState>(States::Menu);
-    mStateStack.registerState<Application::GameState>(States::Game);
-    mStateStack.registerState<Application::PauseState>(States::Pause);
+    mStateStack.registerState< Application::MenuState >( States::Menu );
+    mStateStack.registerState< Application::GameState >( States::Game );
+    mStateStack.registerState< Application::PauseState >( States::Pause );
 }
 
 void Application::App::run()
@@ -54,52 +48,51 @@ void Application::App::run()
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
-    if constexpr (Utility::CAN_LOG)
-        mAppLogger->logInfo("Entering main RUN loop");
+    if constexpr ( Utility::CAN_LOG )
+        mAppLogger->logInfo( "Entering main RUN loop" );
 
-
-    while(mWindow.isOpen())
+    while ( mWindow.isOpen() )
     {
         sf::Time elapsedTime = clock.restart();
         timeSinceLastUpdate += elapsedTime;
 
-        while(timeSinceLastUpdate > TIME_PER_FRAME)
+        while ( timeSinceLastUpdate > TIME_PER_FRAME )
         {
             timeSinceLastUpdate -= TIME_PER_FRAME;
 
             processInput();
-            update(TIME_PER_FRAME);
+            update( TIME_PER_FRAME );
 
-            if(mStateStack.isEmpty())
+            if ( mStateStack.isEmpty() )
             {
                 mWindow.close();
 
-                if constexpr (Utility::CAN_LOG)
-                    mAppLogger->logInfo("Closing Window....");
+                if constexpr ( Utility::CAN_LOG )
+                    mAppLogger->logInfo( "Closing Window...." );
             }
         }
         render();
     }
 
-    if constexpr (Utility::CAN_LOG)
-        mAppLogger->logInfo("Exiting main RUN loop");
+    if constexpr ( Utility::CAN_LOG )
+        mAppLogger->logInfo( "Exiting main RUN loop" );
 }
 
 void Application::App::processInput()
 {
     // SFMLs Window Class will detect events and then call these functions if the event matches
     // When needed, Add Event Subtypes here
-    mWindow.handleEvents(
-        [this](const sf::Event::Closed&) { mWindow.close(); },
-        [this](const sf::Event::KeyPressed& keyPressedEvent) { mStateStack.handleKeyPressed(keyPressedEvent); },
-        [this](const sf::Event::MouseMoved& mouseMovedEvent) { mStateStack.handleMouseMoved(mouseMovedEvent); }
-    );
 
+    mWindow.handleEvents( [ this ]( const sf::Event::Closed& ) { mWindow.close(); },
+        [ this ]( const sf::Event::KeyPressed& keyPressedEvent ) { mStateStack.handleKeyPressed( keyPressedEvent ); },
+        [ this ]( const sf::Event::MouseMoved& mouseMovedEvent ) { mStateStack.handleMouseMoved( mouseMovedEvent ); } );
+
+    mStateStack.handleRealTimeInput();
 }
 
-void Application::App::update(sf::Time fixedTimeStep)
+void Application::App::update( sf::Time fixedTimeStep )
 {
-    mStateStack.update(fixedTimeStep);
+    mStateStack.update( fixedTimeStep );
 }
 
 void Application::App::render()
@@ -108,7 +101,7 @@ void Application::App::render()
 
     mStateStack.draw();
 
-    mWindow.setView(mWindow.getDefaultView());
+    mWindow.setView( mWindow.getDefaultView() );
     mWindow.display();
 }
 
@@ -118,19 +111,17 @@ void Application::App::initializeAppLogger()
     const std::string appOutputDir = Utility::LogRegistry::instance()->getAppOutputDir();
 
     // Setup Sinks
-    auto textFileSink = std::make_shared< Utility::TextFileSink >( appOutputDir, 
-                                                                   "App",
-                                                                   ".log",
-                                                                   Utility::LogLevel::DEBUG);
+    auto textFileSink =
+        std::make_shared< Utility::TextFileSink >( appOutputDir, "App", ".log", Utility::LogLevel::DEBUG );
 
-    auto colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >(Utility::LogLevel::INFO);
+    auto colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >( Utility::LogLevel::INFO );
 
     // Add Sinks to Logger
     Utility::Logger::sinkList list = { colorConsoleSink, textFileSink };
-    mAppLogger->addSinkList(list);
+    mAppLogger->addSinkList( list );
 
     // Register App Logger
-    Utility::LogRegistry::instance()->registerLogger(mAppLogger);
+    Utility::LogRegistry::instance()->registerLogger( mAppLogger );
 }
 
 void Application::App::initializeCoreLoggers()

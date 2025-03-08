@@ -8,15 +8,17 @@ namespace Core
 
     class Parser
     {
-        public:
-            inline Parser(const std::string parserIdentifierString) :
-                mParserIdentifierString(parserIdentifierString) {}
+      public:
+        inline Parser( const std::string parserIdentifierString ) :
+            mParserIdentifierString( parserIdentifierString )
+        {}
 
-            virtual void parseFile(std::ifstream& fileStream) = 0;
+        virtual void parseFile( std::ifstream& fileStream ) = 0;
 
-            virtual ~Parser() {}
+        virtual ~Parser()
+        {}
 
-        private:
-            std::string mParserIdentifierString;
+      private:
+        std::string mParserIdentifierString;
     };
 }

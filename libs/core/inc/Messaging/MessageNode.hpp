@@ -1,34 +1,59 @@
 #pragma once
 
-#include "core/inc/Messaging/MessageNodeInfo.hpp"
+#include "utility/inc/Logging/Logger.hpp"
+#include "utility/inc/Logging/LogRegistry.hpp"
 
-#include <functional>
+#include "core/inc/Messaging/MessageTypes.hpp"
 
 namespace Core
 {
     class MessageNetwork;
+    class Message;
 
-    class MessageNode 
+    enum class NodeType
     {
-        public:
-            MessageNode(MessageNetwork* messageNetwork, const std::string& messageNodeName);
-            MessageNode(MessageNetwork* messageNetwork);
+        SUBSCRIBER = 0,
+        PUBLISHER,
+        SUB_AND_PUB
+    };
 
-        protected:
-            void subscribeTo(Messages::ID subscribeMessageID);
-            void notifyUnsubscribe(Messages::ID messageID);
-            void registerSubscriberMessages();
-            void send(std::shared_ptr<Message> message);
-            virtual void onNotify(Message* message);
+    /**
+     * MessageNode is a base class for Publisher and Subscriber Nodes. The class registers the node onto the
+     * Network object given in the constructor and facilitates communication to the Network.
+     */
+    class MessageNode
+    {
+      public:
+        MessageNode( MessageNetwork& messageNetwork, const std::string& messageNodeName, NodeType nodeType );
 
-        private:
-            std::function<void (Message*)> getNotifyFunc();
+      protected:
+        void addTopic( Messages::ID messageID );
+        void addSubscriberTopic( Messages::ID messageID );
+        void addPublisherTopic( Messages::ID messageID );
 
-        private:
-            MessageNetwork* mMessageNetwork;
+        void removeTopic( Messages::ID messageID );
+        void removeSubscriberTopic( Messages::ID messageID );
+        void removePublisherTopic( Messages::ID messageID );
 
-        protected:
-            MessageNodeInfo mMessageNodeInfo;
+        void unRegisterNode();
+        void unRegisterSubscriberNode();
+        void unRegisterpublisherNode();
+
+        void publish( std::shared_ptr< Message > message );
+        virtual void onNotify( Message* message );
+
+      private:
+        std::function< void( Message* ) > getNotifyFunc();
+
+      private:
+        MessageNetwork& mMessageNetwork;
+
+      protected:
+        std::string mNodeName;
+        std::function< void( Message* ) > mCallback;
+        NodeType mNodeType;
+
+        std::shared_ptr< Utility::Logger > mNetworkLogger;
     };
 
 }

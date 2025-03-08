@@ -1,10 +1,12 @@
 #pragma once
 
 #include <string>
-#include <sstream>
 
 namespace Messages
 {
+    /**
+     * Defines application specific Message IDs
+     */
     enum class ID
     {
         NONE = 0,
@@ -12,5 +14,5 @@ namespace Messages
         EnemySpawnMessage
     };
 
-    const std::string messageIDEnumToString(const Messages::ID identifier);
+    const std::string messageIDEnumToString( const Messages::ID identifier );
 }

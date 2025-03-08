@@ -10,7 +10,6 @@ set(LIBRARY_NAME "core")
 set(SRC src/Messaging/Message.cpp
         src/Messaging/MessageNetwork.cpp
         src/Messaging/MessageNode.cpp
-        src/Messaging/MessageNodeInfo.cpp
         src/Messaging/MessageTypes.cpp
         src/State/State.cpp 
         src/State/StateStack.cpp
@@ -25,7 +24,6 @@ set(SRC src/Messaging/Message.cpp
 set(INC inc/Messaging/Message.hpp
         inc/Messaging/MessageNetwork.hpp
         inc/Messaging/MessageNode.hpp
-        inc/Messaging/MessageNodeInfo.hpp
         inc/State/State.hpp 
         inc/State/StateStack.hpp
         inc/SceneNode.hpp

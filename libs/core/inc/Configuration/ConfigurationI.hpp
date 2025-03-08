@@ -7,12 +7,13 @@ namespace Core
 {
     class ConfigurationI
     {
-        public:
-            virtual void initializeIteration() = 0;
+      public:
+        virtual void initializeIteration() = 0;
 
-            virtual void parseConfigs() = 0;
+        virtual void parseConfigs() = 0;
 
-            virtual ~ConfigurationI() {}
+        virtual ~ConfigurationI()
+        {}
     };
-    
+
 }

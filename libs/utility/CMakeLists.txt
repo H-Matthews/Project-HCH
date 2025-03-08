@@ -4,19 +4,24 @@ project(utilLibrary LANGUAGES CXX)
 
 set(LIBRARY_NAME "utility")
 
-set(SRC src/Logging/LogRegistry.cpp 
+set(SRC src/Logging/LogRegistry.cpp
+        src/Logging/Logger.cpp
         src/Logging/Sinks/ColorConsoleSink.cpp
         src/Logging/Sinks/TextFileSink.cpp
-        src/Logging/Logger.cpp
+        src/Logging/Formatters/KeyValueFormatter.cpp
+        src/Logging/Formatters/DefaultFormatter.cpp
         src/Logging/LogLevel.cpp )
 
 set(INC inc/Logging/LogRegistry.hpp
-        inc/Logging/Sinks/LogSinksI.hpp
+        inc/Logging/Logger.hpp
+        inc/Logging/Sinks/LogSink.hpp
         inc/Logging/Sinks/ColorConsoleSink.hpp
         inc/Logging/Sinks/TextFileSink.hpp
-        inc/Logging/Logger.hpp
-        inc/StringOperations.hpp
-        inc/Logging/LogLevel.hpp )
+        inc/Logging/Formatters/LogFormatter.hpp
+        inc/Logging/Formatters/KeyValueFormatter.hpp
+        inc/Logging/Formatters/DefaultFormatter.hpp
+        inc/Logging/LogLevel.hpp
+        inc/StringOperations.hpp )
 
 add_library(${LIBRARY_NAME} STATIC ${SRC} ${INC})
 

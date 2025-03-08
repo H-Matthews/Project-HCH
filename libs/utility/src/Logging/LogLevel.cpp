@@ -1,37 +1,37 @@
 #include "utility/inc/Logging/LogLevel.hpp"
 
-const std::string Utility::logLevelEnumToString(const LogLevel identifier)
+const std::string Utility::logLevelEnumToString( const LogLevel identifier )
 {
-    std::stringstream sStream;
+    std::string tempString;
 
-        switch(identifier)
+    switch ( identifier )
+    {
+        case LogLevel::NONE:
         {
-            case LogLevel::NONE:
-            {
-                sStream << "NONE";
-                break;
-            }
-            case LogLevel::DEBUG:
-            {
-                sStream << "DEBUG";
-                break;
-            }
-            case LogLevel::INFO:
-            {
-                sStream << "INFO";
-                break;
-            }
-            case LogLevel::WARN:
-            {
-                sStream << "WARN";
-                break;
-            }
-            case LogLevel::ERROR:
-            {
-                sStream << "ERROR";
-                break;
-            }
+            tempString = "NONE";
+            break;
         }
+        case LogLevel::DEBUG:
+        {
+            tempString = "DEBUG";
+            break;
+        }
+        case LogLevel::INFO:
+        {
+            tempString = "INFO";
+            break;
+        }
+        case LogLevel::WARN:
+        {
+            tempString = "WARN";
+            break;
+        }
+        case LogLevel::ERROR:
+        {
+            tempString = "ERROR";
+            break;
+        }
+    }
 
-        return sStream.str();
+    return tempString;
 }

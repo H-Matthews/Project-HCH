@@ -1,28 +1,27 @@
 #include "core/inc/Messaging/MessageTypes.hpp"
 
-
-const std::string Messages::messageIDEnumToString(const Messages::ID identifier)
+const std::string Messages::messageIDEnumToString( const Messages::ID identifier )
 {
-    std::stringstream sStream;
+    std::string string;
 
-        switch(identifier)
+    switch ( identifier )
+    {
+        case Messages::ID::NONE:
         {
-            case Messages::ID::NONE:
-            {
-                sStream << "None";
-                break;
-            }
-            case Messages::ID::PlayerActionMessage:
-            {
-                sStream << "PlayerAction Message";
-                break;
-            }
-            case Messages::ID::EnemySpawnMessage:
-            {
-                sStream << "EnemySpawn Message";
-                break;
-            }
+            string = "None";
+            break;
         }
+        case Messages::ID::PlayerActionMessage:
+        {
+            string = "PlayerAction Message";
+            break;
+        }
+        case Messages::ID::EnemySpawnMessage:
+        {
+            string = "EnemySpawn Message";
+            break;
+        }
+    }
 
-        return sStream.str();
+    return string;
 }
