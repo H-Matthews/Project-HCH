@@ -2,6 +2,10 @@
 
 bool Core::GameAssetContainer::initializeTextures()
 {
+    if ( !loadTexture( GameAssetType::ERROR_TEXTURE, "../../../gameAssets/textures/errorSprite.png" ) )
+    {
+        return false;
+    }
     if ( !loadTexture( GameAssetType::PLAYER_TEXTURE, "../../../gameAssets/textures/playerSprite.png" ) )
     {
         return false;
@@ -15,6 +19,10 @@ bool Core::GameAssetContainer::initializeTextures()
 
 bool Core::GameAssetContainer::initializeFonts()
 {
+    if ( !loadFont( GameAssetType::ERROR_FONT, "../../../gameAssets/fonts/error.ttf" ) )
+    {
+        return false;
+    }
     if ( !loadFont( GameAssetType::ARIAL_FONT, "../../../gameAssets/fonts/arial.ttf" ) )
     {
         return false;
@@ -26,14 +34,26 @@ bool Core::GameAssetContainer::initializeFonts()
     return true;
 }
 
-const sf::Texture* Core::GameAssetContainer::getTexture( GameAssetType textureName )
+const sf::Texture& Core::GameAssetContainer::getTexture( GameAssetType textureName )
 {
-    return textureMap[ textureName ].get();
+
+    if ( textureMap.find( textureName ) != textureMap.end() )
+    {
+        return *textureMap[ textureName ].get();
+    }
+    // ERROR Return error texture
+    return *textureMap[ GameAssetType::ERROR_TEXTURE ].get();
 }
 
-const sf::Font* Core::GameAssetContainer::getFont( GameAssetType fontName )
+const sf::Font& Core::GameAssetContainer::getFont( GameAssetType fontName )
 {
-    return fontMap[ fontName ].get();
+
+    if ( fontMap.find( fontName ) != fontMap.end() )
+    {
+        return *fontMap[ fontName ].get();
+    }
+    // ERROR Return error texture
+    return *fontMap[ GameAssetType::ERROR_FONT ].get();
 }
 
 bool Core::GameAssetContainer::loadTexture( GameAssetType textureName, const std::string& filePath )

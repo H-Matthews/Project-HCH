@@ -7,10 +7,12 @@ namespace Core
 {
     enum class GameAssetType
     {
-        PLAYER_TEXTURE = 1,
-        ENEMY_TEXTURE = 2,
-        ARIAL_FONT = 3,
-        NASTY_FONT = 4
+        ERROR_TEXTURE = 1,
+        ERROR_FONT = 2,
+        PLAYER_TEXTURE = 3,
+        ENEMY_TEXTURE = 4,
+        ARIAL_FONT = 5,
+        NASTY_FONT = 6
     };
 
     class GameAssetContainer
@@ -19,8 +21,8 @@ namespace Core
       public:
         bool initializeTextures();
         bool initializeFonts();
-        const sf::Texture* getTexture( GameAssetType textureName );
-        const sf::Font* getFont( GameAssetType fontName );
+        const sf::Texture& getTexture( GameAssetType textureName );
+        const sf::Font& getFont( GameAssetType fontName );
 
       private:
         bool loadTexture( GameAssetType spriteName, const std::string& filePath );
