@@ -2,6 +2,8 @@
 
 bool Core::GameAssetContainer::initializeTextures()
 {
+    // TODO probably remove this later on and add this logic to be baked into the sprites themselves.
+    // That way they are built into the binary.
     if ( !loadTexture( GameAssetType::ERROR_TEXTURE, "../../../gameAssets/textures/errorSprite.png" ) )
     {
         return false;
@@ -19,6 +21,8 @@ bool Core::GameAssetContainer::initializeTextures()
 
 bool Core::GameAssetContainer::initializeFonts()
 {
+    // TODO probably remove this later on and add this logic to be baked into the font themselves.
+    // That way they are built into the binary. Not sure how possible this is but I know you can do it with sprites.
     if ( !loadFont( GameAssetType::ERROR_FONT, "../../../gameAssets/fonts/error.ttf" ) )
     {
         return false;
@@ -41,8 +45,9 @@ const sf::Texture& Core::GameAssetContainer::getTexture( GameAssetType textureNa
     {
         return *textureMap[ textureName ].get();
     }
-    // ERROR Return error texture
-    return *textureMap[ GameAssetType::ERROR_TEXTURE ].get();
+    // ERROR print and then exit program.
+    printf( "[ERROR] Texture %d was referenced, but not loaded.\n", int( textureName ) );
+    std::exit( 1 );
 }
 
 const sf::Font& Core::GameAssetContainer::getFont( GameAssetType fontName )
@@ -52,8 +57,9 @@ const sf::Font& Core::GameAssetContainer::getFont( GameAssetType fontName )
     {
         return *fontMap[ fontName ].get();
     }
-    // ERROR Return error texture
-    return *fontMap[ GameAssetType::ERROR_FONT ].get();
+    // ERROR print and then exit program.
+    printf( "[ERROR] Font %d was referenced, but not loaded.\n", int( fontName ) );
+    std::exit( 1 );
 }
 
 bool Core::GameAssetContainer::loadTexture( GameAssetType textureName, const std::string& filePath )
