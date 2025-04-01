@@ -40,25 +40,28 @@ bool Core::GameAssetContainer::initializeFonts()
 
 const sf::Texture& Core::GameAssetContainer::getTexture( GameAssetType textureName )
 {
-
-    if ( textureMap.find( textureName ) != textureMap.end() )
+    auto it = textureMap.find( textureName );
+    if ( it != textureMap.end() )
     {
-        return *textureMap[ textureName ].get();
+        return *it->second.get();
     }
     // ERROR print and then exit program.
-    printf( "[ERROR] Texture %d was referenced, but not loaded.\n", int( textureName ) );
-    std::exit( 1 );
+    throw std::filesystem::filesystem_error(
+        "Texture " + std::to_string( int( textureName ) ) + " was referenced, but not loaded.", std::error_code() );
 }
 
 const sf::Font& Core::GameAssetContainer::getFont( GameAssetType fontName )
 {
 
-    if ( fontMap.find( fontName ) != fontMap.end() )
+    auto it = fontMap.find( fontName );
+    if ( it != fontMap.end() )
     {
-        return *fontMap[ fontName ].get();
+        return *it->second.get();
     }
     // ERROR print and then exit program.
-    printf( "[ERROR] Font %d was referenced, but not loaded.\n", int( fontName ) );
+    throw std::filesystem::filesystem_error(
+        "Font " + std::to_string( int( fontName ) ) + " was referenced, but not loaded.", std::error_code() );
+
     std::exit( 1 );
 }
 
