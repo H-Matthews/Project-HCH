@@ -61,8 +61,6 @@ const sf::Font& Core::GameAssetContainer::getFont( GameAssetType fontName )
     // ERROR print and then exit program.
     throw std::filesystem::filesystem_error(
         "Font " + std::to_string( int( fontName ) ) + " was referenced, but not loaded.", std::error_code() );
-
-    std::exit( 1 );
 }
 
 bool Core::GameAssetContainer::loadTexture( GameAssetType textureName, const std::string& filePath )
