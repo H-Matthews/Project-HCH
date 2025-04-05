@@ -3,6 +3,10 @@
 #include <string>
 #include <sstream>
 
+/**
+ * Represents Player Actions
+ */
+
 namespace Actions
 {
     enum class Player

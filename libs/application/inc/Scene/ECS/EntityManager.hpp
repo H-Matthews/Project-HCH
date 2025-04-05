@@ -11,6 +11,10 @@ namespace Application
 
     class Entity;
 
+    /**
+     * Main wrapper around the Entt Library. Maintains all of the Systems, Components, and Entities
+     */
+
     class EntityManager
     {
       public:

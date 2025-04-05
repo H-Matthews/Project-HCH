@@ -4,6 +4,10 @@
 
 namespace System
 {
+    /**
+     * Draws all Sprite Components to the SFML Window
+     */
+
     class RenderSystem : public BaseSystem
     {
       public:

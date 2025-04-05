@@ -8,6 +8,10 @@
 
 namespace Application
 {
+    /**
+     * This class maintains the data mapping between a Key on the Keyboard and a Player Action
+     */
+
     class KeyBindings
     {
       public:

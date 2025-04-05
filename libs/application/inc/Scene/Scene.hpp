@@ -9,6 +9,10 @@
 
 namespace Application
 {
+    /**
+     * High Level class that represents a "Scene" during gameplay. It is used by the Game State to drive updates to our
+     * Entities
+     */
     class Scene
     {
       public:

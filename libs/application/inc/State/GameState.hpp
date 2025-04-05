@@ -7,6 +7,10 @@
 
 namespace Application
 {
+
+    /**
+     * High Level class that contains everything the game would need to run when playing the game
+     */
     class GameState : public Core::State
     {
       public:

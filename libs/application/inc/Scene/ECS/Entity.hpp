@@ -4,11 +4,16 @@
 
 namespace Application
 {
+
+    /**
+     * This Class serves as a wrapper around the entt::entity type so that we don't have to operate directly with the
+     * Entt library
+     */
+
     class Entity
     {
       public:
         Entity();
-        Entity( entt::entity entityHandle, EntityManager* entityManager );
 
         inline entt::entity getHandle()
         {
@@ -36,7 +41,13 @@ namespace Application
         }
 
       private:
+        Entity( entt::entity entityHandle, EntityManager* entityManager );
+
+      private:
         entt::entity mEntityHandle = entt::entity( 0 );
         EntityManager* mEntityManager = nullptr;
+
+      public:
+        friend class EntityManager;
     };
 }

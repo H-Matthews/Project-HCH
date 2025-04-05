@@ -7,6 +7,12 @@
 
 namespace System
 {
+    /**
+     * This Class is a subscriber on the Message Network that listens to PlayerActions.
+     * When Receiving a PlayerAction Message, it manipulates the data in the PlayerInput Component
+     * depending on the received Action
+     */
+
     class PlayerInputSystem : public BaseSystem, public Core::MessageNode
     {
       public:
