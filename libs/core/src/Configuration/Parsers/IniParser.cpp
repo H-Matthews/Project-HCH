@@ -3,16 +3,15 @@
 #include "utility/inc/Logging/LogRegistry.hpp"
 
 Core::IniParser::IniParser( const std::string parserIdentifierString ) :
-    Parser( parserIdentifierString, std::make_unique< IniParserData >() )
+    Parser( parserIdentifierString, Parsers::ID::INI )
 {}
 
 void Core::IniParser::parseFile( std::ifstream& fileStream )
 {
+    IniData iniData;
+    iniData.insert( { "Test", std::make_pair( "Key", "Value" ) } );
 
-    IniData testData;
-    testData.insert( { "Test", std::make_pair( "Key", "Value" ) } );
-
-    mParserData->setData( std::any( testData ) );
+    Core::ParserDataRegistry::instance()->setParserData( mParserID, std::any( iniData ) );
 
     return;
 }

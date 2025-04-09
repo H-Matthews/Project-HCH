@@ -1,10 +1,12 @@
 #pragma once
 
 #include "core/inc/Configuration/Parsers/Parser.hpp"
-#include "core/inc/Configuration/Parsers/IniParserData.hpp"
 
 namespace Core
 {
+
+    typedef std::map< std::string, std::pair< std::string, std::string > > IniData;
+
     class IniParser : public Parser
     {
       public:

@@ -15,7 +15,7 @@ set(SRC src/Messaging/Message.cpp
         src/State/StateStack.cpp
         src/State/StateTypes.cpp
         src/Configuration/Configuration.cpp
-        src/Configuration/Parsers/IniParserData.cpp
+        src/Configuration/Parsers/ParserDataRegistry.cpp
         src/Configuration/Parsers/ParserTypes.cpp
         src/Configuration/Parsers/IniParser.cpp
         src/Configuration/Parsers/JsonParser.cpp
@@ -28,9 +28,7 @@ set(INC inc/Messaging/Message.hpp
         inc/State/StateStack.hpp
         inc/Configuration/ConfigurationI.hpp
         inc/Configuration/Configuration.hpp
-        inc/Configuration/Parsers/ParserData.hpp
-        inc/Configuration/Parsers/IniParserData.hpp
-        inc/Configuration/Parsers/JsonParserData.hpp
+        inc/Configuration/Parsers/ParserDataRegistry.hpp
         inc/Configuration/Parsers/Parser.hpp
         inc/Configuration/Parsers/ParserTypes.hpp
         inc/Configuration/Parsers/IniParser.hpp

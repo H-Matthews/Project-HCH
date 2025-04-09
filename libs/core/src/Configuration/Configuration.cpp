@@ -18,7 +18,7 @@ Core::Configuration::Configuration() :
     mParsers(),
     mProjectDirectory( PROJECT_DIR )
 {
-    if constexpr ( Utility::CAN_LOG )
+    if constexpr (Utility::CAN_LOG)
     {
         Utility::createGlobalLogger();
         initializeGlobalLogger();
@@ -47,30 +47,25 @@ void Core::Configuration::parseConfigs()
 {
     std::string filePath;
     std::ifstream fileStream;
-    for ( const auto& file : mConfigFiles )
+    for (const auto& file : mConfigFiles)
     {
         filePath = "";
         filePath = mConfigDirPath + "/" + file.mFileName + file.mFileExtension;
 
         // Open File
         fileStream.open( filePath, std::ifstream::in );
-        if ( fileStream.is_open() )
+        if (fileStream.is_open())
         {
-            if constexpr ( Utility::CAN_LOG )
+            if constexpr (Utility::CAN_LOG)
                 Utility::LogRegistry::instance()->getGlobalLogger()->logDebug( "Parsing File: " + filePath );
 
             // Parse File
             auto fileExtensionIT = mFileExtensionToIDMap.find( file.mFileExtension );
             mParsers[ fileExtensionIT->second ]->parseFile( fileStream );
-
-            /*
-            ParserData* parserData = mParsers[ fileExtensionIT->second ]->getParserData();
-            auto iniData = std::any_cast< IniData >( parserData->getData() );
-            */
         }
         else
         {
-            if constexpr ( Utility::CAN_LOG )
+            if constexpr (Utility::CAN_LOG)
                 Utility::LogRegistry::instance()->getGlobalLogger()->logWarn(
                     "Could NOT Parse File: " + filePath + " File would not open" );
         }
@@ -96,9 +91,9 @@ void Core::Configuration::initializeConfigDirectory()
     mConfigDirPath = configDirectoryPath;
 
     // Check to see if directory is valid
-    if ( !( std::filesystem::is_directory( mConfigDirPath ) ) )
+    if (!( std::filesystem::is_directory( mConfigDirPath ) ))
     {
-        if constexpr ( Utility::CAN_LOG )
+        if constexpr (Utility::CAN_LOG)
             Utility::LogRegistry::instance()->getGlobalLogger()->logError(
                 "Config Directory WAS NOT FOUND --> " + mConfigDirPath );
 
@@ -107,9 +102,9 @@ void Core::Configuration::initializeConfigDirectory()
     }
 
     // See if base file exists
-    if ( !( std::filesystem::is_regular_file( mConfigDirPath + "/" + MAIN_FILE_NAME ) ) )
+    if (!( std::filesystem::is_regular_file( mConfigDirPath + "/" + MAIN_FILE_NAME ) ))
     {
-        if constexpr ( Utility::CAN_LOG )
+        if constexpr (Utility::CAN_LOG)
             Utility::LogRegistry::instance()->getGlobalLogger()->logError(
                 "Root Config File WAS NOT FOUND --> " + mConfigDirPath + "/" + MAIN_FILE_NAME );
 
@@ -122,20 +117,20 @@ void Core::Configuration::initializeConfigDirectory()
 
 void Core::Configuration::initializeConfigFiles()
 {
-    for ( const auto& fileEntry : std::filesystem::directory_iterator( mConfigDirPath ) )
+    for (const auto& fileEntry : std::filesystem::directory_iterator( mConfigDirPath ))
     {
         std::filesystem::path filePath( fileEntry.path() );
 
         // Ensure file extension is in MAP
         const std::string fileExtensionStr = filePath.extension().string();
-        if ( mFileExtensionToIDMap.find( fileExtensionStr ) == mFileExtensionToIDMap.end() )
+        if (mFileExtensionToIDMap.find( fileExtensionStr ) == mFileExtensionToIDMap.end())
         {
-            if constexpr ( Utility::CAN_LOG )
+            if constexpr (Utility::CAN_LOG)
                 Utility::LogRegistry::instance()->getGlobalLogger()->logWarn(
                     "Unknown File Extension: " + fileExtensionStr + " File: " + filePath.filename().string() +
                     " will NOT be parsed" );
 
-            if ( filePath.filename().string() == MAIN_FILE_NAME )
+            if (filePath.filename().string() == MAIN_FILE_NAME)
                 throw std::filesystem::filesystem_error(
                     "Unknown Base file extension: " + fileExtensionStr, std::error_code() );
 
@@ -149,17 +144,17 @@ void Core::Configuration::initializeConfigFiles()
     }
 
     // Create Parser Objects
-    for ( const auto& file : mConfigFiles )
+    for (const auto& file : mConfigFiles)
     {
         // Ensure File Extension is registered to a parser
         // At this point it should be
         auto fileExtensionIT = mFileExtensionToIDMap.find( file.mFileExtension );
-        if ( fileExtensionIT == mFileExtensionToIDMap.end() )
+        if (fileExtensionIT == mFileExtensionToIDMap.end())
             continue;
 
         // Ensure Parser has NOT been created already
         auto parserIT = mParsers.find( fileExtensionIT->second );
-        if ( parserIT != mParsers.end() )
+        if (parserIT != mParsers.end())
             continue;
 
         // Create Parser
@@ -176,11 +171,11 @@ void Core::Configuration::initializeOutputDirectory()
     outputDirectoryPath += mProjectDirectory + "/" + OUTPUT_DIR_NAME;
 
     // Creates the "output" directory
-    if ( !( std::filesystem::is_directory( outputDirectoryPath ) ) )
+    if (!( std::filesystem::is_directory( outputDirectoryPath ) ))
     {
-        if ( !( std::filesystem::create_directory( outputDirectoryPath ) ) )
+        if (!( std::filesystem::create_directory( outputDirectoryPath ) ))
         {
-            if constexpr ( Utility::CAN_LOG )
+            if constexpr (Utility::CAN_LOG)
                 Utility::LogRegistry::instance()->getGlobalLogger()->logError(
                     "Could NOT create output DIRECTORY --> " + outputDirectoryPath );
 
@@ -204,9 +199,9 @@ void Core::Configuration::initializeOutputDirectory()
     mOutputDirPath = outputDirectoryPath;
 
     // Creates the "App_" directory with the current time
-    if ( !( std::filesystem::create_directory( mOutputDirPath ) ) )
+    if (!( std::filesystem::create_directory( mOutputDirPath ) ))
     {
-        if constexpr ( Utility::CAN_LOG )
+        if constexpr (Utility::CAN_LOG)
             Utility::LogRegistry::instance()->getGlobalLogger()->logError(
                 "Could NOT create output APP_ DIRECTORY --> " + mOutputDirPath );
 
@@ -223,7 +218,7 @@ void Core::Configuration::initializeGlobalLogger()
     // Get Global Logger
     std::shared_ptr< Utility::Logger > cLogger = Utility::LogRegistry::instance()->getGlobalLogger();
 
-    if ( cLogger )
+    if (cLogger)
     {
         auto globalConsoleSink = std::make_shared< Utility::ColorConsoleSink >();
         cLogger->addSink( globalConsoleSink );

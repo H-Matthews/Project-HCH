@@ -1,6 +1,7 @@
 #pragma once
 
-#include "core/inc/Configuration/Parsers/ParserData.hpp"
+#include "core/inc/Configuration/Parsers/ParserTypes.hpp"
+#include "core/inc/Configuration/Parsers/ParserDataRegistry.hpp"
 
 #include <fstream>
 #include <string>
@@ -12,15 +13,12 @@ namespace Core
     class Parser
     {
       public:
-        inline Parser( const std::string parserIdentifierString, std::unique_ptr< ParserData > parserData ) :
+        inline Parser( const std::string parserIdentifierString, Parsers::ID parserID ) :
             mParserIdentifierString( parserIdentifierString ),
-            mParserData( std::move( parserData ) )
-        {}
-
-        inline ParserData* getParserData()
+            mParserID( parserID )
         {
-            return mParserData.get();
-        };
+            Core::ParserDataRegistry::instance()->registerParserID( mParserID );
+        }
 
         virtual void parseFile( std::ifstream& fileStream ) = 0;
 
@@ -29,7 +27,6 @@ namespace Core
 
       protected:
         std::string mParserIdentifierString;
-
-        std::unique_ptr< ParserData > mParserData;
+        Parsers::ID mParserID;
     };
 }
