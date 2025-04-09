@@ -10,9 +10,7 @@ int main()
 
     try
     {
-        auto config = std::make_shared< Core::Configuration >();
-
-        Application::App game( config );
+        Application::App game( std::make_unique< Core::Configuration >() );
         game.initialize();
         game.run();
     }

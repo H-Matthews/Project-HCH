@@ -2,9 +2,13 @@
 
 #include <string>
 
-// Defines our Configuration Interface
 namespace Core
 {
+
+    /**
+     * Defines our Configuration Interface
+     */
+
     class ConfigurationI
     {
       public:

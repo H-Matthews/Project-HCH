@@ -62,6 +62,11 @@ void Core::Configuration::parseConfigs()
             // Parse File
             auto fileExtensionIT = mFileExtensionToIDMap.find( file.mFileExtension );
             mParsers[ fileExtensionIT->second ]->parseFile( fileStream );
+
+            /*
+            ParserData* parserData = mParsers[ fileExtensionIT->second ]->getParserData();
+            auto iniData = std::any_cast< IniData >( parserData->getData() );
+            */
         }
         else
         {
@@ -224,7 +229,7 @@ void Core::Configuration::initializeGlobalLogger()
         cLogger->addSink( globalConsoleSink );
 
         std::string logMessage;
-        logMessage += "Initialized Global Logger: " + mOutputDirPath;
+        logMessage += "Initialized Global Logger";
         cLogger->logInfo( logMessage );
     }
 

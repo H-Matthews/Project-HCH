@@ -27,11 +27,11 @@ namespace Core
         {}
     };
 
-    /*
-        Configuration sets up the Config Directory, Output Directory, and contains the parsers that will parse config
-       files. The Configuration class is responsible for handing each parser the correct file stream based on its file
-       extension. Files that lack extensions are ignored
-    */
+    /**
+     * Configuration sets up the Config Directory, Output Directory, and contains the parsers that will parse config
+     * files. The Configuration class is responsible for handing each parser the correct file stream based on its file
+     * extension. Files that lack extensions are ignored
+     */
     class Configuration : public ConfigurationI
     {
       public:

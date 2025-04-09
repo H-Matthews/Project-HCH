@@ -20,7 +20,7 @@ namespace Application
     class App
     {
       public:
-        App( std::shared_ptr< Core::ConfigurationI > config );
+        App( std::unique_ptr< Core::ConfigurationI > config );
         void initialize();
         void run();
 
@@ -41,7 +41,7 @@ namespace Application
         std::shared_ptr< Utility::Logger > mAppLogger;
         // TODO: Implement a Resource Container for Textures / Fonts
 
-        std::shared_ptr< Core::ConfigurationI > mConfiguration;
+        std::unique_ptr< Core::ConfigurationI > mConfiguration;
         Core::MessageNetwork mNetwork;
         Application::KeyBindings mPlayerKeyBindings;
         sf::RenderWindow mWindow;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/inc/Configuration/Parsers/Parser.hpp"
+#include "core/inc/Configuration/Parsers/IniParserData.hpp"
 
 namespace Core
 {
