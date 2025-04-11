@@ -8,7 +8,7 @@ Core::ParserDataRegistry::ParserDataRegistry() :
 
 std::shared_ptr< Core::ParserDataRegistry > Core::ParserDataRegistry::instance()
 {
-    if (mRegistryInstance == nullptr)
+    if ( mRegistryInstance == nullptr )
         mRegistryInstance = std::shared_ptr< Core::ParserDataRegistry >( new Core::ParserDataRegistry() );
 
     return mRegistryInstance;
@@ -17,7 +17,7 @@ std::shared_ptr< Core::ParserDataRegistry > Core::ParserDataRegistry::instance()
 void Core::ParserDataRegistry::registerParserID( Parsers::ID ID )
 {
     auto it = mParserData.find( ID );
-    if (it != mParserData.end())
+    if ( it != mParserData.end() )
     {
         // Log
         return;
@@ -31,9 +31,9 @@ void Core::ParserDataRegistry::registerParserID( Parsers::ID ID )
 void Core::ParserDataRegistry::setParserData( Parsers::ID ID, std::any parserData )
 {
     auto it = mParserData.find( ID );
-    if (it == mParserData.end())
+    if ( it == mParserData.end() )
     {
-        // Log and Return
+        // Log
         return;
     }
 
@@ -47,7 +47,7 @@ std::any Core::ParserDataRegistry::getParserData( Parsers::ID ID )
     std::any targetData;
 
     auto it = mParserData.find( ID );
-    if (it != mParserData.end())
+    if ( it != mParserData.end() )
     {
         targetData = it->second;
     }
