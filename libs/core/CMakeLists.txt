@@ -18,7 +18,6 @@ set(SRC src/Messaging/Message.cpp
         src/Configuration/Parsers/ParserDataRegistry.cpp
         src/Configuration/Parsers/ParserTypes.cpp
         src/Configuration/Parsers/IniParser.cpp
-        src/Configuration/Parsers/JsonParser.cpp
         src/GameAssetContainer/GameAssetContainer.cpp )
 
 set(INC inc/Messaging/Message.hpp
@@ -32,7 +31,6 @@ set(INC inc/Messaging/Message.hpp
         inc/Configuration/Parsers/Parser.hpp
         inc/Configuration/Parsers/ParserTypes.hpp
         inc/Configuration/Parsers/IniParser.hpp
-        inc/Configuration/Parsers/JsonParser.hpp
         inc/GameAssetContainer/GameAssetContainer.hpp )
 
 add_library(${LIBRARY_NAME} STATIC ${SRC} ${INC})

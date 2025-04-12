@@ -6,7 +6,6 @@
 #include "core/inc/Configuration/ConfigurationI.hpp"
 
 #include "core/inc/Configuration/Parsers/IniParser.hpp"
-#include "core/inc/Configuration/Parsers/JsonParser.hpp"
 #include "core/inc/Configuration/Parsers/ParserTypes.hpp"
 
 #include <string>

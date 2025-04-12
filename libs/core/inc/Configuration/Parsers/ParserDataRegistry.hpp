@@ -13,20 +13,22 @@ namespace Core
      * ParserDataRegistry is a Singleton that defines a registry of data
      */
 
+    typedef std::map< std::string, std::any > FileToDataMap;
+    typedef std::map< Parsers::ID, FileToDataMap > ParserDataContainer;
+
     class ParserDataRegistry
     {
       public:
-        // Delete the Copy Constructor
         ParserDataRegistry( const ParserDataRegistry& obj ) = delete;
 
         static std::shared_ptr< ParserDataRegistry > instance();
 
         void registerParserID( Parsers::ID ID );
 
-        void setParserData( Parsers::ID ID, std::any parserData );
+        void setParserData( Parsers::ID ID, const std::string& fileName, std::any parserData );
 
         // Returns empty std::any, if ID is not registered
-        std::any getParserData( Parsers::ID ID );
+        std::any getParserData( Parsers::ID ID, const std::string& fileName );
 
       private:
         ParserDataRegistry();
@@ -34,7 +36,8 @@ namespace Core
         // Static pointer to our object
         static std::shared_ptr< ParserDataRegistry > mRegistryInstance;
 
-        std::map< Parsers::ID, std::any > mParserData;
+        ParserDataContainer mParserDataContainer;
+        std::map< std::string, std::pair< Parsers::ID, std::string > > mFullyQualifedDataName;
     };
 
 }

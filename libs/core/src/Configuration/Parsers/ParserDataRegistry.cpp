@@ -3,7 +3,8 @@
 std::shared_ptr< Core::ParserDataRegistry > Core::ParserDataRegistry::mRegistryInstance = nullptr;
 
 Core::ParserDataRegistry::ParserDataRegistry() :
-    mParserData()
+    mParserDataContainer(),
+    mFullyQualifedDataName()
 {}
 
 std::shared_ptr< Core::ParserDataRegistry > Core::ParserDataRegistry::instance()
@@ -16,40 +17,46 @@ std::shared_ptr< Core::ParserDataRegistry > Core::ParserDataRegistry::instance()
 
 void Core::ParserDataRegistry::registerParserID( Parsers::ID ID )
 {
-    auto it = mParserData.find( ID );
-    if ( it != mParserData.end() )
+    auto it = mParserDataContainer.find( ID );
+    if ( it != mParserDataContainer.end() )
     {
         // Log
         return;
     }
 
-    mParserData.insert( { ID, std::any{} } );
+    mParserDataContainer.insert( { ID, FileToDataMap{} } );
 
     return;
 }
 
-void Core::ParserDataRegistry::setParserData( Parsers::ID ID, std::any parserData )
+void Core::ParserDataRegistry::setParserData( Parsers::ID ID, const std::string& fileName, std::any parserData )
 {
-    auto it = mParserData.find( ID );
-    if ( it == mParserData.end() )
+    auto parserIDIter = mParserDataContainer.find( ID );
+    if ( parserIDIter == mParserDataContainer.end() )
     {
         // Log
         return;
     }
 
-    it->second = parserData;
+    auto result = parserIDIter->second.insert( { fileName, parserData } );
+    if ( !result.second )
+    {
+        // Log Key was already present NOT inserting
+    }
 
     return;
 }
 
-std::any Core::ParserDataRegistry::getParserData( Parsers::ID ID )
+std::any Core::ParserDataRegistry::getParserData( Parsers::ID ID, const std::string& fileName )
 {
     std::any targetData;
 
-    auto it = mParserData.find( ID );
-    if ( it != mParserData.end() )
+    auto parserIDIter = mParserDataContainer.find( ID );
+    if ( parserIDIter != mParserDataContainer.end() )
     {
-        targetData = it->second;
+        auto parserDataIter = parserIDIter->second.find( fileName );
+        if ( parserDataIter != parserIDIter->second.end() )
+            targetData = parserDataIter->second;
     }
 
     return targetData;

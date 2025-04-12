@@ -5,73 +5,68 @@
 Core::IniParser::IniParser( const std::string parserIdentifierString ) :
     Parser( parserIdentifierString, Parsers::ID::INI ),
     mStatus( Core::IniParser::IniStatus::READY_TO_PARSE_SECTION ),
-    mCurrentSection(),
-    mData()
+    mCurrentActiveSection()
 {}
 
-void Core::IniParser::clearParserData()
+void Core::IniParser::parseFile( std::ifstream& fileStream, const std::string& fileName )
 {
-    mData.clear();
-    mCurrentSection.clear();
-    mStatus = IniStatus::READY_TO_PARSE_SECTION;
-}
 
-void Core::IniParser::parseFile( std::ifstream& fileStream )
-{
-    // Ensure we have a clean state (This parser is used to parse multiple ini files)
-    if ( mData.size() > 0 )
-        clearParserData();
+    mCurrentActiveSection.clear();
+    mStatus = IniStatus::READY_TO_PARSE_SECTION;
+
+    IniData iniDataStructure;
 
     std::string currentLine;
     while ( std::getline( fileStream, currentLine ) )
     {
-        if ( currentLine.empty() )
-            continue;
-
         const char firstChar = currentLine[ 0 ];
-        if ( isIniTokenComment( firstChar ) )
+        if ( currentLine.empty() || isIniTokenComment( firstChar ) )
         {
             continue;
         }
         else if ( isIniTokenSectionBracketOpen( firstChar ) )
         {
-            // This enables us to grab another section header
             if ( mStatus == IniStatus::READY_TO_PARSE_KEY_VALUE )
-            {
                 mStatus = IniStatus::READY_TO_PARSE_SECTION;
-            }
 
             if ( mStatus == IniStatus::READY_TO_PARSE_SECTION )
             {
-                parseSection( currentLine );
-                mStatus = IniStatus::READY_TO_PARSE_KEY_VALUE;
+                auto sectionPair = parseSection( currentLine );
+
+                if ( insertSection( sectionPair, iniDataStructure ) )
+                    mStatus = IniStatus::READY_TO_PARSE_KEY_VALUE;
             }
         }
         else
         {
             if ( mStatus == IniStatus::READY_TO_PARSE_KEY_VALUE )
             {
-                parseKeyValue( currentLine );
+                auto keyValuePair = parseKeyValue( currentLine );
+                insertKeyValue( keyValuePair, iniDataStructure );
             }
         }
     }
 
     // Save Ini File Data Entry
-    Core::ParserDataRegistry::instance()->setParserData( mParserID, std::any( IniData{ mData } ) );
+    Core::ParserDataRegistry::instance()->setParserData( mParserID, fileName, std::any( iniDataStructure ) );
 
     return;
 }
 
-void Core::IniParser::parseSection( const std::string& currentLine )
+std::pair< std::string, bool > Core::IniParser::parseSection( const std::string& currentLine )
 {
-    mCurrentSection.clear();
+    bool isSubSection = false;
+    std::string currentSection;
 
-    // Index starts at 1 because of the '[' at the beginning
+    // Index starts at 1 because of starting '[' character
     for ( long unsigned int i = 1; i < currentLine.size(); i++ )
     {
+        if ( isIniTokenSubSection( currentLine[ i ] ) )
+            isSubSection = true;
+
         if ( !( isIniTokenSectionBracketEnd( currentLine[ i ] ) ) )
         {
-            mCurrentSection += currentLine[ i ];
+            currentSection += currentLine[ i ];
         }
         else
         {
@@ -79,32 +74,76 @@ void Core::IniParser::parseSection( const std::string& currentLine )
         }
     }
 
-    // Insert Section Header
-    mData[ mCurrentSection ] = KeyValueData{};
+    // Set this var for convenience when inserting key values
+    mCurrentActiveSection = currentSection;
 
-    return;
+    return std::make_pair( currentSection, isSubSection );
 }
 
-void Core::IniParser::parseKeyValue( const std::string& currentLine )
+std::pair< std::string, std::string > Core::IniParser::parseKeyValue( const std::string& currentLine )
 {
     std::string key;
     std::string value;
 
     size_t position = currentLine.find( Core::IniToken::KEY_VALUE_ASSIGNMENT );
     if ( position == std::string::npos )
-        return;
+        return std::make_pair( std::string( "" ), std::string( "" ) );
 
     key = currentLine.substr( 0, position );
     value = currentLine.substr( position + 1, currentLine.size() );
 
-    // Insert into IniData
-    auto it = mData.find( mCurrentSection );
-    if ( it != mData.end() )
+    return std::make_pair( key, value );
+}
+
+bool Core::IniParser::insertSection( std::pair< std::string, bool > sectionPair, IniData& dataStructure )
+{
+    // Determine if this is a supposed to be a Subsection
+    if ( sectionPair.second )
     {
-        it->second.insert( { key, value } );
+        auto it = dataStructure.find( trimSubSection( sectionPair.first ) );
+        if ( it == dataStructure.end() )
+        {
+            // Log here
+            return false;
+        }
+
+        auto subSection = std::make_shared< IniSection >( sectionPair.first );
+        dataStructure.insert( std::make_pair( sectionPair.first, subSection ) );
+
+        // Insert as a SubSection (Not sure if this is needed. May come in handy later)
+        it->second->subSections.push_back( subSection );
+    }
+    else
+    {
+        auto subSection = std::make_shared< IniSection >( sectionPair.first );
+        dataStructure.insert( std::make_pair( sectionPair.first, subSection ) );
     }
 
+    return true;
+}
+
+void Core::IniParser::insertKeyValue( std::pair< std::string, std::string > keyValuePair, IniData& dataStructure )
+{
+    auto it = dataStructure.find( mCurrentActiveSection );
+    if ( it == dataStructure.end() )
+    {
+        // Log here
+        return;
+    }
+
+    it->second->keyValues.insert( keyValuePair );
+
     return;
+}
+
+std::string Core::IniParser::trimSubSection( const std::string& currentSectionName )
+{
+    // Grab last position of substring
+    size_t position = currentSectionName.rfind( Core::IniToken::SUB_SECTION );
+    if ( position == std::string::npos )
+        return std::string{};
+
+    return currentSectionName.substr( 0, position );
 }
 
 bool Core::IniParser::isIniTokenComment( const char token )
@@ -137,6 +176,14 @@ bool Core::IniParser::isIniTokenSectionBracketEnd( const char token )
 bool Core::IniParser::isIniTokenKeyValueAssignment( const char token )
 {
     if ( token == Core::IniToken::KEY_VALUE_ASSIGNMENT )
+        return true;
+
+    return false;
+}
+
+bool Core::IniParser::isIniTokenSubSection( const char token )
+{
+    if ( token == Core::IniToken::SUB_SECTION )
         return true;
 
     return false;
