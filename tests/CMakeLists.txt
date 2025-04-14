@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.30)
 
+set(TEST_PROJECT_DIR "${CMAKE_SOURCE_DIR}")
+
 # Glob all Test files and compile a binary for each
 file(GLOB TEST_SRC_FILES 
       ${PROJECT_SOURCE_DIR}/tests/Core/*.cc

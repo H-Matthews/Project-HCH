@@ -20,7 +20,7 @@ namespace Core
             Core::ParserDataRegistry::instance()->registerParserID( mParserID );
         }
 
-        virtual void parseFile( std::ifstream& fileStream, const std::string& fileName ) = 0;
+        virtual bool parseFile( std::ifstream& fileStream, const std::string& fileName ) = 0;
 
         virtual ~Parser()
         {}

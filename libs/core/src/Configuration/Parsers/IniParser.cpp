@@ -8,9 +8,13 @@ Core::IniParser::IniParser( const std::string parserIdentifierString ) :
     mCurrentActiveSection()
 {}
 
-void Core::IniParser::parseFile( std::ifstream& fileStream, const std::string& fileName )
+bool Core::IniParser::parseFile( std::ifstream& fileStream, const std::string& fileName )
 {
+    if ( !fileStream.is_open() )
+        return false;
 
+    // Parser is used to parse multiple files, so we must ensure the state is
+    // clear when beginning to parse a file
     mCurrentActiveSection.clear();
     mStatus = IniStatus::READY_TO_PARSE_SECTION;
 
@@ -50,7 +54,7 @@ void Core::IniParser::parseFile( std::ifstream& fileStream, const std::string& f
     // Save Ini File Data Entry
     Core::ParserDataRegistry::instance()->setParserData( mParserID, fileName, std::any( iniDataStructure ) );
 
-    return;
+    return true;
 }
 
 std::pair< std::string, bool > Core::IniParser::parseSection( const std::string& currentLine )

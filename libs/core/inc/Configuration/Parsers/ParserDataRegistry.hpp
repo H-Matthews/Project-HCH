@@ -28,7 +28,7 @@ namespace Core
         void setParserData( Parsers::ID ID, const std::string& fileName, std::any parserData );
 
         // Returns empty std::any, if ID is not registered
-        std::any getParserData( Parsers::ID ID, const std::string& fileName );
+        std::any getParserDataStructure( Parsers::ID ID, const std::string& fileName );
 
       private:
         ParserDataRegistry();

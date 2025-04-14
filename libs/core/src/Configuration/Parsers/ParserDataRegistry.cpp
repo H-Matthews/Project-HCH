@@ -47,7 +47,7 @@ void Core::ParserDataRegistry::setParserData( Parsers::ID ID, const std::string&
     return;
 }
 
-std::any Core::ParserDataRegistry::getParserData( Parsers::ID ID, const std::string& fileName )
+std::any Core::ParserDataRegistry::getParserDataStructure( Parsers::ID ID, const std::string& fileName )
 {
     std::any targetData;
 

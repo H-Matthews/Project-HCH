@@ -44,25 +44,26 @@ namespace Core
 
         IniParser( const std::string parserIdentifierString );
 
-        void parseFile( std::ifstream& fileStream, const std::string& fileName ) override;
+        bool parseFile( std::ifstream& fileStream, const std::string& fileName ) override;
 
       private:
         std::pair< std::string, bool > parseSection( const std::string& currentLine );
         std::pair< std::string, std::string > parseKeyValue( const std::string& currentLine );
+        bool insertSection( std::pair< std::string, bool > sectionPair, IniData& dataStructure );
+        void insertKeyValue( std::pair< std::string, std::string > keyValuePair, IniData& dataStructure );
 
+        // Token Identification helper functions
         bool isIniTokenComment( const char token );
         bool isIniTokenSectionBracketOpen( const char token );
         bool isIniTokenSectionBracketEnd( const char token );
         bool isIniTokenKeyValueAssignment( const char token );
         bool isIniTokenSubSection( const char token );
 
+        // String manipulation helper function
         std::string trimSubSection( const std::string& currentSectionName );
-        bool insertSection( std::pair< std::string, bool > sectionPair, IniData& dataStructure );
-        void insertKeyValue( std::pair< std::string, std::string > keyValuePair, IniData& dataStructure );
 
       private:
         IniStatus mStatus;
-
         std::string mCurrentActiveSection;
     };
 }
