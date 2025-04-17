@@ -10,7 +10,8 @@ set(SRC src/Logging/LogRegistry.cpp
         src/Logging/Sinks/TextFileSink.cpp
         src/Logging/Formatters/KeyValueFormatter.cpp
         src/Logging/Formatters/DefaultFormatter.cpp
-        src/Logging/LogLevel.cpp )
+        src/Logging/LogLevel.cpp
+        src/StringOperations.cpp )
 
 set(INC inc/Logging/LogRegistry.hpp
         inc/Logging/Logger.hpp

@@ -13,4 +13,12 @@ namespace Utility
         sStream << value;
         return sStream.str();
     }
+
+    const std::string WHITESPACE = " \n\r\t\f\v";
+
+    std::string ltrim( const std::string& stringToTrim, const std::string delimiter = WHITESPACE );
+    std::string rtrim( const std::string& stringToTrim, const std::string delimiter = WHITESPACE );
+    std::string trimWhiteSpace( const std::string& stringToTrim );
+    bool containsWhiteSpace( const std::string& stringToCheck );
+
 }

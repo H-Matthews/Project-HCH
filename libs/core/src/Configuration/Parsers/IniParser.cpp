@@ -1,6 +1,7 @@
 #include "core/inc/Configuration/Parsers/IniParser.hpp"
 
 #include "utility/inc/Logging/LogRegistry.hpp"
+#include "utility/inc/StringOperations.hpp"
 
 Core::IniParser::IniParser( const std::string parserIdentifierString ) :
     Parser( parserIdentifierString, Parsers::ID::INI ),
@@ -23,8 +24,14 @@ bool Core::IniParser::parseFile( std::ifstream& fileStream, const std::string& f
     std::string currentLine;
     while ( std::getline( fileStream, currentLine ) )
     {
+        // IF, its an empty line, then go next
+        if ( currentLine.empty() )
+            continue;
+
+        currentLine = Utility::trimWhiteSpace( currentLine );
+
         const char firstChar = currentLine[ 0 ];
-        if ( currentLine.empty() || isIniTokenComment( firstChar ) )
+        if ( isIniTokenComment( firstChar ) )
         {
             continue;
         }
@@ -78,6 +85,8 @@ std::pair< std::string, bool > Core::IniParser::parseSection( const std::string&
         }
     }
 
+    currentSection = Utility::trimWhiteSpace( currentSection );
+
     // Set this var for convenience when inserting key values
     mCurrentActiveSection = currentSection;
 
@@ -93,8 +102,9 @@ std::pair< std::string, std::string > Core::IniParser::parseKeyValue( const std:
     if ( position == std::string::npos )
         return std::make_pair( std::string( "" ), std::string( "" ) );
 
-    key = currentLine.substr( 0, position );
-    value = currentLine.substr( position + 1, currentLine.size() );
+    // Two operations, 1. gets substring 2. trims whitespace
+    key = Utility::trimWhiteSpace( currentLine.substr( 0, position ) );
+    value = Utility::trimWhiteSpace( currentLine.substr( position + 1, currentLine.size() ) );
 
     return std::make_pair( key, value );
 }
