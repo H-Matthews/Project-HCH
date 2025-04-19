@@ -29,6 +29,7 @@ namespace Core
         const char COMMENT[ 2 ] = { '#', ';' };
         const char SECTION_BRACKET_OPEN = '[';
         const char SECTION_BRACKET_END = ']';
+        const char QUOTE = '\"';
         const char KEY_VALUE_ASSIGNMENT = '=';
         const char SUB_SECTION = '.';
     }
@@ -48,7 +49,7 @@ namespace Core
 
       private:
         std::pair< std::string, bool > parseSection( const std::string& currentLine );
-        std::pair< std::string, std::string > parseKeyValue( const std::string& currentLine );
+        std::pair< std::string, std::string > parseKeyValue( const std::string& currentLine, size_t position );
         bool insertSection( std::pair< std::string, bool > sectionPair, IniData& dataStructure );
         void insertKeyValue( std::pair< std::string, std::string > keyValuePair, IniData& dataStructure );
 

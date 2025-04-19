@@ -3,7 +3,15 @@
 // Unit(s) to be Tested
 #include "application/inc/KeyBindings.hpp"
 
-// Ensure the Constructor is setting keys to the correct values
+/*
+    Test: Default Constructor
+    Expected Values:
+        A --> MOVE_LEFT
+        D --> MOVE_RIGHT
+        W --> MOVE_UP
+        S --> MOVE_DOWN
+        SPACE --> JUMP
+*/
 TEST( App_KeyBindings_Constructor_Test, defaultConstructor )
 {
     Application::KeyBindings keyBindings;
@@ -25,6 +33,13 @@ TEST( App_KeyBindings_Constructor_Test, defaultConstructor )
     EXPECT_EQ( action, Actions::Player::JUMP );
 }
 
+/*
+    Test: Assign Key function
+    Expected Values:
+        T --> MOVE_UP
+
+        W --> NONE (W was previously assigned to MOVE_UP)
+*/
 TEST( App_KeyBindings_AssignKey_Test, assignKey )
 {
     Application::KeyBindings keyBindings;

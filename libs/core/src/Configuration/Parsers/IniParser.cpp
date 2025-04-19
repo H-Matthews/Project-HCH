@@ -19,6 +19,7 @@ bool Core::IniParser::parseFile( std::ifstream& fileStream, const std::string& f
     mCurrentActiveSection.clear();
     mStatus = IniStatus::READY_TO_PARSE_SECTION;
 
+    // Container for parsed file contents
     IniData iniDataStructure;
 
     std::string currentLine;
@@ -28,7 +29,8 @@ bool Core::IniParser::parseFile( std::ifstream& fileStream, const std::string& f
         if ( currentLine.empty() )
             continue;
 
-        currentLine = Utility::trimWhiteSpace( currentLine );
+        // Each line should ignore whitespace in INI files
+        currentLine = Utility::trimTrailingAndLeadingWhiteSpace( currentLine );
 
         const char firstChar = currentLine[ 0 ];
         if ( isIniTokenComment( firstChar ) )
@@ -52,7 +54,16 @@ bool Core::IniParser::parseFile( std::ifstream& fileStream, const std::string& f
         {
             if ( mStatus == IniStatus::READY_TO_PARSE_KEY_VALUE )
             {
-                auto keyValuePair = parseKeyValue( currentLine );
+                auto assignmentPosition = currentLine.find( Core::IniToken::KEY_VALUE_ASSIGNMENT );
+                if ( assignmentPosition == std::string::npos )
+                    continue;
+
+                auto keyValuePair = parseKeyValue( currentLine, assignmentPosition );
+
+                // Ensure the values are not empty
+                if ( keyValuePair.first == "" && keyValuePair.second == "" )
+                    continue;
+
                 insertKeyValue( keyValuePair, iniDataStructure );
             }
         }
@@ -85,7 +96,7 @@ std::pair< std::string, bool > Core::IniParser::parseSection( const std::string&
         }
     }
 
-    currentSection = Utility::trimWhiteSpace( currentSection );
+    currentSection = Utility::removeAllSpaces( currentSection );
 
     // Set this var for convenience when inserting key values
     mCurrentActiveSection = currentSection;
@@ -93,18 +104,25 @@ std::pair< std::string, bool > Core::IniParser::parseSection( const std::string&
     return std::make_pair( currentSection, isSubSection );
 }
 
-std::pair< std::string, std::string > Core::IniParser::parseKeyValue( const std::string& currentLine )
+std::pair< std::string, std::string > Core::IniParser::parseKeyValue( const std::string& currentLine, size_t position )
 {
     std::string key;
     std::string value;
 
-    size_t position = currentLine.find( Core::IniToken::KEY_VALUE_ASSIGNMENT );
-    if ( position == std::string::npos )
-        return std::make_pair( std::string( "" ), std::string( "" ) );
-
     // Two operations, 1. gets substring 2. trims whitespace
-    key = Utility::trimWhiteSpace( currentLine.substr( 0, position ) );
-    value = Utility::trimWhiteSpace( currentLine.substr( position + 1, currentLine.size() ) );
+    key = Utility::removeAllSpaces( currentLine.substr( 0, position ) );
+
+    value = currentLine.substr( position + 1, currentLine.size() );
+
+    size_t quotePositionIT = value.find( Core::IniToken::QUOTE );
+    if ( quotePositionIT == std::string::npos )
+    {
+        value = Utility::removeAllSpaces( currentLine.substr( position + 1, currentLine.size() ) );
+    }
+    else
+    {
+        value = Utility::removeQuotes( value );
+    }
 
     return std::make_pair( key, value );
 }

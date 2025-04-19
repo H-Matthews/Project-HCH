@@ -2,6 +2,7 @@
 
 #include <string>
 #include <algorithm>
+#include <iostream>
 
 std::string Utility::ltrim( const std::string& stringToTrim, const std::string delimiter )
 {
@@ -17,7 +18,7 @@ std::string Utility::rtrim( const std::string& stringToTrim, const std::string d
     return ( end == std::string::npos ) ? "" : stringToTrim.substr( 0, end + 1 );
 }
 
-std::string Utility::trimWhiteSpace( const std::string& stringToTrim )
+std::string Utility::trimTrailingAndLeadingWhiteSpace( const std::string& stringToTrim )
 {
     if ( containsWhiteSpace( stringToTrim ) )
         return rtrim( ltrim( stringToTrim ) );
@@ -33,4 +34,23 @@ bool Utility::containsWhiteSpace( const std::string& stringToCheck )
         return false;
 
     return true;
+}
+
+std::string Utility::removeAllSpaces( const std::string& stringToModify )
+{
+    std::string modifiedString( stringToModify );
+
+    modifiedString.erase(
+        std::remove_if( modifiedString.begin(), modifiedString.end(), isspace ), modifiedString.end() );
+
+    return modifiedString;
+}
+
+std::string Utility::removeQuotes( const std::string& stringToModify )
+{
+    std::string modifiedString( stringToModify );
+
+    modifiedString.erase( std::remove( modifiedString.begin(), modifiedString.end(), '\"' ), modifiedString.end() );
+
+    return modifiedString;
 }

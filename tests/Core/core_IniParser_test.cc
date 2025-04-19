@@ -12,6 +12,11 @@ const std::string PROJ_DIRECTORY = PROJECT_DIR;
 // Path to Input Test Files
 const std::string INPUT_FILE_DIRECTORY = PROJ_DIRECTORY + "/" + "tests/input_files/ini_parser";
 
+// Test Files
+const std::string badSyntaxFile = "BadSyntax.ini";
+const std::string simpleSectionParseFile = "SimpleSectionParse.ini";
+const std::string practicalFileParseFile = "PracticalFileParse.ini";
+
 // Test Fixture
 class CoreIniParserTest : public ::testing::Test
 {
@@ -35,15 +40,22 @@ class CoreIniParserTest : public ::testing::Test
     }
 };
 
+/*
+    Test: Basic File Parse
+    Expected Values:
+        Number of Sections: 1
+        Section: App
+            - KeyValues: 1
+            - SubSections: 0
+*/
 TEST_F( CoreIniParserTest, SimpleFileParse )
 {
-    const std::string fileName = "SimpleSectionParse.ini";
-
     std::ifstream fileStream;
-    setupFile( fileName, fileStream );
+    setupFile( simpleSectionParseFile, fileStream );
 
     // Retrieve data
-    std::any genericData = Core::ParserDataRegistry::instance()->getParserDataStructure( Parsers::ID::INI, fileName );
+    std::any genericData =
+        Core::ParserDataRegistry::instance()->getParserDataStructure( Parsers::ID::INI, simpleSectionParseFile );
     ASSERT_TRUE( genericData.has_value() );
 
     ASSERT_NO_THROW( std::any_cast< Core::IniData >( genericData ) );
@@ -66,47 +78,34 @@ TEST_F( CoreIniParserTest, SimpleFileParse )
     EXPECT_EQ( mapIT->second, "value" );
 }
 
-TEST_F( CoreIniParserTest, badFileStream )
-{
-    std::ifstream fileStream;
-    ASSERT_FALSE( mTestParser.parseFile( fileStream, "DummyFileName" ) );
-}
+/*
+    Test: Practical File Parse
+    Expected Values:
+        Number Of Sections: 4
+        Section: App
+            KeyValues: 1
+            SubSections: 1
 
-TEST_F( CoreIniParserTest, BadSyntax )
-{
-    const std::string fileName = "BadSyntax.ini";
+        Section: App.Logger
+            KeyValues: 2
+            SubSections: 2
 
-    std::ifstream fileStream;
-    setupFile( fileName, fileStream );
+        Section: App.Logger.ColorConsoleSink
+            KeyValues: 1
+            SubSections: 0
 
-    // Retrieve data
-    std::any genericData = Core::ParserDataRegistry::instance()->getParserDataStructure( Parsers::ID::INI, fileName );
-    ASSERT_TRUE( genericData.has_value() );
-
-    ASSERT_NO_THROW( std::any_cast< Core::IniData >( genericData ) );
-    Core::IniData iniData = std::any_cast< Core::IniData >( genericData );
-
-    // Check Section Size
-    EXPECT_TRUE( iniData.size() == 3 );
-
-    // Check Section Test
-    auto sectionTestIT = iniData.find( "Test" );
-    ASSERT_FALSE( sectionTestIT == iniData.end() );
-
-    // Check KeyValueSize
-    auto keyValueIT = sectionTestIT->second->keyValues.find( "key" );
-    EXPECT_FALSE( keyValueIT == sectionTestIT->second->keyValues.end() );
-}
-
+        Section: App.Logger.TextFileSink
+            KeyValues: 3
+            SubSections: 0
+*/
 TEST_F( CoreIniParserTest, PracticalFileParse )
 {
-    const std::string fileName = "PracticalFileParse.ini";
-
     std::ifstream fileStream;
-    setupFile( fileName, fileStream );
+    setupFile( practicalFileParseFile, fileStream );
 
     // Retrieve data
-    std::any genericData = Core::ParserDataRegistry::instance()->getParserDataStructure( Parsers::ID::INI, fileName );
+    std::any genericData =
+        Core::ParserDataRegistry::instance()->getParserDataStructure( Parsers::ID::INI, practicalFileParseFile );
     ASSERT_TRUE( genericData.has_value() );
 
     ASSERT_NO_THROW( std::any_cast< Core::IniData >( genericData ) );
@@ -179,6 +178,156 @@ TEST_F( CoreIniParserTest, PracticalFileParse )
     ASSERT_FALSE( appLoggerLevelIT == appLoggerTextSinkSection->keyValues.end() );
     EXPECT_EQ( appLoggerLevelIT->first, "LogLevel" );
     EXPECT_EQ( appLoggerLevelIT->second, "ERROR" );
+}
+
+/*
+    Test: Bad File Stream
+*/
+TEST_F( CoreIniParserTest, badFileStream )
+{
+    std::ifstream fileStream;
+    ASSERT_FALSE( mTestParser.parseFile( fileStream, "DummyFileName" ) );
+}
+
+/*
+    Test: Bad Syntax: Successful Parse
+*/
+TEST_F( CoreIniParserTest, BadSyntaxSuccessfullParse )
+{
+    std::ifstream fileStream;
+    setupFile( badSyntaxFile, fileStream );
+
+    // Retrieve data
+    std::any genericData =
+        Core::ParserDataRegistry::instance()->getParserDataStructure( Parsers::ID::INI, badSyntaxFile );
+    ASSERT_TRUE( genericData.has_value() );
+
+    ASSERT_NO_THROW( std::any_cast< Core::IniData >( genericData ) );
+}
+
+/*
+    Test: Bad Syntax: Has correct amount of sections
+    Expected Values:
+        Number of Sections: 3
+*/
+TEST_F( CoreIniParserTest, BadSyntaxCorrectSectionSize )
+{
+    std::ifstream fileStream;
+    setupFile( badSyntaxFile, fileStream );
+
+    // Retrieve data
+    std::any genericData =
+        Core::ParserDataRegistry::instance()->getParserDataStructure( Parsers::ID::INI, badSyntaxFile );
+    ASSERT_TRUE( genericData.has_value() );
+
+    ASSERT_NO_THROW( std::any_cast< Core::IniData >( genericData ) );
+    Core::IniData iniData = std::any_cast< Core::IniData >( genericData );
+
+    // Check Section Size
+    EXPECT_TRUE( iniData.size() == 3 );
+}
+
+/*
+    Test: Bad Syntax: Section contains leading spaces
+    Expected Values:
+        Section: Hello
+            KeyValues: 2
+            SubSections: 0
+*/
+TEST_F( CoreIniParserTest, BadSyntaxLeadingSpaceSection )
+{
+    std::ifstream fileStream;
+    setupFile( badSyntaxFile, fileStream );
+
+    // Retrieve data
+    std::any genericData =
+        Core::ParserDataRegistry::instance()->getParserDataStructure( Parsers::ID::INI, badSyntaxFile );
+    ASSERT_TRUE( genericData.has_value() );
+
+    ASSERT_NO_THROW( std::any_cast< Core::IniData >( genericData ) );
+    Core::IniData iniData = std::any_cast< Core::IniData >( genericData );
+
+    // Check that the section was parsed
+    auto sectionHelloIT = iniData.find( "Hello" );
+    ASSERT_FALSE( sectionHelloIT == iniData.end() );
+
+    // Check Key Values
+    auto helloKeyValues = sectionHelloIT->second->keyValues;
+    EXPECT_TRUE( helloKeyValues.size() == 2 );
+
+    // Check KeyValues (1)
+    auto helloKeyValuesOne = helloKeyValues.find( "key" );
+    EXPECT_EQ( helloKeyValuesOne->first, "key" );
+    EXPECT_EQ( helloKeyValuesOne->second, "myvalue" );
+
+    // Check KeyValues (2)
+    auto helloKeyValuesTwo = helloKeyValues.find( "key2" );
+    EXPECT_EQ( helloKeyValuesTwo->first, "key2" );
+    EXPECT_EQ( helloKeyValuesTwo->second, "my value" );
+}
+
+/*
+    Test: Bad Syntax: KeyValue has leading and trailing whitespace
+    Expected Values:
+        Section: Test
+            KeyValues: 1
+            SubSections: 0
+*/
+TEST_F( CoreIniParserTest, BadSyntaxLeadingAndTrailingSpaceKeyValues )
+{
+    std::ifstream fileStream;
+    setupFile( badSyntaxFile, fileStream );
+
+    // Retrieve data
+    std::any genericData =
+        Core::ParserDataRegistry::instance()->getParserDataStructure( Parsers::ID::INI, badSyntaxFile );
+    ASSERT_TRUE( genericData.has_value() );
+
+    ASSERT_NO_THROW( std::any_cast< Core::IniData >( genericData ) );
+    Core::IniData iniData = std::any_cast< Core::IniData >( genericData );
+
+    // Grab Section Test
+    auto sectionTestIT = iniData.find( "Test" );
+    ASSERT_FALSE( sectionTestIT == iniData.end() );
+
+    // Check KeyValues
+    auto testKeyValues = sectionTestIT->second->keyValues;
+    EXPECT_TRUE( testKeyValues.size() == 1 );
+
+    auto testKeyValueIT = testKeyValues.find( "key" );
+    ASSERT_FALSE( testKeyValueIT == testKeyValues.end() );
+
+    EXPECT_EQ( testKeyValueIT->first, "key" );
+    EXPECT_EQ( testKeyValueIT->second, "value" );
+}
+
+/*
+    Test: Bad Syntax: Section has spaces in it
+    Expected Values:
+        Section: TESTSPACESINSECTION
+            KeyValues: 1
+            SubSections: 0
+*/
+TEST_F( CoreIniParserTest, BadSyntaxSpacesInSection )
+{
+    std::ifstream fileStream;
+    setupFile( badSyntaxFile, fileStream );
+
+    // Retrieve data
+    std::any genericData =
+        Core::ParserDataRegistry::instance()->getParserDataStructure( Parsers::ID::INI, badSyntaxFile );
+    ASSERT_TRUE( genericData.has_value() );
+
+    ASSERT_NO_THROW( std::any_cast< Core::IniData >( genericData ) );
+    Core::IniData iniData = std::any_cast< Core::IniData >( genericData );
+
+    // Grab Section
+    auto spacesInSection = iniData.find( "TESTSPACESINSECTION" );
+    ASSERT_FALSE( spacesInSection == iniData.end() );
+
+    // Check Key Values
+    auto spacesInSectionKeyValues = spacesInSection->second->keyValues;
+    EXPECT_TRUE( spacesInSectionKeyValues.size() == 1 );
 }
 
 // END TESTING

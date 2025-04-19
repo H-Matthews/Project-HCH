@@ -159,6 +159,13 @@ class CoreMessageNetworkTest : public ::testing::Test
     }
 };
 
+/*
+    Test: Receive a message
+    Expected Values:
+        Message: Action
+        Number: 1
+        Contents: MOVE_UP
+*/
 TEST_F( CoreMessageNetworkTest, ReceiveMessage )
 {
     // Ensure messageVector is empty
@@ -181,6 +188,13 @@ TEST_F( CoreMessageNetworkTest, ReceiveMessage )
     ASSERT_EQ( myActionMessages[ 0 ], upAction );
 }
 
+/*
+    Test: Receive multiple messages
+    Expected Values:
+        Message: Action
+        Number: 30
+        Contents: MOVE_UP
+*/
 TEST_F( CoreMessageNetworkTest, ReceiveMultipleMessages )
 {
     // Ensure messageVector is empty
