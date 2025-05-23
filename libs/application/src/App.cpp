@@ -25,6 +25,8 @@ void Application::App::initialize()
     mConfiguration->initializeIteration();
     mConfiguration->parseConfigs();
 
+    Core::FileToDataMap parserFiles = Core::ParserDataRegistry::instance()->getParserDataStructure( Parsers::ID::INI );
+
     if constexpr ( Utility::CAN_LOG )
     {
         initializeAppLogger();

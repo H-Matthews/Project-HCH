@@ -7,7 +7,6 @@
 
 const std::string Core::Configuration::OUTPUT_DIR_NAME = "output";
 const std::string Core::Configuration::CONFIG_DIR_NAME = "configs";
-const std::string Core::Configuration::MAIN_FILE_NAME = "base.ini";
 
 Core::Configuration::Configuration() :
     mConfigDirPath(),
@@ -68,17 +67,6 @@ void Core::Configuration::initializeConfigDirectory()
             "Config directory: " + mConfigDirPath + " could not be found", std::error_code() );
     }
 
-    // See if base file exists
-    if ( !( std::filesystem::is_regular_file( mConfigDirPath + "/" + MAIN_FILE_NAME ) ) )
-    {
-        if constexpr ( Utility::CAN_LOG )
-            Utility::LogRegistry::instance()->getGlobalLogger()->logError(
-                "Root Config File WAS NOT FOUND --> " + mConfigDirPath + "/" + MAIN_FILE_NAME );
-
-        throw std::filesystem::filesystem_error(
-            "Main config file: " + MAIN_FILE_NAME + " could not be found", std::error_code() );
-    }
-
     initializeConfigFiles();
 }
 
@@ -96,10 +84,6 @@ void Core::Configuration::initializeConfigFiles()
                 Utility::LogRegistry::instance()->getGlobalLogger()->logWarn(
                     "Unknown File Extension: " + fileExtensionStr + " File: " + filePath.filename().string() +
                     " will NOT be parsed" );
-
-            if ( filePath.filename().string() == MAIN_FILE_NAME )
-                throw std::filesystem::filesystem_error(
-                    "Unknown Base file extension: " + fileExtensionStr, std::error_code() );
 
             continue;
         }
