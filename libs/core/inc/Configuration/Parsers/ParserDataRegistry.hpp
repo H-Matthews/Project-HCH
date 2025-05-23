@@ -2,6 +2,8 @@
 
 #include "core/inc/Configuration/Parsers/ParserTypes.hpp"
 
+#include "utility/inc/Logging/LogRegistry.hpp"
+
 #include <memory>
 #include <map>
 #include <any>
@@ -30,11 +32,18 @@ namespace Core
         // Returns empty std::any, if ID is not registered
         std::any getParserDataStructure( Parsers::ID ID, const std::string& fileName );
 
+        // Grabs all Files that the Parser has parsed
+        FileToDataMap getParserDataStructure( Parsers::ID ID );
+
       private:
         ParserDataRegistry();
 
+        void initializeLogger();
+
         // Static pointer to our object
         static std::shared_ptr< ParserDataRegistry > mRegistryInstance;
+
+        std::shared_ptr< Utility::Logger > mLogger;
 
         ParserDataContainer mParserDataContainer;
         std::map< std::string, std::pair< Parsers::ID, std::string > > mFullyQualifedDataName;

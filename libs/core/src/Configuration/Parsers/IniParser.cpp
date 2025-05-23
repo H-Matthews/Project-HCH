@@ -1,18 +1,32 @@
 #include "core/inc/Configuration/Parsers/IniParser.hpp"
 
 #include "utility/inc/Logging/LogRegistry.hpp"
+#include "utility/inc/Logging/Sinks/TextFileSink.hpp"
+
 #include "utility/inc/StringOperations.hpp"
 
 Core::IniParser::IniParser( const std::string parserIdentifierString ) :
     Parser( parserIdentifierString, Parsers::ID::INI ),
     mStatus( Core::IniParser::IniStatus::READY_TO_PARSE_SECTION ),
-    mCurrentActiveSection()
-{}
+    mCurrentActiveSection(),
+    mLogger( nullptr )
+{
+    initializeLogger();
+}
 
+// TODO: Get Fine Level Logging for Parsing of files
 bool Core::IniParser::parseFile( std::ifstream& fileStream, const std::string& fileName )
 {
+    std::string logMessage;
     if ( !fileStream.is_open() )
+    {
+        if constexpr ( Utility::CAN_LOG )
+        {
+            logMessage = "FileStream for file '" + fileName + "' was NOT OPEN. This file will NOT be parsed";
+            mLogger->logError( logMessage );
+        }
         return false;
+    }
 
     // Parser is used to parse multiple files, so we must ensure the state is
     // clear when beginning to parse a file
@@ -67,6 +81,12 @@ bool Core::IniParser::parseFile( std::ifstream& fileStream, const std::string& f
                 insertKeyValue( keyValuePair, iniDataStructure );
             }
         }
+    }
+
+    if constexpr ( Utility::CAN_LOG )
+    {
+        logMessage = "Parsed File: '" + fileName + "'";
+        mLogger->logInfo( logMessage );
     }
 
     // Save Ini File Data Entry
@@ -178,7 +198,7 @@ std::string Core::IniParser::trimSubSection( const std::string& currentSectionNa
     return currentSectionName.substr( 0, position );
 }
 
-bool Core::IniParser::isIniTokenComment( const char token )
+bool Core::IniParser::isIniTokenComment( const char token ) const
 {
     for ( const char& iniComment : Core::IniToken::COMMENT )
     {
@@ -189,7 +209,7 @@ bool Core::IniParser::isIniTokenComment( const char token )
     return false;
 }
 
-bool Core::IniParser::isIniTokenSectionBracketOpen( const char token )
+bool Core::IniParser::isIniTokenSectionBracketOpen( const char token ) const
 {
     if ( token == Core::IniToken::SECTION_BRACKET_OPEN )
         return true;
@@ -197,7 +217,7 @@ bool Core::IniParser::isIniTokenSectionBracketOpen( const char token )
     return false;
 }
 
-bool Core::IniParser::isIniTokenSectionBracketEnd( const char token )
+bool Core::IniParser::isIniTokenSectionBracketEnd( const char token ) const
 {
     if ( token == Core::IniToken::SECTION_BRACKET_END )
         return true;
@@ -205,7 +225,7 @@ bool Core::IniParser::isIniTokenSectionBracketEnd( const char token )
     return false;
 }
 
-bool Core::IniParser::isIniTokenKeyValueAssignment( const char token )
+bool Core::IniParser::isIniTokenKeyValueAssignment( const char token ) const
 {
     if ( token == Core::IniToken::KEY_VALUE_ASSIGNMENT )
         return true;
@@ -213,10 +233,27 @@ bool Core::IniParser::isIniTokenKeyValueAssignment( const char token )
     return false;
 }
 
-bool Core::IniParser::isIniTokenSubSection( const char token )
+bool Core::IniParser::isIniTokenSubSection( const char token ) const
 {
     if ( token == Core::IniToken::SUB_SECTION )
         return true;
 
     return false;
+}
+
+void Core::IniParser::initializeLogger()
+{
+    const std::string outDirectory = Utility::LogRegistry::instance()->getAppOutputDir();
+    if ( outDirectory == "" )
+        return;
+
+    mLogger = Utility::createTextFileLogger( "IniParser", outDirectory, "IniParser", ".log", Utility::LogLevel::DEBUG );
+
+    if constexpr ( Utility::CAN_LOG )
+    {
+        mLogger->logInfo( "Logger Initialized" );
+        Utility::LogRegistry::instance()->getGlobalLogger()->logInfo( "Logger Initialized" );
+    }
+
+    return;
 }

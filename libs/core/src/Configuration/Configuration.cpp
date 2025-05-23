@@ -43,44 +43,11 @@ std::unique_ptr< Core::Parser > Core::Configuration::createParser( Parsers::ID p
     return found->second();
 }
 
-void Core::Configuration::parseConfigs()
-{
-    std::string filePath;
-    std::ifstream fileStream;
-    for ( const auto& file : mConfigFiles )
-    {
-        filePath = "";
-        filePath = mConfigDirPath + "/" + file.mFileName + file.mFileExtension;
-
-        // Open File
-        fileStream.open( filePath, std::ifstream::in );
-        if ( fileStream.is_open() )
-        {
-            if constexpr ( Utility::CAN_LOG )
-                Utility::LogRegistry::instance()->getGlobalLogger()->logDebug( "Parsing File: " + filePath );
-
-            // Parse File
-            auto fileExtensionIT = mFileExtensionToIDMap.find( file.mFileExtension );
-            mParsers[ fileExtensionIT->second ]->parseFile( fileStream, file.mFileName + file.mFileExtension );
-        }
-        else
-        {
-            if constexpr ( Utility::CAN_LOG )
-                Utility::LogRegistry::instance()->getGlobalLogger()->logWarn(
-                    "Could NOT Parse File: " + filePath + " File would not open" );
-        }
-
-        fileStream.close();
-    }
-
-    return;
-}
-
 void Core::Configuration::initializeIteration()
 {
-    initializeConfigDirectory();
-
     initializeOutputDirectory();
+
+    initializeConfigDirectory();
 }
 
 void Core::Configuration::initializeConfigDirectory()
@@ -160,6 +127,39 @@ void Core::Configuration::initializeConfigFiles()
         // Create Parser
         mParsers[ fileExtensionIT->second ] = createParser( fileExtensionIT->second );
     }
+    return;
+}
+
+void Core::Configuration::parseConfigs()
+{
+    std::string filePath;
+    std::ifstream fileStream;
+    for ( const auto& file : mConfigFiles )
+    {
+        filePath = "";
+        filePath = mConfigDirPath + "/" + file.mFileName + file.mFileExtension;
+
+        // Open File
+        fileStream.open( filePath, std::ifstream::in );
+        if ( fileStream.is_open() )
+        {
+            if constexpr ( Utility::CAN_LOG )
+                Utility::LogRegistry::instance()->getGlobalLogger()->logDebug( "Parsing File: " + filePath );
+
+            // Parse File
+            auto fileExtensionIT = mFileExtensionToIDMap.find( file.mFileExtension );
+            mParsers[ fileExtensionIT->second ]->parseFile( fileStream, file.mFileName + file.mFileExtension );
+        }
+        else
+        {
+            if constexpr ( Utility::CAN_LOG )
+                Utility::LogRegistry::instance()->getGlobalLogger()->logWarn(
+                    "Could NOT Parse File: " + filePath + " File would not open" );
+        }
+
+        fileStream.close();
+    }
+
     return;
 }
 
