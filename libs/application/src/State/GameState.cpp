@@ -5,7 +5,7 @@
 Application::GameState::GameState( Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects ) :
     State( stack, stateIdentifier, sharedObjects ),
     mGameNetwork( *sharedObjects.network ),
-    mGameWorld( *sharedObjects.window, mGameNetwork ),
+    mScene( *sharedObjects.window, mGameNetwork ),
     mKeyBindings(),
     mPlayerInputPublisher( mGameNetwork, mKeyBindings )
 {
@@ -19,12 +19,15 @@ Application::GameState::GameState( Core::StateStack& stack, std::string stateIde
 
 void Application::GameState::draw()
 {
-    mGameWorld.draw();
+    mScene.draw();
 }
 
 bool Application::GameState::update( sf::Time fixedTimeStep )
 {
-    mGameWorld.update( fixedTimeStep );
+    // Right now this just publishes Player Input Messages
+    mGameNetwork.notifySubscribers();
+
+    mScene.update( fixedTimeStep );
 
     return true;
 }

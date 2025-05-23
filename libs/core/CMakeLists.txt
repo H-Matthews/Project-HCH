@@ -14,7 +14,6 @@ set(SRC src/Messaging/Message.cpp
         src/State/State.cpp 
         src/State/StateStack.cpp
         src/State/StateTypes.cpp
-        src/SceneNode.cpp
         src/Configuration/Configuration.cpp
         src/Configuration/Parsers/ParserTypes.cpp
         src/Configuration/Parsers/IniParser.cpp
@@ -26,7 +25,6 @@ set(INC inc/Messaging/Message.hpp
         inc/Messaging/MessageNode.hpp
         inc/State/State.hpp 
         inc/State/StateStack.hpp
-        inc/SceneNode.hpp
         inc/Configuration/Configuration.hpp
         inc/Configuration/ConfigurationI.hpp
         inc/Configuration/Parsers/Parser.hpp
