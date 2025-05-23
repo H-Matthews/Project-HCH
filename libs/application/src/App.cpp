@@ -11,9 +11,9 @@
 
 const sf::Time Application::App::TIME_PER_FRAME = sf::seconds( 1.0f / 120.0f );
 
-Application::App::App( std::shared_ptr< Core::ConfigurationI > config ) :
+Application::App::App( std::unique_ptr< Core::ConfigurationI > config ) :
     mAppLogger( std::make_shared< Utility::Logger >( "AppLogger" ) ),
-    mConfiguration( config ),
+    mConfiguration( std::move( config ) ),
     mNetwork(),
     mPlayerKeyBindings(),
     mWindow( sf::VideoMode( { 640, 480 } ), "App Window", sf::Style::Close ),
@@ -24,6 +24,8 @@ void Application::App::initialize()
 {
     mConfiguration->initializeIteration();
     mConfiguration->parseConfigs();
+
+    Core::FileToDataMap parserFiles = Core::ParserDataRegistry::instance()->getParserDataStructure( Parsers::ID::INI );
 
     if constexpr ( Utility::CAN_LOG )
     {

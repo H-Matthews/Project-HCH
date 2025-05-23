@@ -28,7 +28,8 @@ namespace Core
         explicit StateStack( Core::State::SharedObjects sObjects );
 
         // Needs to be a template so that we can treat registerState as a factory
-        template < typename T > void registerState( States::ID stateID );
+        template < typename T >
+        void registerState( States::ID stateID );
 
         void update( sf::Time fixedTimeStep );
         void draw();
@@ -68,7 +69,8 @@ namespace Core
 
 }
 
-template < typename T > void Core::StateStack::registerState( States::ID stateID )
+template < typename T >
+void Core::StateStack::registerState( States::ID stateID )
 {
     const std::string identifierString( States::statesEnumToString( stateID ) );
 

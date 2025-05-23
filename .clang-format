@@ -7,6 +7,7 @@ AlignOperands: true
 AllowShortBlocksOnASingleLine: Never
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: Never
+AlwaysBreakTemplateDeclarations: true
 BracedInitializerIndentWidth: 2
 BreakBeforeBraces: Custom
 BraceWrapping:

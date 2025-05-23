@@ -58,7 +58,7 @@ set_target_properties(${LIBRARY_NAME} PROPERTIES FOLDER ${LIBRARY_NAME})
 
 target_link_libraries(${LIBRARY_NAME} PRIVATE SFML::Graphics SFML::Window SFML::System core utility)
 
-target_compile_definitions(${LIBRARY_NAME} PRIVATE PROJECT_DIR="${PROJECT_DIR}")
+target_compile_definitions(${LIBRARY_NAME} PUBLIC PROJECT_DIR="${PROJECT_DIR}")
 target_include_directories(${LIBRARY_NAME} PUBLIC ${SFML_INC_DIR} ${LIBS_INC_DIR})
 target_compile_features(${LIBRARY_NAME} PRIVATE cxx_std_20)
 target_compile_definitions(${LIBRARY_NAME} PRIVATE "$<$<CONFIG:DEBUG>:APP_DEBUG>")

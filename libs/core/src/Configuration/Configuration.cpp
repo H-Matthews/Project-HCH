@@ -7,7 +7,6 @@
 
 const std::string Core::Configuration::OUTPUT_DIR_NAME = "output";
 const std::string Core::Configuration::CONFIG_DIR_NAME = "configs";
-const std::string Core::Configuration::MAIN_FILE_NAME = "base.ini";
 
 Core::Configuration::Configuration() :
     mConfigDirPath(),
@@ -43,44 +42,11 @@ std::unique_ptr< Core::Parser > Core::Configuration::createParser( Parsers::ID p
     return found->second();
 }
 
-void Core::Configuration::parseConfigs()
-{
-    std::string filePath;
-    std::ifstream fileStream;
-    for ( const auto& file : mConfigFiles )
-    {
-        filePath = "";
-        filePath = mConfigDirPath + "/" + file.mFileName + file.mFileExtension;
-
-        // Open File
-        fileStream.open( filePath, std::ifstream::in );
-        if ( fileStream.is_open() )
-        {
-            if constexpr ( Utility::CAN_LOG )
-                Utility::LogRegistry::instance()->getGlobalLogger()->logDebug( "Parsing File: " + filePath );
-
-            // Parse File
-            auto fileExtensionIT = mFileExtensionToIDMap.find( file.mFileExtension );
-            mParsers[ fileExtensionIT->second ]->parseFile( fileStream );
-        }
-        else
-        {
-            if constexpr ( Utility::CAN_LOG )
-                Utility::LogRegistry::instance()->getGlobalLogger()->logWarn(
-                    "Could NOT Parse File: " + filePath + " File would not open" );
-        }
-
-        fileStream.close();
-    }
-
-    return;
-}
-
 void Core::Configuration::initializeIteration()
 {
-    initializeConfigDirectory();
-
     initializeOutputDirectory();
+
+    initializeConfigDirectory();
 }
 
 void Core::Configuration::initializeConfigDirectory()
@@ -101,17 +67,6 @@ void Core::Configuration::initializeConfigDirectory()
             "Config directory: " + mConfigDirPath + " could not be found", std::error_code() );
     }
 
-    // See if base file exists
-    if ( !( std::filesystem::is_regular_file( mConfigDirPath + "/" + MAIN_FILE_NAME ) ) )
-    {
-        if constexpr ( Utility::CAN_LOG )
-            Utility::LogRegistry::instance()->getGlobalLogger()->logError(
-                "Root Config File WAS NOT FOUND --> " + mConfigDirPath + "/" + MAIN_FILE_NAME );
-
-        throw std::filesystem::filesystem_error(
-            "Main config file: " + MAIN_FILE_NAME + " could not be found", std::error_code() );
-    }
-
     initializeConfigFiles();
 }
 
@@ -129,10 +84,6 @@ void Core::Configuration::initializeConfigFiles()
                 Utility::LogRegistry::instance()->getGlobalLogger()->logWarn(
                     "Unknown File Extension: " + fileExtensionStr + " File: " + filePath.filename().string() +
                     " will NOT be parsed" );
-
-            if ( filePath.filename().string() == MAIN_FILE_NAME )
-                throw std::filesystem::filesystem_error(
-                    "Unknown Base file extension: " + fileExtensionStr, std::error_code() );
 
             continue;
         }
@@ -160,6 +111,39 @@ void Core::Configuration::initializeConfigFiles()
         // Create Parser
         mParsers[ fileExtensionIT->second ] = createParser( fileExtensionIT->second );
     }
+    return;
+}
+
+void Core::Configuration::parseConfigs()
+{
+    std::string filePath;
+    std::ifstream fileStream;
+    for ( const auto& file : mConfigFiles )
+    {
+        filePath = "";
+        filePath = mConfigDirPath + "/" + file.mFileName + file.mFileExtension;
+
+        // Open File
+        fileStream.open( filePath, std::ifstream::in );
+        if ( fileStream.is_open() )
+        {
+            if constexpr ( Utility::CAN_LOG )
+                Utility::LogRegistry::instance()->getGlobalLogger()->logDebug( "Parsing File: " + filePath );
+
+            // Parse File
+            auto fileExtensionIT = mFileExtensionToIDMap.find( file.mFileExtension );
+            mParsers[ fileExtensionIT->second ]->parseFile( fileStream, file.mFileName + file.mFileExtension );
+        }
+        else
+        {
+            if constexpr ( Utility::CAN_LOG )
+                Utility::LogRegistry::instance()->getGlobalLogger()->logWarn(
+                    "Could NOT Parse File: " + filePath + " File would not open" );
+        }
+
+        fileStream.close();
+    }
+
     return;
 }
 
@@ -224,7 +208,7 @@ void Core::Configuration::initializeGlobalLogger()
         cLogger->addSink( globalConsoleSink );
 
         std::string logMessage;
-        logMessage += "Initialized Global Logger: " + mOutputDirPath;
+        logMessage += "Initialized Global Logger";
         cLogger->logInfo( logMessage );
     }
 
