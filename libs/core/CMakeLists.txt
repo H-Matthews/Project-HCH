@@ -7,31 +7,31 @@ set(PROJECT_DIR "${CMAKE_SOURCE_DIR}")
 
 set(LIBRARY_NAME "core")
 
-set(SRC src/Messaging/Message.cpp
-        src/Messaging/MessageNetwork.cpp
-        src/Messaging/MessageNode.cpp
-        src/Messaging/MessageTypes.cpp
-        src/State/State.cpp 
-        src/State/StateStack.cpp
-        src/State/StateTypes.cpp
-        src/Configuration/Configuration.cpp
-        src/Configuration/Parsers/ParserDataRegistry.cpp
-        src/Configuration/Parsers/ParserTypes.cpp
-        src/Configuration/Parsers/IniParser.cpp
-        src/GameAssetContainer/GameAssetContainer.cpp )
+set(SRC Messaging/Message.cpp
+        Messaging/MessageNetwork.cpp
+        Messaging/MessageNode.cpp
+        Messaging/MessageTypes.cpp
+        StateStack/State.cpp 
+        StateStack/StateStack.cpp
+        StateStack/StateTypes.cpp
+        Configuration/Configuration.cpp
+        Configuration/Parsers/ParserDataRegistry.cpp
+        Configuration/Parsers/ParserTypes.cpp
+        Configuration/Parsers/IniParser.cpp
+        GameAssetContainer/GameAssetContainer.cpp )
 
-set(INC inc/Messaging/Message.hpp
-        inc/Messaging/MessageNetwork.hpp
-        inc/Messaging/MessageNode.hpp
-        inc/State/State.hpp 
-        inc/State/StateStack.hpp
-        inc/Configuration/ConfigurationI.hpp
-        inc/Configuration/Configuration.hpp
-        inc/Configuration/Parsers/ParserDataRegistry.hpp
-        inc/Configuration/Parsers/Parser.hpp
-        inc/Configuration/Parsers/ParserTypes.hpp
-        inc/Configuration/Parsers/IniParser.hpp
-        inc/GameAssetContainer/GameAssetContainer.hpp )
+set(INC Messaging/Message.hpp
+        Messaging/MessageNetwork.hpp
+        Messaging/MessageNode.hpp
+        StateStack/State.hpp 
+        StateStack/StateStack.hpp
+        Configuration/ConfigurationI.hpp
+        Configuration/Configuration.hpp
+        Configuration/Parsers/ParserDataRegistry.hpp
+        Configuration/Parsers/Parser.hpp
+        Configuration/Parsers/ParserTypes.hpp
+        Configuration/Parsers/IniParser.hpp
+        GameAssetContainer/GameAssetContainer.hpp )
 
 add_library(${LIBRARY_NAME} STATIC ${SRC} ${INC})
 

@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 // Unit(s) to be Tested
-#include "application/inc/KeyBindings.hpp"
+#include "application/Settings/KeyBindings.hpp"
 
 /*
     Test: Default Constructor

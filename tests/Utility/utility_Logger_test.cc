@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 
 // Unit to be Tested
-#include "utility/inc/Logging/Logger.hpp"
-#include "utility/inc/Logging/LogRegistry.hpp"
-#include "utility/inc/Logging/Sinks/ColorConsoleSink.hpp"
-#include "utility/inc/Logging/Sinks/TextFileSink.hpp"
-#include "utility/inc/Logging/Formatters/KeyValueFormatter.hpp"
+#include "utility/Logging/Logger.hpp"
+#include "utility/Logging/LogRegistry.hpp"
+#include "utility/Logging/Sinks/ColorConsoleSink.hpp"
+#include "utility/Logging/Sinks/TextFileSink.hpp"
+#include "utility/Logging/Formatters/KeyValueFormatter.hpp"
 
 // Test Fixture
 class UtilityLoggerTest : public ::testing::Test

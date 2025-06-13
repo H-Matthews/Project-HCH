@@ -3,7 +3,7 @@
 #include <filesystem>
 
 // Unit(s) to be Tested
-#include "core/inc/Configuration/Parsers/IniParser.hpp"
+#include "core/Configuration/Parsers/IniParser.hpp"
 
 // BEGIN TESTING
 

@@ -3,8 +3,8 @@
 #include <vector>
 
 // Unit(s) to be Tested
-#include "core/inc/Messaging/MessageNetwork.hpp"
-#include "core/inc/Messaging/MessageNode.hpp"
+#include "core/Messaging/MessageNetwork.hpp"
+#include "core/Messaging/MessageNode.hpp"
 
 // BEGIN Helper Classes
 enum class Action

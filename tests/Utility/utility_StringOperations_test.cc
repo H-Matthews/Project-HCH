@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 // Unit to be Tested
-#include "utility/inc/StringOperations.hpp"
+#include "utility/StringOperations.hpp"
 
 TEST( Utility_StringOperations_toString_Test, primitives )
 {
