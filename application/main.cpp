@@ -1,6 +1,6 @@
-#include "application/inc/App.hpp"
+#include "application/App.hpp"
 
-#include "core/inc/Configuration/Configuration.hpp"
+#include "core/Configuration/Configuration.hpp"
 
 #include <iostream>
 #include <stdexcept>

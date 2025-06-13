@@ -4,25 +4,25 @@ project(utilLibrary LANGUAGES CXX)
 
 set(LIBRARY_NAME "utility")
 
-set(SRC src/Logging/LogRegistry.cpp
-        src/Logging/Logger.cpp
-        src/Logging/Sinks/ColorConsoleSink.cpp
-        src/Logging/Sinks/TextFileSink.cpp
-        src/Logging/Formatters/KeyValueFormatter.cpp
-        src/Logging/Formatters/DefaultFormatter.cpp
-        src/Logging/LogLevel.cpp
-        src/StringOperations.cpp )
+set(SRC Logging/LogRegistry.cpp
+        Logging/Logger.cpp
+        Logging/Sinks/ColorConsoleSink.cpp
+        Logging/Sinks/TextFileSink.cpp
+        Logging/Formatters/KeyValueFormatter.cpp
+        Logging/Formatters/DefaultFormatter.cpp
+        Logging/LogLevel.cpp
+        StringOperations.cpp )
 
-set(INC inc/Logging/LogRegistry.hpp
-        inc/Logging/Logger.hpp
-        inc/Logging/Sinks/LogSink.hpp
-        inc/Logging/Sinks/ColorConsoleSink.hpp
-        inc/Logging/Sinks/TextFileSink.hpp
-        inc/Logging/Formatters/LogFormatter.hpp
-        inc/Logging/Formatters/KeyValueFormatter.hpp
-        inc/Logging/Formatters/DefaultFormatter.hpp
-        inc/Logging/LogLevel.hpp
-        inc/StringOperations.hpp )
+set(INC Logging/LogRegistry.hpp
+        Logging/Logger.hpp
+        Logging/Sinks/LogSink.hpp
+        Logging/Sinks/ColorConsoleSink.hpp
+        Logging/Sinks/TextFileSink.hpp
+        Logging/Formatters/LogFormatter.hpp
+        Logging/Formatters/KeyValueFormatter.hpp
+        Logging/Formatters/DefaultFormatter.hpp
+        Logging/LogLevel.hpp
+        StringOperations.hpp )
 
 add_library(${LIBRARY_NAME} STATIC ${SRC} ${INC})
 
