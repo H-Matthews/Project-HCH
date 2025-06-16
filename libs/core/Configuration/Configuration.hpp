@@ -27,9 +27,9 @@ namespace Core
     };
 
     /**
-     * Configuration sets up the Config Directory, Output Directory, and contains the parsers that will parse config
-     * files. The Configuration class is responsible for handing each parser the correct file stream based on its file
-     * extension. Files that lack extensions are ignored
+     * Configuration sets up the Config Directory, Output Directory, Game asset file paths, and contains the parsers
+     * that will parse config files. The Configuration class is responsible for handing each parser the correct file
+     * stream based on its file extension. Files that lack extensions are ignored
      */
     class Configuration : public ConfigurationI
     {
@@ -39,6 +39,9 @@ namespace Core
         void initializeIteration() override;
 
         void parseConfigs() override;
+
+        // TODO This needs to be removed. Shouldn't have an interface function as a getter like this
+        std::pair< std::string, std::string > getAssetPaths() override;
 
         const std::string getOutDirPath();
 
@@ -55,8 +58,11 @@ namespace Core
         std::unique_ptr< Core::Parser > createParser( Parsers::ID parserID );
 
         void initializeConfigDirectory();
-        void initializeOutputDirectory();
         void initializeConfigFiles();
+
+        void initializeOutputDirectory();
+
+        void initializeAssetDirectorys();
 
         void initializeGlobalLogger();
 
@@ -67,10 +73,16 @@ namespace Core
 
         std::string mOutputDirPath;
         static const std::string OUTPUT_DIR_NAME;
-        static const std::string MAIN_FILE_NAME;
+
+        std::string mAssetDirPath;
+        std::string mAssetFontsDirPath;
+        std::string mAssetTexturesDirPath;
+        static const std::string ASSET_DIR_NAME;
+        static const std::string ASSET_FONTS_DIR_NAME;
+        static const std::string ASSET_TEXTURES_DIR_NAME;
 
         std::vector< Core::FileInformation > mConfigFiles;
-        std::map< std::string, Parsers::ID > mFileExtensionToIDMap;
+        std::map< std::string, Parsers::ID > mParserFileExtensionToIDMap;
 
         // This contains a function that ALLOCATES memory for a specified Parser object
         // This way we ONLY create a parser if we have a config file that uses it
@@ -89,7 +101,7 @@ void Core::Configuration::registerParser( Parsers::ID parserID )
     const std::string identifierString( Parsers::parserEnumsToString( parserID ) );
 
     // Insert into file extension MAP
-    mFileExtensionToIDMap[ identifierString ] = parserID;
+    mParserFileExtensionToIDMap[ identifierString ] = parserID;
 
     // Stores a Lambda in mParserRegistry
     mParserRegistry[ parserID ] = [ identifierString ]()

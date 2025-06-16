@@ -1,9 +1,11 @@
 #include "core/StateStack/State.hpp"
 #include "core/StateStack/StateStack.hpp"
 
-Core::State::SharedObjects::SharedObjects( sf::RenderWindow& window, Core::MessageNetwork& network ) :
+Core::State::SharedObjects::SharedObjects(
+    sf::RenderWindow& window, Core::MessageNetwork& network, TextureHolder& textures ) :
     window( &window ),
-    network( &network )
+    network( &network ),
+    textures( &textures )
 {}
 
 Core::State::State( StateStack& stack, std::string stateIdentifier, SharedObjects sObjects ) :

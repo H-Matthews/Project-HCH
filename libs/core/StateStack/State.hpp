@@ -3,6 +3,8 @@
 #include "core/StateStack/StateTypes.hpp"
 #include "core/Messaging/MessageNetwork.hpp"
 
+#include "core/GameAssetContainer/ResourceEnums.hpp"
+
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -19,10 +21,11 @@ namespace Core
       public:
         struct SharedObjects
         {
-            SharedObjects( sf::RenderWindow& window, Core::MessageNetwork& network );
+            SharedObjects( sf::RenderWindow& window, Core::MessageNetwork& network, TextureHolder& textures );
 
             sf::RenderWindow* window;
             Core::MessageNetwork* network;
+            TextureHolder* textures;
         };
 
       public:

@@ -31,7 +31,9 @@ set(INC Messaging/Message.hpp
         Configuration/Parsers/Parser.hpp
         Configuration/Parsers/ParserTypes.hpp
         Configuration/Parsers/IniParser.hpp
-        GameAssetContainer/GameAssetContainer.hpp )
+        GameAssetContainer/GameAssetContainer.hpp
+        GameAssetContainer/ResourceHolder.hpp
+        GameAssetContainer/ResourceEnums.hpp )
 
 add_library(${LIBRARY_NAME} STATIC ${SRC} ${INC})
 

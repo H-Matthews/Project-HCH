@@ -13,11 +13,12 @@ const sf::Time Application::App::TIME_PER_FRAME = sf::seconds( 1.0f / 120.0f );
 
 Application::App::App( std::unique_ptr< Core::ConfigurationI > config ) :
     mAppLogger( std::make_shared< Utility::Logger >( "AppLogger" ) ),
+    mTextures(),
     mConfiguration( std::move( config ) ),
     mNetwork(),
     mPlayerKeyBindings(),
     mWindow( sf::VideoMode( { 640, 480 } ), "App Window", sf::Style::Close ),
-    mStateStack( Core::State::SharedObjects( mWindow, mNetwork ) )
+    mStateStack( Core::State::SharedObjects( mWindow, mNetwork, mTextures ) )
 {}
 
 void Application::App::initialize()
@@ -32,6 +33,9 @@ void Application::App::initialize()
         initializeAppLogger();
         initializeCoreLoggers();
     }
+
+    // Loads Textures / Fonts
+    loadResources();
 
     // Initialize State Stack
     registerStates();
@@ -99,7 +103,7 @@ void Application::App::update( sf::Time fixedTimeStep )
 
 void Application::App::render()
 {
-    mWindow.clear();
+    mWindow.clear( sf::Color::Cyan );
 
     mStateStack.draw();
 
@@ -130,4 +134,19 @@ void Application::App::initializeCoreLoggers()
 {
     mStateStack.initializeLogger();
     mNetwork.initializeLogger();
+}
+
+void Application::App::loadResources()
+{
+    auto fontTexturePaths = mConfiguration->getAssetPaths();
+    std::string texturePath = fontTexturePaths.first;
+    std::string fontPath = fontTexturePaths.second;
+
+    // TODO: This needs to be reexamined. Shouldn't hardcode file names like this
+    // Should tie this to the config file...
+    mTextures.load( Textures::ID::PLAYER, texturePath + "/" + "playerSprite.png" );
+    mTextures.load( Textures::ID::BACKGROUND, texturePath + "/" + "background.png" );
+    mTextures.load( Textures::ID::ENEMY, texturePath + "/" + "enemySprite.png" );
+
+    return;
 }

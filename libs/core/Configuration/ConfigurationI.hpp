@@ -16,6 +16,8 @@ namespace Core
 
         virtual void parseConfigs() = 0;
 
+        virtual std::pair< std::string, std::string > getAssetPaths() = 0;
+
         virtual ~ConfigurationI()
         {}
     };

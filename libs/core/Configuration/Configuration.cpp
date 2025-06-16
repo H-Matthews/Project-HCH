@@ -7,12 +7,15 @@
 
 const std::string Core::Configuration::OUTPUT_DIR_NAME = "output";
 const std::string Core::Configuration::CONFIG_DIR_NAME = "configs";
+const std::string Core::Configuration::ASSET_DIR_NAME = "assets";
+const std::string Core::Configuration::ASSET_FONTS_DIR_NAME = "fonts";
+const std::string Core::Configuration::ASSET_TEXTURES_DIR_NAME = "textures";
 
 Core::Configuration::Configuration() :
     mConfigDirPath(),
     mOutputDirPath(),
     mConfigFiles(),
-    mFileExtensionToIDMap(),
+    mParserFileExtensionToIDMap(),
     mParserRegistry(),
     mParsers(),
     mProjectDirectory( PROJECT_DIR )
@@ -47,6 +50,8 @@ void Core::Configuration::initializeIteration()
     initializeOutputDirectory();
 
     initializeConfigDirectory();
+
+    initializeAssetDirectorys();
 }
 
 void Core::Configuration::initializeConfigDirectory()
@@ -78,7 +83,7 @@ void Core::Configuration::initializeConfigFiles()
 
         // Ensure file extension is in MAP
         const std::string fileExtensionStr = filePath.extension().string();
-        if ( mFileExtensionToIDMap.find( fileExtensionStr ) == mFileExtensionToIDMap.end() )
+        if ( mParserFileExtensionToIDMap.find( fileExtensionStr ) == mParserFileExtensionToIDMap.end() )
         {
             if constexpr ( Utility::CAN_LOG )
                 Utility::LogRegistry::instance()->getGlobalLogger()->logWarn(
@@ -99,8 +104,8 @@ void Core::Configuration::initializeConfigFiles()
     {
         // Ensure File Extension is registered to a parser
         // At this point it should be
-        auto fileExtensionIT = mFileExtensionToIDMap.find( file.mFileExtension );
-        if ( fileExtensionIT == mFileExtensionToIDMap.end() )
+        auto fileExtensionIT = mParserFileExtensionToIDMap.find( file.mFileExtension );
+        if ( fileExtensionIT == mParserFileExtensionToIDMap.end() )
             continue;
 
         // Ensure Parser has NOT been created already
@@ -131,7 +136,7 @@ void Core::Configuration::parseConfigs()
                 Utility::LogRegistry::instance()->getGlobalLogger()->logDebug( "Parsing File: " + filePath );
 
             // Parse File
-            auto fileExtensionIT = mFileExtensionToIDMap.find( file.mFileExtension );
+            auto fileExtensionIT = mParserFileExtensionToIDMap.find( file.mFileExtension );
             mParsers[ fileExtensionIT->second ]->parseFile( fileStream, file.mFileName + file.mFileExtension );
         }
         else
@@ -197,6 +202,30 @@ void Core::Configuration::initializeOutputDirectory()
     Utility::LogRegistry::instance()->configureRegistry( mOutputDirPath );
 }
 
+void Core::Configuration::initializeAssetDirectorys()
+{
+    // Get and save the Asset file path
+    std::string assetDirectoryPath;
+
+    assetDirectoryPath += mProjectDirectory + "/" + ASSET_DIR_NAME;
+    mAssetDirPath = assetDirectoryPath;
+
+    // Set convenience path for fonts / textures as well
+    mAssetFontsDirPath = mAssetDirPath + "/" + ASSET_FONTS_DIR_NAME;
+    mAssetTexturesDirPath = mAssetDirPath + "/" + ASSET_TEXTURES_DIR_NAME;
+
+    // Check to see if directory is valid
+    if ( !( std::filesystem::is_directory( mAssetDirPath ) ) )
+    {
+        if constexpr ( Utility::CAN_LOG )
+            Utility::LogRegistry::instance()->getGlobalLogger()->logError(
+                "Asset Directory WAS NOT FOUND --> " + mAssetDirPath );
+
+        throw std::filesystem::filesystem_error(
+            "Asset directory: " + mAssetDirPath + " could not be found", std::error_code() );
+    }
+}
+
 void Core::Configuration::initializeGlobalLogger()
 {
     // Get Global Logger
@@ -218,4 +247,9 @@ void Core::Configuration::initializeGlobalLogger()
 const std::string Core::Configuration::getOutDirPath()
 {
     return mOutputDirPath;
+}
+
+std::pair< std::string, std::string > Core::Configuration::getAssetPaths()
+{
+    return std::make_pair( mAssetTexturesDirPath, mAssetFontsDirPath );
 }

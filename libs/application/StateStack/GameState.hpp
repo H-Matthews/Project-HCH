@@ -4,6 +4,8 @@
 #include "application/Messaging/Publishers/PlayerInputPublisher.hpp"
 
 #include "core/StateStack/State.hpp"
+#include "core/GameAssetContainer/ResourceHolder.hpp"
+#include "core/GameAssetContainer/ResourceEnums.hpp"
 
 namespace Application
 {

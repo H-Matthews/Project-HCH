@@ -8,11 +8,13 @@ System::RenderSystem::RenderSystem( sf::RenderWindow& window ) :
 
 void System::RenderSystem::render()
 {
+    // Draw Background first
+
     auto view = mRegistry->view< Component::Sprite >();
 
     for ( auto entity : view )
     {
         auto& sprite = view.get< Component::Sprite >( entity );
-        mWindow.draw( sprite.mRectangleShape );
+        mWindow.draw( sprite.mSprite );
     }
 }
