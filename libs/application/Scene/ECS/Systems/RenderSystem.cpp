@@ -10,11 +10,11 @@ void System::RenderSystem::render()
 {
     // Draw Background first
 
-    auto view = mRegistry->view< Component::Sprite >();
+    auto view = mRegistry->view< Component::SpriteComponent >();
 
     for ( auto entity : view )
     {
-        auto& sprite = view.get< Component::Sprite >( entity );
+        auto& sprite = view.get< Component::SpriteComponent >( entity );
         mWindow.draw( sprite.mSprite );
     }
 }

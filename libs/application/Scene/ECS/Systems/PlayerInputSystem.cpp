@@ -1,6 +1,6 @@
 #include "application/Scene/ECS/Systems/PlayerInputSystem.hpp"
 
-#include "application/Scene/ECS/Components/PlayerInput.hpp"
+#include "application/Scene/ECS/Components/PlayerInputComponent.hpp"
 
 System::PlayerInputSystem::PlayerInputSystem( Core::MessageNetwork& network ) :
     Core::MessageNode( network, "PlayerInput System", Core::NodeType::SUBSCRIBER )
@@ -15,8 +15,8 @@ void System::PlayerInputSystem::onNotify( Core::Message* message )
     if ( playerInput )
     {
         // Grab PlayerInput Component data
-        auto view = mRegistry->view< Component::PlayerInput >();
-        auto& playerInputData = view.get< Component::PlayerInput >( *( view.begin() ) );
+        auto view = mRegistry->view< Component::PlayerInputComponent >();
+        auto& playerInputData = view.get< Component::PlayerInputComponent >( *( view.begin() ) );
 
         // Modify PlayerInputData
         switch ( playerInput->action )

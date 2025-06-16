@@ -4,9 +4,9 @@
 
 namespace Component
 {
-    struct Sprite
+    struct SpriteComponent
     {
-        Sprite( sf::Sprite sprite, sf::Vector2f position, sf::Vector2f velocity );
+        SpriteComponent( sf::Sprite sprite, sf::Vector2f position, sf::Vector2f velocity );
 
         sf::Sprite mSprite;
         sf::Vector2f mPosition;

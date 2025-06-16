@@ -22,8 +22,8 @@ Application::Entity Application::EntityManager::createPlayerEntity(
     sf::Texture& texture = mTextures.get( Textures::ID::PLAYER );
     sf::Sprite sprite( texture );
 
-    entity.addComponent< Component::Sprite >( sprite, initialPosition, initialVelocity );
-    entity.addComponent< Component::PlayerInput >( sf::Vector2f{ 0.f, 0.f } );
+    entity.addComponent< Component::SpriteComponent >( sprite, initialPosition, initialVelocity );
+    entity.addComponent< Component::PlayerInputComponent >( sf::Vector2f{ 0.f, 0.f } );
 
     return entity;
 }

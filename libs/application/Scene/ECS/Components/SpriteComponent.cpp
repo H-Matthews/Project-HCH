@@ -1,8 +1,8 @@
-#include "application/Scene/ECS/Components/Sprite.hpp"
+#include "application/Scene/ECS/Components/SpriteComponent.hpp"
 
 #include <SFML/Graphics.hpp>
 
-Component::Sprite::Sprite( sf::Sprite sprite, sf::Vector2f position, sf::Vector2f velocity ) :
+Component::SpriteComponent::SpriteComponent( sf::Sprite sprite, sf::Vector2f position, sf::Vector2f velocity ) :
     mSprite( sprite ),
     mPosition( position ),
     mVelocity( velocity )
