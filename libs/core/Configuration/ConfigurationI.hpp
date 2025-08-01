@@ -57,7 +57,6 @@ namespace Core
 
       private:
         unsigned int mDirectoryBits : 3;
-        // std::bitset< DirectoryIDs::SIZE > mDirectoryBits;
     };
 
     void ConfigurationI::setDirectoryInit( DirectoryIDs directoryID )
