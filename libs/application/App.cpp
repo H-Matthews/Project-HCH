@@ -9,6 +9,9 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <stdexcept>
+#include <iostream>
+
 const sf::Time Application::App::TIME_PER_FRAME = sf::seconds( 1.0f / 120.0f );
 
 Application::App::App( std::unique_ptr< Core::ConfigurationI > config ) :
@@ -23,23 +26,35 @@ Application::App::App( std::unique_ptr< Core::ConfigurationI > config ) :
 
 void Application::App::initialize()
 {
-    mConfiguration->initializeIteration();
-    mConfiguration->parseConfigs();
+    // 1. INITIALIZE CONFIGURATION
+    try
+    {
+        mConfiguration->initializeOutputDirectory();
+        mConfiguration->initializeConfigDirectory();
+        mConfiguration->initializeAssetsDirectory();
 
-    Core::FileToDataMap parserFiles = Core::ParserDataRegistry::instance()->getParserDataStructure( Parsers::ID::INI );
+        mConfiguration->configure();
+    }
+    catch ( const std::exception& e )
+    {
+        std::cerr << e.what() << '\n';
+    }
 
+    // 2. INITIALIZE APP, CORE LOGGERS
     if constexpr ( Utility::CAN_LOG )
     {
         initializeAppLogger();
         initializeCoreLoggers();
     }
 
-    // Loads Textures / Fonts
+    // 3. LOAD ASSETS
     loadResources();
 
-    // Initialize State Stack
+    // 4. INITIALIZE STATE STACK
     registerStates();
     mStateStack.pushState( States::Menu );
+
+    return;
 }
 
 void Application::App::registerStates()
@@ -138,15 +153,15 @@ void Application::App::initializeCoreLoggers()
 
 void Application::App::loadResources()
 {
-    auto fontTexturePaths = mConfiguration->getAssetPaths();
-    std::string texturePath = fontTexturePaths.first;
-    std::string fontPath = fontTexturePaths.second;
+    // auto fontTexturePaths = mConfiguration->getAssetPaths();
+    // std::string texturePath = fontTexturePaths.first;
+    // std::string fontPath = fontTexturePaths.second;
 
     // TODO: This needs to be reexamined. Shouldn't hardcode file names like this
     // Should tie this to the config file...
-    mTextures.load( Textures::ID::PLAYER, texturePath + "/" + "playerSprite.png" );
-    mTextures.load( Textures::ID::BACKGROUND, texturePath + "/" + "background.png" );
-    mTextures.load( Textures::ID::ENEMY, texturePath + "/" + "enemySprite.png" );
+    // mTextures.load( Textures::ID::PLAYER, texturePath + "/" + "playerSprite.png" );
+    // mTextures.load( Textures::ID::BACKGROUND, texturePath + "/" + "background.png" );
+    // mTextures.load( Textures::ID::ENEMY, texturePath + "/" + "enemySprite.png" );
 
     return;
 }

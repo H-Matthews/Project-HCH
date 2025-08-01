@@ -1,0 +1,78 @@
+# Defines Core Configurable Objects
+# Meaning, Only Configurables that are instantiated once throughout the program
+
+# List of All Core Configurables
+# - App
+# - StateStack
+# - Message Network
+# - Scene
+
+# BEGINNING APP ----------------------------------
+
+[App]
+configurable_type = "CORE_CONFIGURABLE"
+logging_enabled = true
+
+[App.Logger]
+LoggerName = "AppLogger"
+GlobalLogLevel = "NONE"
+
+[App.Logger.ColorConsoleSink]
+LogLevel = "INFO"
+
+[App.Logger.TextFileSink]
+LogFileName = "App"
+LogFileExtension = ".log"
+LogLevel = "INFO"
+
+# END APP ----------------------------------------
+
+# BEGINNING STATESTACK ---------------------------
+
+[StateStack]
+configurable_type = "CORE_CONFIGURABLE"
+logging_enabled = true
+
+[StateStack.Logger]
+LoggerName = "StateStackLogger"
+GlobalLogLevel = "NONE"
+
+[StateStack.Logger.TextFileSink]
+LogFileName = "StateStack"
+LogFileExtension = ".log"
+LogLevel = "INFO"
+
+# END STATESTACK ---------------------------------
+
+# BEGINNING MESSAGE NETWORK ----------------------
+
+[MessageNetwork]
+configurable_type = "CORE_CONFIGURABLE"
+logging_enabled = true
+
+[MessageNetwork.Logger]
+LoggerName = "MessageNetworkLogger"
+GlobalLogLevel = "NONE"
+
+[MessageNetwork.Logger.TextFileSink]
+LogFileName = "MessageNetwork"
+LogFileExtension = ".log"
+LogLevel = "INFO"
+
+# END MESSAGE NETWORK ----------------------------
+
+# BEGINNING SCENE --------------------------------
+
+[Scene]
+configurable_type = "CORE_CONFIGURABLE"
+logging_enabled = true
+
+[Scene.Logger]
+LoggerName = "SceneLogger"
+
+[Scene.Logger.TextFileSink]
+LogFileName = "Scene"
+LogFileExtension = ".log"
+LogLevel = "INFO"
+
+# END SCENE --------------------------------------
