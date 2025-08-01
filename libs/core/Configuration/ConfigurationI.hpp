@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <bits/stdc++.h>
 
 namespace Core
 {
@@ -57,29 +56,21 @@ namespace Core
         std::string mProjectDirectory;
 
       private:
-        std::bitset< DirectoryIDs::SIZE > mDirectoryBits;
+        unsigned int mDirectoryBits : 3;
+        // std::bitset< DirectoryIDs::SIZE > mDirectoryBits;
     };
 
     void ConfigurationI::setDirectoryInit( DirectoryIDs directoryID )
     {
-        // Bitset will NOT be this large
-        if ( directoryID == DirectoryIDs::SIZE )
-            return;
-
-        // IF the bit is NOT set, then set it
-        if ( !mDirectoryBits.test( directoryID ) )
-            mDirectoryBits.set( directoryID );
+        mDirectoryBits = mDirectoryBits | 1 << directoryID;
 
         return;
     }
 
     bool ConfigurationI::isInitialized()
     {
-        for ( int i = 0; i < DirectoryIDs::SIZE; i++ )
-        {
-            if ( !mDirectoryBits.test( i ) )
-                return false;
-        }
+        // 7 is from 2^3 - 1
+        return mDirectoryBits == 7;
 
         return true;
     }
