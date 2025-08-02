@@ -29,7 +29,7 @@ namespace Core
         void initializeConfigDirectory() override;
         void initializeAssetsDirectory() override;
 
-        bool configure() override;
+        bool parse() override;
 
         ~Configuration()
         {}

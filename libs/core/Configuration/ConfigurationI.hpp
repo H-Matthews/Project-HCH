@@ -36,7 +36,7 @@ namespace Core
 
         virtual void initializeAssetsDirectory() = 0;
 
-        virtual bool configure() = 0;
+        virtual bool parse() = 0;
 
         inline void setDirectoryInit( DirectoryIDs directoryID );
 

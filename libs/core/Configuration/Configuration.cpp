@@ -141,12 +141,32 @@ void Core::Configuration::initializeAssetsDirectory()
             "Asset directory: " + mAssetDirPath + " could not be found", std::error_code() );
     }
 
+    if ( !( std::filesystem::is_directory( mAssetFontsDirPath ) ) )
+    {
+        if constexpr ( Utility::CAN_LOG )
+            Utility::LogRegistry::instance()->getGlobalLogger()->logError(
+                "Asset Font Directory WAS NOT FOUND --> " + mAssetFontsDirPath );
+
+        throw std::filesystem::filesystem_error(
+            "Asset Font directory: " + mAssetFontsDirPath + " could not be found", std::error_code() );
+    }
+
+    if ( !( std::filesystem::is_directory( mAssetTexturesDirPath ) ) )
+    {
+        if constexpr ( Utility::CAN_LOG )
+            Utility::LogRegistry::instance()->getGlobalLogger()->logError(
+                "Asset Texture Directory WAS NOT FOUND --> " + mAssetTexturesDirPath );
+
+        throw std::filesystem::filesystem_error(
+            "Asset Texture directory: " + mAssetTexturesDirPath + " could not be found", std::error_code() );
+    }
+
     ConfigurationI::setDirectoryInit( DirectoryIDs::ASSETS );
 
     return;
 }
 
-bool Core::Configuration::configure()
+bool Core::Configuration::parse()
 {
     if ( !ConfigurationI::isInitialized() )
     {
@@ -161,19 +181,24 @@ bool Core::Configuration::configure()
     }
 
     // PARSE ROOT FILE --- Populates mConfigFiles
-    auto retPair = parseRootFile();
-    if ( !retPair.first )
+    auto retRootPair = parseRootFile();
+    if ( !retRootPair.first )
     {
         if constexpr ( Utility::CAN_LOG )
-        {
-            Utility::LogRegistry::instance()->getGlobalLogger()->logError( retPair.second );
+            Utility::LogRegistry::instance()->getGlobalLogger()->logError( retRootPair.second );
 
-            return false;
-        }
+        return false;
     }
 
     // PARSE CONFIG FILES ---- Populates ConfigRegistry (Doesnt exist yet)
-    parseConfigFiles();
+    auto retConfigPair = parseConfigFiles();
+    if ( !retConfigPair.first )
+    {
+        if constexpr ( Utility::CAN_LOG )
+            Utility::LogRegistry::instance()->getGlobalLogger()->logError( retConfigPair.second );
+
+        return false;
+    }
 
     return true;
 }
@@ -216,7 +241,11 @@ std::pair< bool, std::string > Core::Configuration::parseRootFile()
             std::filesystem::path filePath = mConfigDirPath + "/" + str1.value();
             if ( ( !std::filesystem::exists( filePath ) ) )
             {
-                // TODO: Log that the file could NOT be found
+                if constexpr ( Utility::CAN_LOG )
+                {
+                    Utility::LogRegistry::instance()->getGlobalLogger()->logError(
+                        std::string( "Could NOT find " + filePath.string() ) );
+                }
                 continue;
             }
 
