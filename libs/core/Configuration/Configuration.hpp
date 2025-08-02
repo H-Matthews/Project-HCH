@@ -6,6 +6,8 @@
 #include "core/Configuration/ConfigurationI.hpp"
 #include "core/Configuration/ConfigFileID.hpp"
 
+#include "vendor/toml/include/toml.hpp"
+
 #include <string>
 #include <functional>
 #include <map>
@@ -38,8 +40,7 @@ namespace Core
         std::pair< bool, std::string > parseRootFile();
         std::pair< bool, std::string > parseConfigFiles();
 
-        std::pair< bool, std::string > handleCoreConfigurables( const std::string& filePath );
-        std::pair< bool, std::string > handlePrefabs( const std::string& filePath );
+        std::pair< bool, std::string > handleConfigFile( const toml::table& tomlTable, ConfigFileID configFileID );
 
         void initializeGlobalLogger();
 
@@ -50,9 +51,10 @@ namespace Core
         // string is the ConfigFileID
         std::map< ConfigFileID, std::pair< std::string, std::filesystem::path > > mConfigFiles;
 
+      private:
+        // Root Config File
         static const std::string ROOT_CONFIG_FILE_NAME;
 
-      private:
         // FilePath information
         static const std::string CONFIG_DIR_NAME;
         static const std::string OUTPUT_DIR_NAME;

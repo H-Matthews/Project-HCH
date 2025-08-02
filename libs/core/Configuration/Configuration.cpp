@@ -4,8 +4,6 @@
 
 #include "utility/Logging/LogRegistry.hpp"
 
-#include "vendor/toml/include/toml.hpp"
-
 #include <cassert>
 #include <sstream>
 #include <iostream>
@@ -233,34 +231,19 @@ std::pair< bool, std::string > Core::Configuration::parseConfigFiles()
 {
     for ( const auto& configFileID : mConfigFileIDs )
     {
-        switch ( configFileID )
+        auto it = mConfigFiles.find( configFileID );
+        if ( it != mConfigFiles.end() )
         {
-            case ConfigFileID::CORE_CONFIGURABLES:
+            toml::table tomlTable;
+            try
             {
-                auto it = mConfigFiles.find( configFileID );
-                if ( it != mConfigFiles.end() )
-                {
-                    std::string filePath = it->second.second.string();
-                    handleCoreConfigurables( filePath );
-                }
+                tomlTable = toml::parse_file( it->second.second.string() );
 
-                break;
+                handleConfigFile( tomlTable, it->first );
             }
-            case ConfigFileID::PREFABS:
+            catch ( const toml::parse_error& err )
             {
-                auto it = mConfigFiles.find( configFileID );
-                if ( it != mConfigFiles.end() )
-                {
-                    std::string filePath = it->second.second.string();
-                    handlePrefabs( filePath );
-                }
-
-                break;
-            }
-            case ConfigFileID::SIZE:
-            {
-                // DO NOTHING
-                break;
+                return std::make_pair( false, err.what() );
             }
         }
     }
@@ -268,34 +251,9 @@ std::pair< bool, std::string > Core::Configuration::parseConfigFiles()
     return std::make_pair( true, std::string( "" ) );
 }
 
-std::pair< bool, std::string > Core::Configuration::handleCoreConfigurables( const std::string& filePath )
+std::pair< bool, std::string > Core::Configuration::handleConfigFile(
+    const toml::table& tomlTable, ConfigFileID configFileID )
 {
-
-    toml::table tomlTable;
-    try
-    {
-        tomlTable = toml::parse_file( filePath );
-    }
-    catch ( const toml::parse_error& err )
-    {
-        return std::make_pair( false, err.what() );
-    }
-
-    return std::make_pair( true, "" );
-}
-
-std::pair< bool, std::string > Core::Configuration::handlePrefabs( const std::string& filePath )
-{
-
-    toml::table tomlTable;
-    try
-    {
-        tomlTable = toml::parse_file( filePath );
-    }
-    catch ( const toml::parse_error& err )
-    {
-        std::cerr << err.what() << std::endl;
-    }
 
     return std::make_pair( true, "" );
 }
