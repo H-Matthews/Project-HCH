@@ -6,11 +6,15 @@
 #include "core/Configuration/Configuration.hpp"
 #include "core/Messaging/MessageNetwork.hpp"
 #include "core/GameAssetContainer/GameAssetContainer.hpp"
+#include "core/GameAssetContainer/ResourceHolder.hpp"
+#include "core/GameAssetContainer/ResourceEnums.hpp"
 
 #include "utility/Logging/Logger.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Time.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Font.hpp>
 
 #include <string>
 #include <functional>
@@ -35,11 +39,15 @@ namespace Application
         void initializeAppLogger();
         void initializeCoreLoggers();
 
+        void loadResources();
+
       private:
         static const sf::Time TIME_PER_FRAME;
 
         std::shared_ptr< Utility::Logger > mAppLogger;
-        // TODO: Implement a Resource Container for Textures / Fonts
+
+        // Should this go here? or in the GameState?
+        TextureHolder mTextures;
 
         std::unique_ptr< Core::ConfigurationI > mConfiguration;
         Core::MessageNetwork mNetwork;

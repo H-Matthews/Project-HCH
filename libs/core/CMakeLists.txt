@@ -15,9 +15,7 @@ set(SRC Messaging/Message.cpp
         StateStack/StateStack.cpp
         StateStack/StateTypes.cpp
         Configuration/Configuration.cpp
-        Configuration/Parsers/ParserDataRegistry.cpp
-        Configuration/Parsers/ParserTypes.cpp
-        Configuration/Parsers/IniParser.cpp
+        Configuration/ConfigFileID.cpp
         GameAssetContainer/GameAssetContainer.cpp )
 
 set(INC Messaging/Message.hpp
@@ -27,11 +25,10 @@ set(INC Messaging/Message.hpp
         StateStack/StateStack.hpp
         Configuration/ConfigurationI.hpp
         Configuration/Configuration.hpp
-        Configuration/Parsers/ParserDataRegistry.hpp
-        Configuration/Parsers/Parser.hpp
-        Configuration/Parsers/ParserTypes.hpp
-        Configuration/Parsers/IniParser.hpp
-        GameAssetContainer/GameAssetContainer.hpp )
+        Configuration/ConfigFileID.hpp
+        GameAssetContainer/GameAssetContainer.hpp
+        GameAssetContainer/ResourceHolder.hpp
+        GameAssetContainer/ResourceEnums.hpp )
 
 add_library(${LIBRARY_NAME} STATIC ${SRC} ${INC})
 

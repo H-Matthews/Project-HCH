@@ -4,9 +4,9 @@
 
 namespace Component
 {
-    struct PlayerInput
+    struct PlayerInputComponent
     {
-        PlayerInput( sf::Vector2f playerVelocity );
+        PlayerInputComponent( sf::Vector2f playerVelocity );
 
         sf::Vector2f mPlayerVelocity;
 

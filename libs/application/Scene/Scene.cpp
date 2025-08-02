@@ -7,24 +7,32 @@
 #include <cmath>
 #include <memory>
 
-Application::Scene::Scene( sf::RenderWindow& window, Core::MessageNetwork& gameNetwork ) :
+Application::Scene::Scene( sf::RenderWindow& window, Core::MessageNetwork& gameNetwork, TextureHolder& textures ) :
     mWindow( window ),
-    mEntityManager()
+    mEntityManager( textures )
 {
-    init( gameNetwork );
+    initializeGameSystems( gameNetwork );
+
+    initializePlayerEntity();
 }
 
-void Application::Scene::init( Core::MessageNetwork& gameNetwork )
+void Application::Scene::initializeGameSystems( Core::MessageNetwork& gameNetwork )
 {
     mEntityManager.registerSystem( std::make_unique< System::PlayerMovementSystem >() );
     mEntityManager.registerSystem( std::make_unique< System::PlayerInputSystem >( gameNetwork ) );
 
     mEntityManager.registerRenderingSystem( std::make_unique< System::RenderSystem >( mWindow ) );
 
-    // Testing
-    createEntity();
-
     return;
+}
+
+void Application::Scene::initializePlayerEntity()
+{
+    // TODO: Should be relative to the window
+    sf::Vector2f initialPosition( { 320.f, 240.f } );
+    sf::Vector2f initialVelocity( { 0.f, 0.f } );
+
+    mEntityManager.createPlayerEntity( initialPosition, initialVelocity );
 }
 
 void Application::Scene::update( sf::Time fixedTimeStep )
@@ -39,20 +47,4 @@ void Application::Scene::draw()
     mEntityManager.render();
 
     return;
-}
-
-void Application::Scene::createEntity()
-{
-    Entity playerEntity = mEntityManager.createEntity();
-
-    sf::RectangleShape rectangle( { 50.f, 50.f } );
-    sf::FloatRect bounds = rectangle.getLocalBounds();
-    rectangle.setOrigin( { bounds.size.x, bounds.size.y } );
-    rectangle.setFillColor( sf::Color( 100, 250, 50 ) );
-
-    sf::Vector2f initialPosition( { 320.f, 240.f } );
-    sf::Vector2f initialVelocity( { 0.f, 0.f } );
-
-    playerEntity.addComponent< Component::Sprite >( rectangle, initialPosition, initialVelocity );
-    playerEntity.addComponent< Component::PlayerInput >( sf::Vector2f{ 0.f, 0.f } );
 }

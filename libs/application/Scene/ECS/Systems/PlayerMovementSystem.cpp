@@ -6,24 +6,23 @@
 
 void System::PlayerMovementSystem::update( const sf::Time timeStep )
 {
-    auto view = mRegistry->view< Component::PlayerInput, Component::Sprite >();
+    auto view = mRegistry->view< Component::PlayerInputComponent, Component::SpriteComponent >();
 
     // Iterate over all sprites with playerInput component (AKA our PLAYER)
     for ( auto entity : view )
     {
-        auto& playerInputData = view.get< Component::PlayerInput >( entity );
-        auto& sprite = view.get< Component::Sprite >( entity );
+        auto& playerInputData = view.get< Component::PlayerInputComponent >( entity );
+        auto& sprite = view.get< Component::SpriteComponent >( entity );
 
         sprite.mVelocity += playerInputData.mPlayerVelocity;
 
         // IF WE MOVE DIAGONALLY
         if ( sprite.mVelocity.x != 0.f && sprite.mVelocity.y != 0.f )
         {
-            // TODO: Get MASTER PHYSICS LORD to change this
             sprite.mVelocity /= std::sqrt( 2.f );
         }
 
-        sprite.mRectangleShape.move( sprite.mVelocity * timeStep.asSeconds() );
+        sprite.mSprite.move( sprite.mVelocity * timeStep.asSeconds() );
 
         // Reset both Velocitys after performing the move
         sprite.mVelocity = sf::Vector2f( { 0.f, 0.f } );

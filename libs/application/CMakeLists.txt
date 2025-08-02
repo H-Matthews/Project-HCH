@@ -12,8 +12,8 @@ set(SRC App.cpp
         Messaging/Messages/PlayerInputMessage.cpp
         Data/PlayerAction.cpp
         Scene/Scene.cpp
-        Scene/ECS/Components/Sprite.cpp
-        Scene/ECS/Components/PlayerInput.cpp
+        Scene/ECS/Components/SpriteComponent.cpp
+        Scene/ECS/Components/PlayerInputComponent.cpp
         Scene/ECS/Systems/BaseSystem.cpp
         Scene/ECS/Systems/RenderSystem.cpp
         Scene/ECS/Systems/PlayerMovementSystem.cpp
@@ -31,8 +31,8 @@ set(INC App.hpp
         Data/PlayerAction.hpp
         Scene/Scene.hpp
         Scene/ECS/Components/Components.hpp
-        Scene/ECS/Components/Sprite.hpp
-        Scene/ECS/Components/PlayerInput.hpp
+        Scene/ECS/Components/SpriteComponent.hpp
+        Scene/ECS/Components/PlayerInputComponent.hpp
         Scene/ECS/Systems/Systems.hpp
         Scene/ECS/Systems/BaseSystem.hpp
         Scene/ECS/Systems/RenderSystem.hpp

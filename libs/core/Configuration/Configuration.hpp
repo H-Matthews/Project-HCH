@@ -4,9 +4,9 @@
 #include "utility/Logging/LogRegistry.hpp"
 
 #include "core/Configuration/ConfigurationI.hpp"
+#include "core/Configuration/ConfigFileID.hpp"
 
-#include "core/Configuration/Parsers/IniParser.hpp"
-#include "core/Configuration/Parsers/ParserTypes.hpp"
+#include "vendor/toml/include/toml.hpp"
 
 #include <string>
 #include <functional>
@@ -15,90 +15,51 @@
 
 namespace Core
 {
-    struct FileInformation
-    {
-        std::string mFileName;
-        std::string mFileExtension;
-
-        FileInformation( std::string fileName, std::string fileExtension ) :
-            mFileName( fileName ),
-            mFileExtension( fileExtension )
-        {}
-    };
 
     /**
-     * Configuration sets up the Config Directory, Output Directory, and contains the parsers that will parse config
-     * files. The Configuration class is responsible for handing each parser the correct file stream based on its file
-     * extension. Files that lack extensions are ignored
+     * Configuration sets up the Config Directory, Output Directory, Game asset file paths
+     * Utilizes a TOML parser
      */
     class Configuration : public ConfigurationI
     {
       public:
         Configuration();
 
-        void initializeIteration() override;
+        void initializeOutputDirectory() override;
+        void initializeConfigDirectory() override;
+        void initializeAssetsDirectory() override;
 
-        void parseConfigs() override;
-
-        const std::string getOutDirPath();
+        bool parse() override;
 
         ~Configuration()
         {}
 
       private:
-        void initializeParsers();
+        bool initializeConfigFileIDs();
 
-        // Needs to be a template so that we can treat registerParser as a factory
-        template < typename T >
-        void registerParser( Parsers::ID parserID );
+        std::pair< bool, std::string > parseRootFile();
+        std::pair< bool, std::string > parseConfigFiles();
 
-        std::unique_ptr< Core::Parser > createParser( Parsers::ID parserID );
-
-        void initializeConfigDirectory();
-        void initializeOutputDirectory();
-        void initializeConfigFiles();
+        std::pair< bool, std::string > handleConfigFile( const toml::table& tomlTable, ConfigFileID configFileID );
 
         void initializeGlobalLogger();
 
       private:
+        // Generic ConfigFileIDs
+        std::vector< ConfigFileID > mConfigFileIDs;
+
+        // string is the ConfigFileID
+        std::map< ConfigFileID, std::pair< std::string, std::filesystem::path > > mConfigFiles;
+
+      private:
+        // Root Config File
+        static const std::string ROOT_CONFIG_FILE_NAME;
+
         // FilePath information
-        std::string mConfigDirPath;
         static const std::string CONFIG_DIR_NAME;
-
-        std::string mOutputDirPath;
         static const std::string OUTPUT_DIR_NAME;
-        static const std::string MAIN_FILE_NAME;
-
-        std::vector< Core::FileInformation > mConfigFiles;
-        std::map< std::string, Parsers::ID > mFileExtensionToIDMap;
-
-        // This contains a function that ALLOCATES memory for a specified Parser object
-        // This way we ONLY create a parser if we have a config file that uses it
-        std::map< Parsers::ID, std::function< std::unique_ptr< Core::Parser >() > > mParserRegistry;
-
-        // Holds the actual pointer to the Parser object
-        std::map< Parsers::ID, std::unique_ptr< Core::Parser > > mParsers;
-
-        std::string mProjectDirectory;
+        static const std::string ASSET_DIR_NAME;
+        static const std::string ASSET_FONTS_DIR_NAME;
+        static const std::string ASSET_TEXTURES_DIR_NAME;
     };
-}
-
-template < typename T >
-void Core::Configuration::registerParser( Parsers::ID parserID )
-{
-    const std::string identifierString( Parsers::parserEnumsToString( parserID ) );
-
-    // Insert into file extension MAP
-    mFileExtensionToIDMap[ identifierString ] = parserID;
-
-    // Stores a Lambda in mParserRegistry
-    mParserRegistry[ parserID ] = [ identifierString ]()
-    { return std::unique_ptr< Parser >( new T( identifierString ) ); };
-
-    if constexpr ( Utility::CAN_LOG )
-    {
-        std::string logMessage;
-        logMessage = "Registered Parser: " + identifierString;
-        Utility::LogRegistry::instance()->getGlobalLogger()->logInfo( logMessage );
-    }
 }
