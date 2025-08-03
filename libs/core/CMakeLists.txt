@@ -16,6 +16,7 @@ set(SRC Messaging/Message.cpp
         StateStack/StateTypes.cpp
         Configuration/Configuration.cpp
         Configuration/ConfigFileID.cpp
+        Configuration/ConfigReader/TOMLConfigReader.cpp
         GameAssetContainer/GameAssetContainer.cpp )
 
 set(INC Messaging/Message.hpp
@@ -26,6 +27,13 @@ set(INC Messaging/Message.hpp
         Configuration/ConfigurationI.hpp
         Configuration/Configuration.hpp
         Configuration/ConfigFileID.hpp
+        Configuration/ConfigReader/ConfigType/ConfigType.hpp
+        Configuration/ConfigReader/ConfigType/RootConfigType.hpp
+        Configuration/ConfigReader/ConfigReader.hpp
+        Configuration/ConfigReader/TOMLConfigReader.hpp
+        Configuration/ConfigReader/Nodes/ConfigNode.hpp
+        Configuration/ConfigurableHelperTypes.hpp
+        Configuration/ConfigurableTypes.hpp
         GameAssetContainer/GameAssetContainer.hpp
         GameAssetContainer/ResourceHolder.hpp
         GameAssetContainer/ResourceEnums.hpp )

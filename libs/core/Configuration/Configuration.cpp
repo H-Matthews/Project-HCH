@@ -1,6 +1,8 @@
 #include "core/Configuration/Configuration.hpp"
 
 #include "core/Configuration/ConfigFileID.hpp"
+#include "core/Configuration/ConfigurableTypes.hpp"
+#include "core/Configuration/ConfigReader/ConfigType/RootConfigType.hpp"
 
 #include "utility/Logging/LogRegistry.hpp"
 
@@ -17,7 +19,7 @@ const std::string Core::Configuration::ASSET_TEXTURES_DIR_NAME = "textures";
 
 Core::Configuration::Configuration() :
     ConfigurationI( PROJECT_DIR ),
-    mConfigFileIDs(),
+    mConfigReader( std::make_unique< TOMLConfigReader >() ),
     mConfigFiles()
 {
     if constexpr ( Utility::CAN_LOG )
@@ -25,20 +27,6 @@ Core::Configuration::Configuration() :
         Utility::createGlobalLogger();
         initializeGlobalLogger();
     }
-
-    if ( !initializeConfigFileIDs() )
-    {
-        if constexpr ( Utility::CAN_LOG )
-            Utility::LogRegistry::instance()->getGlobalLogger()->logError( "Missing ConfigFileID" );
-    }
-}
-
-bool Core::Configuration::initializeConfigFileIDs()
-{
-    mConfigFileIDs.push_back( ConfigFileID::CORE_CONFIGURABLES );
-    mConfigFileIDs.push_back( ConfigFileID::PREFABS );
-
-    return mConfigFileIDs.size() == (std::size_t)ConfigFileID::SIZE;
 }
 
 // The following field needs to be read in by CONFIG file
@@ -203,32 +191,37 @@ bool Core::Configuration::parse()
     return true;
 }
 
-/**
- * Parses the root.toml file
- */
 std::pair< bool, std::string > Core::Configuration::parseRootFile()
 {
-    // Parse Root.toml for Configuration File ID mappings
+    // Build RootfilePath
     std::string rootFilePath = mConfigDirPath + "/" + ROOT_CONFIG_FILE_NAME;
-    if ( ( !std::filesystem::is_regular_file( rootFilePath ) ) )
+
+    ConfigNode configNode;
+
+    // ConfigNode is passed by reference
+    mConfigReader->readFile( std::filesystem::path( rootFilePath ), configNode );
+
+    // IF we fail to read a file, then just fail fast
+    if ( !configNode.retStatus.first )
+        return configNode.retStatus;
+
+    std::shared_ptr< RootConfigType > rootConfig = configNode.getTypedConfig< RootConfigType >();
+    if ( rootConfig )
     {
-        const std::string errString = "Could NOT FIND root file ---->" + rootFilePath;
-        return std::make_pair( false, errString );
+        for ( const auto& configFile : rootConfig->configFiles )
+        {
+            // IF ANY of the config files CANNOT be located, then fail fast
+            auto retPair = buildConfigFilePath( configFile );
+            if ( !retPair.first )
+                return std::make_pair(
+                    retPair.first, "Config File could NOT be located --> " + retPair.second.string() );
+
+            // Store ConfigFile Path
+            mConfigFiles.push_back( retPair.second );
+        }
     }
 
-    toml::table tbl;
-    try
-    {
-        tbl = toml::parse_file( rootFilePath );
-    }
-    catch ( const toml::parse_error& err )
-    {
-        return std::make_pair( false, err.what() );
-    }
-
-    // PARSE CONFIGURATION FILE PATHS
-    const std::string configFileKey( "Configuration_Files" );
-
+    /*
     for ( const auto& configID : mConfigFileIDs )
     {
         std::string configIDString = enumToString( configID );
@@ -252,40 +245,119 @@ std::pair< bool, std::string > Core::Configuration::parseRootFile()
             mConfigFiles[ configID ] = std::make_pair( configIDString, filePath );
         }
     }
+    */
 
     return std::make_pair( true, std::string( "" ) );
 }
 
 std::pair< bool, std::string > Core::Configuration::parseConfigFiles()
 {
-    for ( const auto& configFileID : mConfigFileIDs )
-    {
-        auto it = mConfigFiles.find( configFileID );
-        if ( it != mConfigFiles.end() )
-        {
-            toml::table tomlTable;
-            try
-            {
-                tomlTable = toml::parse_file( it->second.second.string() );
 
-                handleConfigFile( tomlTable, it->first );
-            }
-            catch ( const toml::parse_error& err )
-            {
-                return std::make_pair( false, err.what() );
-            }
-        }
+    for ( const auto& configFile : mConfigFiles )
+    {
+        ConfigNode configNode;
+
+        // ConfigNode is passed by reference
+        mConfigReader->readFile( configFile, configNode );
+
+        // IF we fail to read a file, then just fail fast
+        if ( !configNode.retStatus.first )
+            return configNode.retStatus;
     }
 
     return std::make_pair( true, std::string( "" ) );
 }
 
-std::pair< bool, std::string > Core::Configuration::handleConfigFile(
-    const toml::table& tomlTable, ConfigFileID configFileID )
+std::pair< bool, std::filesystem::path > Core::Configuration::buildConfigFilePath( const std::string& configFile )
 {
+    bool fileExists = true;
+    std::string configFilePath = mConfigDirPath + "/" + configFile;
 
-    return std::make_pair( true, "" );
+    // Check if file exists
+    if ( ( !std::filesystem::is_regular_file( configFilePath ) ) )
+        fileExists = false;
+
+    return std::make_pair( fileExists, std::filesystem::path( configFile ) );
 }
+
+// PARSE APP FIRST
+// auto appTable = tomlTable[ "App" ].as_table();
+// if ( appTable )
+// {
+//     CoreConfigurable appConfigurable;
+
+//     std::optional< std::string > configurableType = appTable->get( "configurable_type" )->value< std::string >();
+//     if ( configurableType.has_value() )
+//         appConfigurable.configurableType = configurableType.value();
+
+//     if ( appConfigurable.configurableType != "CORE_CONFIGURABLE" )
+//         return std::make_pair(
+//             false, "Attempted to parse a Configurable that was did NOT have the CORE_CONFIGURABLE type" );
+
+//     std::optional< bool > loggingEnabled = appTable->get( "logging_enabled" )->value< bool >();
+//     if ( loggingEnabled.has_value() )
+//         appConfigurable.loggingEnabled = loggingEnabled.value();
+
+//     if ( appConfigurable.loggingEnabled )
+//     {
+//         auto appLoggerTable = tomlTable[ "App" ][ "Logger" ].as_table();
+//         if ( appLoggerTable )
+//         {
+//             LoggerConfigurable loggerConfigurable;
+
+//             std::optional< std::string > loggerName = appLoggerTable->get( "logger_name" )->value< std::string
+//             >(); if ( loggerName.has_value() )
+//                 loggerConfigurable.loggerName = loggerName.value();
+
+//             std::optional< std::string > globalLogLevel =
+//                 appLoggerTable->get( "global_log_level" )->value< std::string >();
+
+//             if ( globalLogLevel.has_value() )
+//                 loggerConfigurable.globalLogLevel = globalLogLevel.value();
+
+//             auto sinks = appLoggerTable->get_as< toml::array >( "sinks" );
+//             for ( auto it = sinks->begin(); it != sinks->end(); it++ )
+//             {
+//                 if ( const auto* string_elem = it->as_string() )
+//                 {
+//                     loggerConfigurable.sinks[ static_cast< std::string >( *string_elem ) ] =
+//                         LoggerSinkConfigurable();
+//                 }
+//             }
+
+//             for ( const auto& [ stringSink, loggerSink ] : loggerConfigurable.sinks )
+//             {
+//                 auto appSinkTable = appLoggerTable->get( stringSink )->as_table();
+//                 if ( appSinkTable )
+//                 {
+//                     LoggerSinkConfigurable sinkConfigurable;
+//                     std::optional< std::string > logLevel =
+//                         appSinkTable->get( "log_level" )->value< std::string >();
+
+//                     if ( logLevel.has_value() )
+//                         sinkConfigurable.logLevel = logLevel.value();
+
+//                     std::optional< std::string > logFileName =
+//                         appSinkTable->get( "log_file_name" )->value< std::string >();
+
+//                     if ( logFileName.has_value() )
+//                         sinkConfigurable.logFileName = logFileName.value();
+
+//                     std::optional< std::string > logFileExtension =
+//                         appSinkTable->get( "log_file_extension" )->value< std::string >();
+
+//                     if ( logFileExtension.has_value() )
+//                         sinkConfigurable.logFileExtension = logFileExtension.value();
+//                 }
+//             }
+
+//         } // END APP_LOGGER_TABLE IF
+
+//     } // END LOGGING_ENABLED IF
+
+// } // END CORE_CONFIGURABLE IF
+
+// return std::make_pair( true, "" );
 
 void Core::Configuration::initializeGlobalLogger()
 {

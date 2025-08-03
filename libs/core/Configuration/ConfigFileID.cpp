@@ -4,9 +4,13 @@
 
 Core::ConfigFileID Core::stringToEnum( const std::string& stringEnum )
 {
-    ConfigFileID fileID;
+    ConfigFileID fileID = ConfigFileID::SIZE;
 
-    if ( stringEnum == "CORE_CONFIGURABLES" )
+    if ( stringEnum == "ROOT" )
+    {
+        fileID = ConfigFileID::ROOT;
+    }
+    else if ( stringEnum == "CORE_CONFIGURABLES" )
     {
         fileID = ConfigFileID::CORE_CONFIGURABLES;
     }
@@ -29,6 +33,12 @@ std::string Core::enumToString( const ConfigFileID& configID )
 
     switch ( configID )
     {
+        case ConfigFileID::ROOT:
+        {
+            retString = "ROOT";
+
+            break;
+        }
         case ConfigFileID::CORE_CONFIGURABLES:
         {
             retString = "CORE_CONFIGURABLES";

@@ -4,14 +4,14 @@
 #include "utility/Logging/LogRegistry.hpp"
 
 #include "core/Configuration/ConfigurationI.hpp"
+#include "core/Configuration/ConfigReader/TOMLConfigReader.hpp"
 #include "core/Configuration/ConfigFileID.hpp"
-
-#include "vendor/toml/include/toml.hpp"
 
 #include <string>
 #include <functional>
 #include <map>
 #include <vector>
+#include <filesystem>
 
 namespace Core
 {
@@ -35,21 +35,21 @@ namespace Core
         {}
 
       private:
-        bool initializeConfigFileIDs();
-
         std::pair< bool, std::string > parseRootFile();
         std::pair< bool, std::string > parseConfigFiles();
 
-        std::pair< bool, std::string > handleConfigFile( const toml::table& tomlTable, ConfigFileID configFileID );
+        std::pair< bool, std::filesystem::path > buildConfigFilePath( const std::string& configFile );
 
         void initializeGlobalLogger();
 
       private:
-        // Generic ConfigFileIDs
-        std::vector< ConfigFileID > mConfigFileIDs;
+        std::unique_ptr< ConfigReader > mConfigReader;
+
+        // Configuration Files
+        std::vector< std::filesystem::path > mConfigFiles;
 
         // string is the ConfigFileID
-        std::map< ConfigFileID, std::pair< std::string, std::filesystem::path > > mConfigFiles;
+        // std::map< ConfigFileID, std::pair< std::string, std::filesystem::path > > mConfigFiles;
 
       private:
         // Root Config File

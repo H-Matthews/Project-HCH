@@ -10,7 +10,8 @@ namespace Core
      */
     enum class ConfigFileID
     {
-        CORE_CONFIGURABLES = 0,
+        ROOT = 0,
+        CORE_CONFIGURABLES,
         PREFABS,
         SIZE
     };
