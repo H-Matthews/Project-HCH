@@ -221,32 +221,6 @@ std::pair< bool, std::string > Core::Configuration::parseRootFile()
         }
     }
 
-    /*
-    for ( const auto& configID : mConfigFileIDs )
-    {
-        std::string configIDString = enumToString( configID );
-
-        std::optional< std::string > str1 = tbl[ configFileKey ][ configIDString ].value< std::string >();
-
-        if ( str1.has_value() )
-        {
-            // Build filepath
-            std::filesystem::path filePath = mConfigDirPath + "/" + str1.value();
-            if ( ( !std::filesystem::exists( filePath ) ) )
-            {
-                if constexpr ( Utility::CAN_LOG )
-                {
-                    Utility::LogRegistry::instance()->getGlobalLogger()->logError(
-                        std::string( "Could NOT find " + filePath.string() ) );
-                }
-                continue;
-            }
-
-            mConfigFiles[ configID ] = std::make_pair( configIDString, filePath );
-        }
-    }
-    */
-
     return std::make_pair( true, std::string( "" ) );
 }
 
@@ -277,87 +251,8 @@ std::pair< bool, std::filesystem::path > Core::Configuration::buildConfigFilePat
     if ( ( !std::filesystem::is_regular_file( configFilePath ) ) )
         fileExists = false;
 
-    return std::make_pair( fileExists, std::filesystem::path( configFile ) );
+    return std::make_pair( fileExists, std::filesystem::path( configFilePath ) );
 }
-
-// PARSE APP FIRST
-// auto appTable = tomlTable[ "App" ].as_table();
-// if ( appTable )
-// {
-//     CoreConfigurable appConfigurable;
-
-//     std::optional< std::string > configurableType = appTable->get( "configurable_type" )->value< std::string >();
-//     if ( configurableType.has_value() )
-//         appConfigurable.configurableType = configurableType.value();
-
-//     if ( appConfigurable.configurableType != "CORE_CONFIGURABLE" )
-//         return std::make_pair(
-//             false, "Attempted to parse a Configurable that was did NOT have the CORE_CONFIGURABLE type" );
-
-//     std::optional< bool > loggingEnabled = appTable->get( "logging_enabled" )->value< bool >();
-//     if ( loggingEnabled.has_value() )
-//         appConfigurable.loggingEnabled = loggingEnabled.value();
-
-//     if ( appConfigurable.loggingEnabled )
-//     {
-//         auto appLoggerTable = tomlTable[ "App" ][ "Logger" ].as_table();
-//         if ( appLoggerTable )
-//         {
-//             LoggerConfigurable loggerConfigurable;
-
-//             std::optional< std::string > loggerName = appLoggerTable->get( "logger_name" )->value< std::string
-//             >(); if ( loggerName.has_value() )
-//                 loggerConfigurable.loggerName = loggerName.value();
-
-//             std::optional< std::string > globalLogLevel =
-//                 appLoggerTable->get( "global_log_level" )->value< std::string >();
-
-//             if ( globalLogLevel.has_value() )
-//                 loggerConfigurable.globalLogLevel = globalLogLevel.value();
-
-//             auto sinks = appLoggerTable->get_as< toml::array >( "sinks" );
-//             for ( auto it = sinks->begin(); it != sinks->end(); it++ )
-//             {
-//                 if ( const auto* string_elem = it->as_string() )
-//                 {
-//                     loggerConfigurable.sinks[ static_cast< std::string >( *string_elem ) ] =
-//                         LoggerSinkConfigurable();
-//                 }
-//             }
-
-//             for ( const auto& [ stringSink, loggerSink ] : loggerConfigurable.sinks )
-//             {
-//                 auto appSinkTable = appLoggerTable->get( stringSink )->as_table();
-//                 if ( appSinkTable )
-//                 {
-//                     LoggerSinkConfigurable sinkConfigurable;
-//                     std::optional< std::string > logLevel =
-//                         appSinkTable->get( "log_level" )->value< std::string >();
-
-//                     if ( logLevel.has_value() )
-//                         sinkConfigurable.logLevel = logLevel.value();
-
-//                     std::optional< std::string > logFileName =
-//                         appSinkTable->get( "log_file_name" )->value< std::string >();
-
-//                     if ( logFileName.has_value() )
-//                         sinkConfigurable.logFileName = logFileName.value();
-
-//                     std::optional< std::string > logFileExtension =
-//                         appSinkTable->get( "log_file_extension" )->value< std::string >();
-
-//                     if ( logFileExtension.has_value() )
-//                         sinkConfigurable.logFileExtension = logFileExtension.value();
-//                 }
-//             }
-
-//         } // END APP_LOGGER_TABLE IF
-
-//     } // END LOGGING_ENABLED IF
-
-// } // END CORE_CONFIGURABLE IF
-
-// return std::make_pair( true, "" );
 
 void Core::Configuration::initializeGlobalLogger()
 {

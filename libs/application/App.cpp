@@ -33,7 +33,7 @@ void Application::App::initialize()
         mConfiguration->initializeConfigDirectory();
         mConfiguration->initializeAssetsDirectory();
 
-        mConfiguration->parse();
+        bool successfullyParsed = mConfiguration->parse();
     }
     catch ( const std::exception& e )
     {

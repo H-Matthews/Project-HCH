@@ -15,7 +15,7 @@ void Core::TOMLConfigReader::readFile( const std::filesystem::path& filePath, Co
     // Check if file exists
     if ( ( !std::filesystem::is_regular_file( filePath ) ) )
     {
-        const std::string errString = "Could NOT FIND root file ---->" + filePath.string();
+        const std::string errString = "Could NOT FIND file ----> " + filePath.string();
         configNode.retStatus = std::make_pair( false, errString );
 
         return;
@@ -57,7 +57,15 @@ void Core::TOMLConfigReader::readFile( const std::filesystem::path& filePath, Co
         case ConfigFileID::ROOT:
         {
             auto rootConfigType = std::make_shared< RootConfigType >();
-            handleRootFile( config, rootConfigType );
+            auto retPair = handleRootFile( config, rootConfigType );
+            if ( !retPair.first )
+            {
+                configNode.retStatus = retPair;
+
+                return;
+            }
+
+            configNode.configType = rootConfigType;
 
             break;
         }
