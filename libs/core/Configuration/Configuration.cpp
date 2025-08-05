@@ -1,8 +1,7 @@
 #include "core/Configuration/Configuration.hpp"
 
-#include "core/Configuration/ConfigFileID.hpp"
-#include "core/Configuration/ConfigurableTypes.hpp"
-#include "core/Configuration/ConfigReader/ConfigType/RootConfigType.hpp"
+#include "core/Configuration/ConfigReader/TOMLConfigReader.hpp"
+#include "core/Configuration/ConfigTree/ConfigurationTree.hpp"
 
 #include "utility/Logging/LogRegistry.hpp"
 
@@ -19,8 +18,7 @@ const std::string Core::Configuration::ASSET_TEXTURES_DIR_NAME = "textures";
 
 Core::Configuration::Configuration() :
     ConfigurationI( PROJECT_DIR ),
-    mConfigReader( std::make_unique< TOMLConfigReader >() ),
-    mConfigFiles()
+    mConfigReader( std::make_unique< TOMLConfigReader >() )
 {
     if constexpr ( Utility::CAN_LOG )
     {
@@ -168,7 +166,7 @@ bool Core::Configuration::parse()
         return false;
     }
 
-    // PARSE ROOT FILE --- Populates mConfigFiles
+    // PARSE ROOT FILE --- Populates ConfigurationTree
     auto retRootPair = parseRootFile();
     if ( !retRootPair.first )
     {
@@ -178,7 +176,7 @@ bool Core::Configuration::parse()
         return false;
     }
 
-    // PARSE CONFIG FILES ---- Populates ConfigRegistry (Doesnt exist yet)
+    // PARSE CONFIG FILES ---- Populates ConfigurationTree
     auto retConfigPair = parseConfigFiles();
     if ( !retConfigPair.first )
     {
@@ -195,31 +193,16 @@ std::pair< bool, std::string > Core::Configuration::parseRootFile()
 {
     // Build RootfilePath
     std::string rootFilePath = mConfigDirPath + "/" + ROOT_CONFIG_FILE_NAME;
+    std::shared_ptr< ConfigNode > rootConfigNode = nullptr;
 
-    ConfigNode configNode;
-
-    // ConfigNode is passed by reference
-    mConfigReader->readFile( std::filesystem::path( rootFilePath ), configNode );
+    auto retStatus = mConfigReader->readFile( std::filesystem::path( rootFilePath ), rootConfigNode );
 
     // IF we fail to read a file, then just fail fast
-    if ( !configNode.retStatus.first )
-        return configNode.retStatus;
+    if ( !retStatus.first )
+        return retStatus;
 
-    std::shared_ptr< RootConfigType > rootConfig = configNode.getTypedConfig< RootConfigType >();
-    if ( rootConfig )
-    {
-        for ( const auto& configFile : rootConfig->configFiles )
-        {
-            // IF ANY of the config files CANNOT be located, then fail fast
-            auto retPair = buildConfigFilePath( configFile );
-            if ( !retPair.first )
-                return std::make_pair(
-                    retPair.first, "Config File could NOT be located --> " + retPair.second.string() );
-
-            // Store ConfigFile Path
-            mConfigFiles.push_back( retPair.second );
-        }
-    }
+    if ( rootConfigNode )
+        ConfigurationTree::instance()->addConfigNode( rootConfigNode );
 
     return std::make_pair( true, std::string( "" ) );
 }
@@ -227,17 +210,17 @@ std::pair< bool, std::string > Core::Configuration::parseRootFile()
 std::pair< bool, std::string > Core::Configuration::parseConfigFiles()
 {
 
+    /*
     for ( const auto& configFile : mConfigFiles )
     {
-        ConfigNode configNode;
-
-        // ConfigNode is passed by reference
-        mConfigReader->readFile( configFile, configNode );
+        std::shared_ptr< ConfigNode > fileConfigNode = nullptr;
+        auto retStatus = mConfigReader->readFile( configFile, fileConfigNode );
 
         // IF we fail to read a file, then just fail fast
-        if ( !configNode.retStatus.first )
-            return configNode.retStatus;
+        if ( !retStatus.first )
+            return retStatus;
     }
+    */
 
     return std::make_pair( true, std::string( "" ) );
 }

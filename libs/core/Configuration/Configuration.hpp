@@ -4,8 +4,7 @@
 #include "utility/Logging/LogRegistry.hpp"
 
 #include "core/Configuration/ConfigurationI.hpp"
-#include "core/Configuration/ConfigReader/TOMLConfigReader.hpp"
-#include "core/Configuration/ConfigFileID.hpp"
+#include "core/Configuration/ConfigReader/ConfigReader.hpp"
 
 #include <string>
 #include <functional>
@@ -44,12 +43,6 @@ namespace Core
 
       private:
         std::unique_ptr< ConfigReader > mConfigReader;
-
-        // Configuration Files
-        std::vector< std::filesystem::path > mConfigFiles;
-
-        // string is the ConfigFileID
-        // std::map< ConfigFileID, std::pair< std::string, std::filesystem::path > > mConfigFiles;
 
       private:
         // Root Config File

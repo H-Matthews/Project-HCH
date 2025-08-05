@@ -1,6 +1,9 @@
 #include "core/Configuration/ConfigReader/TOMLConfigReader.hpp"
 
+#include "core/Configuration/ConfigTree/ConfigNode.hpp"
+
 #include <iostream>
+#include <limits>
 
 // Parameters that are in EVERY toml config file
 const std::string Core::TOMLConfigReader::PARAM_FILE_TYPE = "FILE_TYPE";
@@ -10,16 +13,19 @@ void Core::TOMLConfigReader::init()
     return;
 }
 
-void Core::TOMLConfigReader::readFile( const std::filesystem::path& filePath, ConfigNode& configNode )
+std::pair< bool, std::string > Core::TOMLConfigReader::readFile(
+    const std::filesystem::path& filePath, std::shared_ptr< ConfigNode >& configNode )
 {
     // Check if file exists
     if ( ( !std::filesystem::is_regular_file( filePath ) ) )
     {
         const std::string errString = "Could NOT FIND file ----> " + filePath.string();
-        configNode.retStatus = std::make_pair( false, errString );
 
-        return;
+        return std::make_pair( false, errString );
     }
+
+    if ( !configNode )
+        configNode = std::make_shared< ConfigNode >( filePath.filename().stem().string() );
 
     toml::table config;
     try
@@ -28,115 +34,98 @@ void Core::TOMLConfigReader::readFile( const std::filesystem::path& filePath, Co
     }
     catch ( const toml::parse_error& err )
     {
-        configNode.retStatus = std::make_pair( false, err.what() );
-        return;
+        return std::make_pair( false, err.what() );
     }
 
-    // 1. GET FILE_TYPE
-    std::string fileType;
-    auto retPair = extractTOMLString( config, PARAM_FILE_TYPE, fileType );
-    if ( !retPair.first )
-    {
-        configNode.retStatus = std::make_pair( retPair.first, retPair.second + ", FILE: " + filePath.string() );
-        return;
-    }
+    // BEGIN PARSING TOML DATA TO CONFIG TREE-----------------------------------------------------------
+    processTOMLData( config, configNode );
 
-    ConfigFileID fileID = stringToEnum( fileType );
-    if ( fileID == ConfigFileID::SIZE )
-    {
-        configNode.retStatus =
-            std::make_pair( false, "PARAMETER: " + PARAM_FILE_TYPE + " COULD NOT BE MAPPED TO A CONFIG_FILE_ID" +
-                                       "FILE: " + filePath.string() );
-    }
+    return std::make_pair( true, "" );
+}
 
-    // SET FILEID
-    configNode.configFileID = fileID;
+void Core::TOMLConfigReader::processTOMLData( const toml::node& tomlNode, std::shared_ptr< ConfigNode > configNode )
+{
 
-    switch ( fileID )
+    // Determine Node Type
+    if ( tomlNode.is_table() )
     {
-        case ConfigFileID::ROOT:
+        const auto& tomlTable = tomlNode.as_table();
+        for ( auto&& [ key, value ] : *tomlTable )
         {
-            auto rootConfigType = std::make_shared< RootConfigType >();
-            auto retPair = handleRootFile( config, rootConfigType );
-            if ( !retPair.first )
+            std::string keyString( key.str() );
+
+            // IF its a table, then we need to recursively call this function
+            if ( value.is_table() || value.is_array() )
             {
-                configNode.retStatus = retPair;
-
-                return;
+                auto newConfigNode = std::make_shared< ConfigNode >( keyString, configNode );
+                configNode->addChild( newConfigNode );
+                processTOMLData( value, newConfigNode );
             }
-
-            configNode.configType = rootConfigType;
-
-            break;
-        }
-        case ConfigFileID::CORE_CONFIGURABLES:
-        {
-            // handleCoreConfigFile( config );
-
-            break;
-        }
-        case ConfigFileID::PREFABS:
-        {
-            // FUTURE
-
-            break;
-        }
-        case ConfigFileID::SIZE:
-        {
-            // DO NOTHING
-
-            break;
+            else // For arrays, we must iterate over all elements
+            {
+                processPrimitiveTOMLData( keyString, value, configNode );
+            }
         }
     }
-
-    configNode.retStatus = std::make_pair( true, "" );
+    else if ( tomlNode.is_array() )
+    {
+        const auto& tomlArray = tomlNode.as_array();
+        for ( auto&& val : *tomlArray )
+        {
+            processArrayTOMLData( val, configNode );
+        }
+    }
 
     return;
 }
 
-std::pair< bool, std::string > Core::TOMLConfigReader::handleRootFile(
-    const toml::table& configTable, std::shared_ptr< RootConfigType > rootConfigType )
-{
-    // ITERATE OVER THE DEFINED TABLE KEYS
-    for ( const auto& key : rootConfigType->absoluteTablePaths )
-    {
-        auto nodeView = configTable.at_path( key );
-
-        auto tomlStringView = nodeView.as_string();
-        if ( tomlStringView )
-        {
-            std::string myValue = tomlStringView->value_or( "" );
-            if ( !myValue.empty() )
-                rootConfigType->configFiles.push_back( myValue );
-        }
-    }
-
-    return std::make_pair( true, "" );
-}
-
-// std::pair< bool, std::string > Core::TOMLConfigReader::handleCoreConfigFile(
-//     const toml::table& configTable, std::shared_ptr< ConfigNode > configNode )
-// {}
-
 // BEGIN HELPER FUNCTIONS ------------------------------------------------------------------------------
 
-std::pair< bool, std::string > Core::TOMLConfigReader::extractTOMLString(
-    const toml::table& configTable, const std::string& stringParameter, std::string& extractedString )
+void Core::TOMLConfigReader::processArrayTOMLData(
+    const toml::node& tomlNode, std::shared_ptr< ConfigNode > configNode )
 {
-    // 1. DETERMINE FILE_TYPE
-    auto it = configTable.find( stringParameter );
-    if ( it == configTable.end() )
-        return std::make_pair( false, "PARAMETER: " + PARAM_FILE_TYPE + ", IS MISSING" );
 
-    auto tomlFileString = it->second.as_string();
-    if ( !tomlFileString )
-        return std::make_pair( false, "PARAMETER: " + PARAM_FILE_TYPE + ", VALUE IS NOT A STRING" );
+    if ( tomlNode.is_string() )
+    {
+        configNode->insertArrayValue( tomlNode.as_string()->value_or( "" ) );
+    }
+    else if ( tomlNode.is_integer() )
+    {
+        configNode->insertArrayValue( tomlNode.as_integer()->value_or( std::numeric_limits< int >::max() ) );
+    }
+    else if ( tomlNode.is_floating_point() )
+    {
+        configNode->insertArrayValue( tomlNode.as_floating_point()->value_or( std::numeric_limits< double >::max() ) );
+    }
+    else if ( tomlNode.is_boolean() )
+    {
+        configNode->insertArrayValue( tomlNode.as_boolean()->value_or( false ) );
+    }
 
-    const std::string fileTypeString = tomlFileString->value_or( "" );
-    if ( fileTypeString.empty() )
-        return std::make_pair( false, "PARAMETER: " + PARAM_FILE_TYPE + ", HAS AN EMPTY VALUE" );
+    return;
+}
 
-    extractedString = fileTypeString;
+void Core::TOMLConfigReader::processPrimitiveTOMLData(
+    const std::string& keyString, const toml::node& tomlNode, std::shared_ptr< ConfigNode > configNode )
+{
 
-    return std::make_pair( true, "" );
+    if ( tomlNode.is_string() )
+    {
+        configNode->insertValuePair( keyString, tomlNode.as_string()->value_or( "" ) );
+    }
+    else if ( tomlNode.is_integer() )
+    {
+        configNode->insertValuePair( keyString, tomlNode.as_integer()->value_or( std::numeric_limits< int >::max() ) );
+    }
+    else if ( tomlNode.is_floating_point() )
+    {
+        configNode->insertValuePair(
+            keyString, tomlNode.as_floating_point()->value_or( std::numeric_limits< double >::max() ) );
+    }
+    else if ( tomlNode.is_boolean() )
+    {
+        configNode->insertValuePair( keyString, tomlNode.as_boolean()->value_or( false ) );
+    }
+
+    return;
 }

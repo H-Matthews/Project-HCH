@@ -7,8 +7,6 @@
 # - Message Network
 # - Scene
 
-FILE_TYPE = 'CORE_CONFIGURABLES'
-
 # BEGINNING APP ----------------------------------
 
 [App]

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/Configuration/ConfigReader/Nodes/ConfigNode.hpp"
+#include "core/Configuration/ConfigTree/ConfigNode.hpp"
 
 #include <filesystem>
 #include <string>
@@ -15,6 +15,7 @@ namespace Core
       public:
         virtual void init() = 0;
 
-        virtual void readFile( const std::filesystem::path& filePath, ConfigNode& configNode ) = 0;
+        virtual std::pair< bool, std::string > readFile(
+            const std::filesystem::path& filePath, std::shared_ptr< ConfigNode >& configNode ) = 0;
     };
 }
