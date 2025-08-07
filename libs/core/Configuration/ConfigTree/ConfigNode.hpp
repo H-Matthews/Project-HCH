@@ -8,7 +8,7 @@
 
 namespace Core
 {
-    using PrimitiveVariant = std::variant< char, int, float, double, std::string >;
+    using PrimitiveVariant = std::variant< bool, char, int, float, double, std::string >;
 
     class ConfigNode
     {
@@ -32,6 +32,9 @@ namespace Core
 
         std::multimap< std::string, PrimitiveVariant > mKeyValues;
         std::vector< PrimitiveVariant > mArrayValues;
+
+      public:
+        friend class ConfigurationTree;
     };
 
     template < typename T >
@@ -40,7 +43,7 @@ namespace Core
         T* primitiveType = nullptr;
 
         auto it = mKeyValues.find( key );
-        if ( it != mKeyValues.end() )
+        if (it != mKeyValues.end())
             primitiveType = std::get_if< T >( it->second );
 
         return primitiveType;

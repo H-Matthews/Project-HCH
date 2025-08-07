@@ -48,6 +48,8 @@ namespace Core
         // Root Config File
         static const std::string ROOT_CONFIG_FILE_NAME;
 
+        std::vector< std::string > mConfigFiles;
+
         // FilePath information
         static const std::string CONFIG_DIR_NAME;
         static const std::string OUTPUT_DIR_NAME;
