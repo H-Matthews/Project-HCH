@@ -10,7 +10,7 @@ Core::ConfigurationTree::ConfigurationTree() :
 
 std::shared_ptr< Core::ConfigurationTree > Core::ConfigurationTree::instance()
 {
-    if (mConfigTreeInstance == nullptr)
+    if ( mConfigTreeInstance == nullptr )
         mConfigTreeInstance = std::shared_ptr< Core::ConfigurationTree >( new Core::ConfigurationTree() );
 
     return mConfigTreeInstance;
@@ -26,16 +26,16 @@ void Core::ConfigurationTree::attachConfigNode( std::shared_ptr< ConfigNode > co
 
 Core::ConfigNode* Core::ConfigurationTree::traverseTree( ConfigNode* node, const std::string nodeName )
 {
-    if (node == nullptr)
+    if ( node == nullptr )
         return nullptr;
 
-    if (node->mName == nodeName)
+    if ( node->mName == nodeName )
         return node;
 
-    for (const auto& child : node->mChildren)
+    for ( const auto& child : node->mChildren )
     {
         ConfigNode* resultNode = traverseTree( child.get(), nodeName );
-        if (resultNode)
+        if ( resultNode )
             return resultNode;
     }
 

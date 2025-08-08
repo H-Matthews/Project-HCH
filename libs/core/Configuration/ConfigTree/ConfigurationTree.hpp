@@ -2,11 +2,12 @@
 
 #include <memory>
 #include <string>
-#include <iostream>
 #include <algorithm>
 #include <cstring>
 
 #include "core/Configuration/ConfigTree/ConfigNode.hpp"
+
+#include "utility/StringOperations.hpp"
 
 namespace Core
 {
@@ -26,6 +27,9 @@ namespace Core
         template < typename T >
         T* findValueByNode( const std::string& nodeName, const std::string& key );
 
+        template < typename T >
+        std::vector< T* > findValuesByNode( const std::string& nodeName );
+
       private:
         ConfigurationTree();
 
@@ -39,48 +43,56 @@ namespace Core
         friend class ConfigNode;
     };
 
-    // root.configuration_files
-
     template < typename T >
     T* ConfigurationTree::findValueByNode( const std::string& nodeName, const std::string& key )
     {
         T* result = nullptr;
 
-        auto pos = nodeName.find( '.' );
-
-        std::string temp = nodeName;
         std::vector< std::string > configNodeNames;
-
-        while (pos != std::string::npos)
-        {
-            // Extract the substring
-            std::string configName = temp.substr( 0, pos );
-            configNodeNames.push_back( configName );
-
-            // Erase extracted part
-            temp.erase( 0, pos + 1 );
-
-            // Find next occurrence of delimiter
-            pos = temp.find( '.' );
-        }
-
-        configNodeNames.push_back( temp );
+        Utility::splitString( nodeName, configNodeNames, '.' );
 
         ConfigNode* traversalNode = nullptr;
-        for (const auto& configNodeName : configNodeNames)
+        for ( const auto& configNodeName : configNodeNames )
         {
             traversalNode = traverseTree( mRootNode.get(), configNodeName );
-            if (traversalNode == nullptr)
+            if ( traversalNode == nullptr )
                 return result;
         }
 
         // IF we got here, then we found the node
         // Lookup the Key
         auto it = traversalNode->mKeyValues.find( key );
-        if (it != traversalNode->mKeyValues.end())
+        if ( it != traversalNode->mKeyValues.end() )
             result = std::get_if< T >( &it->second );
 
         return result;
+    }
+
+    template < typename T >
+    std::vector< T* > ConfigurationTree::findValuesByNode( const std::string& nodeName )
+    {
+        std::vector< T* > result;
+
+        std::vector< std::string > configNodeNames;
+        Utility::splitString( nodeName, configNodeNames, '.' );
+
+        ConfigNode* traversalNode = nullptr;
+        for ( const auto& configNodeName : configNodeNames )
+        {
+            traversalNode = traverseTree( mRootNode.get(), configNodeName );
+            if ( traversalNode == nullptr )
+                return result;
+        }
+
+        // IF we got here, then we found the node with the vector
+        for ( auto& value : traversalNode->mArrayValues )
+        {
+            T* tempPointer = std::get_if< T >( &value );
+            if ( tempPointer )
+            {
+                result.push_back( tempPointer );
+            }
+        }
     }
 
 }
