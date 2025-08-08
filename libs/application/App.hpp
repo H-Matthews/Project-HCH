@@ -21,6 +21,15 @@
 
 namespace Application
 {
+    enum class State
+    {
+        NOT_CONFIGURED = 0,
+        CONFIGURED,
+        WAITING_TO_RUN,
+        RUNNING,
+        SHUTTING_DOWN
+    };
+
     class App
     {
       public:
@@ -41,8 +50,27 @@ namespace Application
 
         void loadResources();
 
+        bool transitionState( State statusToTransfer );
+
+        inline bool isConfigured()
+        {
+            return mState == State::CONFIGURED;
+        }
+
+        inline bool isWaitingToRun()
+        {
+            return mState == State::WAITING_TO_RUN;
+        }
+
+        inline bool isRunning()
+        {
+            return mState == State::RUNNING;
+        }
+
       private:
         static const sf::Time TIME_PER_FRAME;
+
+        State mState;
 
         std::shared_ptr< Utility::Logger > mAppLogger;
 

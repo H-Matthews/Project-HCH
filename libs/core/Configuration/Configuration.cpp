@@ -166,7 +166,7 @@ bool Core::Configuration::parse()
         return false;
     }
 
-    // PARSE ROOT FILE --- Populates ConfigurationTree
+    // PARSE ROOT FILE ---- Populates ConfigurationTree
     auto retRootPair = parseRootFile();
     if ( !retRootPair.first )
     {
