@@ -5,6 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cstring>
+#include <optional>
 
 #include "core/Configuration/ConfigTree/ConfigNode.hpp"
 
@@ -24,7 +25,7 @@ namespace Core
         ConfigNode* traverseTree( ConfigNode* root, const std::string nodeName );
 
         template < typename T >
-        T* findValueByNode( const std::string& nodeName, const std::string& key );
+        std::optional< T > findValueByNode( const std::string& nodeName, const std::string& key );
 
       private:
         ConfigurationTree();
@@ -42,9 +43,9 @@ namespace Core
     // root.configuration_files
 
     template < typename T >
-    T* ConfigurationTree::findValueByNode( const std::string& nodeName, const std::string& key )
+    std::optional< T > ConfigurationTree::findValueByNode( const std::string& nodeName, const std::string& key )
     {
-        T* result = nullptr;
+        std::optional< T > result = std::nullopt;
 
         auto pos = nodeName.find( '.' );
 
@@ -78,9 +79,11 @@ namespace Core
         // Lookup the Key
         auto it = traversalNode->mKeyValues.find( key );
         if (it != traversalNode->mKeyValues.end())
-            result = std::get_if< T >( &it->second );
+        {
+            if (auto val = std::get_if< T >( &it->second ))
+                result = *val;
+        }
 
         return result;
     }
-
 }

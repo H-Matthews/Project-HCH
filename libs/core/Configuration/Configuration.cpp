@@ -193,44 +193,64 @@ std::pair< bool, std::string > Core::Configuration::parseRootFile()
 {
     // Build RootfilePath
     std::string rootFilePath = mConfigDirPath + "/" + ROOT_CONFIG_FILE_NAME;
+
+    if constexpr (Utility::CAN_LOG)
+        Utility::LogRegistry::instance()->getGlobalLogger()->logDebug( "Parsing config file: " + rootFilePath );
+
     std::shared_ptr< ConfigNode > rootConfigNode = nullptr;
+    try
+    {
+        auto retStatus = mConfigReader->readFile( std::filesystem::path( rootFilePath ), rootConfigNode );
 
-    auto retStatus = mConfigReader->readFile( std::filesystem::path( rootFilePath ), rootConfigNode );
+        // IF we fail to read a file, then just fail fast
+        if (!retStatus.first)
+            return retStatus;
 
-    // IF we fail to read a file, then just fail fast
-    if (!retStatus.first)
-        return retStatus;
-
-    if (rootConfigNode)
         ConfigurationTree::instance()->attachConfigNode( rootConfigNode );
 
-    const std::string* coreConfigFile = ConfigurationTree::instance()->findValueByNode< std::string >(
-        "root.Configuration_Files", "CORE_CONFIGURABLES" );
-    if (coreConfigFile)
-        mConfigFiles.push_back( std::string( mConfigDirPath + "/" + *coreConfigFile ) );
+        // Get files from Config Tree
+        std::optional< std::string > coreConfigFile = ConfigurationTree::instance()->findValueByNode< std::string >(
+            "root.Configuration_Files", "CORE_CONFIGURABLES" );
 
-    const std::string* prefabConfigFile =
-        ConfigurationTree::instance()->findValueByNode< std::string >( "root.Configuration_Files", "PREFABS" );
-    if (prefabConfigFile)
-        mConfigFiles.push_back( std::string( mConfigDirPath + "/" + *prefabConfigFile ) );
+        if (coreConfigFile)
+            mConfigFiles.push_back( std::string( mConfigDirPath + "/" + *coreConfigFile ) );
+
+        std::optional< std::string > prefabConfigFile =
+            ConfigurationTree::instance()->findValueByNode< std::string >( "root.Configuration_Files", "PREFABS" );
+
+        if (prefabConfigFile)
+            mConfigFiles.push_back( std::string( mConfigDirPath + "/" + *prefabConfigFile ) );
+    }
+    catch (const toml::parse_error& e)
+    {
+        return std::make_pair( false, "TOML parse error in file: " + rootFilePath + " - " + e.what() );
+    }
 
     return std::make_pair( true, std::string( "" ) );
 }
 
 std::pair< bool, std::string > Core::Configuration::parseConfigFiles()
 {
-
     for (const auto& configFile : mConfigFiles)
     {
+        if constexpr (Utility::CAN_LOG)
+            Utility::LogRegistry::instance()->getGlobalLogger()->logDebug( "Parsing config file: " + configFile );
+
         std::shared_ptr< ConfigNode > fileConfigNode = nullptr;
-        auto retStatus = mConfigReader->readFile( std::filesystem::path( configFile ), fileConfigNode );
+        try
+        {
+            auto retStatus = mConfigReader->readFile( std::filesystem::path( configFile ), fileConfigNode );
 
-        // IF we fail to read a file, then just fail fast
-        if (!retStatus.first)
-            return retStatus;
+            // IF we fail to read a file, then just fail fast
+            if (!retStatus.first)
+                return retStatus;
 
-        if (fileConfigNode)
             ConfigurationTree::instance()->attachConfigNode( fileConfigNode );
+        }
+        catch (const toml::parse_error& e)
+        {
+            return std::make_pair( false, "TOML parse error in file: " + configFile + " - " + e.what() );
+        }
     }
 
     return std::make_pair( true, std::string( "" ) );

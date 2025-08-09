@@ -2,6 +2,8 @@
 
 #include "core/Configuration/ConfigTree/ConfigNode.hpp"
 
+#include <stack>
+
 std::shared_ptr< Core::ConfigurationTree > Core::ConfigurationTree::mConfigTreeInstance = nullptr;
 
 Core::ConfigurationTree::ConfigurationTree() :
@@ -29,14 +31,19 @@ Core::ConfigNode* Core::ConfigurationTree::traverseTree( ConfigNode* node, const
     if (node == nullptr)
         return nullptr;
 
-    if (node->mName == nodeName)
-        return node;
+    std::stack< ConfigNode* > nodeStack;
+    nodeStack.push( node );
 
-    for (const auto& child : node->mChildren)
+    while (!nodeStack.empty())
     {
-        ConfigNode* resultNode = traverseTree( child.get(), nodeName );
-        if (resultNode)
-            return resultNode;
+        ConfigNode* currentNode = nodeStack.top();
+        nodeStack.pop();
+
+        if (currentNode->mName == nodeName)
+            return currentNode;
+
+        for (const auto& child : currentNode->mChildren)
+            nodeStack.push( child.get() );
     }
 
     return nullptr;

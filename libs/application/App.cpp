@@ -27,21 +27,14 @@ Application::App::App( std::unique_ptr< Core::ConfigurationI > config ) :
 void Application::App::initialize()
 {
     // 1. INITIALIZE CONFIGURATION
-    try
-    {
-        mConfiguration->initializeOutputDirectory();
-        mConfiguration->initializeConfigDirectory();
-        mConfiguration->initializeAssetsDirectory();
+    mConfiguration->initializeOutputDirectory();
+    mConfiguration->initializeConfigDirectory();
+    mConfiguration->initializeAssetsDirectory();
 
-        bool successfullyParsed = mConfiguration->parse();
-    }
-    catch ( const std::exception& e )
-    {
-        std::cerr << e.what() << '\n';
-    }
+    bool successfullyParsed = mConfiguration->parse();
 
     // 2. INITIALIZE APP, CORE LOGGERS
-    if constexpr ( Utility::CAN_LOG )
+    if constexpr (Utility::CAN_LOG)
     {
         initializeAppLogger();
         initializeCoreLoggers();
@@ -69,33 +62,33 @@ void Application::App::run()
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
-    if constexpr ( Utility::CAN_LOG )
+    if constexpr (Utility::CAN_LOG)
         mAppLogger->logInfo( "Entering main RUN loop" );
 
-    while ( mWindow.isOpen() )
+    while (mWindow.isOpen())
     {
         sf::Time elapsedTime = clock.restart();
         timeSinceLastUpdate += elapsedTime;
 
-        while ( timeSinceLastUpdate > TIME_PER_FRAME )
+        while (timeSinceLastUpdate > TIME_PER_FRAME)
         {
             timeSinceLastUpdate -= TIME_PER_FRAME;
 
             processInput();
             update( TIME_PER_FRAME );
 
-            if ( mStateStack.isEmpty() )
+            if (mStateStack.isEmpty())
             {
                 mWindow.close();
 
-                if constexpr ( Utility::CAN_LOG )
+                if constexpr (Utility::CAN_LOG)
                     mAppLogger->logInfo( "Closing Window...." );
             }
         }
         render();
     }
 
-    if constexpr ( Utility::CAN_LOG )
+    if constexpr (Utility::CAN_LOG)
         mAppLogger->logInfo( "Exiting main RUN loop" );
 }
 
