@@ -92,9 +92,7 @@ namespace Core
         {
             T* tempPointer = std::get_if< T >( &value );
             if (tempPointer)
-            {
                 result.push_back( tempPointer );
-            }
         }
     }
 

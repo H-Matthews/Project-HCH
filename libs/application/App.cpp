@@ -35,44 +35,30 @@ void Application::App::initialize()
     bool retStatus = mConfiguration->parse();
     if (retStatus)
         transitionState( State::CONFIGURED );
-}
-catch (const std::exception& e)
-{
-    std::cerr << e.what() << '\n';
-}
 
-// 2. INITIALIZE APP, CORE LOGGERS
-if constexpr (Utility::CAN_LOG)
-{
-    initializeAppLogger();
-    initializeCoreLoggers();
-}
+    // 2. INITIALIZE APP, CORE LOGGERS
+    if constexpr (Utility::CAN_LOG)
+    {
+        initializeAppLogger();
+        initializeCoreLoggers();
+    }
 
-// 3. LOAD ASSETS
-loadResources();
+    // 3. LOAD ASSETS
+    loadResources();
 
-// 4. INITIALIZE STATE STACK
-registerStates();
-mStateStack.pushState( States::Menu );
+    // 4. INITIALIZE STATE STACK
+    registerStates();
+    mStateStack.pushState( States::Menu );
 
-transitionState( State::WAITING_TO_RUN );
+    transitionState( State::WAITING_TO_RUN );
 
-return;
+    return;
 }
 
 void Application::App::run()
 {
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
-
-    if (!transitionState( State::RUNNING ))
-    {
-        if constexpr (Utility::CAN_LOG)
-            mAppLogger->logError(
-                "Application is unable to transition to the RUNNING state... Likely a Configuration Error " );
-
-        return;
-    }
 
     if (!transitionState( State::RUNNING ))
     {
