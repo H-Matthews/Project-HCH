@@ -2,6 +2,7 @@
 #pragma once
 
 #include <sstream>
+#include <vector>
 
 namespace Utility
 {
@@ -25,5 +26,8 @@ namespace Utility
 
     std::string removeAllSpaces( const std::string& stringToModify );
     std::string removeQuotes( const std::string& stringToModify );
+
+    void splitString(
+        const std::string& stringToSplit, std::vector< std::string >& splitStrings, const char delimiter );
 
 }

@@ -54,3 +54,28 @@ std::string Utility::removeQuotes( const std::string& stringToModify )
 
     return modifiedString;
 }
+
+void Utility::splitString(
+    const std::string& stringToSplit, std::vector< std::string >& splitStrings, const char delimiter )
+{
+
+    std::string temp = stringToSplit;
+
+    auto pos = temp.find( delimiter );
+    while ( pos != std::string::npos )
+    {
+        // Extract the substring
+        std::string configName = temp.substr( 0, pos );
+        splitStrings.push_back( configName );
+
+        // Erase extracted part
+        temp.erase( 0, pos + 1 );
+
+        // Find next occurrence of delimiter
+        pos = temp.find( delimiter );
+    }
+
+    splitStrings.push_back( temp );
+
+    return;
+}

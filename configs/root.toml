@@ -1,5 +1,5 @@
 # Root file contains a list of other Configuration Files
 
 [Configuration_Files]
-CORE_CONFIGURABLES = 'core_configurables.toml'
-PREFABS = 'prefabs.toml' # Not currently used, will be used in future
+core_configurables = 'core_configurables.toml'
+prefabs = 'prefabs.toml' # Not currently used, will be used in future

@@ -166,7 +166,7 @@ bool Core::Configuration::parse()
         return false;
     }
 
-    // PARSE ROOT FILE --- Populates ConfigurationTree
+    // PARSE ROOT FILE ---- Populates ConfigurationTree
     auto retRootPair = parseRootFile();
     if (!retRootPair.first)
     {
@@ -210,13 +210,13 @@ std::pair< bool, std::string > Core::Configuration::parseRootFile()
 
         // Get files from Config Tree
         std::optional< std::string > coreConfigFile = ConfigurationTree::instance()->findValueByNode< std::string >(
-            "root.Configuration_Files", "CORE_CONFIGURABLES" );
+            "root.Configuration_Files", "core_configurables" );
 
         if (coreConfigFile)
             mConfigFiles.push_back( std::string( mConfigDirPath + "/" + *coreConfigFile ) );
 
         std::optional< std::string > prefabConfigFile =
-            ConfigurationTree::instance()->findValueByNode< std::string >( "root.Configuration_Files", "PREFABS" );
+            ConfigurationTree::instance()->findValueByNode< std::string >( "root.Configuration_Files", "prefabs" );
 
         if (prefabConfigFile)
             mConfigFiles.push_back( std::string( mConfigDirPath + "/" + *prefabConfigFile ) );

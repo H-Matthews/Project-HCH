@@ -15,6 +15,7 @@
 const sf::Time Application::App::TIME_PER_FRAME = sf::seconds( 1.0f / 120.0f );
 
 Application::App::App( std::unique_ptr< Core::ConfigurationI > config ) :
+    mState( State::NOT_CONFIGURED ),
     mAppLogger( std::make_shared< Utility::Logger >( "AppLogger" ) ),
     mTextures(),
     mConfiguration( std::move( config ) ),
@@ -31,36 +32,56 @@ void Application::App::initialize()
     mConfiguration->initializeConfigDirectory();
     mConfiguration->initializeAssetsDirectory();
 
-    bool successfullyParsed = mConfiguration->parse();
-
-    // 2. INITIALIZE APP, CORE LOGGERS
-    if constexpr (Utility::CAN_LOG)
-    {
-        initializeAppLogger();
-        initializeCoreLoggers();
-    }
-
-    // 3. LOAD ASSETS
-    loadResources();
-
-    // 4. INITIALIZE STATE STACK
-    registerStates();
-    mStateStack.pushState( States::Menu );
-
-    return;
+    bool retStatus = mConfiguration->parse();
+    if (retStatus)
+        transitionState( State::CONFIGURED );
+}
+catch (const std::exception& e)
+{
+    std::cerr << e.what() << '\n';
 }
 
-void Application::App::registerStates()
+// 2. INITIALIZE APP, CORE LOGGERS
+if constexpr (Utility::CAN_LOG)
 {
-    mStateStack.registerState< Application::MenuState >( States::Menu );
-    mStateStack.registerState< Application::GameState >( States::Game );
-    mStateStack.registerState< Application::PauseState >( States::Pause );
+    initializeAppLogger();
+    initializeCoreLoggers();
+}
+
+// 3. LOAD ASSETS
+loadResources();
+
+// 4. INITIALIZE STATE STACK
+registerStates();
+mStateStack.pushState( States::Menu );
+
+transitionState( State::WAITING_TO_RUN );
+
+return;
 }
 
 void Application::App::run()
 {
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
+
+    if (!transitionState( State::RUNNING ))
+    {
+        if constexpr (Utility::CAN_LOG)
+            mAppLogger->logError(
+                "Application is unable to transition to the RUNNING state... Likely a Configuration Error " );
+
+        return;
+    }
+
+    if (!transitionState( State::RUNNING ))
+    {
+        if constexpr (Utility::CAN_LOG)
+            mAppLogger->logError(
+                "Application is unable to transition to the RUNNING state... Likely a Configuration Error " );
+
+        return;
+    }
 
     if constexpr (Utility::CAN_LOG)
         mAppLogger->logInfo( "Entering main RUN loop" );
@@ -85,6 +106,7 @@ void Application::App::run()
                     mAppLogger->logInfo( "Closing Window...." );
             }
         }
+
         render();
     }
 
@@ -144,6 +166,13 @@ void Application::App::initializeCoreLoggers()
     mNetwork.initializeLogger();
 }
 
+void Application::App::registerStates()
+{
+    mStateStack.registerState< Application::MenuState >( States::Menu );
+    mStateStack.registerState< Application::GameState >( States::Game );
+    mStateStack.registerState< Application::PauseState >( States::Pause );
+}
+
 void Application::App::loadResources()
 {
     // auto fontTexturePaths = mConfiguration->getAssetPaths();
@@ -157,4 +186,63 @@ void Application::App::loadResources()
     // mTextures.load( Textures::ID::ENEMY, texturePath + "/" + "enemySprite.png" );
 
     return;
+}
+
+// TODO: IMPLEMENT LOGGING
+bool Application::App::transitionState( State statusToTransfer )
+{
+    bool retStatus = false;
+
+    if (mState == statusToTransfer)
+        return retStatus;
+
+    switch (statusToTransfer)
+    {
+        case State::NOT_CONFIGURED:
+        {
+            break;
+        }
+        case State::CONFIGURED:
+        {
+            if (mState == State::NOT_CONFIGURED)
+            {
+                mState = statusToTransfer;
+                retStatus = true;
+            }
+
+            break;
+        }
+        case State::WAITING_TO_RUN:
+        {
+            if (mState == State::CONFIGURED)
+            {
+                mState = statusToTransfer;
+                retStatus = true;
+            }
+
+            break;
+        }
+        case State::RUNNING:
+        {
+            if (mState == State::WAITING_TO_RUN)
+            {
+                mState = statusToTransfer;
+                retStatus = true;
+            }
+
+            break;
+        }
+        case State::SHUTTING_DOWN:
+        {
+            if (mState == State::WAITING_TO_RUN)
+            {
+                mState = statusToTransfer;
+                retStatus = true;
+            }
+
+            break;
+        }
+    }
+
+    return retStatus;
 }
