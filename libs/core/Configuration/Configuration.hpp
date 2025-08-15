@@ -34,6 +34,8 @@ namespace Core
         {}
 
       private:
+        void registerConfigurables();
+
         std::pair< bool, std::string > parseRootFile();
         std::pair< bool, std::string > parseConfigFiles();
 

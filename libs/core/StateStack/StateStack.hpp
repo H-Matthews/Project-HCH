@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/StateStack/State.hpp"
+#include "core/Configuration/Configurables/Configurable.hpp"
 
 #include "utility/Logging/LogRegistry.hpp"
 
@@ -14,9 +15,11 @@
 namespace Core
 {
 
-    class StateStack
+    class StateStack : public Configurable
     {
       public:
+        static const std::string TYPE_NAME;
+
         enum Action
         {
             Push,
@@ -25,6 +28,7 @@ namespace Core
         };
 
       public:
+        StateStack();
         explicit StateStack( Core::State::SharedObjects sObjects );
 
         // Needs to be a template so that we can treat registerState as a factory

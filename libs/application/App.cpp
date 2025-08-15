@@ -13,12 +13,14 @@
 #include <iostream>
 
 const sf::Time Application::App::TIME_PER_FRAME = sf::seconds( 1.0f / 120.0f );
+const std::string Application::App::TYPE_NAME = "APP";
 
-Application::App::App( std::unique_ptr< Core::ConfigurationI > config ) :
-    mState( State::NOT_CONFIGURED ),
-    mAppLogger( std::make_shared< Utility::Logger >( "AppLogger" ) ),
+Application::App::App() :
+    Configurable( TYPE_NAME ),
+    mState( State::NONE ),
+    mAppLogger( nullptr ),
     mTextures(),
-    mConfiguration( std::move( config ) ),
+    mConfiguration( nullptr ),
     mNetwork(),
     mPlayerKeyBindings(),
     mWindow( sf::VideoMode( { 640, 480 } ), "App Window", sf::Style::Close ),
@@ -27,12 +29,22 @@ Application::App::App( std::unique_ptr< Core::ConfigurationI > config ) :
 
 void Application::App::initialize()
 {
+    if ( !mConfiguration )
+    {
+        // Throw configuration exception when we get ConfigException setup
+        return;
+    }
+
+    mState = State::NOT_CONFIGURED;
+
     // 1. INITIALIZE CONFIGURATION
     mConfiguration->initializeOutputDirectory();
     mConfiguration->initializeConfigDirectory();
     mConfiguration->initializeAssetsDirectory();
 
     bool retStatus = mConfiguration->parse();
+
+    // Need to build App based on configuration file...
 
     // 2. INITIALIZE APP, CORE LOGGERS
     if constexpr ( Utility::CAN_LOG )
@@ -62,11 +74,22 @@ void Application::App::run()
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
+    if ( mState == State::NONE )
+    {
+        // Throw Configuration Exception
+        return;
+    }
+
     if ( !transitionState( State::RUNNING ) )
     {
         if constexpr ( Utility::CAN_LOG )
-            mAppLogger->logError(
-                "Application is unable to transition to the RUNNING state... Likely a Configuration Error " );
+        {
+            if ( mAppLogger )
+            {
+                mAppLogger->logError(
+                    "Application is unable to transition to the RUNNING state... Likely a Configuration Error " );
+            }
+        }
 
         return;
     }

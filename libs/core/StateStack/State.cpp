@@ -1,6 +1,12 @@
 #include "core/StateStack/State.hpp"
 #include "core/StateStack/StateStack.hpp"
 
+Core::State::SharedObjects::SharedObjects() :
+    window( nullptr ),
+    network( nullptr ),
+    textures( nullptr )
+{}
+
 Core::State::SharedObjects::SharedObjects(
     sf::RenderWindow& window, Core::MessageNetwork& network, TextureHolder& textures ) :
     window( &window ),

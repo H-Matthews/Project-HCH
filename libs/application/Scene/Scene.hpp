@@ -18,6 +18,9 @@ namespace Application
     class Scene
     {
       public:
+        static const std::string TYPE_NAME;
+
+      public:
         explicit Scene( sf::RenderWindow& window, Core::MessageNetwork& gameNetwork, TextureHolder& textures );
 
         void update( sf::Time fixedTimeStep );

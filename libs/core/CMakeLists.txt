@@ -18,6 +18,7 @@ set(SRC Messaging/Message.cpp
         Configuration/ConfigTree/ConfigurationTree.cpp
         Configuration/ConfigTree/ConfigNode.cpp
         Configuration/ConfigReader/TOMLConfigReader.cpp
+        Configuration/Configurables/Configurable.cpp
         GameAssetContainer/GameAssetContainer.cpp )
 
 set(INC Messaging/Message.hpp
@@ -31,6 +32,10 @@ set(INC Messaging/Message.hpp
         Configuration/ConfigTree/ConfigNode.hpp
         Configuration/ConfigReader/ConfigReader.hpp
         Configuration/ConfigReader/TOMLConfigReader.hpp
+        Configuration/Configurables/Configurable.hpp
+        Configuration/Configurables/ConfigurableFactory.hpp
+        Configuration/Configurables/ConfigInitializer.hpp
+        Configuration/Configurables/ConfigInitializer.cpp
         GameAssetContainer/GameAssetContainer.hpp
         GameAssetContainer/ResourceHolder.hpp
         GameAssetContainer/ResourceEnums.hpp )

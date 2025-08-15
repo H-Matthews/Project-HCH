@@ -22,6 +22,7 @@ namespace Core
         struct SharedObjects
         {
             SharedObjects( sf::RenderWindow& window, Core::MessageNetwork& network, TextureHolder& textures );
+            SharedObjects();
 
             sf::RenderWindow* window;
             Core::MessageNetwork* network;

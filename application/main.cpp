@@ -1,5 +1,6 @@
 #include "application/App.hpp"
 
+#include "core/Configuration/Configurables/ConfigInitializer.hpp"
 #include "core/Configuration/Configuration.hpp"
 
 #include <iostream>
@@ -7,12 +8,20 @@
 
 int main()
 {
+    Core::ConfigInitializer::registerConfigurables();
+    auto application =
+        Core::ConfigurableFactory::createTypedConfigurable< Application::App >( Application::App::TYPE_NAME );
+
+    auto gameConfig = std::make_unique< Core::Configuration >();
+
+    application->setConfiguration( std::move( gameConfig ) );
+    application->initialize();
+    application->run();
 
     try
     {
-        Application::App game( std::make_unique< Core::Configuration >() );
-        game.initialize();
-        game.run();
+        // game.initialize();
+        // game.run();
     }
     catch ( const std::exception& e )
     {

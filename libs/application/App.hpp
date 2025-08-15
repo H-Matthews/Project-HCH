@@ -2,8 +2,9 @@
 
 #include "application/Settings/KeyBindings.hpp"
 
-#include "core/StateStack/StateStack.hpp"
+#include "core/Configuration/Configurables/Configurable.hpp"
 #include "core/Configuration/Configuration.hpp"
+#include "core/StateStack/StateStack.hpp"
 #include "core/Messaging/MessageNetwork.hpp"
 #include "core/GameAssetContainer/GameAssetContainer.hpp"
 #include "core/GameAssetContainer/ResourceHolder.hpp"
@@ -34,15 +35,18 @@ namespace Application
     std::string convertEnumToString( const State& state );
     State convertStringToEnum( const std::string& stringState );
 
-    class App
+    class App : public Core::Configurable
     {
       public:
-        App( std::unique_ptr< Core::ConfigurationI > config );
+        static const std::string TYPE_NAME;
+
+        App();
+        inline void setConfiguration( std::unique_ptr< Core::ConfigurationI > configuration );
         void initialize();
         void run();
 
       private:
-        // Registers States in StateStack mRegistry
+        // Registers States in StateStack
         void registerStates();
 
         void processInput();
@@ -87,4 +91,9 @@ namespace Application
         sf::RenderWindow mWindow;
         Core::StateStack mStateStack;
     };
+
+    void Application::App::setConfiguration( std::unique_ptr< Core::ConfigurationI > configuration )
+    {
+        mConfiguration = std::move( configuration );
+    }
 }

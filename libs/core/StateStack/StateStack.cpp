@@ -5,7 +5,19 @@
 
 #include <cassert>
 
+const std::string Core::StateStack::TYPE_NAME = "STATE_STACK";
+
+Core::StateStack::StateStack() :
+    Configurable( TYPE_NAME ),
+    mLogger( nullptr ),
+    mStack(),
+    mPendingList(),
+    mSharedObjects(),
+    mRegistry()
+{}
+
 Core::StateStack::StateStack( Core::State::SharedObjects sObjects ) :
+    Configurable( TYPE_NAME ),
     mLogger( nullptr ),
     mStack(),
     mPendingList(),

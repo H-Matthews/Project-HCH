@@ -7,6 +7,7 @@
 #include <cmath>
 #include <memory>
 
+const std::string Application::Scene::TYPE_NAME = "SCENE";
 Application::Scene::Scene( sf::RenderWindow& window, Core::MessageNetwork& gameNetwork, TextureHolder& textures ) :
     mWindow( window ),
     mEntityManager( textures )
