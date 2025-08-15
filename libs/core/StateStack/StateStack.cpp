@@ -84,6 +84,11 @@ bool Core::StateStack::isEmpty() const
     return mStack.empty();
 }
 
+bool Core::StateStack::isPendingListEmpty() const
+{
+    return mPendingList.empty();
+}
+
 void Core::StateStack::initializeLogger()
 {
     // Create and Register

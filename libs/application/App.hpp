@@ -23,12 +23,16 @@ namespace Application
 {
     enum class State
     {
-        NOT_CONFIGURED = 0,
+        NONE = 0, // This IS NOT a valid value, just used for default values
+        NOT_CONFIGURED,
         CONFIGURED,
         WAITING_TO_RUN,
         RUNNING,
         SHUTTING_DOWN
     };
+
+    std::string convertEnumToString( const State& state );
+    State convertStringToEnum( const std::string& stringState );
 
     class App
     {

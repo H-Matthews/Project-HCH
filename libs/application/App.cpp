@@ -33,15 +33,16 @@ void Application::App::initialize()
     mConfiguration->initializeAssetsDirectory();
 
     bool retStatus = mConfiguration->parse();
-    if (retStatus)
-        transitionState( State::CONFIGURED );
 
     // 2. INITIALIZE APP, CORE LOGGERS
-    if constexpr (Utility::CAN_LOG)
+    if constexpr ( Utility::CAN_LOG )
     {
         initializeAppLogger();
         initializeCoreLoggers();
     }
+
+    if ( retStatus )
+        transitionState( State::CONFIGURED );
 
     // 3. LOAD ASSETS
     loadResources();
@@ -50,7 +51,8 @@ void Application::App::initialize()
     registerStates();
     mStateStack.pushState( States::Menu );
 
-    transitionState( State::WAITING_TO_RUN );
+    if ( !mStateStack.isPendingListEmpty() )
+        transitionState( State::WAITING_TO_RUN );
 
     return;
 }
@@ -60,35 +62,35 @@ void Application::App::run()
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
-    if (!transitionState( State::RUNNING ))
+    if ( !transitionState( State::RUNNING ) )
     {
-        if constexpr (Utility::CAN_LOG)
+        if constexpr ( Utility::CAN_LOG )
             mAppLogger->logError(
                 "Application is unable to transition to the RUNNING state... Likely a Configuration Error " );
 
         return;
     }
 
-    if constexpr (Utility::CAN_LOG)
+    if constexpr ( Utility::CAN_LOG )
         mAppLogger->logInfo( "Entering main RUN loop" );
 
-    while (mWindow.isOpen())
+    while ( mWindow.isOpen() )
     {
         sf::Time elapsedTime = clock.restart();
         timeSinceLastUpdate += elapsedTime;
 
-        while (timeSinceLastUpdate > TIME_PER_FRAME)
+        while ( timeSinceLastUpdate > TIME_PER_FRAME )
         {
             timeSinceLastUpdate -= TIME_PER_FRAME;
 
             processInput();
             update( TIME_PER_FRAME );
 
-            if (mStateStack.isEmpty())
+            if ( mStateStack.isEmpty() )
             {
                 mWindow.close();
 
-                if constexpr (Utility::CAN_LOG)
+                if constexpr ( Utility::CAN_LOG )
                     mAppLogger->logInfo( "Closing Window...." );
             }
         }
@@ -96,7 +98,7 @@ void Application::App::run()
         render();
     }
 
-    if constexpr (Utility::CAN_LOG)
+    if constexpr ( Utility::CAN_LOG )
         mAppLogger->logInfo( "Exiting main RUN loop" );
 }
 
@@ -174,24 +176,38 @@ void Application::App::loadResources()
     return;
 }
 
-// TODO: IMPLEMENT LOGGING
 bool Application::App::transitionState( State statusToTransfer )
 {
     bool retStatus = false;
 
-    if (mState == statusToTransfer)
+    if constexpr ( Utility::CAN_LOG )
+        mAppLogger->logDebug( "Attempting to Transition to State: " + convertEnumToString( statusToTransfer ) );
+
+    if ( mState == statusToTransfer )
         return retStatus;
 
-    switch (statusToTransfer)
+    State prevState = State::NONE;
+
+    switch ( statusToTransfer )
     {
+        case State::NONE:
+        {
+            // DO NOTHING
+
+            break;
+        }
         case State::NOT_CONFIGURED:
         {
+            // DO NOTHING
+
             break;
         }
         case State::CONFIGURED:
         {
-            if (mState == State::NOT_CONFIGURED)
+            if ( mState == State::NOT_CONFIGURED )
             {
+                prevState = mState;
+
                 mState = statusToTransfer;
                 retStatus = true;
             }
@@ -200,8 +216,10 @@ bool Application::App::transitionState( State statusToTransfer )
         }
         case State::WAITING_TO_RUN:
         {
-            if (mState == State::CONFIGURED)
+            if ( mState == State::CONFIGURED )
             {
+                prevState = mState;
+
                 mState = statusToTransfer;
                 retStatus = true;
             }
@@ -210,8 +228,10 @@ bool Application::App::transitionState( State statusToTransfer )
         }
         case State::RUNNING:
         {
-            if (mState == State::WAITING_TO_RUN)
+            if ( mState == State::WAITING_TO_RUN )
             {
+                prevState = mState;
+
                 mState = statusToTransfer;
                 retStatus = true;
             }
@@ -220,8 +240,10 @@ bool Application::App::transitionState( State statusToTransfer )
         }
         case State::SHUTTING_DOWN:
         {
-            if (mState == State::WAITING_TO_RUN)
+            if ( mState == State::WAITING_TO_RUN )
             {
+                prevState = mState;
+
                 mState = statusToTransfer;
                 retStatus = true;
             }
@@ -230,5 +252,92 @@ bool Application::App::transitionState( State statusToTransfer )
         }
     }
 
+    if ( Utility::CAN_LOG && retStatus )
+    {
+        if constexpr ( Utility::CAN_LOG )
+            mAppLogger->logDebug( "Transitioning from State: " + convertEnumToString( prevState ) + " to " +
+                                  convertEnumToString( statusToTransfer ) );
+    }
+    else if ( Utility::CAN_LOG )
+    {
+        if constexpr ( Utility::CAN_LOG )
+            mAppLogger->logError( "Could NOT transition from State: " + convertEnumToString( prevState ) + " to " +
+                                  convertEnumToString( statusToTransfer ) );
+    }
+
     return retStatus;
+}
+
+std::string Application::convertEnumToString( const State& state )
+{
+    std::string retString;
+
+    switch ( state )
+    {
+        case State::NONE:
+        {
+            retString = "NONE";
+
+            break;
+        }
+        case State::NOT_CONFIGURED:
+        {
+            retString = "NOT_CONFIGURED";
+
+            break;
+        }
+        case State::CONFIGURED:
+        {
+            retString = "CONFIGURED";
+
+            break;
+        }
+        case State::WAITING_TO_RUN:
+        {
+            retString = "WAITING_TO_RUN";
+
+            break;
+        }
+        case State::RUNNING:
+        {
+            retString = "RUNNING";
+
+            break;
+        }
+        case State::SHUTTING_DOWN:
+        {
+            retString = "SHUTTING_DOWN";
+
+            break;
+        }
+    }
+
+    return retString;
+}
+Application::State Application::convertStringToEnum( const std::string& stringState )
+{
+    State retState = State::NONE;
+
+    if ( stringState == "NOT_CONFIGURED" )
+    {
+        retState = State::NOT_CONFIGURED;
+    }
+    else if ( stringState == "CONFIGURED" )
+    {
+        retState = State::CONFIGURED;
+    }
+    else if ( stringState == "WAITING_TO_RUN" )
+    {
+        retState = State::WAITING_TO_RUN;
+    }
+    else if ( stringState == "RUNNING" )
+    {
+        retState = State::RUNNING;
+    }
+    else if ( stringState == "SHUTTING_DOWN" )
+    {
+        retState = State::SHUTTING_DOWN;
+    }
+
+    return retState;
 }

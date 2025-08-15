@@ -43,6 +43,7 @@ namespace Core
         void clearStates();
 
         bool isEmpty() const;
+        bool isPendingListEmpty() const;
 
         void initializeLogger();
 
