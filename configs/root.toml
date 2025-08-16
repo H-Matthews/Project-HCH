@@ -1,5 +1,13 @@
 # Root file contains a list of other Configuration Files
 
+[Configuration]
+# out_directory = 'myOutput'
+
+# # Path to where your asset files are
+# asset_directory = 'assets'
+# asset_font_directory = 'fonts'
+# asset_texture_directory = 'textures'
+
 [Configuration_Files]
 core_configurables = 'core_configurables.toml'
 prefabs = 'prefabs.toml' # Not currently used, will be used in future

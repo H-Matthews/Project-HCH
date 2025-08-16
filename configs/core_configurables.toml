@@ -2,30 +2,30 @@
 # Meaning, Only Configurables that are instantiated once throughout the program
 
 # List of All Core Configurables
-# - App
+# - Engine
 # - StateStack
 # - Message Network
 # - Scene
 
-# BEGINNING APP ----------------------------------
+# BEGINNING ENGINE ----------------------------------
 
-[App]
+[Engine]
 logging_enabled = true
 
-[App.Logger]
+[Engine.Logger]
 logger_name = "AppLogger"
 global_log_level = "NONE"
 sinks = [ "ColorConsoleSink", "TextFileSink" ]
 
-[App.Logger.ColorConsoleSink]
+[Engine.Logger.ColorConsoleSink]
 log_level = "INFO"
 
-[App.Logger.TextFileSink]
-log_file_name = "App"
+[Engine.Logger.TextFileSink]
+log_file_name = "Engine"
 log_file_extension = ".log"
 log_level = "INFO"
 
-# END APP ----------------------------------------
+# END ENGINE ----------------------------------------
 
 # BEGINNING STATESTACK ---------------------------
 

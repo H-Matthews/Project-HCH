@@ -7,26 +7,13 @@ set(PROJECT_DIR "${CMAKE_SOURCE_DIR}")
 
 set(LIBRARY_NAME "core")
 
-set(SRC Messaging/Message.cpp
-        Messaging/MessageNetwork.cpp
-        Messaging/MessageNode.cpp
-        Messaging/MessageTypes.cpp
-        StateStack/State.cpp 
-        StateStack/StateStack.cpp
-        StateStack/StateTypes.cpp
-        Configuration/Configuration.cpp
-        Configuration/ConfigTree/ConfigurationTree.cpp
-        Configuration/ConfigTree/ConfigNode.cpp
-        Configuration/ConfigReader/TOMLConfigReader.cpp
-        Configuration/Configurables/Configurable.cpp
-        GameAssetContainer/GameAssetContainer.cpp )
-
-set(INC Messaging/Message.hpp
+set(INC Engine.hpp
+        Messaging/Message.hpp
         Messaging/MessageNetwork.hpp
         Messaging/MessageNode.hpp
         StateStack/State.hpp 
         StateStack/StateStack.hpp
-        Configuration/ConfigurationI.hpp
+        Exceptions/ConfigurationException.hpp
         Configuration/Configuration.hpp
         Configuration/ConfigTree/ConfigurationTree.hpp
         Configuration/ConfigTree/ConfigNode.hpp
@@ -39,6 +26,21 @@ set(INC Messaging/Message.hpp
         GameAssetContainer/GameAssetContainer.hpp
         GameAssetContainer/ResourceHolder.hpp
         GameAssetContainer/ResourceEnums.hpp )
+
+set(SRC Engine.cpp
+        Messaging/Message.cpp
+        Messaging/MessageNetwork.cpp
+        Messaging/MessageNode.cpp
+        Messaging/MessageTypes.cpp
+        StateStack/State.cpp 
+        StateStack/StateStack.cpp
+        StateStack/StateTypes.cpp
+        Configuration/Configuration.cpp
+        Configuration/ConfigTree/ConfigurationTree.cpp
+        Configuration/ConfigTree/ConfigNode.cpp
+        Configuration/ConfigReader/TOMLConfigReader.cpp
+        Configuration/Configurables/Configurable.cpp
+        GameAssetContainer/GameAssetContainer.cpp )
 
 add_library(${LIBRARY_NAME} STATIC ${SRC} ${INC})
 

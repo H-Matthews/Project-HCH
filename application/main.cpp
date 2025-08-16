@@ -1,32 +1,43 @@
-#include "application/App.hpp"
+#include "core/Engine.hpp"
 
-#include "core/Configuration/Configurables/ConfigInitializer.hpp"
 #include "core/Configuration/Configuration.hpp"
+#include "core/Configuration/ConfigReader/TOMLConfigReader.hpp"
+
+#include "core/Exceptions/ConfigurationException.hpp"
 
 #include <iostream>
-#include <stdexcept>
+
+constexpr const char* CONFIG_DIR_NAME = "configs";
 
 int main()
 {
-    Core::ConfigInitializer::registerConfigurables();
-    auto application =
-        Core::ConfigurableFactory::createTypedConfigurable< Application::App >( Application::App::TYPE_NAME );
 
-    auto gameConfig = std::make_unique< Core::Configuration >();
-
-    application->setConfiguration( std::move( gameConfig ) );
-    application->initialize();
-    application->run();
+    std::shared_ptr< Core::Engine > gameEngine = nullptr;
 
     try
     {
-        // game.initialize();
-        // game.run();
+        auto gameConfig =
+            std::make_unique< Core::Configuration >( std::make_unique< Core::TOMLConfigReader >(), CONFIG_DIR_NAME );
+
+        gameConfig->parse();
+
+        gameConfig->initializeOutputDirectory();
+        gameConfig->initializeAssetsDirectory();
+
+        auto gameEngine = Core::ConfigurableFactory::createTypedConfigurable< Core::Engine >( Core::Engine::TYPE_NAME );
+
+        gameEngine->setConfiguration( std::move( gameConfig ) );
+        gameEngine->initialize();
     }
-    catch ( const std::exception& e )
+    catch ( const Core::ConfigurationException& e )
     {
-        std::cerr << "EXCEPTION: " << e.what() << std::endl;
+        std::cerr << e.what() << '\n';
+
+        return -1;
     }
+
+    if ( gameEngine )
+        gameEngine->run();
 
     return 0;
 }

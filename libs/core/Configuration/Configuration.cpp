@@ -11,29 +11,64 @@
 #include <iostream>
 
 const std::string Core::Configuration::ROOT_CONFIG_FILE_NAME = "root.toml";
-const std::string Core::Configuration::OUTPUT_DIR_NAME = "output";
-const std::string Core::Configuration::CONFIG_DIR_NAME = "configs";
-const std::string Core::Configuration::ASSET_DIR_NAME = "assets";
-const std::string Core::Configuration::ASSET_FONTS_DIR_NAME = "fonts";
-const std::string Core::Configuration::ASSET_TEXTURES_DIR_NAME = "textures";
 
-Core::Configuration::Configuration() :
-    ConfigurationI( PROJECT_DIR ),
-    mConfigReader( std::make_unique< TOMLConfigReader >() )
+// These can be changed via config files
+const std::string Core::Configuration::DEFAULT_OUTPUT_DIR_NAME = "output";
+const std::string Core::Configuration::DEFAULT_ASSET_DIR_NAME = "assets";
+const std::string Core::Configuration::DEFAULT_ASSET_FONTS_DIR_NAME = "fonts";
+const std::string Core::Configuration::DEFAULT_ASSET_TEXTURES_DIR_NAME = "textures";
+
+Core::Configuration::Configuration(
+    std::unique_ptr< ConfigReader > configReader, const std::string& configDirectoryName ) :
+    mConfigReader( std::move( configReader ) ),
+    mConfigFiles(),
+    mProjectDirectory( PROJECT_DIR ),
+    mConfigDirPath( mProjectDirectory + "/" + configDirectoryName ),
+    mOutputDirPath(),
+    mAssetDirPath(),
+    mAssetFontsDirPath(),
+    mAssetTexturesDirPath(),
+    mDirectoryBits( 0 )
 {
     if constexpr ( Utility::CAN_LOG )
     {
         Utility::createGlobalLogger();
         initializeGlobalLogger();
     }
+
+    // Check to see if config directory is valid
+    if ( !( std::filesystem::is_directory( mConfigDirPath ) ) )
+    {
+        if constexpr ( Utility::CAN_LOG )
+            Utility::LogRegistry::instance()->getGlobalLogger()->logError(
+                "Config Directory WAS NOT FOUND --> " + mConfigDirPath );
+
+        throw ConfigurationException( std::string( "Config directory could NOT be found" + mConfigDirPath ).c_str() );
+    }
+
+    Configuration::setDirectoryInit( DirectoryIDs::CONFIG );
+
+    // Registers all CORE configurables
+    Core::ConfigInitializer::registerCoreConfigurables();
 }
 
 // The following field needs to be read in by CONFIG file
 // 1. OUTPUT_DIR_NAME
 void Core::Configuration::initializeOutputDirectory()
 {
-    std::string outputDirectoryPath;
-    outputDirectoryPath += mProjectDirectory + "/" + OUTPUT_DIR_NAME;
+    // Get configured output directory IF SET
+    auto configuredOutDirectory =
+        ConfigurationTree::instance()->findValueByNode< std::string >( "root.Configuration", "out_directory" );
+
+    std::string outputDirectoryPath = mProjectDirectory + "/";
+    if ( configuredOutDirectory )
+    {
+        outputDirectoryPath += *configuredOutDirectory;
+    }
+    else
+    {
+        outputDirectoryPath += DEFAULT_OUTPUT_DIR_NAME;
+    }
 
     // Creates the "output" directory
     if ( !( std::filesystem::is_directory( outputDirectoryPath ) ) )
@@ -44,8 +79,8 @@ void Core::Configuration::initializeOutputDirectory()
                 Utility::LogRegistry::instance()->getGlobalLogger()->logError(
                     "Could NOT create output DIRECTORY --> " + outputDirectoryPath );
 
-            throw std::filesystem::filesystem_error(
-                "Output Directory: " + outputDirectoryPath + " could NOT be created", std::error_code() );
+            std::string exceptionMessage = "Output Directory: " + outputDirectoryPath + " could NOT be created";
+            throw ConfigurationException( exceptionMessage.c_str() );
         }
     }
 
@@ -70,52 +105,65 @@ void Core::Configuration::initializeOutputDirectory()
             Utility::LogRegistry::instance()->getGlobalLogger()->logError(
                 "Could NOT create output APP_ DIRECTORY --> " + mOutputDirPath );
 
-        throw std::filesystem::filesystem_error(
-            "APP_ Directory: " + mOutputDirPath + " could NOT be created", std::error_code() );
+        std::string exceptionMessage = "APP_Directory: " + mOutputDirPath + " could NOT be created ";
+        throw ConfigurationException( exceptionMessage.c_str() );
     }
 
     // Set the Output Directory in the LogRegistry
     Utility::LogRegistry::instance()->configureRegistry( mOutputDirPath );
 
-    ConfigurationI::setDirectoryInit( DirectoryIDs::OUTPUT );
-
-    return;
-}
-
-void Core::Configuration::initializeConfigDirectory()
-{
-    std::string configDirectoryPath;
-
-    configDirectoryPath += mProjectDirectory + "/" + CONFIG_DIR_NAME;
-    mConfigDirPath = configDirectoryPath;
-
-    // Check to see if directory is valid
-    if ( !( std::filesystem::is_directory( mConfigDirPath ) ) )
-    {
-        if constexpr ( Utility::CAN_LOG )
-            Utility::LogRegistry::instance()->getGlobalLogger()->logError(
-                "Config Directory WAS NOT FOUND --> " + mConfigDirPath );
-
-        throw std::filesystem::filesystem_error(
-            "Config directory: " + mConfigDirPath + " could not be found", std::error_code() );
-    }
-
-    ConfigurationI::setDirectoryInit( DirectoryIDs::CONFIG );
+    Configuration::setDirectoryInit( DirectoryIDs::OUTPUT );
 
     return;
 }
 
 void Core::Configuration::initializeAssetsDirectory()
 {
-    // Get and save the Asset file path
-    std::string assetDirectoryPath;
+    // Look up configurable values
+    auto configuredAssetDir =
+        ConfigurationTree::instance()->findValueByNode< std::string >( "root.Configuration", "asset_directory" );
 
-    assetDirectoryPath += mProjectDirectory + "/" + ASSET_DIR_NAME;
+    auto configuredAssetFontDir =
+        ConfigurationTree::instance()->findValueByNode< std::string >( "root.Configuration", "asset_font_directory" );
+
+    auto configuredAssetTextureDir = ConfigurationTree::instance()->findValueByNode< std::string >(
+        "root.Configuration", "asset_texture_directory" );
+
+    // Get and save the Asset file path
+    std::string assetDirectoryPath = mProjectDirectory + "/";
+    if ( configuredAssetDir )
+    {
+        assetDirectoryPath += *configuredAssetDir;
+    }
+    else
+    {
+        assetDirectoryPath += DEFAULT_ASSET_DIR_NAME;
+    }
     mAssetDirPath = assetDirectoryPath;
 
-    // Set convenience path for fonts / textures as well
-    mAssetFontsDirPath = mAssetDirPath + "/" + ASSET_FONTS_DIR_NAME;
-    mAssetTexturesDirPath = mAssetDirPath + "/" + ASSET_TEXTURES_DIR_NAME;
+    std::string assetFontDirPath = mAssetDirPath + "/";
+    if ( configuredAssetFontDir )
+    {
+        assetFontDirPath += *configuredAssetFontDir;
+    }
+    else
+    {
+        assetFontDirPath += DEFAULT_ASSET_FONTS_DIR_NAME;
+    }
+
+    std::string assetTextureDirPath = mAssetDirPath + "/";
+    if ( configuredAssetTextureDir )
+    {
+        assetTextureDirPath += *configuredAssetTextureDir;
+    }
+    else
+    {
+        assetTextureDirPath += DEFAULT_ASSET_TEXTURES_DIR_NAME;
+    }
+
+    // Set convenience path for fonts / textures
+    mAssetFontsDirPath = assetFontDirPath;
+    mAssetTexturesDirPath = assetTextureDirPath;
 
     // Check to see if directory is valid
     if ( !( std::filesystem::is_directory( mAssetDirPath ) ) )
@@ -124,8 +172,8 @@ void Core::Configuration::initializeAssetsDirectory()
             Utility::LogRegistry::instance()->getGlobalLogger()->logError(
                 "Asset Directory WAS NOT FOUND --> " + mAssetDirPath );
 
-        throw std::filesystem::filesystem_error(
-            "Asset directory: " + mAssetDirPath + " could not be found", std::error_code() );
+        std::string exceptionMessage = "Asset Directory: " + mAssetDirPath + " could NOT be found";
+        throw ConfigurationException( exceptionMessage.c_str() );
     }
 
     if ( !( std::filesystem::is_directory( mAssetFontsDirPath ) ) )
@@ -134,8 +182,8 @@ void Core::Configuration::initializeAssetsDirectory()
             Utility::LogRegistry::instance()->getGlobalLogger()->logError(
                 "Asset Font Directory WAS NOT FOUND --> " + mAssetFontsDirPath );
 
-        throw std::filesystem::filesystem_error(
-            "Asset Font directory: " + mAssetFontsDirPath + " could not be found", std::error_code() );
+        std::string exceptionMessage = "Asset Font Directory: " + mAssetFontsDirPath + " could NOT be found";
+        throw ConfigurationException( exceptionMessage.c_str() );
     }
 
     if ( !( std::filesystem::is_directory( mAssetTexturesDirPath ) ) )
@@ -144,27 +192,35 @@ void Core::Configuration::initializeAssetsDirectory()
             Utility::LogRegistry::instance()->getGlobalLogger()->logError(
                 "Asset Texture Directory WAS NOT FOUND --> " + mAssetTexturesDirPath );
 
-        throw std::filesystem::filesystem_error(
-            "Asset Texture directory: " + mAssetTexturesDirPath + " could not be found", std::error_code() );
+        std::string exceptionMessage = "Asset Texture Directory: " + mAssetTexturesDirPath + " could NOT be found";
+        throw ConfigurationException( exceptionMessage.c_str() );
     }
 
-    ConfigurationI::setDirectoryInit( DirectoryIDs::ASSETS );
+    Configuration::setDirectoryInit( DirectoryIDs::ASSETS );
 
     return;
 }
 
-bool Core::Configuration::parse()
+void Core::Configuration::parse()
 {
-    if ( !ConfigurationI::isInitialized() )
+    if ( !isConfigInitialized() )
     {
-        // TODO: Write a function to get the exact directories that still need to be intialized
-        if constexpr ( Utility::CAN_LOG )
-        {
-            Utility::LogRegistry::instance()->getGlobalLogger()->logError(
-                "Could NOT CONFIGURE, directories are NOT initialized --> " );
-        }
+        std::string message = "Could NOT parse, Config DIRECTORY was NOT SET";
 
-        return false;
+        if constexpr ( Utility::CAN_LOG )
+            Utility::LogRegistry::instance()->getGlobalLogger()->logError( message );
+
+        throw ConfigurationException( message.c_str() );
+    }
+
+    if ( !mConfigReader )
+    {
+        std::string message = "Could NOT parse, ConfigReader is NULL";
+
+        if constexpr ( Utility::CAN_LOG )
+            Utility::LogRegistry::instance()->getGlobalLogger()->logError( message );
+
+        throw ConfigurationException( message.c_str() );
     }
 
     // PARSE ROOT FILE ---- Populates ConfigurationTree
@@ -174,7 +230,7 @@ bool Core::Configuration::parse()
         if constexpr ( Utility::CAN_LOG )
             Utility::LogRegistry::instance()->getGlobalLogger()->logError( retRootPair.second );
 
-        return false;
+        throw ConfigurationException( retRootPair.second.c_str() );
     }
 
     // PARSE CONFIG FILES ---- Populates ConfigurationTree
@@ -184,10 +240,10 @@ bool Core::Configuration::parse()
         if constexpr ( Utility::CAN_LOG )
             Utility::LogRegistry::instance()->getGlobalLogger()->logError( retConfigPair.second );
 
-        return false;
+        throw ConfigurationException( retRootPair.second.c_str() );
     }
 
-    return true;
+    return;
 }
 
 std::pair< bool, std::string > Core::Configuration::parseRootFile()
@@ -203,7 +259,6 @@ std::pair< bool, std::string > Core::Configuration::parseRootFile()
     {
         auto retStatus = mConfigReader->readFile( std::filesystem::path( rootFilePath ), rootConfigNode );
 
-        // IF we fail to read a file, then just fail fast
         if ( !retStatus.first )
             return retStatus;
 

@@ -1,16 +1,15 @@
 #include "core/Configuration/Configurables/ConfigInitializer.hpp"
 
 // Core Configurables
-#include "application/App.hpp"
+#include "core/Engine.hpp"
 #include "core/StateStack/StateStack.hpp"
 #include "core/Messaging/MessageNetwork.hpp"
 #include "application/Scene/Scene.hpp"
 
-void Core::ConfigInitializer::registerConfigurables()
+void Core::ConfigInitializer::registerCoreConfigurables()
 {
     // Register Configurables
-    ConfigurableFactory::registerType(
-        Application::App::TYPE_NAME, []() { return std::make_shared< Application::App >(); } );
+    ConfigurableFactory::registerType( Core::Engine::TYPE_NAME, []() { return std::make_shared< Core::Engine >(); } );
 
     ConfigurableFactory::registerType(
         Core::StateStack::TYPE_NAME, []() { return std::make_shared< Core::StateStack >(); } );

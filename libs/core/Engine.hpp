@@ -20,9 +20,9 @@
 #include <string>
 #include <functional>
 
-namespace Application
+namespace Core
 {
-    enum class State
+    enum class EngineState
     {
         NONE = 0, // This IS NOT a valid value, just used for default values
         NOT_CONFIGURED,
@@ -32,16 +32,16 @@ namespace Application
         SHUTTING_DOWN
     };
 
-    std::string convertEnumToString( const State& state );
-    State convertStringToEnum( const std::string& stringState );
+    std::string convertEngineStateEnumToString( const EngineState& state );
+    EngineState convertStringToEngineStateEnum( const std::string& stringState );
 
-    class App : public Core::Configurable
+    class Engine : public Core::Configurable
     {
       public:
         static const std::string TYPE_NAME;
 
-        App();
-        inline void setConfiguration( std::unique_ptr< Core::ConfigurationI > configuration );
+        Engine();
+        inline void setConfiguration( std::unique_ptr< Core::Configuration > config );
         void initialize();
         void run();
 
@@ -58,42 +58,46 @@ namespace Application
 
         void loadResources();
 
-        bool transitionState( State statusToTransfer );
+        bool transitionState( EngineState statusToTransfer );
 
-        inline bool isConfigured()
-        {
-            return mState == State::CONFIGURED;
-        }
-
-        inline bool isWaitingToRun()
-        {
-            return mState == State::WAITING_TO_RUN;
-        }
-
-        inline bool isRunning()
-        {
-            return mState == State::RUNNING;
-        }
+        inline bool isConfigured() const;
+        inline bool isWaitingToRun() const;
+        inline bool isRunning() const;
 
       private:
         static const sf::Time TIME_PER_FRAME;
 
-        State mState;
+        EngineState mState;
 
         std::shared_ptr< Utility::Logger > mAppLogger;
 
         // Should this go here? or in the GameState?
         TextureHolder mTextures;
 
-        std::unique_ptr< Core::ConfigurationI > mConfiguration;
+        std::unique_ptr< Core::Configuration > mConfiguration;
         Core::MessageNetwork mNetwork;
-        Application::KeyBindings mPlayerKeyBindings;
+        // Application::KeyBindings mPlayerKeyBindings;
         sf::RenderWindow mWindow;
         Core::StateStack mStateStack;
     };
 
-    void Application::App::setConfiguration( std::unique_ptr< Core::ConfigurationI > configuration )
+    bool Engine::isConfigured() const
     {
-        mConfiguration = std::move( configuration );
+        return mState == EngineState::CONFIGURED;
+    }
+
+    bool Engine::isWaitingToRun() const
+    {
+        return mState == EngineState::WAITING_TO_RUN;
+    }
+
+    bool Engine::isRunning() const
+    {
+        return mState == EngineState::RUNNING;
+    }
+
+    void Core::Engine::setConfiguration( std::unique_ptr< Core::Configuration > config )
+    {
+        mConfiguration = std::move( config );
     }
 }

@@ -1,4 +1,4 @@
-#include "application/App.hpp"
+#include "core/Engine.hpp"
 #include "application/StateStack/MenuState.hpp"
 #include "application/StateStack/GameState.hpp"
 #include "application/StateStack/PauseState.hpp"
@@ -12,49 +12,32 @@
 #include <stdexcept>
 #include <iostream>
 
-const sf::Time Application::App::TIME_PER_FRAME = sf::seconds( 1.0f / 120.0f );
-const std::string Application::App::TYPE_NAME = "APP";
+const sf::Time Core::Engine::TIME_PER_FRAME = sf::seconds( 1.0f / 120.0f );
+const std::string Core::Engine::TYPE_NAME = "ENGINE";
 
-Application::App::App() :
+Core::Engine::Engine() :
     Configurable( TYPE_NAME ),
-    mState( State::NONE ),
+    mState( EngineState::NONE ),
     mAppLogger( nullptr ),
     mTextures(),
     mConfiguration( nullptr ),
     mNetwork(),
-    mPlayerKeyBindings(),
-    mWindow( sf::VideoMode( { 640, 480 } ), "App Window", sf::Style::Close ),
+    // mPlayerKeyBindings(),
+    mWindow( sf::VideoMode( { 640, 480 } ), "Engine Window", sf::Style::Close ),
     mStateStack( Core::State::SharedObjects( mWindow, mNetwork, mTextures ) )
 {}
 
-void Application::App::initialize()
+void Core::Engine::initialize()
 {
     if ( !mConfiguration )
-    {
-        // Throw configuration exception when we get ConfigException setup
-        return;
-    }
+        throw ConfigurationException( "Configuration is NULL" );
 
-    mState = State::NOT_CONFIGURED;
-
-    // 1. INITIALIZE CONFIGURATION
-    mConfiguration->initializeOutputDirectory();
-    mConfiguration->initializeConfigDirectory();
-    mConfiguration->initializeAssetsDirectory();
-
-    bool retStatus = mConfiguration->parse();
-
-    // Need to build App based on configuration file...
-
-    // 2. INITIALIZE APP, CORE LOGGERS
+    // 2. INITIALIZE ENGINE, CORE LOGGERS
     if constexpr ( Utility::CAN_LOG )
     {
         initializeAppLogger();
         initializeCoreLoggers();
     }
-
-    if ( retStatus )
-        transitionState( State::CONFIGURED );
 
     // 3. LOAD ASSETS
     loadResources();
@@ -64,23 +47,23 @@ void Application::App::initialize()
     mStateStack.pushState( States::Menu );
 
     if ( !mStateStack.isPendingListEmpty() )
-        transitionState( State::WAITING_TO_RUN );
+        transitionState( EngineState::WAITING_TO_RUN );
 
     return;
 }
 
-void Application::App::run()
+void Core::Engine::run()
 {
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
-    if ( mState == State::NONE )
+    if ( mState == EngineState::NONE )
     {
         // Throw Configuration Exception
         return;
     }
 
-    if ( !transitionState( State::RUNNING ) )
+    if ( !transitionState( EngineState::RUNNING ) )
     {
         if constexpr ( Utility::CAN_LOG )
         {
@@ -125,7 +108,7 @@ void Application::App::run()
         mAppLogger->logInfo( "Exiting main RUN loop" );
 }
 
-void Application::App::processInput()
+void Core::Engine::processInput()
 {
     // SFMLs Window Class will detect events and then call these functions if the event matches
     // When needed, Add Event Subtypes here
@@ -137,12 +120,12 @@ void Application::App::processInput()
     mStateStack.handleRealTimeInput();
 }
 
-void Application::App::update( sf::Time fixedTimeStep )
+void Core::Engine::update( sf::Time fixedTimeStep )
 {
     mStateStack.update( fixedTimeStep );
 }
 
-void Application::App::render()
+void Core::Engine::render()
 {
     mWindow.clear( sf::Color::Cyan );
 
@@ -152,14 +135,14 @@ void Application::App::render()
     mWindow.display();
 }
 
-void Application::App::initializeAppLogger()
+void Core::Engine::initializeAppLogger()
 {
-    // Configure App Logger
+    // Configure Engine Logger
     const std::string appOutputDir = Utility::LogRegistry::instance()->getAppOutputDir();
 
     // Setup Sinks
     auto textFileSink =
-        std::make_shared< Utility::TextFileSink >( appOutputDir, "App", ".log", Utility::LogLevel::DEBUG );
+        std::make_shared< Utility::TextFileSink >( appOutputDir, "Engine", ".log", Utility::LogLevel::DEBUG );
 
     auto colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >( Utility::LogLevel::INFO );
 
@@ -167,24 +150,24 @@ void Application::App::initializeAppLogger()
     Utility::Logger::sinkList list = { colorConsoleSink, textFileSink };
     mAppLogger->addSinkList( list );
 
-    // Register App Logger
+    // Register Engine Logger
     Utility::LogRegistry::instance()->registerLogger( mAppLogger );
 }
 
-void Application::App::initializeCoreLoggers()
+void Core::Engine::initializeCoreLoggers()
 {
     mStateStack.initializeLogger();
     mNetwork.initializeLogger();
 }
 
-void Application::App::registerStates()
+void Core::Engine::registerStates()
 {
-    mStateStack.registerState< Application::MenuState >( States::Menu );
-    mStateStack.registerState< Application::GameState >( States::Game );
-    mStateStack.registerState< Application::PauseState >( States::Pause );
+    // mStateStack.registerState< Application::MenuState >( States::Menu );
+    // mStateStack.registerState< Application::GameState >( States::Game );
+    // mStateStack.registerState< Application::PauseState >( States::Pause );
 }
 
-void Application::App::loadResources()
+void Core::Engine::loadResources()
 {
     // auto fontTexturePaths = mConfiguration->getAssetPaths();
     // std::string texturePath = fontTexturePaths.first;
@@ -199,35 +182,36 @@ void Application::App::loadResources()
     return;
 }
 
-bool Application::App::transitionState( State statusToTransfer )
+bool Core::Engine::transitionState( EngineState statusToTransfer )
 {
     bool retStatus = false;
 
     if constexpr ( Utility::CAN_LOG )
-        mAppLogger->logDebug( "Attempting to Transition to State: " + convertEnumToString( statusToTransfer ) );
+        mAppLogger->logDebug(
+            "Attempting to Transition to State: " + convertEngineStateEnumToString( statusToTransfer ) );
 
     if ( mState == statusToTransfer )
         return retStatus;
 
-    State prevState = State::NONE;
+    EngineState prevState = EngineState::NONE;
 
     switch ( statusToTransfer )
     {
-        case State::NONE:
+        case EngineState::NONE:
         {
             // DO NOTHING
 
             break;
         }
-        case State::NOT_CONFIGURED:
+        case EngineState::NOT_CONFIGURED:
         {
             // DO NOTHING
 
             break;
         }
-        case State::CONFIGURED:
+        case EngineState::CONFIGURED:
         {
-            if ( mState == State::NOT_CONFIGURED )
+            if ( mState == EngineState::NOT_CONFIGURED )
             {
                 prevState = mState;
 
@@ -237,9 +221,9 @@ bool Application::App::transitionState( State statusToTransfer )
 
             break;
         }
-        case State::WAITING_TO_RUN:
+        case EngineState::WAITING_TO_RUN:
         {
-            if ( mState == State::CONFIGURED )
+            if ( mState == EngineState::CONFIGURED )
             {
                 prevState = mState;
 
@@ -249,9 +233,9 @@ bool Application::App::transitionState( State statusToTransfer )
 
             break;
         }
-        case State::RUNNING:
+        case EngineState::RUNNING:
         {
-            if ( mState == State::WAITING_TO_RUN )
+            if ( mState == EngineState::WAITING_TO_RUN )
             {
                 prevState = mState;
 
@@ -261,9 +245,9 @@ bool Application::App::transitionState( State statusToTransfer )
 
             break;
         }
-        case State::SHUTTING_DOWN:
+        case EngineState::SHUTTING_DOWN:
         {
-            if ( mState == State::WAITING_TO_RUN )
+            if ( mState == EngineState::WAITING_TO_RUN )
             {
                 prevState = mState;
 
@@ -278,56 +262,56 @@ bool Application::App::transitionState( State statusToTransfer )
     if ( Utility::CAN_LOG && retStatus )
     {
         if constexpr ( Utility::CAN_LOG )
-            mAppLogger->logDebug( "Transitioning from State: " + convertEnumToString( prevState ) + " to " +
-                                  convertEnumToString( statusToTransfer ) );
+            mAppLogger->logDebug( "Transitioning from State: " + convertEngineStateEnumToString( prevState ) + " to " +
+                                  convertEngineStateEnumToString( statusToTransfer ) );
     }
     else if ( Utility::CAN_LOG )
     {
         if constexpr ( Utility::CAN_LOG )
-            mAppLogger->logError( "Could NOT transition from State: " + convertEnumToString( prevState ) + " to " +
-                                  convertEnumToString( statusToTransfer ) );
+            mAppLogger->logError( "Could NOT transition from State: " + convertEngineStateEnumToString( prevState ) +
+                                  " to " + convertEngineStateEnumToString( statusToTransfer ) );
     }
 
     return retStatus;
 }
 
-std::string Application::convertEnumToString( const State& state )
+std::string Core::convertEngineStateEnumToString( const EngineState& state )
 {
     std::string retString;
 
     switch ( state )
     {
-        case State::NONE:
+        case EngineState::NONE:
         {
             retString = "NONE";
 
             break;
         }
-        case State::NOT_CONFIGURED:
+        case EngineState::NOT_CONFIGURED:
         {
             retString = "NOT_CONFIGURED";
 
             break;
         }
-        case State::CONFIGURED:
+        case EngineState::CONFIGURED:
         {
             retString = "CONFIGURED";
 
             break;
         }
-        case State::WAITING_TO_RUN:
+        case EngineState::WAITING_TO_RUN:
         {
             retString = "WAITING_TO_RUN";
 
             break;
         }
-        case State::RUNNING:
+        case EngineState::RUNNING:
         {
             retString = "RUNNING";
 
             break;
         }
-        case State::SHUTTING_DOWN:
+        case EngineState::SHUTTING_DOWN:
         {
             retString = "SHUTTING_DOWN";
 
@@ -337,29 +321,29 @@ std::string Application::convertEnumToString( const State& state )
 
     return retString;
 }
-Application::State Application::convertStringToEnum( const std::string& stringState )
+Core::EngineState Core::convertStringToEngineStateEnum( const std::string& stringState )
 {
-    State retState = State::NONE;
+    EngineState retState = EngineState::NONE;
 
     if ( stringState == "NOT_CONFIGURED" )
     {
-        retState = State::NOT_CONFIGURED;
+        retState = EngineState::NOT_CONFIGURED;
     }
     else if ( stringState == "CONFIGURED" )
     {
-        retState = State::CONFIGURED;
+        retState = EngineState::CONFIGURED;
     }
     else if ( stringState == "WAITING_TO_RUN" )
     {
-        retState = State::WAITING_TO_RUN;
+        retState = EngineState::WAITING_TO_RUN;
     }
     else if ( stringState == "RUNNING" )
     {
-        retState = State::RUNNING;
+        retState = EngineState::RUNNING;
     }
     else if ( stringState == "SHUTTING_DOWN" )
     {
-        retState = State::SHUTTING_DOWN;
+        retState = EngineState::SHUTTING_DOWN;
     }
 
     return retState;
