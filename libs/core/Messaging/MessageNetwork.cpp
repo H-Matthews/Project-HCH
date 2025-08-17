@@ -3,7 +3,7 @@
 #include "utility/Logging/Sinks/TextFileSink.hpp"
 #include "utility/Logging/Formatters/KeyValueFormatter.hpp"
 
-const std::string Core::MessageNetwork::TYPE_NAME = "MESSAGE_NETWORK";
+const std::string Core::MessageNetwork::TYPE_NAME = "MessageNetwork";
 
 Core::MessageNetwork::MessageNetwork() :
     Configurable( TYPE_NAME ),

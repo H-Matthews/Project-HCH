@@ -2,6 +2,8 @@
 
 #include "utility/Logging/Logger.hpp"
 
+#include "utility/Logging/Builder/ColorConsoleSinkBuilder.hpp"
+
 namespace Utility
 {
 
@@ -23,6 +25,9 @@ namespace Utility
         ~ColorConsoleSink()
         {}
 
+        inline static ColorConsoleSinkBuilder build();
+        friend class ColorConsoleSinkBuilder;
+
       private:
         void insertColorCodes( std::string& message, std::string colorCode );
 
@@ -38,6 +43,12 @@ namespace Utility
         const std::string mErrorColorCode = "\033[31m";   // Red
         const std::string mDefaultColorCode = "\033[0m";  // Reset
     };
+
+    Utility::ColorConsoleSinkBuilder Utility::ColorConsoleSink::build()
+    {
+        ColorConsoleSink* sink = new ColorConsoleSink();
+        return Utility::ColorConsoleSinkBuilder( sink );
+    }
 
     // Convenience function
     // Creates Logger with the necessary Sink. Registers with LogRegistry

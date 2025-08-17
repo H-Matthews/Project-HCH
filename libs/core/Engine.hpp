@@ -69,7 +69,7 @@ namespace Core
 
         EngineState mState;
 
-        std::shared_ptr< Utility::Logger > mAppLogger;
+        std::shared_ptr< Utility::Logger > mEngineLogger;
 
         // Should this go here? or in the GameState?
         TextureHolder mTextures;

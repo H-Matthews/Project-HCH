@@ -1,6 +1,8 @@
 #pragma once
 
-#include "core/Configuration/ConfigTree/ConfigNode.hpp"
+#include "core/Configuration/ConfigTree/ConfigurationTree.hpp"
+
+#include "utility/Logging/Logger.hpp"
 
 #include <string>
 
@@ -16,9 +18,13 @@ namespace Core
 
         virtual ~Configurable() = default;
 
+      protected:
+        std::shared_ptr< Utility::Logger > createLogger();
+
+      protected:
+        std::weak_ptr< ConfigNode > mConfigNode;
+
       private:
         std::string mTypeName;
-
-        std::shared_ptr< ConfigNode > mConfigNode;
     };
 }

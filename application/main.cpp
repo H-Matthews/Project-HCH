@@ -20,7 +20,6 @@ int main()
             std::make_unique< Core::Configuration >( std::make_unique< Core::TOMLConfigReader >(), CONFIG_DIR_NAME );
 
         gameConfig->parse();
-
         gameConfig->initializeOutputDirectory();
         gameConfig->initializeAssetsDirectory();
 

@@ -13,19 +13,22 @@
 #include <iostream>
 
 const sf::Time Core::Engine::TIME_PER_FRAME = sf::seconds( 1.0f / 120.0f );
-const std::string Core::Engine::TYPE_NAME = "ENGINE";
+const std::string Core::Engine::TYPE_NAME = "Engine";
 
 Core::Engine::Engine() :
     Configurable( TYPE_NAME ),
     mState( EngineState::NONE ),
-    mAppLogger( nullptr ),
+    mEngineLogger( nullptr ),
     mTextures(),
     mConfiguration( nullptr ),
     mNetwork(),
     // mPlayerKeyBindings(),
     mWindow( sf::VideoMode( { 640, 480 } ), "Engine Window", sf::Style::Close ),
     mStateStack( Core::State::SharedObjects( mWindow, mNetwork, mTextures ) )
-{}
+{
+    if constexpr ( Utility::CAN_LOG )
+        mEngineLogger = Configurable::createLogger();
+}
 
 void Core::Engine::initialize()
 {
@@ -67,9 +70,9 @@ void Core::Engine::run()
     {
         if constexpr ( Utility::CAN_LOG )
         {
-            if ( mAppLogger )
+            if ( mEngineLogger )
             {
-                mAppLogger->logError(
+                mEngineLogger->logError(
                     "Application is unable to transition to the RUNNING state... Likely a Configuration Error " );
             }
         }
@@ -78,7 +81,7 @@ void Core::Engine::run()
     }
 
     if constexpr ( Utility::CAN_LOG )
-        mAppLogger->logInfo( "Entering main RUN loop" );
+        mEngineLogger->logInfo( "Entering main RUN loop" );
 
     while ( mWindow.isOpen() )
     {
@@ -97,7 +100,7 @@ void Core::Engine::run()
                 mWindow.close();
 
                 if constexpr ( Utility::CAN_LOG )
-                    mAppLogger->logInfo( "Closing Window...." );
+                    mEngineLogger->logInfo( "Closing Window...." );
             }
         }
 
@@ -105,7 +108,7 @@ void Core::Engine::run()
     }
 
     if constexpr ( Utility::CAN_LOG )
-        mAppLogger->logInfo( "Exiting main RUN loop" );
+        mEngineLogger->logInfo( "Exiting main RUN loop" );
 }
 
 void Core::Engine::processInput()
@@ -147,11 +150,11 @@ void Core::Engine::initializeAppLogger()
     auto colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >( Utility::LogLevel::INFO );
 
     // Add Sinks to Logger
-    Utility::Logger::sinkList list = { colorConsoleSink, textFileSink };
-    mAppLogger->addSinkList( list );
+    Utility::Logger::SinkList list = { colorConsoleSink, textFileSink };
+    mEngineLogger->addSinkList( list );
 
     // Register Engine Logger
-    Utility::LogRegistry::instance()->registerLogger( mAppLogger );
+    Utility::LogRegistry::instance()->registerLogger( mEngineLogger );
 }
 
 void Core::Engine::initializeCoreLoggers()
@@ -187,7 +190,7 @@ bool Core::Engine::transitionState( EngineState statusToTransfer )
     bool retStatus = false;
 
     if constexpr ( Utility::CAN_LOG )
-        mAppLogger->logDebug(
+        mEngineLogger->logDebug(
             "Attempting to Transition to State: " + convertEngineStateEnumToString( statusToTransfer ) );
 
     if ( mState == statusToTransfer )
@@ -262,14 +265,14 @@ bool Core::Engine::transitionState( EngineState statusToTransfer )
     if ( Utility::CAN_LOG && retStatus )
     {
         if constexpr ( Utility::CAN_LOG )
-            mAppLogger->logDebug( "Transitioning from State: " + convertEngineStateEnumToString( prevState ) + " to " +
-                                  convertEngineStateEnumToString( statusToTransfer ) );
+            mEngineLogger->logDebug( "Transitioning from State: " + convertEngineStateEnumToString( prevState ) +
+                                     " to " + convertEngineStateEnumToString( statusToTransfer ) );
     }
     else if ( Utility::CAN_LOG )
     {
         if constexpr ( Utility::CAN_LOG )
-            mAppLogger->logError( "Could NOT transition from State: " + convertEngineStateEnumToString( prevState ) +
-                                  " to " + convertEngineStateEnumToString( statusToTransfer ) );
+            mEngineLogger->logError( "Could NOT transition from State: " + convertEngineStateEnumToString( prevState ) +
+                                     " to " + convertEngineStateEnumToString( statusToTransfer ) );
     }
 
     return retStatus;

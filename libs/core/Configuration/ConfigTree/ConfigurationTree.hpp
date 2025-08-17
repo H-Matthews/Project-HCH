@@ -23,7 +23,7 @@ namespace Core
 
         void attachConfigNode( std::shared_ptr< ConfigNode > configNode );
 
-        ConfigNode* traverseTree( ConfigNode* root, const std::string nodeName );
+        std::optional< std::shared_ptr< ConfigNode > > getConfigNode( const std::string& nodeName );
 
         template < typename T >
         std::optional< T > findValueByNode( const std::string& nodeName, const std::string& key );
@@ -33,6 +33,8 @@ namespace Core
 
       private:
         ConfigurationTree();
+
+        std::shared_ptr< ConfigNode > traverseTree( const std::string nodeName );
 
       private:
         // Static pointer to our object
@@ -52,20 +54,20 @@ namespace Core
         std::vector< std::string > configNodeNames;
         Utility::splitString( nodeName, configNodeNames, '.' );
 
-        ConfigNode* traversalNode = nullptr;
-        for (const auto& configNodeName : configNodeNames)
+        std::shared_ptr< ConfigNode > traversalNode = nullptr;
+        for ( const auto& configNodeName : configNodeNames )
         {
-            traversalNode = traverseTree( mRootNode.get(), configNodeName );
-            if (traversalNode == nullptr)
+            traversalNode = traverseTree( configNodeName );
+            if ( traversalNode == nullptr )
                 return result;
         }
 
         // IF we got here, then we found the node
         // Lookup the Key
         auto it = traversalNode->mKeyValues.find( key );
-        if (it != traversalNode->mKeyValues.end())
+        if ( it != traversalNode->mKeyValues.end() )
         {
-            if (auto val = std::get_if< T >( &it->second ))
+            if ( auto val = std::get_if< T >( &it->second ) )
                 result = *val;
         }
 
@@ -79,19 +81,19 @@ namespace Core
         std::vector< std::string > configNodeNames;
         Utility::splitString( nodeName, configNodeNames, '.' );
 
-        ConfigNode* traversalNode = nullptr;
-        for (const auto& configNodeName : configNodeNames)
+        std::shared_ptr< ConfigNode > traversalNode = nullptr;
+        for ( const auto& configNodeName : configNodeNames )
         {
-            traversalNode = traverseTree( mRootNode.get(), configNodeName );
-            if (traversalNode == nullptr)
+            traversalNode = traverseTree( configNodeName );
+            if ( traversalNode == nullptr )
                 return result;
         }
 
         // IF we got here, then we found the node with the vector
-        for (auto& value : traversalNode->mArrayValues)
+        for ( auto& value : traversalNode->mArrayValues )
         {
             T* tempPointer = std::get_if< T >( &value );
-            if (tempPointer)
+            if ( tempPointer )
                 result.push_back( tempPointer );
         }
     }

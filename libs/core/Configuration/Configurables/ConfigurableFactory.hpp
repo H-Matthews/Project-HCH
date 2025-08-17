@@ -35,17 +35,6 @@ namespace Core
                 typedConfigurable = std::dynamic_pointer_cast< T >( baseConfigurable );
                 if ( typedConfigurable )
                     return typedConfigurable;
-
-                // if ( T* rawTypedPtr = dynamic_cast< T* >( baseConfigurable.get() ) )
-                // {
-                //     typedConfigurable.reset( baseConfigurable.release() );
-
-                //     return std::move( typedConfigurable );
-                // }
-                // else
-                // {
-                //     // TODO: Throw Configurable Error
-                // }
             }
 
             return nullptr;

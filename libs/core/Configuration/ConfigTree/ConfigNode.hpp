@@ -30,7 +30,7 @@ namespace Core
         std::shared_ptr< ConfigNode > mParent;
         std::vector< std::shared_ptr< ConfigNode > > mChildren;
 
-        std::multimap< std::string, PrimitiveVariant > mKeyValues;
+        std::map< std::string, PrimitiveVariant > mKeyValues;
         std::vector< PrimitiveVariant > mArrayValues;
 
       public:
@@ -43,8 +43,8 @@ namespace Core
         T* primitiveType = nullptr;
 
         auto it = mKeyValues.find( key );
-        if (it != mKeyValues.end())
-            primitiveType = std::get_if< T >( it->second );
+        if ( it != mKeyValues.end() )
+            primitiveType = std::get_if< T >( &it->second );
 
         return primitiveType;
     }

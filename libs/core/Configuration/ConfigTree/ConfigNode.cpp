@@ -35,7 +35,7 @@ void Core::ConfigNode::setParent( std::shared_ptr< ConfigNode > parentNode )
 
 void Core::ConfigNode::insertValuePair( const std::string& key, const PrimitiveVariant& value )
 {
-    mKeyValues.insert( { key, value } );
+    mKeyValues[ key ] = value;
 
     return;
 }

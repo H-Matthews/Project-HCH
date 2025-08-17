@@ -5,7 +5,7 @@
 
 #include <cassert>
 
-const std::string Core::StateStack::TYPE_NAME = "STATE_STACK";
+const std::string Core::StateStack::TYPE_NAME = "StateStack";
 
 Core::StateStack::StateStack() :
     Configurable( TYPE_NAME ),

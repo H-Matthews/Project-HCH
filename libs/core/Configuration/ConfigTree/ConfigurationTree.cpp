@@ -12,7 +12,7 @@ Core::ConfigurationTree::ConfigurationTree() :
 
 std::shared_ptr< Core::ConfigurationTree > Core::ConfigurationTree::instance()
 {
-    if (mConfigTreeInstance == nullptr)
+    if ( mConfigTreeInstance == nullptr )
         mConfigTreeInstance = std::shared_ptr< Core::ConfigurationTree >( new Core::ConfigurationTree() );
 
     return mConfigTreeInstance;
@@ -29,25 +29,35 @@ void Core::ConfigurationTree::attachConfigNode( std::shared_ptr< ConfigNode > co
 /**
  * Itertaively traversing the tree, instead of using recursion
  */
-Core::ConfigNode* Core::ConfigurationTree::traverseTree( ConfigNode* node, const std::string nodeName )
+std::shared_ptr< Core::ConfigNode > Core::ConfigurationTree::traverseTree( const std::string nodeName )
 {
-    if (node == nullptr)
+    if ( mRootNode == nullptr )
         return nullptr;
 
-    std::stack< ConfigNode* > nodeStack;
-    nodeStack.push( node );
+    std::stack< std::shared_ptr< ConfigNode > > nodeStack;
+    nodeStack.push( mRootNode );
 
-    while (!nodeStack.empty())
+    while ( !nodeStack.empty() )
     {
-        ConfigNode* currentNode = nodeStack.top();
+        auto currentNode = nodeStack.top();
         nodeStack.pop();
 
-        if (currentNode->mName == nodeName)
+        if ( currentNode->mName == nodeName )
             return currentNode;
 
-        for (const auto& child : currentNode->mChildren)
-            nodeStack.push( child.get() );
+        for ( const auto& child : currentNode->mChildren )
+            nodeStack.push( child );
     }
 
     return nullptr;
+}
+
+std::optional< std::shared_ptr< Core::ConfigNode > > Core::ConfigurationTree::getConfigNode(
+    const std::string& nodeName )
+{
+    std::optional< std::shared_ptr< ConfigNode > > result = std::nullopt;
+
+    result = traverseTree( nodeName );
+
+    return result;
 }

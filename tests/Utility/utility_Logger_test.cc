@@ -32,7 +32,7 @@ class UtilityLoggerTest : public ::testing::Test
         textFileSink = std::make_shared< Utility::TextFileSink >( "./testing_output", "Utility_logger_test", ".log" );
 
         // Create SinkList for logger_twoSinks
-        Utility::Logger::sinkList list = { colorConsoleSink, textFileSink };
+        Utility::Logger::SinkList list = { colorConsoleSink, textFileSink };
 
         // Create Loggers
         logger_default = std::make_shared< Utility::Logger >( "logger_default" );
@@ -239,13 +239,13 @@ TEST_F( UtilityLoggerTest, setLoggerNameJustNumbers )
 }
 
 /*
-    Test: addSinkList sinkList = {colorConsoleSink, textFileSink}
+    Test: addSinkList SinkList = {colorConsoleSink, textFileSink}
     Description: Ensure the function addSinkList properly adds the sinks defined in the list to the Logger
     Expectation: logger_default should have two sinks colorConsoleSink, textFileSink
 */
 TEST_F( UtilityLoggerTest, addSinkList )
 {
-    Utility::Logger::sinkList list = { textFileSink, colorConsoleSink };
+    Utility::Logger::SinkList list = { textFileSink, colorConsoleSink };
     logger_default->addSinkList( list );
 
     // Ensure there are two sinks for logger_default

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utility/Logging/Sinks/LogSink.hpp"
+#include "utility/Logging/Builder/LoggerBuilder.hpp"
 
 #include <vector>
 
@@ -23,15 +24,15 @@ namespace Utility
     class Logger
     {
       public:
-        typedef std::vector< std::shared_ptr< LogSink > > sinkList;
+        typedef std::vector< std::shared_ptr< LogSink > > SinkList;
 
-        Logger() = delete;
+        Logger();
         Logger( const std::string& loggerName, Utility::LogLevel level = Utility::LogLevel::NONE );
 
         Logger( const std::string& loggerName, std::shared_ptr< Utility::LogSink > sink,
             Utility::LogLevel level = Utility::LogLevel::NONE );
 
-        Logger( const std::string& loggerName, Utility::Logger::sinkList sinks,
+        Logger( const std::string& loggerName, Utility::Logger::SinkList sinks,
             Utility::LogLevel level = Utility::LogLevel::NONE );
 
         void logDebug(
@@ -43,30 +44,19 @@ namespace Utility
 
         bool shouldLog( LogLevel level, LogLevel sinkLevel ) const;
 
-        inline void setGlobalLogLevel( LogLevel gLevel )
-        {
-            mGlobalLogLevel = gLevel;
-        }
-        inline LogLevel getGlobalLogLevel() const
-        {
-            return mGlobalLogLevel;
-        }
-        const std::string getGlobalLogLevelAsString() const;
+        inline void setGlobalLogLevel( LogLevel gLevel );
 
-        inline void setLoggerName( const std::string& name )
-        {
-            mLoggerName = name;
-        }
-        inline const std::string& getLoggerName() const
-        {
-            return mLoggerName;
-        }
+        inline LogLevel getGlobalLogLevel() const;
+        inline const std::string getGlobalLogLevelAsString() const;
+
+        inline void setLoggerName( const std::string& name );
+        inline const std::string& getLoggerName() const;
 
         // Inserts a single sink into mSinks
         void addSink( std::shared_ptr< LogSink > sink );
 
         // Insert multiple sinks into mSink
-        void addSinkList( sinkList list );
+        void addSinkList( SinkList list );
 
         std::vector< LogSink* > getSinkReferences();
 
@@ -78,17 +68,52 @@ namespace Utility
         // Define as a friend
         friend void createGlobalLogger();
 
+        inline static LoggerBuilder build();
+        friend class LoggerBuilder;
+
       private:
         void sinkIt( std::string_view message, LogLevel level, const std::source_location location );
         void toggleGlobalLogger();
 
       private:
-        std::vector< std::shared_ptr< LogSink > > mSinks;
+        SinkList mSinks;
         std::string mLoggerName;
         LogLevel mGlobalLogLevel;
 
         bool mIsGlobalLogger = false;
     };
+
+    void Logger::setGlobalLogLevel( Utility::LogLevel gLevel )
+    {
+        mGlobalLogLevel = gLevel;
+    }
+
+    LogLevel Logger::getGlobalLogLevel() const
+    {
+        return mGlobalLogLevel;
+    }
+
+    const std::string Logger::getGlobalLogLevelAsString() const
+    {
+        const std::string loggerAsString = Utility::logLevelEnumToString( mGlobalLogLevel );
+        return loggerAsString;
+    }
+
+    void Logger::setLoggerName( const std::string& name )
+    {
+        mLoggerName = name;
+    }
+
+    const std::string& Logger::getLoggerName() const
+    {
+        return mLoggerName;
+    }
+
+    Utility::LoggerBuilder Utility::Logger::build()
+    {
+        Logger* logger = new Logger();
+        return Utility::LoggerBuilder( logger );
+    }
 
     // Creates a Global Logger
     void createGlobalLogger();
