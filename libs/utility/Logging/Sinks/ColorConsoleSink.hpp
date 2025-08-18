@@ -17,7 +17,7 @@ namespace Utility
         static const std::string sinkIdentifier;
 
       public:
-        ColorConsoleSink( LogLevel level = LogLevel::NONE );
+        ColorConsoleSink();
 
         void sinkData(
             std::string_view message, Utility::LogLevel level, const std::source_location location ) override;

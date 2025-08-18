@@ -345,14 +345,9 @@ void Core::MessageNetwork::addressPendingRequests()
 
 void Core::MessageNetwork::initializeLogger()
 {
-    // Create and Register
-    const std::string outDirectory = Utility::LogRegistry::instance()->getAppOutputDir();
+    mLogger = Configurable::createLogger();
 
-    mLogger = Utility::createTextFileLogger(
-        "MessageNetworkLogger", outDirectory, "MessageNetwork", ".log", Utility::LogLevel::INFO );
-
-    if constexpr ( Utility::CAN_LOG )
-        mLogger->logInfo( "Logger Initialized" );
+    return;
 }
 
 void Core::MessageNetwork::shutdownNetwork()

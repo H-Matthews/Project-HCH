@@ -22,7 +22,7 @@ set(INC Engine.hpp
         Configuration/Configurables/Configurable.hpp
         Configuration/Configurables/ConfigurableFactory.hpp
         Configuration/Configurables/ConfigInitializer.hpp
-        Configuration/Configurables/ConfigInitializer.cpp
+        Configuration/Configurables/ConfigurableDirector.hpp
         GameAssetContainer/GameAssetContainer.hpp
         GameAssetContainer/ResourceHolder.hpp
         GameAssetContainer/ResourceEnums.hpp )
@@ -40,6 +40,8 @@ set(SRC Engine.cpp
         Configuration/ConfigTree/ConfigNode.cpp
         Configuration/ConfigReader/TOMLConfigReader.cpp
         Configuration/Configurables/Configurable.cpp
+        Configuration/Configurables/ConfigInitializer.cpp
+        Configuration/Configurables/ConfigurableDirector.cpp
         GameAssetContainer/GameAssetContainer.cpp )
 
 add_library(${LIBRARY_NAME} STATIC ${SRC} ${INC})

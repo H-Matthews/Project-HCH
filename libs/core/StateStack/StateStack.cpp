@@ -104,7 +104,7 @@ bool Core::StateStack::isPendingListEmpty() const
 void Core::StateStack::initializeLogger()
 {
     // Create and Register
-    const std::string outDirectory = Utility::LogRegistry::instance()->getAppOutputDir();
+    const std::string outDirectory = Utility::LogRegistry::instance()->getOutputDir();
 
     mLogger = Utility::createTextFileLogger(
         "StateStackLogger", outDirectory, "StateStack", ".log", Utility::LogLevel::INFO );

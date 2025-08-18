@@ -35,17 +35,16 @@ void Core::Engine::initialize()
     if ( !mConfiguration )
         throw ConfigurationException( "Configuration is NULL" );
 
-    // 2. INITIALIZE ENGINE, CORE LOGGERS
-    if constexpr ( Utility::CAN_LOG )
-    {
-        initializeAppLogger();
-        initializeCoreLoggers();
-    }
+    // Create CORE CONFIGURABLES ----------------------------
+    // auto gameNetwork =
+    //     Core::ConfigurableFactory::createTypedConfigurable< Core::MessageNetwork >( Core::MessageNetwork::TYPE_NAME
+    //     );
 
-    // 3. LOAD ASSETS
+    // if constexpr ( Utility::CAN_LOG )
+    //     gameNetwork->initializeLogger();
+
     loadResources();
 
-    // 4. INITIALIZE STATE STACK
     registerStates();
     mStateStack.pushState( States::Menu );
 
@@ -138,31 +137,8 @@ void Core::Engine::render()
     mWindow.display();
 }
 
-void Core::Engine::initializeAppLogger()
-{
-    // Configure Engine Logger
-    const std::string appOutputDir = Utility::LogRegistry::instance()->getAppOutputDir();
-
-    // Setup Sinks
-    auto textFileSink =
-        std::make_shared< Utility::TextFileSink >( appOutputDir, "Engine", ".log", Utility::LogLevel::DEBUG );
-
-    auto colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >( Utility::LogLevel::INFO );
-
-    // Add Sinks to Logger
-    Utility::Logger::SinkList list = { colorConsoleSink, textFileSink };
-    mEngineLogger->addSinkList( list );
-
-    // Register Engine Logger
-    Utility::LogRegistry::instance()->registerLogger( mEngineLogger );
-}
-
-void Core::Engine::initializeCoreLoggers()
-{
-    mStateStack.initializeLogger();
-    mNetwork.initializeLogger();
-}
-
+// TODO: This register call should take a string to a State Identifier
+// that way we can inject states from the game application library
 void Core::Engine::registerStates()
 {
     // mStateStack.registerState< Application::MenuState >( States::Menu );
@@ -206,27 +182,9 @@ bool Core::Engine::transitionState( EngineState statusToTransfer )
 
             break;
         }
-        case EngineState::NOT_CONFIGURED:
-        {
-            // DO NOTHING
-
-            break;
-        }
-        case EngineState::CONFIGURED:
-        {
-            if ( mState == EngineState::NOT_CONFIGURED )
-            {
-                prevState = mState;
-
-                mState = statusToTransfer;
-                retStatus = true;
-            }
-
-            break;
-        }
         case EngineState::WAITING_TO_RUN:
         {
-            if ( mState == EngineState::CONFIGURED )
+            if ( mState == EngineState::NONE )
             {
                 prevState = mState;
 
@@ -290,18 +248,6 @@ std::string Core::convertEngineStateEnumToString( const EngineState& state )
 
             break;
         }
-        case EngineState::NOT_CONFIGURED:
-        {
-            retString = "NOT_CONFIGURED";
-
-            break;
-        }
-        case EngineState::CONFIGURED:
-        {
-            retString = "CONFIGURED";
-
-            break;
-        }
         case EngineState::WAITING_TO_RUN:
         {
             retString = "WAITING_TO_RUN";
@@ -328,15 +274,7 @@ Core::EngineState Core::convertStringToEngineStateEnum( const std::string& strin
 {
     EngineState retState = EngineState::NONE;
 
-    if ( stringState == "NOT_CONFIGURED" )
-    {
-        retState = EngineState::NOT_CONFIGURED;
-    }
-    else if ( stringState == "CONFIGURED" )
-    {
-        retState = EngineState::CONFIGURED;
-    }
-    else if ( stringState == "WAITING_TO_RUN" )
+    if ( stringState == "WAITING_TO_RUN" )
     {
         retState = EngineState::WAITING_TO_RUN;
     }

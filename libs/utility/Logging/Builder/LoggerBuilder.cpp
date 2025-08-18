@@ -13,7 +13,7 @@ Utility::LoggerBuilder& Utility::LoggerBuilder::name( const std::string& name )
     return *this;
 }
 
-Utility::LoggerBuilder& Utility::LoggerBuilder::logLevel( const std::string& level )
+Utility::LoggerBuilder& Utility::LoggerBuilder::globalLogLevel( const std::string& level )
 {
     LogLevel globalLogLevel = stringToLogLevelEnum( level );
 
@@ -22,9 +22,9 @@ Utility::LoggerBuilder& Utility::LoggerBuilder::logLevel( const std::string& lev
     return *this;
 }
 
-Utility::LoggerBuilder& Utility::LoggerBuilder::sinks( const std::vector< std::string >& sinkIdentifiers )
+Utility::LoggerBuilder& Utility::LoggerBuilder::sinks( std::vector< std::shared_ptr< LogSink > > sinks )
 {
-    // This will require some work
+    mLogger->mSinks = sinks;
 
     return *this;
 }

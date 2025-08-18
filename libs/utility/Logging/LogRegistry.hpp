@@ -26,7 +26,7 @@ namespace Utility
 
         static std::shared_ptr< LogRegistry > instance();
 
-        // Configure the Applications output directory
+        // Configure the output directory
         void configureRegistry( const std::string outputDirPath );
 
         // Associate Logger with hashed value, store in mRegistry
@@ -37,7 +37,7 @@ namespace Utility
 
         std::shared_ptr< Logger > getGlobalLogger() const;
 
-        const std::string getAppOutputDir() const;
+        const std::string getOutputDir() const;
 
       private:
         LogRegistry();
@@ -51,6 +51,6 @@ namespace Utility
         // Hash Function
         std::hash< std::string > mHash;
 
-        std::string mAppOutputDirectory;
+        std::string mOutputDirectory;
     };
 }

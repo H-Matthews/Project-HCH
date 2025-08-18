@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/Configuration/ConfigTree/ConfigurationTree.hpp"
+#include "core/Configuration/Configurables/ConfigurableDirector.hpp"
 
 #include "utility/Logging/Logger.hpp"
 
@@ -25,6 +26,8 @@ namespace Core
         std::weak_ptr< ConfigNode > mConfigNode;
 
       private:
+        ConfigurableDirector mDirector;
+
         std::string mTypeName;
     };
 }

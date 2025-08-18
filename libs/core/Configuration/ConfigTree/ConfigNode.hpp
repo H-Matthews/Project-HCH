@@ -1,8 +1,8 @@
 #pragma once
 
+#include <variant>
 #include <string>
 #include <memory>
-#include <variant>
 #include <vector>
 #include <map>
 
@@ -17,12 +17,19 @@ namespace Core
         ConfigNode( const std::string& name, std::shared_ptr< ConfigNode > parent );
 
         void addChild( std::shared_ptr< ConfigNode > childNode );
+        ConfigNode* getChild( const std::string& name );
+
         void setParent( std::shared_ptr< ConfigNode > parentNode );
         void insertValuePair( const std::string& key, const PrimitiveVariant& value );
         void insertArrayValue( const PrimitiveVariant& value );
 
+        // TODO: These functions essentially exist in the ConfigurationTree
+        // Need to see if we can consolidate these functions
         template < typename T >
-        T* find( const std::string& key );
+        T* findValue( const std::string& key );
+
+        // TODO: This really needs to go into some utility class for ConfigNodes
+        static ConfigNode* findRelativeNode( const std::string& nodeName, ConfigNode* node );
 
       private:
         std::string mName;
@@ -38,7 +45,7 @@ namespace Core
     };
 
     template < typename T >
-    T* Core::ConfigNode::find( const std::string& key )
+    T* Core::ConfigNode::findValue( const std::string& key )
     {
         T* primitiveType = nullptr;
 

@@ -25,8 +25,6 @@ namespace Core
     enum class EngineState
     {
         NONE = 0, // This IS NOT a valid value, just used for default values
-        NOT_CONFIGURED,
-        CONFIGURED,
         WAITING_TO_RUN,
         RUNNING,
         SHUTTING_DOWN
@@ -53,14 +51,10 @@ namespace Core
         void update( sf::Time fixedTimeStep );
         void render();
 
-        void initializeAppLogger();
-        void initializeCoreLoggers();
-
         void loadResources();
 
         bool transitionState( EngineState statusToTransfer );
 
-        inline bool isConfigured() const;
         inline bool isWaitingToRun() const;
         inline bool isRunning() const;
 
@@ -81,11 +75,6 @@ namespace Core
         Core::StateStack mStateStack;
     };
 
-    bool Engine::isConfigured() const
-    {
-        return mState == EngineState::CONFIGURED;
-    }
-
     bool Engine::isWaitingToRun() const
     {
         return mState == EngineState::WAITING_TO_RUN;
@@ -98,6 +87,8 @@ namespace Core
 
     void Core::Engine::setConfiguration( std::unique_ptr< Core::Configuration > config )
     {
+        if ( mEngineLogger )
+            mEngineLogger->logInfo( "Hello" );
         mConfiguration = std::move( config );
     }
 }

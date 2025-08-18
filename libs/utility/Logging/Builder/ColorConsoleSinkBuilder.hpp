@@ -1,10 +1,12 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 namespace Utility
 {
     class ColorConsoleSink;
+    class LogFormatter;
 
     class ColorConsoleSinkBuilder
     {
@@ -12,6 +14,8 @@ namespace Utility
         ColorConsoleSinkBuilder( ColorConsoleSink* sink );
 
         ColorConsoleSinkBuilder& logLevel( const std::string& logLevel );
+
+        ColorConsoleSinkBuilder& formatter( std::unique_ptr< LogFormatter > formatter );
 
         ~ColorConsoleSinkBuilder()
         {}

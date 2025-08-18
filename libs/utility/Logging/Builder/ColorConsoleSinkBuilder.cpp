@@ -15,3 +15,11 @@ Utility::ColorConsoleSinkBuilder& Utility::ColorConsoleSinkBuilder::logLevel( co
 
     return *this;
 }
+
+Utility::ColorConsoleSinkBuilder& Utility::ColorConsoleSinkBuilder::formatter(
+    std::unique_ptr< LogFormatter > formatter )
+{
+    mSink->mFormatter.swap( formatter );
+
+    return *this;
+}

@@ -7,6 +7,7 @@
 namespace Utility
 {
     class Logger;
+    class LogSink;
 
     /**
      * This class is responsible for incrementally building a logger and its components
@@ -17,8 +18,8 @@ namespace Utility
         LoggerBuilder( Logger* logger );
 
         LoggerBuilder& name( const std::string& name );
-        LoggerBuilder& logLevel( const std::string& level );
-        LoggerBuilder& sinks( const std::vector< std::string >& sinkIdentifiers );
+        LoggerBuilder& globalLogLevel( const std::string& level );
+        LoggerBuilder& sinks( std::vector< std::shared_ptr< LogSink > > sinks );
 
         ~LoggerBuilder()
         {}

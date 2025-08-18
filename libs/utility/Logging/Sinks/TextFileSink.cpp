@@ -5,25 +5,23 @@
 
 #include <sstream>
 
-const std::string Utility::TextFileSink::sinkIdentifier = "TextFileSink";
+const std::string Utility::TextFileSink::SINK_IDENTIFIER = "TextFileSink";
+
+Utility::TextFileSink::TextFileSink() :
+    LogSink( SINK_IDENTIFIER ),
+    mOutputDirectory( "" ),
+    mFileName( "" ),
+    mLogExtension( "" )
+{}
 
 Utility::TextFileSink::TextFileSink(
     const std::string& outputDirectory, const std::string& fileName, const std::string& logExtension, LogLevel level ) :
-    LogSink( sinkIdentifier, std::make_unique< KeyValueFormatter >(), level ),
+    LogSink( SINK_IDENTIFIER, std::make_unique< KeyValueFormatter >(), level ),
     mOutputDirectory( outputDirectory ),
     mFileName( fileName ),
     mLogExtension( logExtension )
 {
-    // Build Path
-    std::stringstream filePath;
-    filePath << outputDirectory << "/";
-    filePath << fileName << logExtension;
-
-    // Open File
-    mFileHandle.open( filePath.str(), std::ios::app );
-
-    // Store path
-    mEntireFilePath = filePath.str();
+    openFile();
 }
 
 const std::string Utility::TextFileSink::getFilePath() const
@@ -45,6 +43,20 @@ void Utility::TextFileSink::sinkData( std::string_view message, LogLevel level, 
         LogRegistry::instance()->getGlobalLogger()->logError(
             "Logger: " + LogSink::mSinkIdentifier + " DOES NOT have a formatter" );
     }
+}
+
+void Utility::TextFileSink::openFile()
+{
+    // Build Path
+    std::stringstream filePath;
+    filePath << mOutputDirectory << "/";
+    filePath << mFileName << mLogExtension;
+
+    // Open File
+    mFileHandle.open( filePath.str(), std::ios::app );
+
+    // Store path
+    mEntireFilePath = filePath.str();
 }
 
 std::shared_ptr< Utility::Logger > Utility::createTextFileLogger( const std::string& loggerName,

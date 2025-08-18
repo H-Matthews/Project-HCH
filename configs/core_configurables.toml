@@ -7,25 +7,26 @@
 # - Message Network
 # - Scene
 
-# BEGINNING ENGINE ----------------------------------
+# BEGINNING ENGINE -------------------------------
 
 [Engine]
 logging_enabled = true
 
 [Engine.Logger]
-logger_name = "AppLogger"
+logger_name = "EngineLogger"
 global_log_level = "NONE"
-sinks = [ "ColorConsoleSink", "TextFileSink" ]
 
 [Engine.Logger.ColorConsoleSink]
 log_level = "INFO"
+formatter = "DefaultFormatter"
 
 [Engine.Logger.TextFileSink]
 log_file_name = "Engine"
 log_file_extension = ".log"
 log_level = "INFO"
+formatter = "KeyValueFormatter"
 
-# END ENGINE ----------------------------------------
+# END ENGINE -------------------------------------
 
 # BEGINNING STATESTACK ---------------------------
 
@@ -35,12 +36,12 @@ logging_enabled = true
 [StateStack.Logger]
 logger_name = "StateStackLogger"
 global_log_level = "NONE"
-sinks = [ "TextFileSink" ]
 
 [StateStack.Logger.TextFileSink]
 log_file_name = "StateStack"
 log_file_extension = ".log"
 log_level = "INFO"
+formatter = "KeyValueFormatter"
 
 # END STATESTACK ---------------------------------
 
@@ -52,12 +53,12 @@ logging_enabled = true
 [MessageNetwork.Logger]
 logger_name = "MessageNetworkLogger"
 global_log_level = "NONE"
-sinks = [ "TextFileSink" ]
 
 [MessageNetwork.Logger.TextFileSink]
 log_file_name = "MessageNetwork"
 log_file_extension = ".log"
 log_level = "INFO"
+formatter = "KeyValueFormatter"
 
 # END MESSAGE NETWORK ----------------------------
 
@@ -69,11 +70,11 @@ logging_enabled = true
 [Scene.Logger]
 logger_name = "SceneLogger"
 global_log_level = "NONE"
-sinks = [ "TextFileSink" ]
 
 [Scene.Logger.TextFileSink]
 log_file_name = "Scene"
 log_file_extension = ".log"
 log_level = "INFO"
+formatter = "KeyValueFormatter"
 
 # END SCENE --------------------------------------
