@@ -8,7 +8,8 @@
 
 namespace Core
 {
-    using PrimitiveVariant = std::variant< bool, char, int, float, double, std::string >;
+    using PrimitiveVariant = std::variant< bool, char, int, float, double, std::string, std::vector< bool >,
+        std::vector< int64_t >, std::vector< double >, std::vector< std::string > >;
 
     class ConfigNode
     {
@@ -19,26 +20,24 @@ namespace Core
         void addChild( std::shared_ptr< ConfigNode > childNode );
         ConfigNode* getChild( const std::string& name );
 
+        std::vector< std::shared_ptr< ConfigNode > > getChildren();
+
         void setParent( std::shared_ptr< ConfigNode > parentNode );
         void insertValuePair( const std::string& key, const PrimitiveVariant& value );
-        void insertArrayValue( const PrimitiveVariant& value );
 
-        // TODO: These functions essentially exist in the ConfigurationTree
-        // Need to see if we can consolidate these functions
+        std::map< std::string, PrimitiveVariant > getKeyValues();
+
         template < typename T >
         T* findValue( const std::string& key );
 
-        // TODO: This really needs to go into some utility class for ConfigNodes
-        static ConfigNode* findRelativeNode( const std::string& nodeName, ConfigNode* node );
-
-      private:
+      public:
         std::string mName;
 
+      private:
         std::shared_ptr< ConfigNode > mParent;
         std::vector< std::shared_ptr< ConfigNode > > mChildren;
 
         std::map< std::string, PrimitiveVariant > mKeyValues;
-        std::vector< PrimitiveVariant > mArrayValues;
 
       public:
         friend class ConfigurationTree;

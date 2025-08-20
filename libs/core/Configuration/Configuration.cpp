@@ -2,6 +2,7 @@
 
 #include "core/Configuration/ConfigReader/TOMLConfigReader.hpp"
 #include "core/Configuration/ConfigTree/ConfigurationTree.hpp"
+#include "core/Configuration/ConfigTree/ConfigUtils.hpp"
 #include "core/Configuration/Configurables/Configurable.hpp"
 
 #include "utility/Logging/LogRegistry.hpp"
@@ -57,8 +58,9 @@ Core::Configuration::Configuration(
 void Core::Configuration::initializeOutputDirectory()
 {
     // Get configured output directory IF SET
+    std::shared_ptr< ConfigNode > rootNode = ConfigurationTree::instance()->getRootNode();
     auto configuredOutDirectory =
-        ConfigurationTree::instance()->findValueByNode< std::string >( "root.Configuration", "out_directory" );
+        ConfigUtils::findValueByNode< std::string >( rootNode, "root.Configuration", "out_directory" );
 
     std::string outputDirectoryPath = mProjectDirectory + "/";
     if ( configuredOutDirectory )
@@ -120,14 +122,16 @@ void Core::Configuration::initializeOutputDirectory()
 void Core::Configuration::initializeAssetsDirectory()
 {
     // Look up configurable values
+
+    std::shared_ptr< ConfigNode > rootNode = ConfigurationTree::instance()->getRootNode();
     auto configuredAssetDir =
-        ConfigurationTree::instance()->findValueByNode< std::string >( "root.Configuration", "asset_directory" );
+        ConfigUtils::findValueByNode< std::string >( rootNode, "root.Configuration", "asset_directory" );
 
     auto configuredAssetFontDir =
-        ConfigurationTree::instance()->findValueByNode< std::string >( "root.Configuration", "asset_font_directory" );
+        ConfigUtils::findValueByNode< std::string >( rootNode, "root.Configuration", "asset_font_directory" );
 
-    auto configuredAssetTextureDir = ConfigurationTree::instance()->findValueByNode< std::string >(
-        "root.Configuration", "asset_texture_directory" );
+    auto configuredAssetTextureDir =
+        ConfigUtils::findValueByNode< std::string >( rootNode, "root.Configuration", "asset_texture_directory" );
 
     // Get and save the Asset file path
     std::string assetDirectoryPath = mProjectDirectory + "/";
@@ -264,15 +268,17 @@ std::pair< bool, std::string > Core::Configuration::parseRootFile()
 
         ConfigurationTree::instance()->attachConfigNode( rootConfigNode );
 
+        std::shared_ptr< ConfigNode > rootNode = ConfigurationTree::instance()->getRootNode();
+
         // Get files from Config Tree
-        std::optional< std::string > coreConfigFile = ConfigurationTree::instance()->findValueByNode< std::string >(
-            "root.Configuration_Files", "core_configurables" );
+        auto coreConfigFile =
+            ConfigUtils::findValueByNode< std::string >( rootNode, "root.Configuration_Files", "core_configurables" );
 
         if ( coreConfigFile )
             mConfigFiles.push_back( std::string( mConfigDirPath + "/" + *coreConfigFile ) );
 
-        std::optional< std::string > prefabConfigFile =
-            ConfigurationTree::instance()->findValueByNode< std::string >( "root.Configuration_Files", "prefabs" );
+        auto prefabConfigFile =
+            ConfigUtils::findValueByNode< std::string >( rootNode, "root.Configuration_Files", "prefabs" );
 
         if ( prefabConfigFile )
             mConfigFiles.push_back( std::string( mConfigDirPath + "/" + *prefabConfigFile ) );

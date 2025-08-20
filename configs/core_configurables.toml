@@ -15,6 +15,7 @@ logging_enabled = true
 [Engine.Logger]
 logger_name = "EngineLogger"
 global_log_level = "NONE"
+sinks = ["ColorConsoleSink", "TextFileSink"]
 
 [Engine.Logger.ColorConsoleSink]
 log_level = "INFO"
@@ -36,6 +37,7 @@ logging_enabled = true
 [StateStack.Logger]
 logger_name = "StateStackLogger"
 global_log_level = "NONE"
+sinks = ["TextFileSink"]
 
 [StateStack.Logger.TextFileSink]
 log_file_name = "StateStack"
@@ -53,6 +55,7 @@ logging_enabled = true
 [MessageNetwork.Logger]
 logger_name = "MessageNetworkLogger"
 global_log_level = "NONE"
+sinks = ["TextFileSink"]
 
 [MessageNetwork.Logger.TextFileSink]
 log_file_name = "MessageNetwork"
@@ -70,6 +73,7 @@ logging_enabled = true
 [Scene.Logger]
 logger_name = "SceneLogger"
 global_log_level = "NONE"
+sinks = ["TextFileSink"]
 
 [Scene.Logger.TextFileSink]
 log_file_name = "Scene"

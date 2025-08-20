@@ -49,7 +49,6 @@ namespace Core
 
         void notifySubscribers();
 
-        void initializeLogger();
         void shutdownNetwork();
 
       private:
@@ -86,7 +85,6 @@ namespace Core
         std::map< std::size_t, std::set< Messages::ID > > mPendingSubscriberRequests;
 
         std::hash< std::string > mHash;
-        std::shared_ptr< Utility::Logger > mLogger;
 
       public:
         friend class Core::MessageNode;

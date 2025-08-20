@@ -63,8 +63,6 @@ namespace Core
 
         EngineState mState;
 
-        std::shared_ptr< Utility::Logger > mEngineLogger;
-
         // Should this go here? or in the GameState?
         TextureHolder mTextures;
 
@@ -87,8 +85,6 @@ namespace Core
 
     void Core::Engine::setConfiguration( std::unique_ptr< Core::Configuration > config )
     {
-        if ( mEngineLogger )
-            mEngineLogger->logInfo( "Hello" );
         mConfiguration = std::move( config );
     }
 }

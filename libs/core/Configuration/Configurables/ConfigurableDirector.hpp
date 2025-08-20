@@ -15,6 +15,6 @@ namespace Core
     class ConfigurableDirector
     {
       public:
-        std::shared_ptr< Utility::Logger > buildLogger( ConfigNode* node );
+        std::shared_ptr< Utility::Logger > buildLogger( std::shared_ptr< ConfigNode > node );
     };
 }

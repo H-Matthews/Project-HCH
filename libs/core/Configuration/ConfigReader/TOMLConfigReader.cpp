@@ -5,26 +5,18 @@
 #include <iostream>
 #include <limits>
 
-// Parameters that are in EVERY toml config file
-const std::string Core::TOMLConfigReader::PARAM_FILE_TYPE = "FILE_TYPE";
-
-void Core::TOMLConfigReader::init()
-{
-    return;
-}
-
 std::pair< bool, std::string > Core::TOMLConfigReader::readFile(
     const std::filesystem::path& filePath, std::shared_ptr< ConfigNode >& configNode )
 {
-    // Check if file exists
-    if (( !std::filesystem::is_regular_file( filePath ) ))
+    // Ensure the file exists
+    if ( ( !std::filesystem::is_regular_file( filePath ) ) )
     {
         const std::string errString = "Could NOT FIND file ----> " + filePath.string();
 
         return std::make_pair( false, errString );
     }
 
-    if (!configNode)
+    if ( !configNode )
         configNode = std::make_shared< ConfigNode >( filePath.filename().stem().string() );
 
     toml::table config;
@@ -38,34 +30,31 @@ std::pair< bool, std::string > Core::TOMLConfigReader::readFile(
 
 void Core::TOMLConfigReader::processTOMLData( const toml::node& tomlNode, std::shared_ptr< ConfigNode > configNode )
 {
-
     // Determine Node Type
-    if (tomlNode.is_table())
+    if ( tomlNode.is_table() )
     {
+
         const auto& tomlTable = tomlNode.as_table();
-        for (auto&& [ key, value ] : *tomlTable)
+        for ( auto&& [ key, value ] : *tomlTable )
         {
             std::string keyString( key.str() );
 
-            // IF its a table, then we need to recursively call this function
-            if (value.is_table() || value.is_array())
+            // TABLE -------------------------- Recursive function call
+            if ( value.is_table() )
             {
                 auto newConfigNode = std::make_shared< ConfigNode >( keyString, configNode );
                 configNode->addChild( newConfigNode );
+
                 processTOMLData( value, newConfigNode );
+            }
+            else if ( value.is_array() )
+            {
+                processArrayTOMLData( keyString, value, configNode );
             }
             else // For arrays, we must iterate over all elements
             {
                 processPrimitiveTOMLData( keyString, value, configNode );
             }
-        }
-    }
-    else if (tomlNode.is_array())
-    {
-        const auto& tomlArray = tomlNode.as_array();
-        for (auto&& val : *tomlArray)
-        {
-            processArrayTOMLData( val, configNode );
         }
     }
 
@@ -75,49 +64,81 @@ void Core::TOMLConfigReader::processTOMLData( const toml::node& tomlNode, std::s
 // BEGIN HELPER FUNCTIONS ------------------------------------------------------------------------------
 
 void Core::TOMLConfigReader::processArrayTOMLData(
-    const toml::node& tomlNode, std::shared_ptr< ConfigNode > configNode )
+    const std::string& keyNode, const toml::node& tomlNode, std::shared_ptr< ConfigNode > configNode )
 {
 
-    if (tomlNode.is_string())
+    const auto& tomlArray = tomlNode.as_array();
+
+    // For now, we are not gonna deal with heterogenous data in arrays
+    // even though it is supported in TOML
+    if ( tomlArray->empty() || !tomlArray->is_homogeneous() )
+        return;
+
+    const auto& firstElement = tomlArray->at( 0 );
+    if ( firstElement.is_string() )
     {
-        configNode->insertArrayValue( tomlNode.as_string()->value_or( "" ) );
+        std::vector< std::string > values;
+        for ( const auto& elem : *tomlArray )
+        {
+            values.push_back( elem.as_string()->value_or( "" ) );
+        }
+
+        configNode->insertValuePair( keyNode, std::move( values ) );
     }
-    else if (tomlNode.is_integer())
+    else if ( firstElement.is_integer() )
     {
-        configNode->insertArrayValue( tomlNode.as_integer()->value_or( std::numeric_limits< int >::max() ) );
+        std::vector< int64_t > values;
+        for ( const auto& elem : *tomlArray )
+        {
+            values.push_back( elem.as_integer()->value_or( std::numeric_limits< int >::max() ) );
+        }
+
+        configNode->insertValuePair( keyNode, std::move( values ) );
     }
-    else if (tomlNode.is_floating_point())
+    else if ( firstElement.is_floating_point() )
     {
-        configNode->insertArrayValue( tomlNode.as_floating_point()->value_or( std::numeric_limits< double >::max() ) );
+        std::vector< double > values;
+        for ( const auto& elem : *tomlArray )
+        {
+            values.push_back( elem.as_floating_point()->value_or( std::numeric_limits< double >::max() ) );
+        }
+
+        configNode->insertValuePair( keyNode, std::move( values ) );
     }
-    else if (tomlNode.is_boolean())
+    else if ( firstElement.is_boolean() )
     {
-        configNode->insertArrayValue( tomlNode.as_boolean()->value_or( false ) );
+        std::vector< bool > values;
+        for ( const auto& elem : *tomlArray )
+        {
+            values.push_back( elem.as_boolean()->value_or( false ) );
+        }
+
+        configNode->insertValuePair( keyNode, std::move( values ) );
     }
 
     return;
 }
 
 void Core::TOMLConfigReader::processPrimitiveTOMLData(
-    const std::string& keyString, const toml::node& tomlNode, std::shared_ptr< ConfigNode > configNode )
+    const std::string& keyNode, const toml::node& tomlNode, std::shared_ptr< ConfigNode > configNode )
 {
 
-    if (tomlNode.is_string())
+    if ( tomlNode.is_string() )
     {
-        configNode->insertValuePair( keyString, tomlNode.as_string()->value_or( "" ) );
+        configNode->insertValuePair( keyNode, tomlNode.as_string()->value_or( "" ) );
     }
-    else if (tomlNode.is_integer())
+    else if ( tomlNode.is_integer() )
     {
-        configNode->insertValuePair( keyString, tomlNode.as_integer()->value_or( std::numeric_limits< int >::max() ) );
+        configNode->insertValuePair( keyNode, tomlNode.as_integer()->value_or( std::numeric_limits< int >::max() ) );
     }
-    else if (tomlNode.is_floating_point())
+    else if ( tomlNode.is_floating_point() )
     {
         configNode->insertValuePair(
-            keyString, tomlNode.as_floating_point()->value_or( std::numeric_limits< double >::max() ) );
+            keyNode, tomlNode.as_floating_point()->value_or( std::numeric_limits< double >::max() ) );
     }
-    else if (tomlNode.is_boolean())
+    else if ( tomlNode.is_boolean() )
     {
-        configNode->insertValuePair( keyString, tomlNode.as_boolean()->value_or( false ) );
+        configNode->insertValuePair( keyNode, tomlNode.as_boolean()->value_or( false ) );
     }
 
     return;

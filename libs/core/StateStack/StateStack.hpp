@@ -64,8 +64,6 @@ namespace Core
         };
 
       private:
-        std::shared_ptr< Utility::Logger > mLogger;
-
         std::vector< std::unique_ptr< Core::State > > mStack;
         std::vector< pendingStateRequests > mPendingList;
         Core::State::SharedObjects mSharedObjects;

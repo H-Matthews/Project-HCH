@@ -18,17 +18,13 @@ const std::string Core::Engine::TYPE_NAME = "Engine";
 Core::Engine::Engine() :
     Configurable( TYPE_NAME ),
     mState( EngineState::NONE ),
-    mEngineLogger( nullptr ),
     mTextures(),
     mConfiguration( nullptr ),
     mNetwork(),
     // mPlayerKeyBindings(),
     mWindow( sf::VideoMode( { 640, 480 } ), "Engine Window", sf::Style::Close ),
     mStateStack( Core::State::SharedObjects( mWindow, mNetwork, mTextures ) )
-{
-    if constexpr ( Utility::CAN_LOG )
-        mEngineLogger = Configurable::createLogger();
-}
+{}
 
 void Core::Engine::initialize()
 {
@@ -39,9 +35,6 @@ void Core::Engine::initialize()
     // auto gameNetwork =
     //     Core::ConfigurableFactory::createTypedConfigurable< Core::MessageNetwork >( Core::MessageNetwork::TYPE_NAME
     //     );
-
-    // if constexpr ( Utility::CAN_LOG )
-    //     gameNetwork->initializeLogger();
 
     loadResources();
 
@@ -69,9 +62,9 @@ void Core::Engine::run()
     {
         if constexpr ( Utility::CAN_LOG )
         {
-            if ( mEngineLogger )
+            if ( mLogger )
             {
-                mEngineLogger->logError(
+                mLogger->logError(
                     "Application is unable to transition to the RUNNING state... Likely a Configuration Error " );
             }
         }
@@ -80,7 +73,7 @@ void Core::Engine::run()
     }
 
     if constexpr ( Utility::CAN_LOG )
-        mEngineLogger->logInfo( "Entering main RUN loop" );
+        mLogger->logInfo( "Entering main RUN loop" );
 
     while ( mWindow.isOpen() )
     {
@@ -99,7 +92,7 @@ void Core::Engine::run()
                 mWindow.close();
 
                 if constexpr ( Utility::CAN_LOG )
-                    mEngineLogger->logInfo( "Closing Window...." );
+                    mLogger->logInfo( "Closing Window...." );
             }
         }
 
@@ -107,7 +100,7 @@ void Core::Engine::run()
     }
 
     if constexpr ( Utility::CAN_LOG )
-        mEngineLogger->logInfo( "Exiting main RUN loop" );
+        mLogger->logInfo( "Exiting main RUN loop" );
 }
 
 void Core::Engine::processInput()
@@ -166,8 +159,7 @@ bool Core::Engine::transitionState( EngineState statusToTransfer )
     bool retStatus = false;
 
     if constexpr ( Utility::CAN_LOG )
-        mEngineLogger->logDebug(
-            "Attempting to Transition to State: " + convertEngineStateEnumToString( statusToTransfer ) );
+        mLogger->logDebug( "Attempting to Transition to State: " + convertEngineStateEnumToString( statusToTransfer ) );
 
     if ( mState == statusToTransfer )
         return retStatus;
@@ -223,14 +215,14 @@ bool Core::Engine::transitionState( EngineState statusToTransfer )
     if ( Utility::CAN_LOG && retStatus )
     {
         if constexpr ( Utility::CAN_LOG )
-            mEngineLogger->logDebug( "Transitioning from State: " + convertEngineStateEnumToString( prevState ) +
-                                     " to " + convertEngineStateEnumToString( statusToTransfer ) );
+            mLogger->logDebug( "Transitioning from State: " + convertEngineStateEnumToString( prevState ) + " to " +
+                               convertEngineStateEnumToString( statusToTransfer ) );
     }
     else if ( Utility::CAN_LOG )
     {
         if constexpr ( Utility::CAN_LOG )
-            mEngineLogger->logError( "Could NOT transition from State: " + convertEngineStateEnumToString( prevState ) +
-                                     " to " + convertEngineStateEnumToString( statusToTransfer ) );
+            mLogger->logError( "Could NOT transition from State: " + convertEngineStateEnumToString( prevState ) +
+                               " to " + convertEngineStateEnumToString( statusToTransfer ) );
     }
 
     return retStatus;

@@ -17,6 +17,7 @@ set(INC Engine.hpp
         Configuration/Configuration.hpp
         Configuration/ConfigTree/ConfigurationTree.hpp
         Configuration/ConfigTree/ConfigNode.hpp
+        Configuration/ConfigTree/ConfigUtils.hpp
         Configuration/ConfigReader/ConfigReader.hpp
         Configuration/ConfigReader/TOMLConfigReader.hpp
         Configuration/Configurables/Configurable.hpp
@@ -38,6 +39,7 @@ set(SRC Engine.cpp
         Configuration/Configuration.cpp
         Configuration/ConfigTree/ConfigurationTree.cpp
         Configuration/ConfigTree/ConfigNode.cpp
+        Configuration/ConfigTree/ConfigUtils.cpp
         Configuration/ConfigReader/TOMLConfigReader.cpp
         Configuration/Configurables/Configurable.cpp
         Configuration/Configurables/ConfigInitializer.cpp

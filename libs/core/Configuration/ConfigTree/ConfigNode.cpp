@@ -6,16 +6,14 @@ Core::ConfigNode::ConfigNode( const std::string& name ) :
     mName( name ),
     mParent( nullptr ),
     mChildren(),
-    mKeyValues(),
-    mArrayValues()
+    mKeyValues()
 {}
 
 Core::ConfigNode::ConfigNode( const std::string& name, std::shared_ptr< ConfigNode > parent ) :
     mName( name ),
     mParent( parent ),
     mChildren(),
-    mKeyValues(),
-    mArrayValues()
+    mKeyValues()
 {}
 
 void Core::ConfigNode::addChild( std::shared_ptr< ConfigNode > childNode )
@@ -28,6 +26,14 @@ void Core::ConfigNode::addChild( std::shared_ptr< ConfigNode > childNode )
     return;
 }
 
+/**
+ * Caller DOES NOT own these, DONT DELETE
+ */
+std::vector< std::shared_ptr< Core::ConfigNode > > Core::ConfigNode::getChildren()
+{
+    return mChildren;
+}
+
 void Core::ConfigNode::setParent( std::shared_ptr< ConfigNode > parentNode )
 {
     this->mParent = parentNode;
@@ -37,39 +43,16 @@ void Core::ConfigNode::setParent( std::shared_ptr< ConfigNode > parentNode )
 
 void Core::ConfigNode::insertValuePair( const std::string& key, const PrimitiveVariant& value )
 {
-    mKeyValues[ key ] = value;
+    auto it = mKeyValues.find( key );
+    if ( it == mKeyValues.end() )
+        mKeyValues[ key ] = value;
 
     return;
 }
 
-void Core::ConfigNode::insertArrayValue( const PrimitiveVariant& value )
+std::map< std::string, Core::PrimitiveVariant > Core::ConfigNode::getKeyValues()
 {
-    mArrayValues.push_back( value );
-
-    return;
-}
-
-Core::ConfigNode* Core::ConfigNode::findRelativeNode( const std::string& nodeName, ConfigNode* node )
-{
-    if ( node == nullptr )
-        return nullptr;
-
-    std::stack< ConfigNode* > nodeStack;
-    nodeStack.push( node );
-
-    while ( !nodeStack.empty() )
-    {
-        auto currentNode = nodeStack.top();
-        nodeStack.pop();
-
-        if ( currentNode->mName == nodeName )
-            return currentNode;
-
-        for ( const auto& child : currentNode->mChildren )
-            nodeStack.push( child.get() );
-    }
-
-    return nullptr;
+    return mKeyValues;
 }
 
 Core::ConfigNode* Core::ConfigNode::getChild( const std::string& name )

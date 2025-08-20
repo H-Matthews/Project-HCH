@@ -14,8 +14,7 @@ Core::MessageNetwork::MessageNetwork() :
     mPublisherRecords(),
     mPendingPublisherRequests(),
     mPendingSubscriberRequests(),
-    mHash(),
-    mLogger( nullptr )
+    mHash()
 {}
 
 void Core::MessageNetwork::registerSubscriberNode(
@@ -339,13 +338,6 @@ void Core::MessageNetwork::addressPendingRequests()
     }
 
     mPendingSubscriberRequests.clear();
-
-    return;
-}
-
-void Core::MessageNetwork::initializeLogger()
-{
-    mLogger = Configurable::createLogger();
 
     return;
 }

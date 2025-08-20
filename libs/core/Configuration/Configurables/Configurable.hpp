@@ -20,10 +20,9 @@ namespace Core
         virtual ~Configurable() = default;
 
       protected:
-        std::shared_ptr< Utility::Logger > createLogger();
+        std::shared_ptr< ConfigNode > mConfigNode;
 
-      protected:
-        std::weak_ptr< ConfigNode > mConfigNode;
+        std::shared_ptr< Utility::Logger > mLogger;
 
       private:
         ConfigurableDirector mDirector;

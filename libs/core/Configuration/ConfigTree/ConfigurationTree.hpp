@@ -14,6 +14,11 @@ namespace Core
 {
     class ConfigNode;
 
+    /**
+     * Singleton class that holds the root config node
+     *
+     * Mainly used so that each Configurable can grab its Config Node
+     */
     class ConfigurationTree
     {
       public:
@@ -23,79 +28,19 @@ namespace Core
 
         void attachConfigNode( std::shared_ptr< ConfigNode > configNode );
 
-        std::optional< std::shared_ptr< ConfigNode > > getConfigNode( const std::string& nodeName );
+        std::shared_ptr< ConfigNode > getRootNode();
 
-        template < typename T >
-        std::optional< T > findValueByNode( const std::string& nodeName, const std::string& key );
-
-        template < typename T >
-        std::vector< T* > findValuesByNode( const std::string& nodeName );
+      public:
+        friend class ConfigNode;
 
       private:
         ConfigurationTree();
-
-        std::shared_ptr< ConfigNode > traverseTree( const std::string nodeName );
 
       private:
         // Static pointer to our object
         static std::shared_ptr< ConfigurationTree > mConfigTreeInstance;
 
         std::shared_ptr< ConfigNode > mRootNode;
-
-      public:
-        friend class ConfigNode;
     };
-
-    template < typename T >
-    std::optional< T > ConfigurationTree::findValueByNode( const std::string& nodeName, const std::string& key )
-    {
-        std::optional< T > result = std::nullopt;
-
-        std::vector< std::string > configNodeNames;
-        Utility::splitString( nodeName, configNodeNames, '.' );
-
-        std::shared_ptr< ConfigNode > traversalNode = nullptr;
-        for ( const auto& configNodeName : configNodeNames )
-        {
-            traversalNode = traverseTree( configNodeName );
-            if ( traversalNode == nullptr )
-                return result;
-        }
-
-        // IF we got here, then we found the node
-        // Lookup the Key
-        auto it = traversalNode->mKeyValues.find( key );
-        if ( it != traversalNode->mKeyValues.end() )
-        {
-            if ( auto val = std::get_if< T >( &it->second ) )
-                result = *val;
-        }
-
-        return result;
-    }
-    template < typename T >
-    std::vector< T* > ConfigurationTree::findValuesByNode( const std::string& nodeName )
-    {
-        std::vector< T* > result;
-
-        std::vector< std::string > configNodeNames;
-        Utility::splitString( nodeName, configNodeNames, '.' );
-
-        std::shared_ptr< ConfigNode > traversalNode = nullptr;
-        for ( const auto& configNodeName : configNodeNames )
-        {
-            traversalNode = traverseTree( configNodeName );
-            if ( traversalNode == nullptr )
-                return result;
-        }
-
-        // IF we got here, then we found the node with the vector
-        for ( auto& value : traversalNode->mArrayValues )
-        {
-            T* tempPointer = std::get_if< T >( &value );
-            if ( tempPointer )
-                result.push_back( tempPointer );
-        }
-    }
 
 }

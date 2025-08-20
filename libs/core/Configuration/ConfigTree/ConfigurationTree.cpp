@@ -26,38 +26,7 @@ void Core::ConfigurationTree::attachConfigNode( std::shared_ptr< ConfigNode > co
     return;
 }
 
-/**
- * Itertaively traversing the tree, instead of using recursion
- */
-std::shared_ptr< Core::ConfigNode > Core::ConfigurationTree::traverseTree( const std::string nodeName )
+std::shared_ptr< Core::ConfigNode > Core::ConfigurationTree::getRootNode()
 {
-    if ( mRootNode == nullptr )
-        return nullptr;
-
-    std::stack< std::shared_ptr< ConfigNode > > nodeStack;
-    nodeStack.push( mRootNode );
-
-    while ( !nodeStack.empty() )
-    {
-        auto currentNode = nodeStack.top();
-        nodeStack.pop();
-
-        if ( currentNode->mName == nodeName )
-            return currentNode;
-
-        for ( const auto& child : currentNode->mChildren )
-            nodeStack.push( child );
-    }
-
-    return nullptr;
-}
-
-std::optional< std::shared_ptr< Core::ConfigNode > > Core::ConfigurationTree::getConfigNode(
-    const std::string& nodeName )
-{
-    std::optional< std::shared_ptr< ConfigNode > > result = std::nullopt;
-
-    result = traverseTree( nodeName );
-
-    return result;
+    return mRootNode;
 }

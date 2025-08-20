@@ -9,7 +9,6 @@ const std::string Core::StateStack::TYPE_NAME = "StateStack";
 
 Core::StateStack::StateStack() :
     Configurable( TYPE_NAME ),
-    mLogger( nullptr ),
     mStack(),
     mPendingList(),
     mSharedObjects(),
@@ -18,7 +17,6 @@ Core::StateStack::StateStack() :
 
 Core::StateStack::StateStack( Core::State::SharedObjects sObjects ) :
     Configurable( TYPE_NAME ),
-    mLogger( nullptr ),
     mStack(),
     mPendingList(),
     mSharedObjects( sObjects ),
