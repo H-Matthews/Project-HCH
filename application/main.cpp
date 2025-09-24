@@ -1,32 +1,30 @@
-#include "core/Engine.hpp"
+#include "core/Application.hpp"
 
 #include "core/Configuration/Configuration.hpp"
 #include "core/Configuration/ConfigReader/TOMLConfigReader.hpp"
 
-#include "core/Exceptions/ConfigurationException.hpp"
-
 #include <iostream>
 
 constexpr const char* CONFIG_DIR_NAME = "configs";
+constexpr const char* ROOT_FILE_NAME = "root.toml";
 
 int main()
 {
-
-    std::shared_ptr< Core::Engine > gameEngine = nullptr;
+    Core::ConfigSpec configSpecification;
+    configSpecification.configDirectory = CONFIG_DIR_NAME;
+    configSpecification.rootConfigFile = ROOT_FILE_NAME;
+    configSpecification.configReader = new Core::TOMLConfigReader();
 
     try
     {
-        auto gameConfig =
-            std::make_unique< Core::Configuration >( std::make_unique< Core::TOMLConfigReader >(), CONFIG_DIR_NAME );
+        auto gameConfiguration = std::make_unique< Core::Configuration >( configSpecification );
+        gameConfiguration->configure();
 
-        gameConfig->parse();
-        gameConfig->initializeOutputDirectory();
-        gameConfig->initializeAssetsDirectory();
+        Core::Application application;
+        application.setConfiguration( std::move( gameConfiguration ) );
+        application.initialize();
 
-        auto gameEngine = Core::ConfigurableFactory::createTypedConfigurable< Core::Engine >( Core::Engine::TYPE_NAME );
-
-        gameEngine->setConfiguration( std::move( gameConfig ) );
-        gameEngine->initialize();
+        application.run();
     }
     catch ( const Core::ConfigurationException& e )
     {
@@ -34,9 +32,12 @@ int main()
 
         return -1;
     }
+    catch ( const std::exception& e )
+    {
+        std::cerr << e.what() << '\n';
 
-    if ( gameEngine )
-        gameEngine->run();
+        return -1;
+    }
 
     return 0;
 }

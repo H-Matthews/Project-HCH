@@ -16,8 +16,7 @@ Core::Configurable::Configurable( const std::string& typeName ) :
 
     if constexpr ( Utility::CAN_LOG )
     {
-        // Check to see if its Logger is enabled Enabled
-        // Determine if this configurable is creating a logger
+        // Check to see if this Configurable has a logger
         bool isLoggingEnabled = false;
         if ( auto* enabled = mConfigNode->findValue< bool >( "logging_enabled" ) )
             isLoggingEnabled = *enabled;

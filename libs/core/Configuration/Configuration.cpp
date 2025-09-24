@@ -11,20 +11,31 @@
 #include <sstream>
 #include <iostream>
 
-const std::string Core::Configuration::ROOT_CONFIG_FILE_NAME = "root.toml";
-
 // These can be changed via config files
 const std::string Core::Configuration::DEFAULT_OUTPUT_DIR_NAME = "output";
 const std::string Core::Configuration::DEFAULT_ASSET_DIR_NAME = "assets";
 const std::string Core::Configuration::DEFAULT_ASSET_FONTS_DIR_NAME = "fonts";
 const std::string Core::Configuration::DEFAULT_ASSET_TEXTURES_DIR_NAME = "textures";
 
-Core::Configuration::Configuration(
-    std::unique_ptr< ConfigReader > configReader, const std::string& configDirectoryName ) :
-    mConfigReader( std::move( configReader ) ),
+Core::ConfigSpec::ConfigSpec() :
+    rootConfigFile( "" ),
+    configDirectory( "" ),
+    configReader( nullptr )
+{}
+
+Core::ConfigSpec::ConfigSpec( const ConfigSpec& other ) :
+    rootConfigFile( other.rootConfigFile ),
+    configDirectory( other.configDirectory ),
+    configReader( other.configReader )
+{}
+
+Core::Configuration::Configuration( const ConfigSpec& configSpec ) :
+    mConfigReader( std::move( configSpec.configReader ) ),
     mConfigFiles(),
     mProjectDirectory( PROJECT_DIR ),
-    mConfigDirPath( mProjectDirectory + "/" + configDirectoryName ),
+    mRootFile( configSpec.rootConfigFile ),
+    mConfigDirectory( configSpec.configDirectory ),
+    mConfigDirPath( mProjectDirectory + "/" + mConfigDirectory ),
     mOutputDirPath(),
     mAssetDirPath(),
     mAssetFontsDirPath(),
@@ -47,10 +58,32 @@ Core::Configuration::Configuration(
         throw ConfigurationException( std::string( "Config directory could NOT be found" + mConfigDirPath ).c_str() );
     }
 
-    Configuration::setDirectoryInit( DirectoryIDs::CONFIG );
+    if ( mRootFile.empty() )
+    {
+        if constexpr ( Utility::CAN_LOG )
+            Utility::LogRegistry::instance()->getGlobalLogger()->logError( "Root file was NOT populated " );
 
-    // Registers all CORE configurables
-    Core::ConfigInitializer::registerCoreConfigurables();
+        throw ConfigurationException( std::string( "Root file was NOT populated" ).c_str() );
+    }
+
+    if ( !mConfigReader )
+    {
+        if constexpr ( Utility::CAN_LOG )
+            Utility::LogRegistry::instance()->getGlobalLogger()->logError( "ConfigReader is NULL" );
+
+        throw ConfigurationException( std::string( "ConfigReader is NULL" ).c_str() );
+    }
+
+    Configuration::setDirectoryInit( DirectoryIDs::CONFIG );
+}
+
+void Core::Configuration::configure()
+{
+    parse();
+    initializeOutputDirectory();
+    initializeAssetsDirectory();
+
+    return;
 }
 
 // The following field needs to be read in by CONFIG file
@@ -205,6 +238,7 @@ void Core::Configuration::initializeAssetsDirectory()
     return;
 }
 
+// Parses the configuration files, and populates the ConfigurationTree
 void Core::Configuration::parse()
 {
     if ( !isConfigInitialized() )
@@ -253,7 +287,7 @@ void Core::Configuration::parse()
 std::pair< bool, std::string > Core::Configuration::parseRootFile()
 {
     // Build RootfilePath
-    std::string rootFilePath = mConfigDirPath + "/" + ROOT_CONFIG_FILE_NAME;
+    std::string rootFilePath = mConfigDirPath + "/" + mRootFile;
 
     if constexpr ( Utility::CAN_LOG )
         Utility::LogRegistry::instance()->getGlobalLogger()->logDebug( "Parsing config file: " + rootFilePath );

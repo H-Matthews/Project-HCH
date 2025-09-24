@@ -22,23 +22,24 @@
 
 namespace Core
 {
-    enum class EngineState
+    class Application : public Core::Configurable
     {
-        NONE = 0, // This IS NOT a valid value, just used for default values
-        WAITING_TO_RUN,
-        RUNNING,
-        SHUTTING_DOWN
-    };
+      public:
+        enum class State
+        {
+            NONE = 0, // This IS NOT a valid value, just used for default values
+            WAITING_TO_RUN,
+            RUNNING,
+            SHUTTING_DOWN
+        };
 
-    std::string convertEngineStateEnumToString( const EngineState& state );
-    EngineState convertStringToEngineStateEnum( const std::string& stringState );
+        std::string convertEngineStateEnumToString( const State& state );
+        State convertStringToEngineStateEnum( const std::string& stringState );
 
-    class Engine : public Core::Configurable
-    {
       public:
         static const std::string TYPE_NAME;
 
-        Engine();
+        Application();
         inline void setConfiguration( std::unique_ptr< Core::Configuration > config );
         void initialize();
         void run();
@@ -53,7 +54,7 @@ namespace Core
 
         void loadResources();
 
-        bool transitionState( EngineState statusToTransfer );
+        bool transitionState( State statusToTransfer );
 
         inline bool isWaitingToRun() const;
         inline bool isRunning() const;
@@ -61,29 +62,33 @@ namespace Core
       private:
         static const sf::Time TIME_PER_FRAME;
 
-        EngineState mState;
+        std::unique_ptr< Core::Configuration > mConfiguration;
+
+        State mState;
 
         // Should this go here? or in the GameState?
         TextureHolder mTextures;
 
-        std::unique_ptr< Core::Configuration > mConfiguration;
-        Core::MessageNetwork mNetwork;
+        // CORE APPLICATION CLASSES
+        MessageNetwork mNetwork;
+        StateStack mStateStack;
+
+        // TODO: These need to go into a CORE Class
         // Application::KeyBindings mPlayerKeyBindings;
         sf::RenderWindow mWindow;
-        Core::StateStack mStateStack;
     };
 
-    bool Engine::isWaitingToRun() const
+    bool Application::isWaitingToRun() const
     {
-        return mState == EngineState::WAITING_TO_RUN;
+        return mState == State::WAITING_TO_RUN;
     }
 
-    bool Engine::isRunning() const
+    bool Application::isRunning() const
     {
-        return mState == EngineState::RUNNING;
+        return mState == State::RUNNING;
     }
 
-    void Core::Engine::setConfiguration( std::unique_ptr< Core::Configuration > config )
+    void Core::Application::setConfiguration( std::unique_ptr< Core::Configuration > config )
     {
         mConfiguration = std::move( config );
     }

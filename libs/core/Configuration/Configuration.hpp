@@ -1,7 +1,6 @@
 #pragma once
 
 #include "core/Exceptions/ConfigurationException.hpp"
-#include "core/Configuration/Configurables/ConfigInitializer.hpp"
 #include "core/Configuration/ConfigReader/ConfigReader.hpp"
 
 #include "utility/Logging/Sinks/ColorConsoleSink.hpp"
@@ -16,6 +15,16 @@
 
 namespace Core
 {
+    struct ConfigSpec
+    {
+        std::string rootConfigFile;
+        std::string configDirectory;
+
+        ConfigReader* configReader;
+
+        ConfigSpec();
+        ConfigSpec( const ConfigSpec& other );
+    };
 
     enum DirectoryIDs
     {
@@ -32,12 +41,9 @@ namespace Core
     class Configuration
     {
       public:
-        Configuration( std::unique_ptr< ConfigReader > configReader, const std::string& configDirectoryName );
+        Configuration( const ConfigSpec& configSpec );
 
-        void initializeOutputDirectory();
-        void initializeAssetsDirectory();
-
-        void parse();
+        void configure();
 
         inline void setDirectoryInit( DirectoryIDs directoryID );
 
@@ -49,6 +55,10 @@ namespace Core
         {}
 
       private:
+        void initializeOutputDirectory();
+        void initializeAssetsDirectory();
+
+        void parse();
         std::pair< bool, std::string > parseRootFile();
         std::pair< bool, std::string > parseConfigFiles();
 
@@ -58,9 +68,6 @@ namespace Core
 
       private:
         std::unique_ptr< ConfigReader > mConfigReader;
-
-        // Root Config File
-        static const std::string ROOT_CONFIG_FILE_NAME;
 
         std::vector< std::string > mConfigFiles;
 
@@ -72,6 +79,9 @@ namespace Core
 
       public:
         std::string mProjectDirectory;
+
+        std::string mRootFile;
+        std::string mConfigDirectory;
 
         std::string mConfigDirPath;
         std::string mOutputDirPath;

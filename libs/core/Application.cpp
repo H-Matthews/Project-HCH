@@ -1,4 +1,7 @@
-#include "core/Engine.hpp"
+#include "core/Application.hpp"
+#include "core/Exceptions/ConfigurationException.hpp"
+
+// TODO: THESE SHOULD NOT BE IN HERE
 #include "application/StateStack/MenuState.hpp"
 #include "application/StateStack/GameState.hpp"
 #include "application/StateStack/PauseState.hpp"
@@ -12,65 +15,57 @@
 #include <stdexcept>
 #include <iostream>
 
-const sf::Time Core::Engine::TIME_PER_FRAME = sf::seconds( 1.0f / 120.0f );
-const std::string Core::Engine::TYPE_NAME = "Engine";
+const sf::Time Core::Application::TIME_PER_FRAME = sf::seconds( 1.0f / 120.0f );
+const std::string Core::Application::TYPE_NAME = "Application";
 
-Core::Engine::Engine() :
+Core::Application::Application() :
     Configurable( TYPE_NAME ),
-    mState( EngineState::NONE ),
-    mTextures(),
     mConfiguration( nullptr ),
+    mState( State::NONE ),
+    mTextures(),
     mNetwork(),
-    // mPlayerKeyBindings(),
-    mWindow( sf::VideoMode( { 640, 480 } ), "Engine Window", sf::Style::Close ),
-    mStateStack( Core::State::SharedObjects( mWindow, mNetwork, mTextures ) )
+    mStateStack( Core::State::SharedObjects( mWindow, mNetwork, mTextures ) ),
+    mWindow( sf::VideoMode( { 640, 480 } ), "Application Window", sf::Style::Close )
 {}
 
-void Core::Engine::initialize()
+void Core::Application::initialize()
 {
     if ( !mConfiguration )
         throw ConfigurationException( "Configuration is NULL" );
 
-    // Create CORE CONFIGURABLES ----------------------------
-    // auto gameNetwork =
-    //     Core::ConfigurableFactory::createTypedConfigurable< Core::MessageNetwork >( Core::MessageNetwork::TYPE_NAME
-    //     );
-
     loadResources();
 
     registerStates();
+
+    // TODO: Need to re do the StateStack so that the user can push the State from
+    // The game application library. The Core Library should have no notion of the Type
+    // of States we are dealing with.... Need to get rid of the Enums
     mStateStack.pushState( States::Menu );
 
     if ( !mStateStack.isPendingListEmpty() )
-        transitionState( EngineState::WAITING_TO_RUN );
+        transitionState( State::WAITING_TO_RUN );
 
     return;
 }
 
-void Core::Engine::run()
+void Core::Application::run()
 {
-    sf::Clock clock;
-    sf::Time timeSinceLastUpdate = sf::Time::Zero;
-
-    if ( mState == EngineState::NONE )
+    if ( !transitionState( State::RUNNING ) )
     {
-        // Throw Configuration Exception
-        return;
-    }
+        std::string exceptionMessage =
+            "Application is unable to transition RUNNING; Current State: " + convertEngineStateEnumToString( mState );
 
-    if ( !transitionState( EngineState::RUNNING ) )
-    {
         if constexpr ( Utility::CAN_LOG )
         {
             if ( mLogger )
-            {
-                mLogger->logError(
-                    "Application is unable to transition to the RUNNING state... Likely a Configuration Error " );
-            }
+                mLogger->logError( exceptionMessage );
         }
 
-        return;
+        throw ConfigurationException( exceptionMessage.c_str() );
     }
+
+    sf::Clock clock;
+    sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
     if constexpr ( Utility::CAN_LOG )
         mLogger->logInfo( "Entering main RUN loop" );
@@ -103,7 +98,7 @@ void Core::Engine::run()
         mLogger->logInfo( "Exiting main RUN loop" );
 }
 
-void Core::Engine::processInput()
+void Core::Application::processInput()
 {
     // SFMLs Window Class will detect events and then call these functions if the event matches
     // When needed, Add Event Subtypes here
@@ -115,12 +110,12 @@ void Core::Engine::processInput()
     mStateStack.handleRealTimeInput();
 }
 
-void Core::Engine::update( sf::Time fixedTimeStep )
+void Core::Application::update( sf::Time fixedTimeStep )
 {
     mStateStack.update( fixedTimeStep );
 }
 
-void Core::Engine::render()
+void Core::Application::render()
 {
     mWindow.clear( sf::Color::Cyan );
 
@@ -132,14 +127,14 @@ void Core::Engine::render()
 
 // TODO: This register call should take a string to a State Identifier
 // that way we can inject states from the game application library
-void Core::Engine::registerStates()
+void Core::Application::registerStates()
 {
     // mStateStack.registerState< Application::MenuState >( States::Menu );
     // mStateStack.registerState< Application::GameState >( States::Game );
     // mStateStack.registerState< Application::PauseState >( States::Pause );
 }
 
-void Core::Engine::loadResources()
+void Core::Application::loadResources()
 {
     // auto fontTexturePaths = mConfiguration->getAssetPaths();
     // std::string texturePath = fontTexturePaths.first;
@@ -154,7 +149,7 @@ void Core::Engine::loadResources()
     return;
 }
 
-bool Core::Engine::transitionState( EngineState statusToTransfer )
+bool Core::Application::transitionState( State statusToTransfer )
 {
     bool retStatus = false;
 
@@ -164,19 +159,19 @@ bool Core::Engine::transitionState( EngineState statusToTransfer )
     if ( mState == statusToTransfer )
         return retStatus;
 
-    EngineState prevState = EngineState::NONE;
+    State prevState = State::NONE;
 
     switch ( statusToTransfer )
     {
-        case EngineState::NONE:
+        case State::NONE:
         {
             // DO NOTHING
 
             break;
         }
-        case EngineState::WAITING_TO_RUN:
+        case State::WAITING_TO_RUN:
         {
-            if ( mState == EngineState::NONE )
+            if ( mState == State::NONE )
             {
                 prevState = mState;
 
@@ -186,9 +181,9 @@ bool Core::Engine::transitionState( EngineState statusToTransfer )
 
             break;
         }
-        case EngineState::RUNNING:
+        case State::RUNNING:
         {
-            if ( mState == EngineState::WAITING_TO_RUN )
+            if ( mState == State::WAITING_TO_RUN )
             {
                 prevState = mState;
 
@@ -198,9 +193,9 @@ bool Core::Engine::transitionState( EngineState statusToTransfer )
 
             break;
         }
-        case EngineState::SHUTTING_DOWN:
+        case State::SHUTTING_DOWN:
         {
-            if ( mState == EngineState::WAITING_TO_RUN )
+            if ( mState == State::RUNNING )
             {
                 prevState = mState;
 
@@ -228,31 +223,31 @@ bool Core::Engine::transitionState( EngineState statusToTransfer )
     return retStatus;
 }
 
-std::string Core::convertEngineStateEnumToString( const EngineState& state )
+std::string Core::Application::convertEngineStateEnumToString( const State& state )
 {
     std::string retString;
 
     switch ( state )
     {
-        case EngineState::NONE:
+        case State::NONE:
         {
             retString = "NONE";
 
             break;
         }
-        case EngineState::WAITING_TO_RUN:
+        case State::WAITING_TO_RUN:
         {
             retString = "WAITING_TO_RUN";
 
             break;
         }
-        case EngineState::RUNNING:
+        case State::RUNNING:
         {
             retString = "RUNNING";
 
             break;
         }
-        case EngineState::SHUTTING_DOWN:
+        case State::SHUTTING_DOWN:
         {
             retString = "SHUTTING_DOWN";
 
@@ -262,21 +257,22 @@ std::string Core::convertEngineStateEnumToString( const EngineState& state )
 
     return retString;
 }
-Core::EngineState Core::convertStringToEngineStateEnum( const std::string& stringState )
+
+Core::Application::State Core::Application::convertStringToEngineStateEnum( const std::string& stringState )
 {
-    EngineState retState = EngineState::NONE;
+    State retState = State::NONE;
 
     if ( stringState == "WAITING_TO_RUN" )
     {
-        retState = EngineState::WAITING_TO_RUN;
+        retState = State::WAITING_TO_RUN;
     }
     else if ( stringState == "RUNNING" )
     {
-        retState = EngineState::RUNNING;
+        retState = State::RUNNING;
     }
     else if ( stringState == "SHUTTING_DOWN" )
     {
-        retState = EngineState::SHUTTING_DOWN;
+        retState = State::SHUTTING_DOWN;
     }
 
     return retState;

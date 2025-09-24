@@ -7,7 +7,7 @@ set(PROJECT_DIR "${CMAKE_SOURCE_DIR}")
 
 set(LIBRARY_NAME "core")
 
-set(INC Engine.hpp
+set(INC Application.hpp
         Messaging/Message.hpp
         Messaging/MessageNetwork.hpp
         Messaging/MessageNode.hpp
@@ -22,13 +22,12 @@ set(INC Engine.hpp
         Configuration/ConfigReader/TOMLConfigReader.hpp
         Configuration/Configurables/Configurable.hpp
         Configuration/Configurables/ConfigurableFactory.hpp
-        Configuration/Configurables/ConfigInitializer.hpp
         Configuration/Configurables/ConfigurableDirector.hpp
         GameAssetContainer/GameAssetContainer.hpp
         GameAssetContainer/ResourceHolder.hpp
         GameAssetContainer/ResourceEnums.hpp )
 
-set(SRC Engine.cpp
+set(SRC Application.cpp
         Messaging/Message.cpp
         Messaging/MessageNetwork.cpp
         Messaging/MessageNode.cpp
@@ -42,7 +41,6 @@ set(SRC Engine.cpp
         Configuration/ConfigTree/ConfigUtils.cpp
         Configuration/ConfigReader/TOMLConfigReader.cpp
         Configuration/Configurables/Configurable.cpp
-        Configuration/Configurables/ConfigInitializer.cpp
         Configuration/Configurables/ConfigurableDirector.cpp
         GameAssetContainer/GameAssetContainer.cpp )
 
