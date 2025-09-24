@@ -6,6 +6,7 @@
 #include "utility/Logging/Sinks/ColorConsoleSink.hpp"
 #include "utility/Logging/Sinks/TextFileSink.hpp"
 #include "utility/Logging/Formatters/KeyValueFormatter.hpp"
+#include "utility/Logging/Formatters/DefaultFormatter.hpp"
 
 // Test Fixture
 class UtilityLoggerTest : public ::testing::Test
@@ -29,6 +30,7 @@ class UtilityLoggerTest : public ::testing::Test
     {
         // Create Sinks
         colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >();
+        colorConsoleSink->setFormatter( std::make_unique< Utility::DefaultFormatter >() );
         textFileSink = std::make_shared< Utility::TextFileSink >( "./testing_output", "Utility_logger_test", ".log" );
 
         // Create SinkList for logger_twoSinks

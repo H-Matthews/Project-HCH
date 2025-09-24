@@ -20,9 +20,6 @@ namespace Utility
       public:
         virtual void sinkData( std::string_view message, LogLevel level, const std::source_location location ) = 0;
 
-        // Set the formatter type
-        void addFormatter( std::unique_ptr< LogFormatter > formatter );
-
         inline void setSinkLogLevel( LogLevel level );
 
         inline LogLevel getSinkLogLevel();
