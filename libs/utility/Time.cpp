@@ -1,22 +1,18 @@
-#include "utility\Time.hpp"
+#include "utility/Time.hpp"
 
 #include <iostream>
 #include <optional>
+#include <cerrno>
 
 namespace Utility
 {
-    std::optional< std::shared_ptr< struct tm > > getCurrentSystemTime()
+    std::tm getCurrentSystemTime()
     {
-        std::optional< std::shared_ptr< struct tm > > optionalTime = std::nullopt;
+        // Get Time in a broken down structure
+        auto now = std::chrono::system_clock::now();
+        std::time_t nowTime = std::chrono::system_clock::to_time_t( now );
+        std::tm now_tm = *std::localtime( &nowTime );
 
-        std::time_t rawTime;
-        time( &rawTime );
-
-        auto testTime = std::make_shared< struct tm >();
-        errno_t testErr = localtime_s( testTime.get(), &rawTime );
-        if (!testErr)
-            optionalTime = testTime;
-
-        return optionalTime;
+        return now_tm;
     }
 }

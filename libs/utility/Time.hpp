@@ -6,5 +6,5 @@
 
 namespace Utility
 {
-    std::optional< std::shared_ptr< struct tm > > getCurrentSystemTime();
+    std::tm getCurrentSystemTime();
 }

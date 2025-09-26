@@ -1,6 +1,6 @@
 #include "utility/Logging/Formatters/KeyValueFormatter.hpp"
 
-#include "utility\Time.hpp"
+#include "utility/Time.hpp"
 
 #include <iomanip>
 #include <iostream>
@@ -34,13 +34,9 @@ std::string Utility::KeyValueFormatter::format(
     // Key: Log Level
     tempBuffer << "\"" << keysEnumToString( Keys::LOG_LEVEL ) << "\"" << ":" << logLevelEnumToString( level ) << "\n\t";
 
-    std::optional< std::shared_ptr< struct tm > > currentTime = Utility::getCurrentSystemTime();
-    if (currentTime.has_value())
-    {
-        // Key: Time
-        tempBuffer << "\"" << keysEnumToString( Keys::TIME ) << "\"" << ":"
-                   << std::put_time( ( currentTime.value().get() ), "%H:%M:%S" ) << "\n";
-    }
+    std::tm now_tm = Utility::getCurrentSystemTime();
+    // Key: Time
+    tempBuffer << "\"" << keysEnumToString( Keys::TIME ) << "\"" << ":" << std::put_time( &now_tm, "%H:%M:%S" ) << "\n";
 
     // END
     tempBuffer << "},";
@@ -52,7 +48,7 @@ const std::string Utility::keysEnumToString( const Keys identifier )
 {
     std::string buffer;
 
-    switch (identifier)
+    switch ( identifier )
     {
         case Keys::FILE:
         {

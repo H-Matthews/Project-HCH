@@ -15,12 +15,10 @@ std::string Utility::DefaultFormatter::format(
 {
     std::stringstream tempBuffer;
 
-    std::optional< std::shared_ptr< struct tm > > currentTime = Utility::getCurrentSystemTime();
-    if (currentTime.has_value())
-    {
-        // TIMESTAMP
-        tempBuffer << "[" << std::put_time( currentTime.value().get(), "%H:%M:%S" ) << "]";
-    }
+    std::tm now_tm = Utility::getCurrentSystemTime();
+
+    // TIMESTAMP
+    tempBuffer << "[" << std::put_time( &now_tm, "%H:%M:%S" ) << "]";
 
     // BEGIN FORMATTING
 
