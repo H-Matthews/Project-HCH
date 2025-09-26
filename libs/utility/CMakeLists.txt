@@ -14,7 +14,8 @@ set(SRC Logging/LogRegistry.cpp
         Logging/Formatters/KeyValueFormatter.cpp
         Logging/Formatters/DefaultFormatter.cpp
         Logging/LogLevel.cpp
-        StringOperations.cpp )
+        StringOperations.cpp
+        Time.cpp )
 
 set(INC Logging/LogRegistry.hpp
         Logging/Builder/LoggerBuilder.hpp
@@ -28,7 +29,8 @@ set(INC Logging/LogRegistry.hpp
         Logging/Formatters/KeyValueFormatter.hpp
         Logging/Formatters/DefaultFormatter.hpp
         Logging/LogLevel.hpp
-        StringOperations.hpp )
+        StringOperations.hpp
+        Time.hpp )
 
 add_library(${LIBRARY_NAME} STATIC ${SRC} ${INC})
 

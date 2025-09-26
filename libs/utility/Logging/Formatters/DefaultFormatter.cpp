@@ -1,5 +1,7 @@
 #include "utility/Logging/Formatters/DefaultFormatter.hpp"
 
+#include "utility/Time.hpp"
+
 #include <chrono>
 #include <iomanip>
 #include <filesystem>
@@ -13,14 +15,14 @@ std::string Utility::DefaultFormatter::format(
 {
     std::stringstream tempBuffer;
 
-    auto now = std::chrono::system_clock::now();
-    std::time_t nowTime = std::chrono::system_clock::to_time_t( now );
-    std::tm now_tm = *std::localtime( &nowTime );
+    std::optional< std::shared_ptr< struct tm > > currentTime = Utility::getCurrentSystemTime();
+    if (currentTime.has_value())
+    {
+        // TIMESTAMP
+        tempBuffer << "[" << std::put_time( currentTime.value().get(), "%H:%M:%S" ) << "]";
+    }
 
     // BEGIN FORMATTING
-
-    // TIMESTAMP
-    tempBuffer << "[" << std::put_time( &now_tm, "%H:%M:%S" ) << "]";
 
     // File / Line Information
     std::filesystem::path filePath( location.file_name() );
