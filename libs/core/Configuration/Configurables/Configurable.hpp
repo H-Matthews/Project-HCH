@@ -20,6 +20,9 @@ namespace Core
         virtual ~Configurable() = default;
 
       protected:
+        void configure( std::shared_ptr< ConfigNode > rootNode );
+
+      protected:
         std::shared_ptr< ConfigNode > mConfigNode;
 
         std::shared_ptr< Utility::Logger > mLogger;

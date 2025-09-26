@@ -39,7 +39,7 @@ namespace Core
       public:
         static const std::string TYPE_NAME;
 
-        Application();
+        Application( Core::ConfigSpec ConfigSpec );
         inline void setConfiguration( std::unique_ptr< Core::Configuration > config );
         void initialize();
         void run();

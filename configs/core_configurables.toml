@@ -13,7 +13,7 @@
 logging_enabled = true
 
 [Application.Logger]
-logger_name = "EngineLogger"
+logger_name = "ApplicationLogger"
 global_log_level = "NONE"
 sinks = ["ColorConsoleSink", "TextFileSink"]
 

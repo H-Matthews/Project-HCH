@@ -17,11 +17,9 @@ int main()
 
     try
     {
-        auto gameConfiguration = std::make_unique< Core::Configuration >( configSpecification );
-        gameConfiguration->configure();
-
-        Core::Application application;
-        application.setConfiguration( std::move( gameConfiguration ) );
+        // TODO: Change this to an Application Specification that
+        // encapsulates the configSpecification
+        Core::Application application( configSpecification );
         application.initialize();
 
         application.run();
