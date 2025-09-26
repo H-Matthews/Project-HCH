@@ -6,8 +6,7 @@ set(PROJECT_DIR "${CMAKE_SOURCE_DIR}")
 
 set(LIBRARY_NAME "application")
 
-set(SRC App.cpp
-        Settings/KeyBindings.cpp
+set(SRC Settings/KeyBindings.cpp
         Messaging/Publishers/PlayerInputPublisher.cpp
         Messaging/Messages/PlayerInputMessage.cpp
         Data/PlayerAction.cpp
@@ -24,8 +23,7 @@ set(SRC App.cpp
         StateStack/MenuState.cpp
         StateStack/PauseState.cpp)
 
-set(INC App.hpp
-        Settings/KeyBindings.hpp
+set(INC Settings/KeyBindings.hpp
         Messaging/Publishers/PlayerInputPublisher.hpp
         Messaging/Messages/PlayerInputMessage.hpp
         Data/PlayerAction.hpp
@@ -56,7 +54,7 @@ endif()
 # Allows Visual Studio to create a folder for the source
 set_target_properties(${LIBRARY_NAME} PROPERTIES FOLDER ${LIBRARY_NAME})
 
-target_link_libraries(${LIBRARY_NAME} PRIVATE SFML::Graphics SFML::Window SFML::System core utility)
+target_link_libraries(${LIBRARY_NAME} PUBLIC sfml-graphics sfml-window sfml-system core utility)
 
 target_compile_definitions(${LIBRARY_NAME} PUBLIC PROJECT_DIR="${PROJECT_DIR}")
 target_include_directories(${LIBRARY_NAME} PUBLIC ${SFML_INC_DIR} ${LIBS_INC_DIR})

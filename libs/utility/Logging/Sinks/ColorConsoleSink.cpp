@@ -7,8 +7,8 @@
 
 const std::string Utility::ColorConsoleSink::sinkIdentifier = "ColorConsoleSink";
 
-Utility::ColorConsoleSink::ColorConsoleSink( LogLevel level ) :
-    LogSink( sinkIdentifier, std::make_unique< DefaultFormatter >(), level ),
+Utility::ColorConsoleSink::ColorConsoleSink() :
+    LogSink( sinkIdentifier ),
     mOutputStream( std::cout )
 {}
 
@@ -25,11 +25,8 @@ void Utility::ColorConsoleSink::sinkData(
         // Write Log
         mOutputStream << formattedMessage << std::endl;
     }
-    else
-    {
-        LogRegistry::instance()->getGlobalLogger()->logError(
-            "Logger: " + LogSink::mSinkIdentifier + " DOES NOT have a formatter" );
-    }
+
+    return;
 }
 
 void Utility::ColorConsoleSink::insertColorCodes( std::string& message, std::string colorCode )
@@ -76,12 +73,12 @@ const std::string Utility::ColorConsoleSink::getColorCode( LogLevel level ) cons
 }
 
 // Convenience function to create a logger that has the ColorConsoleSink
-std::shared_ptr< Utility::Logger > Utility::createColorConsoleLogger( const std::string& loggerName, LogLevel level )
-{
-    auto colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >( level );
+// std::shared_ptr< Utility::Logger > Utility::createColorConsoleLogger( const std::string& loggerName, LogLevel level )
+// {
+//     auto colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >( level );
 
-    auto logger = std::make_shared< Utility::Logger >( loggerName, colorConsoleSink );
-    Utility::LogRegistry::instance()->registerLogger( logger );
+//     auto logger = std::make_shared< Utility::Logger >( loggerName, colorConsoleSink );
+//     Utility::LogRegistry::instance()->registerLogger( logger );
 
-    return logger;
-}
+//     return logger;
+// }

@@ -7,7 +7,7 @@ std::shared_ptr< Utility::LogRegistry > Utility::LogRegistry::mRegistryInstance 
 Utility::LogRegistry::LogRegistry() :
     mRegistry(),
     mHash(),
-    mAppOutputDirectory( "" )
+    mOutputDirectory( "" )
 {}
 
 std::shared_ptr< Utility::LogRegistry > Utility::LogRegistry::instance()
@@ -20,7 +20,7 @@ std::shared_ptr< Utility::LogRegistry > Utility::LogRegistry::instance()
 
 void Utility::LogRegistry::configureRegistry( const std::string outputDirPath )
 {
-    mAppOutputDirectory = outputDirPath;
+    mOutputDirectory = outputDirPath;
 }
 
 // Creates a logger. The Key is the hashed logger name
@@ -74,7 +74,7 @@ std::shared_ptr< Utility::Logger > Utility::LogRegistry::getGlobalLogger() const
     return globalLogger;
 }
 
-const std::string Utility::LogRegistry::getAppOutputDir() const
+const std::string Utility::LogRegistry::getOutputDir() const
 {
-    return mAppOutputDirectory;
+    return mOutputDirectory;
 }

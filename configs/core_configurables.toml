@@ -2,77 +2,83 @@
 # Meaning, Only Configurables that are instantiated once throughout the program
 
 # List of All Core Configurables
-# - App
+# - Application
 # - StateStack
 # - Message Network
 # - Scene
 
-# BEGINNING APP ----------------------------------
+# BEGINNING APPLICATION -------------------------------
 
-[App]
-configurable_type = "CORE_CONFIGURABLE"
+[Application]
 logging_enabled = true
 
-[App.Logger]
-LoggerName = "AppLogger"
-GlobalLogLevel = "NONE"
+[Application.Logger]
+logger_name = "EngineLogger"
+global_log_level = "NONE"
+sinks = ["ColorConsoleSink", "TextFileSink"]
 
-[App.Logger.ColorConsoleSink]
-LogLevel = "INFO"
+[Application.Logger.ColorConsoleSink]
+log_level = "INFO"
+formatter = "DefaultFormatter"
 
-[App.Logger.TextFileSink]
-LogFileName = "App"
-LogFileExtension = ".log"
-LogLevel = "INFO"
+[Application.Logger.TextFileSink]
+log_file_name = "Application"
+log_file_extension = ".log"
+log_level = "INFO"
+formatter = "KeyValueFormatter"
 
-# END APP ----------------------------------------
+# END APPLICATION -------------------------------------
 
 # BEGINNING STATESTACK ---------------------------
 
 [StateStack]
-configurable_type = "CORE_CONFIGURABLE"
 logging_enabled = true
 
 [StateStack.Logger]
-LoggerName = "StateStackLogger"
-GlobalLogLevel = "NONE"
+logger_name = "StateStackLogger"
+global_log_level = "NONE"
+sinks = ["TextFileSink"]
 
 [StateStack.Logger.TextFileSink]
-LogFileName = "StateStack"
-LogFileExtension = ".log"
-LogLevel = "INFO"
+log_file_name = "StateStack"
+log_file_extension = ".log"
+log_level = "INFO"
+formatter = "KeyValueFormatter"
 
 # END STATESTACK ---------------------------------
 
 # BEGINNING MESSAGE NETWORK ----------------------
 
 [MessageNetwork]
-configurable_type = "CORE_CONFIGURABLE"
 logging_enabled = true
 
 [MessageNetwork.Logger]
-LoggerName = "MessageNetworkLogger"
-GlobalLogLevel = "NONE"
+logger_name = "MessageNetworkLogger"
+global_log_level = "NONE"
+sinks = ["TextFileSink"]
 
 [MessageNetwork.Logger.TextFileSink]
-LogFileName = "MessageNetwork"
-LogFileExtension = ".log"
-LogLevel = "INFO"
+log_file_name = "MessageNetwork"
+log_file_extension = ".log"
+log_level = "INFO"
+formatter = "KeyValueFormatter"
 
 # END MESSAGE NETWORK ----------------------------
 
 # BEGINNING SCENE --------------------------------
 
 [Scene]
-configurable_type = "CORE_CONFIGURABLE"
 logging_enabled = true
 
 [Scene.Logger]
-LoggerName = "SceneLogger"
+logger_name = "SceneLogger"
+global_log_level = "NONE"
+sinks = ["TextFileSink"]
 
 [Scene.Logger.TextFileSink]
-LogFileName = "Scene"
-LogFileExtension = ".log"
-LogLevel = "INFO"
+log_file_name = "Scene"
+log_file_extension = ".log"
+log_level = "INFO"
+formatter = "KeyValueFormatter"
 
 # END SCENE --------------------------------------

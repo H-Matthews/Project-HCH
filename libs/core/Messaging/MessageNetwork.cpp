@@ -3,7 +3,10 @@
 #include "utility/Logging/Sinks/TextFileSink.hpp"
 #include "utility/Logging/Formatters/KeyValueFormatter.hpp"
 
+const std::string Core::MessageNetwork::TYPE_NAME = "MessageNetwork";
+
 Core::MessageNetwork::MessageNetwork() :
+    Configurable( TYPE_NAME ),
     mMessageQueue(),
     mSubscriberNodes(),
     mPublisherNodes(),
@@ -11,8 +14,7 @@ Core::MessageNetwork::MessageNetwork() :
     mPublisherRecords(),
     mPendingPublisherRequests(),
     mPendingSubscriberRequests(),
-    mHash(),
-    mLogger( nullptr )
+    mHash()
 {}
 
 void Core::MessageNetwork::registerSubscriberNode(
@@ -338,18 +340,6 @@ void Core::MessageNetwork::addressPendingRequests()
     mPendingSubscriberRequests.clear();
 
     return;
-}
-
-void Core::MessageNetwork::initializeLogger()
-{
-    // Create and Register
-    const std::string outDirectory = Utility::LogRegistry::instance()->getAppOutputDir();
-
-    mLogger = Utility::createTextFileLogger(
-        "MessageNetworkLogger", outDirectory, "MessageNetwork", ".log", Utility::LogLevel::INFO );
-
-    if constexpr ( Utility::CAN_LOG )
-        mLogger->logInfo( "Logger Initialized" );
 }
 
 void Core::MessageNetwork::shutdownNetwork()

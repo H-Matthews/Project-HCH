@@ -1,22 +1,42 @@
-#include "application/App.hpp"
+#include "core/Application.hpp"
 
 #include "core/Configuration/Configuration.hpp"
+#include "core/Configuration/ConfigReader/TOMLConfigReader.hpp"
 
 #include <iostream>
-#include <stdexcept>
+
+constexpr const char* CONFIG_DIR_NAME = "configs";
+constexpr const char* ROOT_FILE_NAME = "root.toml";
 
 int main()
 {
+    Core::ConfigSpec configSpecification;
+    configSpecification.configDirectory = CONFIG_DIR_NAME;
+    configSpecification.rootConfigFile = ROOT_FILE_NAME;
+    configSpecification.configReader = new Core::TOMLConfigReader();
 
     try
     {
-        Application::App game( std::make_unique< Core::Configuration >() );
-        game.initialize();
-        game.run();
+        auto gameConfiguration = std::make_unique< Core::Configuration >( configSpecification );
+        gameConfiguration->configure();
+
+        Core::Application application;
+        application.setConfiguration( std::move( gameConfiguration ) );
+        application.initialize();
+
+        application.run();
+    }
+    catch ( const Core::ConfigurationException& e )
+    {
+        std::cerr << e.what() << '\n';
+
+        return -1;
     }
     catch ( const std::exception& e )
     {
-        std::cerr << "EXCEPTION: " << e.what() << std::endl;
+        std::cerr << e.what() << '\n';
+
+        return -1;
     }
 
     return 0;

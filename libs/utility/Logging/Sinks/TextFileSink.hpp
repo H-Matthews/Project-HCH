@@ -2,6 +2,8 @@
 
 #include "utility/Logging/Logger.hpp"
 
+#include "utility/Logging/Builder/TextFileSinkBuilder.hpp"
+
 #include <fstream>
 
 namespace Utility
@@ -11,10 +13,10 @@ namespace Utility
      */
     class TextFileSink : public LogSink
     {
-        static const std::string sinkIdentifier;
+        static const std::string SINK_IDENTIFIER;
 
       public:
-        TextFileSink() = delete;
+        TextFileSink();
         TextFileSink( const std::string& outputDirectory, const std::string& fileName, const std::string& logExtension,
             LogLevel level = LogLevel::NONE );
 
@@ -22,8 +24,13 @@ namespace Utility
 
         void sinkData( std::string_view message, LogLevel level, const std::source_location location ) override;
 
+        void openFile();
+
         ~TextFileSink()
         {}
+
+        inline static TextFileSinkBuilder build();
+        friend class TextFileSinkBuilder;
 
       private:
         std::string mOutputDirectory;
@@ -33,6 +40,13 @@ namespace Utility
 
         std::ofstream mFileHandle;
     };
+
+    Utility::TextFileSinkBuilder Utility::TextFileSink::build()
+    {
+        TextFileSink* sink = new TextFileSink();
+
+        return Utility::TextFileSinkBuilder( sink );
+    }
 
     // Convenience function
     // Creates Logger with the necessary Sink. Registers with LogRegistry

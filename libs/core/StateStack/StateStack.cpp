@@ -5,8 +5,18 @@
 
 #include <cassert>
 
+const std::string Core::StateStack::TYPE_NAME = "StateStack";
+
+Core::StateStack::StateStack() :
+    Configurable( TYPE_NAME ),
+    mStack(),
+    mPendingList(),
+    mSharedObjects(),
+    mRegistry()
+{}
+
 Core::StateStack::StateStack( Core::State::SharedObjects sObjects ) :
-    mLogger( nullptr ),
+    Configurable( TYPE_NAME ),
     mStack(),
     mPendingList(),
     mSharedObjects( sObjects ),
@@ -84,10 +94,15 @@ bool Core::StateStack::isEmpty() const
     return mStack.empty();
 }
 
+bool Core::StateStack::isPendingListEmpty() const
+{
+    return mPendingList.empty();
+}
+
 void Core::StateStack::initializeLogger()
 {
     // Create and Register
-    const std::string outDirectory = Utility::LogRegistry::instance()->getAppOutputDir();
+    const std::string outDirectory = Utility::LogRegistry::instance()->getOutputDir();
 
     mLogger = Utility::createTextFileLogger(
         "StateStackLogger", outDirectory, "StateStack", ".log", Utility::LogLevel::INFO );

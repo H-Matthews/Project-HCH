@@ -7,7 +7,28 @@ set(PROJECT_DIR "${CMAKE_SOURCE_DIR}")
 
 set(LIBRARY_NAME "core")
 
-set(SRC Messaging/Message.cpp
+set(INC Application.hpp
+        Messaging/Message.hpp
+        Messaging/MessageNetwork.hpp
+        Messaging/MessageNode.hpp
+        StateStack/State.hpp 
+        StateStack/StateStack.hpp
+        Exceptions/ConfigurationException.hpp
+        Configuration/Configuration.hpp
+        Configuration/ConfigTree/ConfigurationTree.hpp
+        Configuration/ConfigTree/ConfigNode.hpp
+        Configuration/ConfigTree/ConfigUtils.hpp
+        Configuration/ConfigReader/ConfigReader.hpp
+        Configuration/ConfigReader/TOMLConfigReader.hpp
+        Configuration/Configurables/Configurable.hpp
+        Configuration/Configurables/ConfigurableFactory.hpp
+        Configuration/Configurables/ConfigurableDirector.hpp
+        GameAssetContainer/GameAssetContainer.hpp
+        GameAssetContainer/ResourceHolder.hpp
+        GameAssetContainer/ResourceEnums.hpp )
+
+set(SRC Application.cpp
+        Messaging/Message.cpp
         Messaging/MessageNetwork.cpp
         Messaging/MessageNode.cpp
         Messaging/MessageTypes.cpp
@@ -15,20 +36,13 @@ set(SRC Messaging/Message.cpp
         StateStack/StateStack.cpp
         StateStack/StateTypes.cpp
         Configuration/Configuration.cpp
-        Configuration/ConfigFileID.cpp
+        Configuration/ConfigTree/ConfigurationTree.cpp
+        Configuration/ConfigTree/ConfigNode.cpp
+        Configuration/ConfigTree/ConfigUtils.cpp
+        Configuration/ConfigReader/TOMLConfigReader.cpp
+        Configuration/Configurables/Configurable.cpp
+        Configuration/Configurables/ConfigurableDirector.cpp
         GameAssetContainer/GameAssetContainer.cpp )
-
-set(INC Messaging/Message.hpp
-        Messaging/MessageNetwork.hpp
-        Messaging/MessageNode.hpp
-        StateStack/State.hpp 
-        StateStack/StateStack.hpp
-        Configuration/ConfigurationI.hpp
-        Configuration/Configuration.hpp
-        Configuration/ConfigFileID.hpp
-        GameAssetContainer/GameAssetContainer.hpp
-        GameAssetContainer/ResourceHolder.hpp
-        GameAssetContainer/ResourceEnums.hpp )
 
 add_library(${LIBRARY_NAME} STATIC ${SRC} ${INC})
 

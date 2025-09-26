@@ -1,5 +1,7 @@
 #include "utility/Logging/Formatters/KeyValueFormatter.hpp"
 
+#include "utility/Time.hpp"
+
 #include <iomanip>
 #include <iostream>
 #include <chrono>
@@ -32,11 +34,7 @@ std::string Utility::KeyValueFormatter::format(
     // Key: Log Level
     tempBuffer << "\"" << keysEnumToString( Keys::LOG_LEVEL ) << "\"" << ":" << logLevelEnumToString( level ) << "\n\t";
 
-    // Get Time Stamp
-    auto now = std::chrono::system_clock::now();
-    std::time_t nowTime = std::chrono::system_clock::to_time_t( now );
-    std::tm now_tm = *std::localtime( &nowTime );
-
+    std::tm now_tm = Utility::getCurrentSystemTime();
     // Key: Time
     tempBuffer << "\"" << keysEnumToString( Keys::TIME ) << "\"" << ":" << std::put_time( &now_tm, "%H:%M:%S" ) << "\n";
 

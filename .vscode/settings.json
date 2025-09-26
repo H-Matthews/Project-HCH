@@ -80,6 +80,20 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "ranges": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "barrier": "cpp",
+        "cfenv": "cpp",
+        "complex": "cpp",
+        "coroutine": "cpp",
+        "csetjmp": "cpp",
+        "cuchar": "cpp",
+        "regex": "cpp",
+        "future": "cpp",
+        "latch": "cpp",
+        "scoped_allocator": "cpp",
+        "shared_mutex": "cpp",
+        "syncstream": "cpp",
+        "typeindex": "cpp",
+        "filesystem": "cpp"
     }
 }

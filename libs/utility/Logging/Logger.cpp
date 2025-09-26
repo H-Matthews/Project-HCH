@@ -2,6 +2,12 @@
 
 #include "utility/Logging/LogRegistry.hpp"
 
+Utility::Logger::Logger() :
+    mSinks(),
+    mLoggerName( "" ),
+    mGlobalLogLevel( LogLevel::NONE )
+{}
+
 // Creates a logger with no sinks
 Utility::Logger::Logger( const std::string& loggerName, LogLevel level ) :
     mSinks(),
@@ -17,7 +23,7 @@ Utility::Logger::Logger( const std::string& loggerName, std::shared_ptr< LogSink
 {}
 
 // Creates a logger with a sinkList
-Utility::Logger::Logger( const std::string& loggerName, Logger::sinkList sinks, LogLevel level ) :
+Utility::Logger::Logger( const std::string& loggerName, Logger::SinkList sinks, LogLevel level ) :
     mSinks( sinks ),
     mLoggerName( loggerName ),
     mGlobalLogLevel( level )
@@ -96,13 +102,6 @@ bool Utility::Logger::shouldLog( LogLevel level, LogLevel sinkLevel ) const
     return canLog;
 }
 
-const std::string Utility::Logger::getGlobalLogLevelAsString() const
-{
-    const std::string loggerAsString = Utility::logLevelEnumToString( mGlobalLogLevel );
-
-    return loggerAsString;
-}
-
 void Utility::Logger::addSink( std::shared_ptr< LogSink > sink )
 {
     // Probably should do more checks here for potential issues that I can't think of
@@ -110,7 +109,7 @@ void Utility::Logger::addSink( std::shared_ptr< LogSink > sink )
         mSinks.push_back( sink );
 }
 
-void Utility::Logger::addSinkList( sinkList list )
+void Utility::Logger::addSinkList( SinkList list )
 {
     for ( auto sink : list )
     {

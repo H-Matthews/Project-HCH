@@ -3,6 +3,8 @@
 #include "core/Messaging/Message.hpp"
 #include "core/Messaging/MessageNode.hpp"
 
+#include "core/Configuration/Configurables/Configurable.hpp"
+
 #include "utility/Logging/LogRegistry.hpp"
 
 #include <queue>
@@ -37,14 +39,16 @@ namespace Core
      * as the "network"
      * NOTE: Not Thread safe
      */
-    class MessageNetwork
+    class MessageNetwork : public Configurable
     {
+      public:
+        static const std::string TYPE_NAME;
+
       public:
         MessageNetwork();
 
         void notifySubscribers();
 
-        void initializeLogger();
         void shutdownNetwork();
 
       private:
@@ -81,7 +85,6 @@ namespace Core
         std::map< std::size_t, std::set< Messages::ID > > mPendingSubscriberRequests;
 
         std::hash< std::string > mHash;
-        std::shared_ptr< Utility::Logger > mLogger;
 
       public:
         friend class Core::MessageNode;
