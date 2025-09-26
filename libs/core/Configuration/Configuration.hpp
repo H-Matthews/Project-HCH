@@ -43,8 +43,6 @@ namespace Core
       public:
         Configuration( const ConfigSpec& configSpec );
 
-        void configure();
-
         inline void setDirectoryInit( DirectoryIDs directoryID );
 
         inline bool isInitialized();
@@ -55,6 +53,8 @@ namespace Core
         {}
 
       private:
+        void configure();
+
         void initializeOutputDirectory();
         void initializeAssetsDirectory();
 

@@ -76,6 +76,11 @@ Core::Configuration::Configuration( const ConfigSpec& configSpec ) :
     }
 
     Configuration::setDirectoryInit( DirectoryIDs::CONFIG );
+
+    // Populates ConfigurationTree
+    // Initializes Output Directory
+    // Initializes Assets Directory
+    this->configure();
 }
 
 void Core::Configuration::configure()

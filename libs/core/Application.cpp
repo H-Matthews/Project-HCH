@@ -18,15 +18,25 @@
 const sf::Time Core::Application::TIME_PER_FRAME = sf::seconds( 1.0f / 120.0f );
 const std::string Core::Application::TYPE_NAME = "Application";
 
-Core::Application::Application() :
+Core::Application::Application( Core::ConfigSpec configSpec ) :
     Configurable( TYPE_NAME ),
-    mConfiguration( nullptr ),
+    mConfiguration( std::make_unique< Core::Configuration >( configSpec ) ),
     mState( State::NONE ),
     mTextures(),
     mNetwork(),
     mStateStack( Core::State::SharedObjects( mWindow, mNetwork, mTextures ) ),
     mWindow( sf::VideoMode( { 640, 480 } ), "Application Window", sf::Style::Close )
-{}
+{
+    // Must call back up to the Configurable
+    std::shared_ptr< ConfigNode > rootNode = ConfigurationTree::instance()->getRootNode();
+    std::vector< std::shared_ptr< Core::ConfigNode > > childrenNodes = rootNode->getChildren();
+    if ( childrenNodes.empty() )
+        throw ConfigurationException( "Children were not populated for RootNode" );
+
+    configure( rootNode );
+
+    return;
+}
 
 void Core::Application::initialize()
 {
