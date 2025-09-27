@@ -22,6 +22,12 @@ namespace Core
         State( std::string stateIdentifier );
         virtual ~State();
 
+        // To be called after setting the StateStack reference
+        virtual bool initializeState()
+        {
+            return true;
+        }
+
         virtual void draw() = 0;
         virtual bool update( sf::Time fixedTimeStep ) = 0;
         virtual bool handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent ) = 0;
@@ -42,8 +48,10 @@ namespace Core
         void requestStackPop();
         void requestStateClear();
 
-      private:
+      protected:
         StateStack* mStackRef;
+
+      private:
         std::string mStateIdentifierString;
     };
 

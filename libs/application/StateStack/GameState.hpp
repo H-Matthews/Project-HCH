@@ -22,6 +22,8 @@ namespace Application
 
         GameState( std::string stateIdentifier );
 
+        bool initializeState() override;
+
         virtual void draw();
         virtual bool update( sf::Time fixedTimeStep );
         bool handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent ) override;
@@ -30,7 +32,7 @@ namespace Application
         ~GameState();
 
       private:
-        // Core::MessageNetwork& mGameNetwork;
+        Core::MessageNetwork* mGameNetwork;
 
         // Application::Scene mScene;
         // Application::KeyBindings mKeyBindings;

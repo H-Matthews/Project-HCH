@@ -51,6 +51,8 @@ namespace Core
 
         void initializeLogger();
 
+        MessageNetwork* getMessageNetworkRef();
+
       private:
         std::unique_ptr< Core::State > createState( std::string stateIdentifier );
         void applyPendingChanges();

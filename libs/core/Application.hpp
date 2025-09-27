@@ -14,8 +14,6 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Time.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Font.hpp>
 
 #include <string>
 #include <functional>
@@ -39,7 +37,9 @@ namespace Core
       public:
         static const std::string TYPE_NAME;
 
-        Application( Core::ConfigSpec ConfigSpec );
+        Application( Core::ConfigSpec configSpec );
+
+        MessageNetwork* getNetwork();
 
         void registerState(
             const std::string& stateIdentifier, std::function< std::unique_ptr< Core::State >() > registerFunc );

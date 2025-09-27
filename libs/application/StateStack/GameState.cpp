@@ -1,12 +1,13 @@
 #include "application/StateStack/GameState.hpp"
 
+#include "core/StateStack/StateStack.hpp"
+
 #include <iostream>
 
 std::string Application::GameState::identifier = "GameState";
 
 Application::GameState::GameState( std::string stateIdentifier ) :
     State( stateIdentifier )
-// mGameNetwork( *sharedObjects.network ),
 // mScene( *sharedObjects.window, mGameNetwork, *sharedObjects.textures ),
 // mKeyBindings(),
 // mPlayerInputPublisher( mGameNetwork, mKeyBindings )
@@ -19,6 +20,17 @@ Application::GameState::GameState( std::string stateIdentifier ) :
     std::cout << "Escape: Return To Menu State " << std::endl;
 }
 
+// Used to set references to external subsystems
+bool Application::GameState::initializeState()
+{
+    if ( !mStackRef )
+        return false;
+
+    mGameNetwork = mStackRef->getMessageNetworkRef();
+
+    return true;
+}
+
 void Application::GameState::draw()
 {
     // mScene.draw();
@@ -26,9 +38,6 @@ void Application::GameState::draw()
 
 bool Application::GameState::update( sf::Time fixedTimeStep )
 {
-    // Sends Message Notifications
-    // mGameNetwork.notifySubscribers();
-
     // mScene.update( fixedTimeStep );
 
     return true;

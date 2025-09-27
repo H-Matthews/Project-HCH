@@ -58,6 +58,7 @@ void registerGameStates( Core::Application& application )
 
     application.registerState( menuID, [ menuID ]() { return std::make_unique< Application::MenuState >( menuID ); } );
     application.registerState( gameID, [ gameID ]() { return std::make_unique< Application::GameState >( gameID ); } );
+
     application.registerState(
         pauseID, [ pauseID ]() { return std::make_unique< Application::PauseState >( pauseID ); } );
 

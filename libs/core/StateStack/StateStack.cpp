@@ -5,6 +5,8 @@
 #include "utility/Logging/Sinks/TextFileSink.hpp"
 #include "utility/Logging/Formatters/KeyValueFormatter.hpp"
 
+#include "core/Application.hpp"
+
 #include <cassert>
 
 const std::string Core::StateStack::TYPE_NAME = "StateStack";
@@ -112,6 +114,11 @@ void Core::StateStack::initializeLogger()
         "StateStackLogger", outDirectory, "StateStack", ".log", Utility::LogLevel::INFO );
 }
 
+Core::MessageNetwork* Core::StateStack::getMessageNetworkRef()
+{
+    return applicationRef.getNetwork();
+}
+
 std::unique_ptr< Core::State > Core::StateStack::createState( std::string stateIdentifier )
 {
     auto found = mRegistry.find( stateIdentifier );
@@ -119,6 +126,15 @@ std::unique_ptr< Core::State > Core::StateStack::createState( std::string stateI
 
     std::unique_ptr< Core::State > createdState( found->second() );
     createdState->setStackRef( this );
+
+    if ( !createdState->initializeState() )
+    {
+        std::string errorMessage( "Unable to initialize state for " + stateIdentifier + " Exiting..." );
+        if constexpr ( Utility::CAN_LOG )
+            mLogger->logError( errorMessage );
+
+        throw std::runtime_error( errorMessage );
+    }
 
     return createdState;
 }

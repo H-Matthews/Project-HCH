@@ -33,6 +33,12 @@ Core::Application::Application( Core::ConfigSpec configSpec ) :
     return;
 }
 
+Core::MessageNetwork* Core::Application::getNetwork()
+{
+    MessageNetwork* network( &mNetwork );
+    return network;
+}
+
 void Core::Application::registerState(
     const std::string& stateIdentifier, std::function< std::unique_ptr< Core::State >() > registerFunc )
 {
@@ -121,6 +127,8 @@ void Core::Application::processInput()
         [ this ]( const sf::Event::MouseMoved& mouseMovedEvent ) { mStateStack.handleMouseMoved( mouseMovedEvent ); } );
 
     mStateStack.handleRealTimeInput();
+
+    mNetwork.notifySubscribers();
 }
 
 void Core::Application::update( sf::Time fixedTimeStep )
