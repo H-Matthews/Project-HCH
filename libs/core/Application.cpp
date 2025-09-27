@@ -1,11 +1,6 @@
 #include "core/Application.hpp"
 #include "core/Exceptions/ConfigurationException.hpp"
 
-// TODO: THESE SHOULD NOT BE IN HERE
-#include "application/StateStack/MenuState.hpp"
-#include "application/StateStack/GameState.hpp"
-#include "application/StateStack/PauseState.hpp"
-
 #include "utility/Logging/Sinks/ColorConsoleSink.hpp"
 #include "utility/Logging/Sinks/TextFileSink.hpp"
 #include "utility/Logging/Formatters/KeyValueFormatter.hpp"
@@ -24,7 +19,7 @@ Core::Application::Application( Core::ConfigSpec configSpec ) :
     mState( State::NONE ),
     mTextures(),
     mNetwork(),
-    mStateStack( Core::State::SharedObjects( mWindow, mNetwork, mTextures ) ),
+    mStateStack(),
     mWindow( sf::VideoMode( { 640, 480 } ), "Application Window", sf::Style::Close )
 {
     // Must call back up to the Configurable
@@ -38,19 +33,27 @@ Core::Application::Application( Core::ConfigSpec configSpec ) :
     return;
 }
 
+void Core::Application::registerState(
+    const std::string& stateIdentifier, std::function< Core::State*() > registerFunc )
+{
+    mStateStack.registerState( stateIdentifier, registerFunc );
+
+    return;
+}
+
+void Core::Application::pushState( const std::string& stateIdentifier )
+{
+    mStateStack.pushState( stateIdentifier );
+
+    return;
+}
+
 void Core::Application::initialize()
 {
     if ( !mConfiguration )
         throw ConfigurationException( "Configuration is NULL" );
 
     loadResources();
-
-    registerStates();
-
-    // TODO: Need to re do the StateStack so that the user can push the State from
-    // The game application library. The Core Library should have no notion of the Type
-    // of States we are dealing with.... Need to get rid of the Enums
-    mStateStack.pushState( States::Menu );
 
     if ( !mStateStack.isPendingListEmpty() )
         transitionState( State::WAITING_TO_RUN );
@@ -63,7 +66,7 @@ void Core::Application::run()
     if ( !transitionState( State::RUNNING ) )
     {
         std::string exceptionMessage =
-            "Application is unable to transition RUNNING; Current State: " + convertEngineStateEnumToString( mState );
+            "Application is unable to transition RUNNING; Current State: " + convertAppStateEnumToString( mState );
 
         if constexpr ( Utility::CAN_LOG )
         {
@@ -135,15 +138,6 @@ void Core::Application::render()
     mWindow.display();
 }
 
-// TODO: This register call should take a string to a State Identifier
-// that way we can inject states from the game application library
-void Core::Application::registerStates()
-{
-    // mStateStack.registerState< Application::MenuState >( States::Menu );
-    // mStateStack.registerState< Application::GameState >( States::Game );
-    // mStateStack.registerState< Application::PauseState >( States::Pause );
-}
-
 void Core::Application::loadResources()
 {
     // auto fontTexturePaths = mConfiguration->getAssetPaths();
@@ -164,7 +158,7 @@ bool Core::Application::transitionState( State statusToTransfer )
     bool retStatus = false;
 
     if constexpr ( Utility::CAN_LOG )
-        mLogger->logDebug( "Attempting to Transition to State: " + convertEngineStateEnumToString( statusToTransfer ) );
+        mLogger->logDebug( "Attempting to Transition to State: " + convertAppStateEnumToString( statusToTransfer ) );
 
     if ( mState == statusToTransfer )
         return retStatus;
@@ -220,20 +214,20 @@ bool Core::Application::transitionState( State statusToTransfer )
     if ( Utility::CAN_LOG && retStatus )
     {
         if constexpr ( Utility::CAN_LOG )
-            mLogger->logDebug( "Transitioning from State: " + convertEngineStateEnumToString( prevState ) + " to " +
-                               convertEngineStateEnumToString( statusToTransfer ) );
+            mLogger->logDebug( "Transitioning from State: " + convertAppStateEnumToString( prevState ) + " to " +
+                               convertAppStateEnumToString( statusToTransfer ) );
     }
     else if ( Utility::CAN_LOG )
     {
         if constexpr ( Utility::CAN_LOG )
-            mLogger->logError( "Could NOT transition from State: " + convertEngineStateEnumToString( prevState ) +
-                               " to " + convertEngineStateEnumToString( statusToTransfer ) );
+            mLogger->logError( "Could NOT transition from State: " + convertAppStateEnumToString( prevState ) + " to " +
+                               convertAppStateEnumToString( statusToTransfer ) );
     }
 
     return retStatus;
 }
 
-std::string Core::Application::convertEngineStateEnumToString( const State& state )
+std::string Core::Application::convertAppStateEnumToString( const State& state )
 {
     std::string retString;
 
@@ -268,7 +262,7 @@ std::string Core::Application::convertEngineStateEnumToString( const State& stat
     return retString;
 }
 
-Core::Application::State Core::Application::convertStringToEngineStateEnum( const std::string& stringState )
+Core::Application::State Core::Application::convertStringToAppStateEnum( const std::string& stringState )
 {
     State retState = State::NONE;
 

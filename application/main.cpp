@@ -3,10 +3,16 @@
 #include "core/Configuration/Configuration.hpp"
 #include "core/Configuration/ConfigReader/TOMLConfigReader.hpp"
 
+#include "application/StateStack/MenuState.hpp"
+#include "application/StateStack/GameState.hpp"
+#include "application/StateStack/PauseState.hpp"
+
 #include <iostream>
 
 constexpr const char* CONFIG_DIR_NAME = "configs";
 constexpr const char* ROOT_FILE_NAME = "root.toml";
+
+void registerGameStates( Core::Application& application );
 
 int main()
 {
@@ -20,8 +26,12 @@ int main()
         // TODO: Change this to an Application Specification that
         // encapsulates the configSpecification
         Core::Application application( configSpecification );
-        application.initialize();
 
+        registerGameStates( application );
+
+        application.pushState( Application::MenuState::identifier );
+
+        application.initialize();
         application.run();
     }
     catch ( const Core::ConfigurationException& e )
@@ -38,4 +48,17 @@ int main()
     }
 
     return 0;
+}
+
+void registerGameStates( Core::Application& application )
+{
+    const std::string menuID = Application::MenuState::identifier;
+    const std::string gameID = Application::GameState::identifier;
+    const std::string pauseID = Application::PauseState::identifier;
+
+    application.registerState( menuID, [ menuID ]() { return new Application::MenuState( menuID ); } );
+    application.registerState( gameID, [ gameID ]() { return new Application::GameState( gameID ); } );
+    application.registerState( pauseID, [ pauseID ]() { return new Application::PauseState( pauseID ); } );
+
+    return;
 }

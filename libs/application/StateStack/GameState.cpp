@@ -2,12 +2,14 @@
 
 #include <iostream>
 
-Application::GameState::GameState( Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects ) :
-    State( stack, stateIdentifier, sharedObjects ),
-    mGameNetwork( *sharedObjects.network ),
-    mScene( *sharedObjects.window, mGameNetwork, *sharedObjects.textures ),
-    mKeyBindings(),
-    mPlayerInputPublisher( mGameNetwork, mKeyBindings )
+std::string Application::GameState::identifier = "GameState";
+
+Application::GameState::GameState( std::string stateIdentifier ) :
+    State( stateIdentifier )
+// mGameNetwork( *sharedObjects.network ),
+// mScene( *sharedObjects.window, mGameNetwork, *sharedObjects.textures ),
+// mKeyBindings(),
+// mPlayerInputPublisher( mGameNetwork, mKeyBindings )
 {
     std::cout << "Creating GameState " << std::endl;
 
@@ -19,15 +21,15 @@ Application::GameState::GameState( Core::StateStack& stack, std::string stateIde
 
 void Application::GameState::draw()
 {
-    mScene.draw();
+    // mScene.draw();
 }
 
 bool Application::GameState::update( sf::Time fixedTimeStep )
 {
     // Sends Message Notifications
-    mGameNetwork.notifySubscribers();
+    // mGameNetwork.notifySubscribers();
 
-    mScene.update( fixedTimeStep );
+    // mScene.update( fixedTimeStep );
 
     return true;
 }
@@ -35,7 +37,7 @@ bool Application::GameState::update( sf::Time fixedTimeStep )
 bool Application::GameState::handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent )
 {
     // Handle Event based Key Presses
-    mPlayerInputPublisher.handleKeyPressed( keyPressedEvent );
+    // mPlayerInputPublisher.handleKeyPressed( keyPressedEvent );
 
     if ( keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter )
     {
@@ -43,12 +45,12 @@ bool Application::GameState::handleKeyPressed( const sf::Event::KeyPressed& keyP
     }
     else if ( keyPressedEvent.scancode == sf::Keyboard::Scancode::P )
     {
-        requestStackPush( States::Pause );
+        requestStackPush( "PauseState" );
     }
     else if ( keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape )
     {
         requestStackPop();
-        requestStackPush( States::Menu );
+        requestStackPush( "MenuState" );
     }
 
     return true;
@@ -58,7 +60,7 @@ bool Application::GameState::handleRealTimeInput()
 {
     // Handle RealTime Input KeyPresses
     // Usually movement based
-    mPlayerInputPublisher.handleRealTimeInput();
+    // mPlayerInputPublisher.handleRealTimeInput();
 
     return true;
 }
@@ -67,5 +69,5 @@ Application::GameState::~GameState()
 {
     // Any objects that persist over different States such as MessageNetwork, will need to
     // cleanup their resources
-    mGameNetwork.shutdownNetwork();
+    // mGameNetwork.shutdownNetwork();
 }

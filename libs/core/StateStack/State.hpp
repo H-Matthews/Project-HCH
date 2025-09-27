@@ -1,6 +1,5 @@
 #pragma once
 
-#include "core/StateStack/StateTypes.hpp"
 #include "core/Messaging/MessageNetwork.hpp"
 
 #include "core/GameAssetContainer/ResourceEnums.hpp"
@@ -19,18 +18,7 @@ namespace Core
     class State
     {
       public:
-        struct SharedObjects
-        {
-            SharedObjects( sf::RenderWindow& window, Core::MessageNetwork& network, TextureHolder& textures );
-            SharedObjects();
-
-            sf::RenderWindow* window;
-            Core::MessageNetwork* network;
-            TextureHolder* textures;
-        };
-
-      public:
-        State( StateStack& stack, std::string mStateIdentifierString, SharedObjects sObjects );
+        State( std::string stateIdentifier );
         virtual ~State();
 
         virtual void draw() = 0;
@@ -45,19 +33,24 @@ namespace Core
             return false;
         }
 
-        const std::string getStateAsString();
+        const std::string getStateName();
+        inline void setStack( StateStack* stack );
 
       protected:
-        void requestStackPush( States::ID stateID );
+        void requestStackPush( const std::string& stateIdentifier );
         void requestStackPop();
         void requestStateClear();
-
-        SharedObjects getSharedObjects() const;
 
       private:
         StateStack* mStack;
         std::string mStateIdentifierString;
-        SharedObjects mSharedObjects;
     };
+
+    void State::setStack( StateStack* stack )
+    {
+        mStack = stack;
+
+        return;
+    }
 
 }

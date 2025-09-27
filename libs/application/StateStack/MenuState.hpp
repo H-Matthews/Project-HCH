@@ -9,7 +9,10 @@ namespace Application
     class MenuState : public Core::State
     {
       public:
-        MenuState( Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects );
+        static std::string identifier;
+
+        MenuState( std::string stateName );
+        MenuState( Core::StateStack& stack, std::string stateIdentifier );
 
         virtual void draw();
         virtual bool update( sf::Time fixedTimeStep );

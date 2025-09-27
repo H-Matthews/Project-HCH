@@ -33,21 +33,21 @@ namespace Core
             SHUTTING_DOWN
         };
 
-        std::string convertEngineStateEnumToString( const State& state );
-        State convertStringToEngineStateEnum( const std::string& stringState );
+        std::string convertAppStateEnumToString( const State& state );
+        State convertStringToAppStateEnum( const std::string& stringState );
 
       public:
         static const std::string TYPE_NAME;
 
         Application( Core::ConfigSpec ConfigSpec );
-        inline void setConfiguration( std::unique_ptr< Core::Configuration > config );
+
+        void registerState( const std::string& stateIdentifier, std::function< Core::State*() > registerFunc );
+        void pushState( const std::string& stateIdentifier );
+
         void initialize();
         void run();
 
       private:
-        // Registers States in StateStack
-        void registerStates();
-
         void processInput();
         void update( sf::Time fixedTimeStep );
         void render();
@@ -88,8 +88,4 @@ namespace Core
         return mState == State::RUNNING;
     }
 
-    void Core::Application::setConfiguration( std::unique_ptr< Core::Configuration > config )
-    {
-        mConfiguration = std::move( config );
-    }
 }

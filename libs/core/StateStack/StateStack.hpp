@@ -29,11 +29,6 @@ namespace Core
 
       public:
         StateStack();
-        explicit StateStack( Core::State::SharedObjects sObjects );
-
-        // Needs to be a template so that we can treat registerState as a factory
-        template < typename T >
-        void registerState( States::ID stateID );
 
         void update( sf::Time fixedTimeStep );
         void draw();
@@ -42,7 +37,9 @@ namespace Core
         void handleMouseMoved( const sf::Event::MouseMoved& mouseMoved );
         void handleRealTimeInput();
 
-        void pushState( States::ID stateID );
+        void registerState( const std::string& stateIdentifier, std::function< Core::State*() > registerFunc );
+
+        void pushState( const std::string& stateIdentifier );
         void popState();
         void clearStates();
 
@@ -52,39 +49,21 @@ namespace Core
         void initializeLogger();
 
       private:
-        std::unique_ptr< Core::State > createState( States::ID stateID );
+        Core::State* createState( std::string stateIdentifier );
         void applyPendingChanges();
 
-        struct pendingStateRequests
+        struct PendingStateRequest
         {
-            explicit pendingStateRequests( Action action, States::ID stateID = States::NONE );
+            explicit PendingStateRequest( Action action, const std::string& stateIdentifier = "" );
 
             Action action;
-            States::ID stateID;
+            std::string stateIdentifier;
         };
 
       private:
-        std::vector< std::unique_ptr< Core::State > > mStack;
-        std::vector< pendingStateRequests > mPendingList;
-        Core::State::SharedObjects mSharedObjects;
-        std::map< States::ID, std::function< std::unique_ptr< Core::State >() > > mRegistry;
+        std::vector< Core::State* > mStack;
+        std::vector< PendingStateRequest > mPendingStateList;
+        std::map< std::string, std::function< Core::State*() > > mRegistry;
     };
 
-}
-
-template < typename T >
-void Core::StateStack::registerState( States::ID stateID )
-{
-    const std::string identifierString( States::statesEnumToString( stateID ) );
-
-    // Stores a Lambda in mRegistry
-    mRegistry[ stateID ] = [ this, identifierString ]()
-    { return std::unique_ptr< State >( new T( *this, identifierString, mSharedObjects ) ); };
-
-    if constexpr ( Utility::CAN_LOG )
-    {
-        std::string logMessage;
-        logMessage = "Registered State: " + identifierString;
-        mLogger->logInfo( logMessage );
-    }
 }

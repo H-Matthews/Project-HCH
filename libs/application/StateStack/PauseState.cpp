@@ -5,9 +5,10 @@
 
 #include <iostream>
 
-Application::PauseState::PauseState(
-    Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects ) :
-    State( stack, stateIdentifier, sharedObjects )
+std::string Application::PauseState::identifier = "PauseState";
+
+Application::PauseState::PauseState( std::string stateIdentifier ) :
+    State( stateIdentifier )
 {
     std::cout << "Creating PauseState " << std::endl;
 
@@ -19,9 +20,6 @@ Application::PauseState::PauseState(
 void Application::PauseState::draw()
 {
     // Draw Game related things to window here
-
-    // Retrieve window from sharedObjects struct
-    sf::RenderWindow& window = *getSharedObjects().window;
 }
 
 bool Application::PauseState::update( sf::Time fixedTimeStep )
@@ -31,7 +29,6 @@ bool Application::PauseState::update( sf::Time fixedTimeStep )
 
 bool Application::PauseState::handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent )
 {
-
     // Pops the Pause State, returning to the GameState
     if ( keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape )
     {
@@ -41,7 +38,7 @@ bool Application::PauseState::handleKeyPressed( const sf::Event::KeyPressed& key
     {
         // Remove all states and push Menu
         requestStateClear();
-        requestStackPush( States::Menu );
+        requestStackPush( "MenuState" );
     }
 
     return false;

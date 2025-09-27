@@ -10,16 +10,7 @@ const std::string Core::StateStack::TYPE_NAME = "StateStack";
 Core::StateStack::StateStack() :
     Configurable( TYPE_NAME ),
     mStack(),
-    mPendingList(),
-    mSharedObjects(),
-    mRegistry()
-{}
-
-Core::StateStack::StateStack( Core::State::SharedObjects sObjects ) :
-    Configurable( TYPE_NAME ),
-    mStack(),
-    mPendingList(),
-    mSharedObjects( sObjects ),
+    mPendingStateList(),
     mRegistry()
 {}
 
@@ -38,7 +29,7 @@ void Core::StateStack::update( sf::Time fixedTimeStep )
 void Core::StateStack::draw()
 {
     // We will always draw a state if its on the stack
-    for ( std::unique_ptr< Core::State >& state : mStack )
+    for ( auto& state : mStack )
     {
         state->draw();
     }
@@ -74,19 +65,28 @@ void Core::StateStack::handleRealTimeInput()
     }
 }
 
-void Core::StateStack::pushState( States::ID stateID )
+void Core::StateStack::registerState( const std::string& stateIdentifier, std::function< Core::State*() > registerFunc )
 {
-    mPendingList.push_back( pendingStateRequests( Push, stateID ) );
+    mRegistry.insert( { stateIdentifier, registerFunc } );
+
+    return;
+}
+
+void Core::StateStack::pushState( const std::string& stateIdentifier )
+{
+    mPendingStateList.push_back( PendingStateRequest( Push, stateIdentifier ) );
+
+    return;
 }
 
 void Core::StateStack::popState()
 {
-    mPendingList.push_back( pendingStateRequests( Pop ) );
+    mPendingStateList.push_back( PendingStateRequest( Pop ) );
 }
 
 void Core::StateStack::clearStates()
 {
-    mPendingList.push_back( pendingStateRequests( Clear ) );
+    mPendingStateList.push_back( PendingStateRequest( Clear ) );
 }
 
 bool Core::StateStack::isEmpty() const
@@ -96,7 +96,7 @@ bool Core::StateStack::isEmpty() const
 
 bool Core::StateStack::isPendingListEmpty() const
 {
-    return mPendingList.empty();
+    return mPendingStateList.empty();
 }
 
 void Core::StateStack::initializeLogger()
@@ -108,45 +108,51 @@ void Core::StateStack::initializeLogger()
         "StateStackLogger", outDirectory, "StateStack", ".log", Utility::LogLevel::INFO );
 }
 
-std::unique_ptr< Core::State > Core::StateStack::createState( States::ID stateID )
+Core::State* Core::StateStack::createState( std::string stateIdentifier )
 {
-    auto found = mRegistry.find( stateID );
+    auto found = mRegistry.find( stateIdentifier );
     assert( found != mRegistry.end() );
 
-    return found->second();
+    auto* createdState = found->second();
+    createdState->setStack( this );
+
+    return createdState;
 }
 
 void Core::StateStack::applyPendingChanges()
 {
     std::string logMessage;
 
-    for ( Core::StateStack::pendingStateRequests change : mPendingList )
+    for ( Core::StateStack::PendingStateRequest change : mPendingStateList )
     {
         logMessage.clear();
         logMessage += "State Transition --> ";
         switch ( change.action )
         {
             case Push:
+            {
                 if constexpr ( Utility::CAN_LOG )
                 {
-                    logMessage += "Pushing State: " + States::statesEnumToString( change.stateID );
+                    logMessage += "Pushing State: " + change.stateIdentifier;
                     mLogger->logInfo( logMessage );
                 }
 
-                mStack.push_back( createState( change.stateID ) );
+                mStack.push_back( createState( change.stateIdentifier ) );
                 break;
-
+            }
             case Pop:
+            {
                 if constexpr ( Utility::CAN_LOG )
                 {
-                    logMessage += "Removing State: " + mStack[ mStack.size() - 1 ]->getStateAsString();
+                    logMessage += "Removing State: " + mStack[ mStack.size() - 1 ]->getStateName();
                     mLogger->logInfo( logMessage );
                 }
 
                 mStack.pop_back();
                 break;
-
+            }
             case Clear:
+            {
                 if constexpr ( Utility::CAN_LOG )
                 {
                     logMessage += "Clearing the Stack";
@@ -155,13 +161,14 @@ void Core::StateStack::applyPendingChanges()
 
                 mStack.clear();
                 break;
+            }
         }
     }
 
-    mPendingList.clear();
+    mPendingStateList.clear();
 }
 
-Core::StateStack::pendingStateRequests::pendingStateRequests( Action action, States::ID stateID ) :
+Core::StateStack::PendingStateRequest::PendingStateRequest( Action action, const std::string& stateIdentifier ) :
     action( action ),
-    stateID( stateID )
+    stateIdentifier( stateIdentifier )
 {}
