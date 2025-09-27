@@ -19,7 +19,7 @@ Core::Application::Application( Core::ConfigSpec configSpec ) :
     mState( State::NONE ),
     mTextures(),
     mNetwork(),
-    mStateStack(),
+    mStateStack( *this ),
     mWindow( sf::VideoMode( { 640, 480 } ), "Application Window", sf::Style::Close )
 {
     // Must call back up to the Configurable
@@ -34,7 +34,7 @@ Core::Application::Application( Core::ConfigSpec configSpec ) :
 }
 
 void Core::Application::registerState(
-    const std::string& stateIdentifier, std::function< Core::State*() > registerFunc )
+    const std::string& stateIdentifier, std::function< std::unique_ptr< Core::State >() > registerFunc )
 {
     mStateStack.registerState( stateIdentifier, registerFunc );
 

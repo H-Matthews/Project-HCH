@@ -56,9 +56,10 @@ void registerGameStates( Core::Application& application )
     const std::string gameID = Application::GameState::identifier;
     const std::string pauseID = Application::PauseState::identifier;
 
-    application.registerState( menuID, [ menuID ]() { return new Application::MenuState( menuID ); } );
-    application.registerState( gameID, [ gameID ]() { return new Application::GameState( gameID ); } );
-    application.registerState( pauseID, [ pauseID ]() { return new Application::PauseState( pauseID ); } );
+    application.registerState( menuID, [ menuID ]() { return std::make_unique< Application::MenuState >( menuID ); } );
+    application.registerState( gameID, [ gameID ]() { return std::make_unique< Application::GameState >( gameID ); } );
+    application.registerState(
+        pauseID, [ pauseID ]() { return std::make_unique< Application::PauseState >( pauseID ); } );
 
     return;
 }

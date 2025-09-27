@@ -1,5 +1,7 @@
 #include "core/StateStack/StateStack.hpp"
 
+#include "core/StateStack/State.hpp"
+
 #include "utility/Logging/Sinks/TextFileSink.hpp"
 #include "utility/Logging/Formatters/KeyValueFormatter.hpp"
 
@@ -7,11 +9,12 @@
 
 const std::string Core::StateStack::TYPE_NAME = "StateStack";
 
-Core::StateStack::StateStack() :
+Core::StateStack::StateStack( Application& application ) :
     Configurable( TYPE_NAME ),
     mStack(),
-    mPendingStateList(),
-    mRegistry()
+    mPendingRequests(),
+    mRegistry(),
+    applicationRef( application )
 {}
 
 void Core::StateStack::update( sf::Time fixedTimeStep )
@@ -65,7 +68,8 @@ void Core::StateStack::handleRealTimeInput()
     }
 }
 
-void Core::StateStack::registerState( const std::string& stateIdentifier, std::function< Core::State*() > registerFunc )
+void Core::StateStack::registerState(
+    const std::string& stateIdentifier, std::function< std::unique_ptr< Core::State >() > registerFunc )
 {
     mRegistry.insert( { stateIdentifier, registerFunc } );
 
@@ -74,19 +78,19 @@ void Core::StateStack::registerState( const std::string& stateIdentifier, std::f
 
 void Core::StateStack::pushState( const std::string& stateIdentifier )
 {
-    mPendingStateList.push_back( PendingStateRequest( Push, stateIdentifier ) );
+    mPendingRequests.push_back( PendingStateRequest( Push, stateIdentifier ) );
 
     return;
 }
 
 void Core::StateStack::popState()
 {
-    mPendingStateList.push_back( PendingStateRequest( Pop ) );
+    mPendingRequests.push_back( PendingStateRequest( Pop ) );
 }
 
 void Core::StateStack::clearStates()
 {
-    mPendingStateList.push_back( PendingStateRequest( Clear ) );
+    mPendingRequests.push_back( PendingStateRequest( Clear ) );
 }
 
 bool Core::StateStack::isEmpty() const
@@ -96,7 +100,7 @@ bool Core::StateStack::isEmpty() const
 
 bool Core::StateStack::isPendingListEmpty() const
 {
-    return mPendingStateList.empty();
+    return mPendingRequests.empty();
 }
 
 void Core::StateStack::initializeLogger()
@@ -108,13 +112,13 @@ void Core::StateStack::initializeLogger()
         "StateStackLogger", outDirectory, "StateStack", ".log", Utility::LogLevel::INFO );
 }
 
-Core::State* Core::StateStack::createState( std::string stateIdentifier )
+std::unique_ptr< Core::State > Core::StateStack::createState( std::string stateIdentifier )
 {
     auto found = mRegistry.find( stateIdentifier );
     assert( found != mRegistry.end() );
 
-    auto* createdState = found->second();
-    createdState->setStack( this );
+    std::unique_ptr< Core::State > createdState( found->second() );
+    createdState->setStackRef( this );
 
     return createdState;
 }
@@ -123,7 +127,7 @@ void Core::StateStack::applyPendingChanges()
 {
     std::string logMessage;
 
-    for ( Core::StateStack::PendingStateRequest change : mPendingStateList )
+    for ( Core::StateStack::PendingStateRequest change : mPendingRequests )
     {
         logMessage.clear();
         logMessage += "State Transition --> ";
@@ -165,7 +169,7 @@ void Core::StateStack::applyPendingChanges()
         }
     }
 
-    mPendingStateList.clear();
+    mPendingRequests.clear();
 }
 
 Core::StateStack::PendingStateRequest::PendingStateRequest( Action action, const std::string& stateIdentifier ) :

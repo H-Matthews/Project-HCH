@@ -6,6 +6,7 @@
 #include "utility/Logging/LogRegistry.hpp"
 
 #include <SFML/System/Time.hpp>
+#include <SFML/Window/Event.hpp>
 
 #include <vector>
 #include <functional>
@@ -14,6 +15,7 @@
 
 namespace Core
 {
+    class Application;
 
     class StateStack : public Configurable
     {
@@ -28,7 +30,7 @@ namespace Core
         };
 
       public:
-        StateStack();
+        StateStack( Application& application );
 
         void update( sf::Time fixedTimeStep );
         void draw();
@@ -37,7 +39,8 @@ namespace Core
         void handleMouseMoved( const sf::Event::MouseMoved& mouseMoved );
         void handleRealTimeInput();
 
-        void registerState( const std::string& stateIdentifier, std::function< Core::State*() > registerFunc );
+        void registerState(
+            const std::string& stateIdentifier, std::function< std::unique_ptr< Core::State >() > registerFunc );
 
         void pushState( const std::string& stateIdentifier );
         void popState();
@@ -49,7 +52,7 @@ namespace Core
         void initializeLogger();
 
       private:
-        Core::State* createState( std::string stateIdentifier );
+        std::unique_ptr< Core::State > createState( std::string stateIdentifier );
         void applyPendingChanges();
 
         struct PendingStateRequest
@@ -61,9 +64,11 @@ namespace Core
         };
 
       private:
-        std::vector< Core::State* > mStack;
-        std::vector< PendingStateRequest > mPendingStateList;
-        std::map< std::string, std::function< Core::State*() > > mRegistry;
+        std::vector< std::unique_ptr< Core::State > > mStack;
+        std::vector< PendingStateRequest > mPendingRequests;
+        std::map< std::string, std::function< std::unique_ptr< Core::State >() > > mRegistry;
+
+        Application& applicationRef;
     };
 
 }

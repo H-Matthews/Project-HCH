@@ -41,7 +41,9 @@ namespace Core
 
         Application( Core::ConfigSpec ConfigSpec );
 
-        void registerState( const std::string& stateIdentifier, std::function< Core::State*() > registerFunc );
+        void registerState(
+            const std::string& stateIdentifier, std::function< std::unique_ptr< Core::State >() > registerFunc );
+
         void pushState( const std::string& stateIdentifier );
 
         void initialize();

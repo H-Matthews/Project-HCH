@@ -13,6 +13,7 @@
 
 namespace Core
 {
+
     class StateStack;
 
     class State
@@ -34,7 +35,7 @@ namespace Core
         }
 
         const std::string getStateName();
-        inline void setStack( StateStack* stack );
+        void setStackRef( StateStack* stack );
 
       protected:
         void requestStackPush( const std::string& stateIdentifier );
@@ -42,15 +43,8 @@ namespace Core
         void requestStateClear();
 
       private:
-        StateStack* mStack;
+        StateStack* mStackRef;
         std::string mStateIdentifierString;
     };
-
-    void State::setStack( StateStack* stack )
-    {
-        mStack = stack;
-
-        return;
-    }
 
 }
