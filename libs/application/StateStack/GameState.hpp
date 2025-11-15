@@ -21,6 +21,7 @@ namespace Application
         static std::string identifier;
 
         GameState( std::string stateIdentifier );
+        GameState();
 
         bool initializeState() override;
 

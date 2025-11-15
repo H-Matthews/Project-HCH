@@ -15,6 +15,10 @@ Application::MenuState::MenuState( std::string stateIdentifier ) :
     std::cout << "Escape: Closes Program " << std::endl;
 }
 
+Application::MenuState::MenuState() :
+    State( "Menu State" )
+{}
+
 void Application::MenuState::draw()
 {
     // Draw Menu related things to window here

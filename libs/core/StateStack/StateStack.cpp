@@ -85,6 +85,13 @@ void Core::StateStack::pushState( const std::string& stateIdentifier )
     return;
 }
 
+// void Core::StateStack::testPushState( State* myState )
+// {
+//     std::cout << myState->getStateName() << std::endl;
+
+//     return;
+// }
+
 void Core::StateStack::popState()
 {
     mPendingRequests.push_back( PendingStateRequest( Pop ) );

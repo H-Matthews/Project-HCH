@@ -20,6 +20,10 @@ Application::GameState::GameState( std::string stateIdentifier ) :
     std::cout << "Escape: Return To Menu State " << std::endl;
 }
 
+Application::GameState::GameState() :
+    State( "GameState " )
+{}
+
 // Used to set references to external subsystems
 bool Application::GameState::initializeState()
 {

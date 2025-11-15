@@ -31,6 +31,8 @@ int main()
 
         application.pushState( Application::MenuState::identifier );
 
+        application.testPushState< Application::MenuState >();
+
         application.initialize();
         application.run();
     }

@@ -13,6 +13,8 @@
 #include <map>
 #include <memory>
 
+#include <iostream>
+
 namespace Core
 {
     class Application;
@@ -43,6 +45,11 @@ namespace Core
             const std::string& stateIdentifier, std::function< std::unique_ptr< Core::State >() > registerFunc );
 
         void pushState( const std::string& stateIdentifier );
+
+        template < typename TState >
+            requires( std::is_base_of_v< Core::State, TState > )
+        void testPushState( TState* stackState );
+
         void popState();
         void clearStates();
 
@@ -72,5 +79,15 @@ namespace Core
 
         Application& applicationRef;
     };
+
+    template < typename TState >
+        requires( std::is_base_of_v< Core::State, TState > )
+    void StateStack::testPushState( TState* stackState )
+    {
+        // Allocate State Memory
+        stackState = new TState();
+
+        return;
+    }
 
 }

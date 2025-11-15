@@ -46,6 +46,10 @@ namespace Core
 
         void pushState( const std::string& stateIdentifier );
 
+        template < typename TState >
+            requires( std::is_base_of_v< Core::State, TState > )
+        void testPushState();
+
         void initialize();
         void run();
 
@@ -88,6 +92,17 @@ namespace Core
     bool Application::isRunning() const
     {
         return mState == State::RUNNING;
+    }
+
+    template < typename TState >
+        requires( std::is_base_of_v< Core::State, TState > )
+    void Application::testPushState()
+    {
+        TState* state = nullptr;
+
+        mStateStack.testPushState( state );
+
+        return;
     }
 
 }

@@ -12,7 +12,7 @@ namespace Application
         static std::string identifier;
 
         MenuState( std::string stateName );
-        MenuState( Core::StateStack& stack, std::string stateIdentifier );
+        MenuState();
 
         virtual void draw();
         virtual bool update( sf::Time fixedTimeStep );
