@@ -34,7 +34,6 @@ void Core::StateStack::update( sf::Time fixedTimeStep )
 
 void Core::StateStack::draw()
 {
-    // We will always draw a state if its on the stack
     for (auto& state : mStack)
     {
         state->draw();
@@ -93,15 +92,6 @@ bool Core::StateStack::isPendingListEmpty() const
     return mPendingRequests.empty();
 }
 
-void Core::StateStack::initializeLogger()
-{
-    // Create and Register
-    const std::string outDirectory = Utility::LogRegistry::instance()->getOutputDir();
-
-    mLogger = Utility::createTextFileLogger(
-        "StateStackLogger", outDirectory, "StateStack", ".log", Utility::LogLevel::INFO );
-}
-
 Core::MessageNetwork* Core::StateStack::getMessageNetworkRef()
 {
     return applicationRef.getNetwork();
@@ -155,9 +145,7 @@ void Core::StateStack::applyPendingChanges()
         }
 
         if constexpr (Utility::CAN_LOG)
-        {
             mLogger->logInfo( logMessage );
-        }
     }
 
     mPendingRequests.clear();

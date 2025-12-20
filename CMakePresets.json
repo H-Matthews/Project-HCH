@@ -31,10 +31,10 @@
             "binaryDir": "${sourceDir}/build"
         },
         {
-            "name": "windows-VS19",
-            "displayName": "Windows VS2019 Config",
-            "description": "Generates soulution for VS2019",
-            "generator": "Visual Studio 16 2019",
+            "name": "windows-VS25",
+            "displayName": "Windows VS2025 Config",
+            "description": "Generates soulution for VS2025",
+            "generator": "Visual Studio 18 2026",
             "binaryDir": "${sourceDir}/build"
         }
     ],
@@ -52,8 +52,8 @@
             "configurePreset": "windows-VS22"
         },
         {
-            "name": "windows-VS19",
-            "configurePreset": "windows-VS19"
+            "name": "windows-VS25",
+            "configurePreset": "windows-VS25"
         }
     ]
 }

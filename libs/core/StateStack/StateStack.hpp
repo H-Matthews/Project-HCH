@@ -34,7 +34,6 @@ namespace Core
 
       public:
         StateStack( Application& application );
-        StateStack();
         ~StateStack();
 
         void update( sf::Time fixedTimeStep );
@@ -53,8 +52,6 @@ namespace Core
 
         bool isEmpty() const;
         bool isPendingListEmpty() const;
-
-        void initializeLogger();
 
         MessageNetwork* getMessageNetworkRef();
 
