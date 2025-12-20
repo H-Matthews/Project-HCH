@@ -25,7 +25,7 @@ Core::Application::Application( Core::ConfigSpec configSpec ) :
     // Must call back up to the Configurable
     std::shared_ptr< ConfigNode > rootNode = ConfigurationTree::instance()->getRootNode();
     std::vector< std::shared_ptr< Core::ConfigNode > > childrenNodes = rootNode->getChildren();
-    if ( childrenNodes.empty() )
+    if (childrenNodes.empty())
         throw ConfigurationException( "Children were not populated for RootNode" );
 
     configure( rootNode );
@@ -33,79 +33,66 @@ Core::Application::Application( Core::ConfigSpec configSpec ) :
     return;
 }
 
-Core::MessageNetwork* Core::Application::getNetwork()
-{
-    MessageNetwork* network( &mNetwork );
-    return network;
-}
-
-void Core::Application::registerState(
-    const std::string& stateIdentifier, std::function< std::unique_ptr< Core::State >() > registerFunc )
-{
-    mStateStack.registerState( stateIdentifier, registerFunc );
-
-    return;
-}
-
-void Core::Application::pushState( const std::string& stateIdentifier )
-{
-    mStateStack.pushState( stateIdentifier );
-
-    return;
-}
-
 void Core::Application::initialize()
 {
-    if ( !mConfiguration )
+    if (!mConfiguration)
         throw ConfigurationException( "Configuration is NULL" );
 
     loadResources();
 
-    if ( !mStateStack.isPendingListEmpty() )
-        transitionState( State::WAITING_TO_RUN );
+    transitionState( State::INITIALIZED );
 
     return;
 }
 
 void Core::Application::run()
 {
-    if ( !transitionState( State::RUNNING ) )
+    if (!transitionState( State::RUNNING ))
     {
-        std::string exceptionMessage =
-            "Application is unable to transition RUNNING; Current State: " + convertAppStateEnumToString( mState );
+        std::string exceptionMessage = "Application is unable to transition to STATE:RUNNING; Currently: STATE:" +
+                                       convertAppStateEnumToString( mState );
 
-        if constexpr ( Utility::CAN_LOG )
+        if (isInitialized())
         {
-            if ( mLogger )
+            exceptionMessage += " The application requires a State to be pushed onto the Stack";
+        }
+        else
+        {
+            exceptionMessage += " The Application is NOT initialized, call initialize()";
+        }
+
+        if constexpr (Utility::CAN_LOG)
+        {
+            if (mLogger)
                 mLogger->logError( exceptionMessage );
         }
 
         throw ConfigurationException( exceptionMessage.c_str() );
     }
 
+    if constexpr (Utility::CAN_LOG)
+        mLogger->logInfo( "Entering main RUN loop" );
+
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
-    if constexpr ( Utility::CAN_LOG )
-        mLogger->logInfo( "Entering main RUN loop" );
-
-    while ( mWindow.isOpen() )
+    while (mWindow.isOpen())
     {
         sf::Time elapsedTime = clock.restart();
         timeSinceLastUpdate += elapsedTime;
 
-        while ( timeSinceLastUpdate > TIME_PER_FRAME )
+        while (timeSinceLastUpdate > TIME_PER_FRAME)
         {
             timeSinceLastUpdate -= TIME_PER_FRAME;
 
             processInput();
             update( TIME_PER_FRAME );
 
-            if ( mStateStack.isEmpty() )
+            if (mStateStack.isEmpty())
             {
                 mWindow.close();
 
-                if constexpr ( Utility::CAN_LOG )
+                if constexpr (Utility::CAN_LOG)
                     mLogger->logInfo( "Closing Window...." );
             }
         }
@@ -113,7 +100,7 @@ void Core::Application::run()
         render();
     }
 
-    if constexpr ( Utility::CAN_LOG )
+    if constexpr (Utility::CAN_LOG)
         mLogger->logInfo( "Exiting main RUN loop" );
 }
 
@@ -165,15 +152,10 @@ bool Core::Application::transitionState( State statusToTransfer )
 {
     bool retStatus = false;
 
-    if constexpr ( Utility::CAN_LOG )
-        mLogger->logDebug( "Attempting to Transition to State: " + convertAppStateEnumToString( statusToTransfer ) );
-
-    if ( mState == statusToTransfer )
+    if (mState == statusToTransfer)
         return retStatus;
 
-    State prevState = State::NONE;
-
-    switch ( statusToTransfer )
+    switch (statusToTransfer)
     {
         case State::NONE:
         {
@@ -181,12 +163,10 @@ bool Core::Application::transitionState( State statusToTransfer )
 
             break;
         }
-        case State::WAITING_TO_RUN:
+        case State::INITIALIZED:
         {
-            if ( mState == State::NONE )
+            if (mState == State::NONE)
             {
-                prevState = mState;
-
                 mState = statusToTransfer;
                 retStatus = true;
             }
@@ -195,10 +175,8 @@ bool Core::Application::transitionState( State statusToTransfer )
         }
         case State::RUNNING:
         {
-            if ( mState == State::WAITING_TO_RUN )
+            if (mState == State::INITIALIZED && !mStateStack.isPendingListEmpty())
             {
-                prevState = mState;
-
                 mState = statusToTransfer;
                 retStatus = true;
             }
@@ -207,29 +185,14 @@ bool Core::Application::transitionState( State statusToTransfer )
         }
         case State::SHUTTING_DOWN:
         {
-            if ( mState == State::RUNNING )
+            if (mState == State::RUNNING)
             {
-                prevState = mState;
-
                 mState = statusToTransfer;
                 retStatus = true;
             }
 
             break;
         }
-    }
-
-    if ( Utility::CAN_LOG && retStatus )
-    {
-        if constexpr ( Utility::CAN_LOG )
-            mLogger->logDebug( "Transitioning from State: " + convertAppStateEnumToString( prevState ) + " to " +
-                               convertAppStateEnumToString( statusToTransfer ) );
-    }
-    else if ( Utility::CAN_LOG )
-    {
-        if constexpr ( Utility::CAN_LOG )
-            mLogger->logError( "Could NOT transition from State: " + convertAppStateEnumToString( prevState ) + " to " +
-                               convertAppStateEnumToString( statusToTransfer ) );
     }
 
     return retStatus;
@@ -239,7 +202,7 @@ std::string Core::Application::convertAppStateEnumToString( const State& state )
 {
     std::string retString;
 
-    switch ( state )
+    switch (state)
     {
         case State::NONE:
         {
@@ -247,9 +210,9 @@ std::string Core::Application::convertAppStateEnumToString( const State& state )
 
             break;
         }
-        case State::WAITING_TO_RUN:
+        case State::INITIALIZED:
         {
-            retString = "WAITING_TO_RUN";
+            retString = "INITIALIZED";
 
             break;
         }
@@ -274,15 +237,15 @@ Core::Application::State Core::Application::convertStringToAppStateEnum( const s
 {
     State retState = State::NONE;
 
-    if ( stringState == "WAITING_TO_RUN" )
+    if (stringState == "INITIALIZED")
     {
-        retState = State::WAITING_TO_RUN;
+        retState = State::INITIALIZED;
     }
-    else if ( stringState == "RUNNING" )
+    else if (stringState == "RUNNING")
     {
         retState = State::RUNNING;
     }
-    else if ( stringState == "SHUTTING_DOWN" )
+    else if (stringState == "SHUTTING_DOWN")
     {
         retState = State::SHUTTING_DOWN;
     }

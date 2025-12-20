@@ -9,9 +9,9 @@ namespace Application
     class PauseState : public Core::State
     {
       public:
-        static std::string identifier;
+        static std::string IDENTIFIER;
 
-        PauseState( std::string stateIdentifier );
+        PauseState();
 
         virtual void draw();
 

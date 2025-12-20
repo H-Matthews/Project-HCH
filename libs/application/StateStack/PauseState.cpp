@@ -1,16 +1,18 @@
 #include "application/StateStack/PauseState.hpp"
 
+#include "application/StateStack/MenuState.hpp"
+
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>
 
 #include <iostream>
 
-std::string Application::PauseState::identifier = "PauseState";
+std::string Application::PauseState::IDENTIFIER = "PAUSE";
 
-Application::PauseState::PauseState( std::string stateIdentifier ) :
-    State( stateIdentifier )
+Application::PauseState::PauseState() :
+    State( IDENTIFIER )
 {
-    std::cout << "Creating PauseState " << std::endl;
+    std::cout << "Creating " << getStateName() << " State" << std::endl;
 
     std::cout << "Controls: --------------------------------" << std::endl;
     std::cout << "BackSpace: Return to Main Menu" << std::endl;
@@ -30,15 +32,15 @@ bool Application::PauseState::update( sf::Time fixedTimeStep )
 bool Application::PauseState::handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent )
 {
     // Pops the Pause State, returning to the GameState
-    if ( keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape )
+    if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape)
     {
         requestStackPop();
     }
-    else if ( keyPressedEvent.scancode == sf::Keyboard::Scancode::Backspace )
+    else if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Backspace)
     {
         // Remove all states and push Menu
         requestStateClear();
-        requestStackPush( "MenuState" );
+        requestStackPush< Application::MenuState >();
     }
 
     return false;

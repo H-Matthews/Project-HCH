@@ -1,18 +1,18 @@
 #include "application/StateStack/GameState.hpp"
 
+#include "application/StateStack/PauseState.hpp"
+#include "application/StateStack/MenuState.hpp"
+
 #include "core/StateStack/StateStack.hpp"
 
 #include <iostream>
 
-std::string Application::GameState::identifier = "GameState";
+std::string Application::GameState::IDENTIFIER = "GAME";
 
-Application::GameState::GameState( std::string stateIdentifier ) :
-    State( stateIdentifier )
-// mScene( *sharedObjects.window, mGameNetwork, *sharedObjects.textures ),
-// mKeyBindings(),
-// mPlayerInputPublisher( mGameNetwork, mKeyBindings )
+Application::GameState::GameState() :
+    State( IDENTIFIER )
 {
-    std::cout << "Creating GameState " << std::endl;
+    std::cout << "Creating " << getStateName() << " State" << std::endl;
 
     std::cout << "Controls: --------------------------------" << std::endl;
     std::cout << "Enter: Print message" << std::endl;
@@ -20,14 +20,10 @@ Application::GameState::GameState( std::string stateIdentifier ) :
     std::cout << "Escape: Return To Menu State " << std::endl;
 }
 
-Application::GameState::GameState() :
-    State( "GameState " )
-{}
-
 // Used to set references to external subsystems
 bool Application::GameState::initializeState()
 {
-    if ( !mStackRef )
+    if (!mStackRef)
         return false;
 
     mGameNetwork = mStackRef->getMessageNetworkRef();
@@ -52,18 +48,18 @@ bool Application::GameState::handleKeyPressed( const sf::Event::KeyPressed& keyP
     // Handle Event based Key Presses
     // mPlayerInputPublisher.handleKeyPressed( keyPressedEvent );
 
-    if ( keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter )
+    if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter)
     {
         std::cout << "Handling Events in GameState. You pressed the enter key " << std::endl;
     }
-    else if ( keyPressedEvent.scancode == sf::Keyboard::Scancode::P )
+    else if (keyPressedEvent.scancode == sf::Keyboard::Scancode::P)
     {
-        requestStackPush( "PauseState" );
+        requestStackPush< Application::PauseState >();
     }
-    else if ( keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape )
+    else if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape)
     {
         requestStackPop();
-        requestStackPush( "MenuState" );
+        requestStackPush< Application::MenuState >();
     }
 
     return true;

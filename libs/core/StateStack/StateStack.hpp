@@ -1,6 +1,5 @@
 #pragma once
 
-#include "core/StateStack/State.hpp"
 #include "core/Configuration/Configurables/Configurable.hpp"
 
 #include "utility/Logging/LogRegistry.hpp"
@@ -18,6 +17,8 @@
 namespace Core
 {
     class Application;
+    class State;
+    class MessageNetwork;
 
     class StateStack : public Configurable
     {
@@ -26,13 +27,15 @@ namespace Core
 
         enum Action
         {
-            Push,
-            Pop,
-            Clear
+            PUSH = 0,
+            POP,
+            CLEAR
         };
 
       public:
         StateStack( Application& application );
+        StateStack();
+        ~StateStack();
 
         void update( sf::Time fixedTimeStep );
         void draw();
@@ -41,14 +44,9 @@ namespace Core
         void handleMouseMoved( const sf::Event::MouseMoved& mouseMoved );
         void handleRealTimeInput();
 
-        void registerState(
-            const std::string& stateIdentifier, std::function< std::unique_ptr< Core::State >() > registerFunc );
-
-        void pushState( const std::string& stateIdentifier );
-
         template < typename TState >
             requires( std::is_base_of_v< Core::State, TState > )
-        void testPushState( TState* stackState );
+        void pushState();
 
         void popState();
         void clearStates();
@@ -61,31 +59,34 @@ namespace Core
         MessageNetwork* getMessageNetworkRef();
 
       private:
-        std::unique_ptr< Core::State > createState( std::string stateIdentifier );
         void applyPendingChanges();
 
         struct PendingStateRequest
         {
-            explicit PendingStateRequest( Action action, const std::string& stateIdentifier = "" );
+            explicit PendingStateRequest( Action action );
 
             Action action;
-            std::string stateIdentifier;
+            std::function< std::unique_ptr< Core::State >() > stateConstructor;
         };
+
+        std::unique_ptr< Core::State > createState( const Core::StateStack::PendingStateRequest& changeRequest );
 
       private:
         std::vector< std::unique_ptr< Core::State > > mStack;
         std::vector< PendingStateRequest > mPendingRequests;
-        std::map< std::string, std::function< std::unique_ptr< Core::State >() > > mRegistry;
 
         Application& applicationRef;
     };
 
     template < typename TState >
         requires( std::is_base_of_v< Core::State, TState > )
-    void StateStack::testPushState( TState* stackState )
+    void StateStack::pushState()
     {
-        // Allocate State Memory
-        stackState = new TState();
+
+        PendingStateRequest request( Action::PUSH );
+        request.stateConstructor = []() { return std::unique_ptr< Core::State >( new TState() ); };
+
+        mPendingRequests.push_back( request );
 
         return;
     }

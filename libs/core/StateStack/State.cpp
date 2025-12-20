@@ -1,4 +1,5 @@
 #include "core/StateStack/State.hpp"
+
 #include "core/StateStack/StateStack.hpp"
 
 Core::State::State( std::string stateIdentifier ) :
@@ -19,11 +20,6 @@ void Core::State::setStackRef( StateStack* stack )
     mStackRef = stack;
 
     return;
-}
-
-void Core::State::requestStackPush( const std::string& stateIdentifier )
-{
-    mStackRef->pushState( stateIdentifier );
 }
 
 void Core::State::requestStackPop()

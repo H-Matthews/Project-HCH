@@ -18,15 +18,14 @@ namespace Application
     class GameState : public Core::State
     {
       public:
-        static std::string identifier;
+        static std::string IDENTIFIER;
 
-        GameState( std::string stateIdentifier );
         GameState();
 
         bool initializeState() override;
 
-        virtual void draw();
-        virtual bool update( sf::Time fixedTimeStep );
+        virtual void draw() override;
+        virtual bool update( sf::Time fixedTimeStep ) override;
         bool handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent ) override;
         bool handleRealTimeInput() override;
 

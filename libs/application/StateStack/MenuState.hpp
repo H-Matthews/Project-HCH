@@ -9,9 +9,8 @@ namespace Application
     class MenuState : public Core::State
     {
       public:
-        static std::string identifier;
+        static std::string IDENTIFIER;
 
-        MenuState( std::string stateName );
         MenuState();
 
         virtual void draw();

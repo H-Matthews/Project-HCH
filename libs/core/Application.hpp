@@ -26,7 +26,7 @@ namespace Core
         enum class State
         {
             NONE = 0, // This IS NOT a valid value, just used for default values
-            WAITING_TO_RUN,
+            INITIALIZED,
             RUNNING,
             SHUTTING_DOWN
         };
@@ -39,16 +39,14 @@ namespace Core
 
         Application( Core::ConfigSpec configSpec );
 
-        MessageNetwork* getNetwork();
+        inline MessageNetwork* getNetwork();
 
         void registerState(
             const std::string& stateIdentifier, std::function< std::unique_ptr< Core::State >() > registerFunc );
 
-        void pushState( const std::string& stateIdentifier );
-
         template < typename TState >
             requires( std::is_base_of_v< Core::State, TState > )
-        void testPushState();
+        void pushState();
 
         void initialize();
         void run();
@@ -62,7 +60,7 @@ namespace Core
 
         bool transitionState( State statusToTransfer );
 
-        inline bool isWaitingToRun() const;
+        inline bool isInitialized() const;
         inline bool isRunning() const;
 
       private:
@@ -84,9 +82,14 @@ namespace Core
         sf::RenderWindow mWindow;
     };
 
-    bool Application::isWaitingToRun() const
+    MessageNetwork* Application::getNetwork()
     {
-        return mState == State::WAITING_TO_RUN;
+        return &mNetwork;
+    }
+
+    bool Application::isInitialized() const
+    {
+        return mState == State::INITIALIZED;
     }
 
     bool Application::isRunning() const
@@ -96,11 +99,13 @@ namespace Core
 
     template < typename TState >
         requires( std::is_base_of_v< Core::State, TState > )
-    void Application::testPushState()
+    void Application::pushState()
     {
-        TState* state = nullptr;
 
-        mStateStack.testPushState( state );
+        if ((int)mState <= 0)
+            return;
+
+        mStateStack.pushState< TState >();
 
         return;
     }

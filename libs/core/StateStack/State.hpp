@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/Messaging/MessageNetwork.hpp"
+#include "core/StateStack/StateStack.hpp"
 
 #include "core/GameAssetContainer/ResourceEnums.hpp"
 
@@ -13,8 +14,6 @@
 
 namespace Core
 {
-
-    class StateStack;
 
     class State
     {
@@ -44,7 +43,10 @@ namespace Core
         void setStackRef( StateStack* stack );
 
       protected:
-        void requestStackPush( const std::string& stateIdentifier );
+        template < typename TState >
+            requires( std::is_base_of_v< Core::State, TState > )
+        void requestStackPush();
+
         void requestStackPop();
         void requestStateClear();
 
@@ -54,5 +56,14 @@ namespace Core
       private:
         std::string mStateIdentifierString;
     };
+
+    template < typename TState >
+        requires( std::is_base_of_v< Core::State, TState > )
+    void State::requestStackPush()
+    {
+        mStackRef->pushState< TState >();
+
+        return;
+    }
 
 }
