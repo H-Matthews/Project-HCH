@@ -15,17 +15,11 @@ set(INC Application.hpp
         StateStack/StateStack.hpp
         Exceptions/ConfigurationException.hpp
         Configuration/Configuration.hpp
-        Configuration/ConfigTree/ConfigurationTree.hpp
-        Configuration/ConfigTree/ConfigNode.hpp
-        Configuration/ConfigTree/ConfigUtils.hpp
         Configuration/ConfigReader/ConfigReader.hpp
         Configuration/ConfigReader/TOMLConfigReader.hpp
         Configuration/ConfigSection/ConfigSection.hpp
         Configuration/ConfigSection/TOMLConfigSection.hpp
         Configuration/LoggerBuilder.hpp
-        Configuration/Configurables/Configurable.hpp
-        Configuration/Configurables/ConfigurableFactory.hpp
-        Configuration/Configurables/ConfigurableDirector.hpp
         GameAssetContainer/GameAssetContainer.hpp
         GameAssetContainer/ResourceHolder.hpp
         GameAssetContainer/ResourceEnums.hpp )
@@ -38,14 +32,9 @@ set(SRC Application.cpp
         StateStack/State.cpp 
         StateStack/StateStack.cpp
         Configuration/Configuration.cpp
-        Configuration/ConfigTree/ConfigurationTree.cpp
-        Configuration/ConfigTree/ConfigNode.cpp
-        Configuration/ConfigTree/ConfigUtils.cpp
         Configuration/ConfigReader/TOMLConfigReader.cpp
         Configuration/ConfigSection/TOMLConfigSection.cpp
         Configuration/LoggerBuilder.cpp
-        Configuration/Configurables/Configurable.cpp
-        Configuration/Configurables/ConfigurableDirector.cpp
         GameAssetContainer/GameAssetContainer.cpp )
 
 add_library(${LIBRARY_NAME} STATIC ${SRC} ${INC})

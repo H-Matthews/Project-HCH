@@ -17,6 +17,10 @@
 
 namespace Core
 {
+    /**
+     * Startup parameters passed to Configuration. Owns the ConfigReader implementation
+     * so the caller decides which file format is used without touching Configuration itself.
+     */
     struct ConfigSpec
     {
         std::string rootConfigFile;
@@ -37,6 +41,12 @@ namespace Core
         SIZE
     };
 
+    /**
+     * Parses the project's config files and makes their contents available to subsystems
+     * as scoped ConfigSection objects. Also initialises the output and asset directories
+     * required before any file-backed logging can begin.
+     * Constructed once by Application; subsystems receive their section via getSection().
+     */
     class Configuration
     {
       public:

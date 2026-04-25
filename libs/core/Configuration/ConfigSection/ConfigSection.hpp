@@ -8,6 +8,12 @@
 
 namespace Core
 {
+    /**
+     * Format-agnostic interface representing one table of the parsed configuration.
+     * Subsystems receive a ConfigSection scoped to their own block (e.g. [StateStack])
+     * and navigate to nested tables via getSection(), keeping them decoupled from any
+     * specific config file format or parser library.
+     */
     class ConfigSection
     {
       public:
