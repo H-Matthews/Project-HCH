@@ -20,6 +20,8 @@ set(INC Application.hpp
         Configuration/ConfigTree/ConfigUtils.hpp
         Configuration/ConfigReader/ConfigReader.hpp
         Configuration/ConfigReader/TOMLConfigReader.hpp
+        Configuration/ConfigSection/ConfigSection.hpp
+        Configuration/ConfigSection/TOMLConfigSection.hpp
         Configuration/Configurables/Configurable.hpp
         Configuration/Configurables/ConfigurableFactory.hpp
         Configuration/Configurables/ConfigurableDirector.hpp
@@ -39,6 +41,7 @@ set(SRC Application.cpp
         Configuration/ConfigTree/ConfigNode.cpp
         Configuration/ConfigTree/ConfigUtils.cpp
         Configuration/ConfigReader/TOMLConfigReader.cpp
+        Configuration/ConfigSection/TOMLConfigSection.cpp
         Configuration/Configurables/Configurable.cpp
         Configuration/Configurables/ConfigurableDirector.cpp
         GameAssetContainer/GameAssetContainer.cpp )
