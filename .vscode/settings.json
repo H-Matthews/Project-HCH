@@ -95,5 +95,6 @@
         "syncstream": "cpp",
         "typeindex": "cpp",
         "filesystem": "cpp"
-    }
+    },
+    "sonarlint.pathToCompileCommands": "${workspaceFolder}/build/Debug/compile_commands.json"
 }

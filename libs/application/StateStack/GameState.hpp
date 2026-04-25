@@ -7,6 +7,8 @@
 #include "core/GameAssetContainer/ResourceHolder.hpp"
 #include "core/GameAssetContainer/ResourceEnums.hpp"
 
+#include <string>
+
 namespace Application
 {
 
@@ -16,20 +18,24 @@ namespace Application
     class GameState : public Core::State
     {
       public:
-        GameState( Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects );
+        static std::string IDENTIFIER;
 
-        virtual void draw();
-        virtual bool update( sf::Time fixedTimeStep );
+        GameState();
+
+        bool initializeState() override;
+
+        virtual void draw() override;
+        virtual bool update( sf::Time fixedTimeStep ) override;
         bool handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent ) override;
         bool handleRealTimeInput() override;
 
         ~GameState();
 
       private:
-        Core::MessageNetwork& mGameNetwork;
+        Core::MessageNetwork* mGameNetwork;
 
-        Application::Scene mScene;
-        Application::KeyBindings mKeyBindings;
-        Application::PlayerInputPublisher mPlayerInputPublisher;
+        // Application::Scene mScene;
+        // Application::KeyBindings mKeyBindings;
+        // Application::PlayerInputPublisher mPlayerInputPublisher;
     };
 }

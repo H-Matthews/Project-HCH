@@ -1,11 +1,6 @@
 #include "core/Application.hpp"
 #include "core/Exceptions/ConfigurationException.hpp"
 
-// TODO: THESE SHOULD NOT BE IN HERE
-#include "application/StateStack/MenuState.hpp"
-#include "application/StateStack/GameState.hpp"
-#include "application/StateStack/PauseState.hpp"
-
 #include "utility/Logging/Sinks/ColorConsoleSink.hpp"
 #include "utility/Logging/Sinks/TextFileSink.hpp"
 #include "utility/Logging/Formatters/KeyValueFormatter.hpp"
@@ -24,79 +19,80 @@ Core::Application::Application( Core::ConfigSpec configSpec ) :
     mState( State::NONE ),
     mTextures(),
     mNetwork(),
-    mStateStack( Core::State::SharedObjects( mWindow, mNetwork, mTextures ) ),
+    mStateStack( *this ),
     mWindow( sf::VideoMode( { 640, 480 } ), "Application Window", sf::Style::Close )
 {
     // Must call back up to the Configurable
     std::shared_ptr< ConfigNode > rootNode = ConfigurationTree::instance()->getRootNode();
     std::vector< std::shared_ptr< Core::ConfigNode > > childrenNodes = rootNode->getChildren();
-    if ( childrenNodes.empty() )
+    if (childrenNodes.empty())
         throw ConfigurationException( "Children were not populated for RootNode" );
 
-    configure( rootNode );
+    Configurable::configure( rootNode );
 
     return;
 }
 
 void Core::Application::initialize()
 {
-    if ( !mConfiguration )
+    if (!mConfiguration)
         throw ConfigurationException( "Configuration is NULL" );
 
     loadResources();
 
-    registerStates();
-
-    // TODO: Need to re do the StateStack so that the user can push the State from
-    // The game application library. The Core Library should have no notion of the Type
-    // of States we are dealing with.... Need to get rid of the Enums
-    mStateStack.pushState( States::Menu );
-
-    if ( !mStateStack.isPendingListEmpty() )
-        transitionState( State::WAITING_TO_RUN );
+    transitionState( State::INITIALIZED );
 
     return;
 }
 
 void Core::Application::run()
 {
-    if ( !transitionState( State::RUNNING ) )
+    if (!transitionState( State::RUNNING ))
     {
-        std::string exceptionMessage =
-            "Application is unable to transition RUNNING; Current State: " + convertEngineStateEnumToString( mState );
+        std::string exceptionMessage = "Application is unable to transition to STATE:RUNNING; Currently: STATE:" +
+                                       convertAppStateEnumToString( mState );
 
-        if constexpr ( Utility::CAN_LOG )
+        if (isInitialized())
         {
-            if ( mLogger )
+            exceptionMessage += " The application requires a State to be pushed onto the Stack";
+        }
+        else
+        {
+            exceptionMessage += " The Application is NOT initialized, call initialize()";
+        }
+
+        if constexpr (Utility::CAN_LOG)
+        {
+            if (mLogger)
                 mLogger->logError( exceptionMessage );
         }
 
         throw ConfigurationException( exceptionMessage.c_str() );
     }
 
+    if constexpr (Utility::CAN_LOG)
+        mLogger->logInfo( "Entering main RUN loop" );
+
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
-    if constexpr ( Utility::CAN_LOG )
-        mLogger->logInfo( "Entering main RUN loop" );
-
-    while ( mWindow.isOpen() )
+    while (mWindow.isOpen())
     {
         sf::Time elapsedTime = clock.restart();
         timeSinceLastUpdate += elapsedTime;
 
-        while ( timeSinceLastUpdate > TIME_PER_FRAME )
+        while (timeSinceLastUpdate > TIME_PER_FRAME)
         {
             timeSinceLastUpdate -= TIME_PER_FRAME;
 
             processInput();
             update( TIME_PER_FRAME );
 
-            if ( mStateStack.isEmpty() )
+            if (mStateStack.isEmpty())
             {
                 mWindow.close();
 
-                if constexpr ( Utility::CAN_LOG )
+                if constexpr (Utility::CAN_LOG)
                     mLogger->logInfo( "Closing Window...." );
             }
         }
@@ -104,7 +100,7 @@ void Core::Application::run()
         render();
     }
 
-    if constexpr ( Utility::CAN_LOG )
+    if constexpr (Utility::CAN_LOG)
         mLogger->logInfo( "Exiting main RUN loop" );
 }
 
@@ -118,6 +114,8 @@ void Core::Application::processInput()
         [ this ]( const sf::Event::MouseMoved& mouseMovedEvent ) { mStateStack.handleMouseMoved( mouseMovedEvent ); } );
 
     mStateStack.handleRealTimeInput();
+
+    mNetwork.notifySubscribers();
 }
 
 void Core::Application::update( sf::Time fixedTimeStep )
@@ -133,15 +131,6 @@ void Core::Application::render()
 
     mWindow.setView( mWindow.getDefaultView() );
     mWindow.display();
-}
-
-// TODO: This register call should take a string to a State Identifier
-// that way we can inject states from the game application library
-void Core::Application::registerStates()
-{
-    // mStateStack.registerState< Application::MenuState >( States::Menu );
-    // mStateStack.registerState< Application::GameState >( States::Game );
-    // mStateStack.registerState< Application::PauseState >( States::Pause );
 }
 
 void Core::Application::loadResources()
@@ -163,101 +152,81 @@ bool Core::Application::transitionState( State statusToTransfer )
 {
     bool retStatus = false;
 
-    if constexpr ( Utility::CAN_LOG )
-        mLogger->logDebug( "Attempting to Transition to State: " + convertEngineStateEnumToString( statusToTransfer ) );
-
-    if ( mState == statusToTransfer )
+    if (mState == statusToTransfer)
         return retStatus;
 
-    State prevState = State::NONE;
+    using enum Core::Application::State;
 
-    switch ( statusToTransfer )
+    switch (statusToTransfer)
     {
-        case State::NONE:
+        case NONE:
         {
             // DO NOTHING
 
             break;
         }
-        case State::WAITING_TO_RUN:
+        case INITIALIZED:
         {
-            if ( mState == State::NONE )
+            if (mState == NONE)
             {
-                prevState = mState;
-
                 mState = statusToTransfer;
                 retStatus = true;
             }
 
             break;
         }
-        case State::RUNNING:
+        case RUNNING:
         {
-            if ( mState == State::WAITING_TO_RUN )
+            if (mState == INITIALIZED && !mStateStack.isPendingListEmpty())
             {
-                prevState = mState;
-
                 mState = statusToTransfer;
                 retStatus = true;
             }
 
             break;
         }
-        case State::SHUTTING_DOWN:
+        case SHUTTING_DOWN:
         {
-            if ( mState == State::RUNNING )
+            if (mState == RUNNING)
             {
-                prevState = mState;
-
                 mState = statusToTransfer;
                 retStatus = true;
             }
 
             break;
         }
-    }
-
-    if ( Utility::CAN_LOG && retStatus )
-    {
-        if constexpr ( Utility::CAN_LOG )
-            mLogger->logDebug( "Transitioning from State: " + convertEngineStateEnumToString( prevState ) + " to " +
-                               convertEngineStateEnumToString( statusToTransfer ) );
-    }
-    else if ( Utility::CAN_LOG )
-    {
-        if constexpr ( Utility::CAN_LOG )
-            mLogger->logError( "Could NOT transition from State: " + convertEngineStateEnumToString( prevState ) +
-                               " to " + convertEngineStateEnumToString( statusToTransfer ) );
     }
 
     return retStatus;
 }
 
-std::string Core::Application::convertEngineStateEnumToString( const State& state )
+std::string Core::Application::convertAppStateEnumToString( const State& state ) const
 {
     std::string retString;
 
-    switch ( state )
+    using enum Core::Application::State;
+
+    switch (state)
     {
-        case State::NONE:
+        case NONE:
         {
             retString = "NONE";
 
             break;
         }
-        case State::WAITING_TO_RUN:
+        case INITIALIZED:
         {
-            retString = "WAITING_TO_RUN";
+            retString = "INITIALIZED";
 
             break;
         }
-        case State::RUNNING:
+        case RUNNING:
         {
             retString = "RUNNING";
 
             break;
         }
-        case State::SHUTTING_DOWN:
+        case SHUTTING_DOWN:
         {
             retString = "SHUTTING_DOWN";
 
@@ -268,21 +237,23 @@ std::string Core::Application::convertEngineStateEnumToString( const State& stat
     return retString;
 }
 
-Core::Application::State Core::Application::convertStringToEngineStateEnum( const std::string& stringState )
+Core::Application::State Core::Application::convertStringToAppStateEnum( std::string_view stringState ) const
 {
-    State retState = State::NONE;
+    using enum Core::Application::State;
 
-    if ( stringState == "WAITING_TO_RUN" )
+    State retState = NONE;
+
+    if (stringState == "INITIALIZED")
     {
-        retState = State::WAITING_TO_RUN;
+        retState = INITIALIZED;
     }
-    else if ( stringState == "RUNNING" )
+    else if (stringState == "RUNNING")
     {
-        retState = State::RUNNING;
+        retState = RUNNING;
     }
-    else if ( stringState == "SHUTTING_DOWN" )
+    else if (stringState == "SHUTTING_DOWN")
     {
-        retState = State::SHUTTING_DOWN;
+        retState = SHUTTING_DOWN;
     }
 
     return retState;

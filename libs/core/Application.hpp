@@ -14,8 +14,6 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Time.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Font.hpp>
 
 #include <string>
 #include <functional>
@@ -28,26 +26,32 @@ namespace Core
         enum class State
         {
             NONE = 0, // This IS NOT a valid value, just used for default values
-            WAITING_TO_RUN,
+            INITIALIZED,
             RUNNING,
             SHUTTING_DOWN
         };
 
-        std::string convertEngineStateEnumToString( const State& state );
-        State convertStringToEngineStateEnum( const std::string& stringState );
+        std::string convertAppStateEnumToString( const State& state ) const;
+        State convertStringToAppStateEnum( std::string_view stringState ) const;
 
       public:
         static const std::string TYPE_NAME;
 
-        Application( Core::ConfigSpec ConfigSpec );
-        inline void setConfiguration( std::unique_ptr< Core::Configuration > config );
+        explicit Application( Core::ConfigSpec configSpec );
+
+        MessageNetwork* getNetwork();
+
+        void registerState(
+            const std::string& stateIdentifier, std::function< std::unique_ptr< Core::State >() > registerFunc );
+
+        template < typename TState >
+            requires( std::is_base_of_v< Core::State, TState > )
+        void pushState();
+
         void initialize();
         void run();
 
       private:
-        // Registers States in StateStack
-        void registerStates();
-
         void processInput();
         void update( sf::Time fixedTimeStep );
         void render();
@@ -56,7 +60,7 @@ namespace Core
 
         bool transitionState( State statusToTransfer );
 
-        inline bool isWaitingToRun() const;
+        inline bool isInitialized() const;
         inline bool isRunning() const;
 
       private:
@@ -78,9 +82,14 @@ namespace Core
         sf::RenderWindow mWindow;
     };
 
-    bool Application::isWaitingToRun() const
+    inline MessageNetwork* Application::getNetwork()
     {
-        return mState == State::WAITING_TO_RUN;
+        return &mNetwork;
+    }
+
+    bool Application::isInitialized() const
+    {
+        return mState == State::INITIALIZED;
     }
 
     bool Application::isRunning() const
@@ -88,8 +97,17 @@ namespace Core
         return mState == State::RUNNING;
     }
 
-    void Core::Application::setConfiguration( std::unique_ptr< Core::Configuration > config )
+    template < typename TState >
+        requires( std::is_base_of_v< Core::State, TState > )
+    void Application::pushState()
     {
-        mConfiguration = std::move( config );
+
+        if ((int)mState <= 0)
+            return;
+
+        mStateStack.pushState< TState >();
+
+        return;
     }
+
 }

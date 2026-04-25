@@ -1,11 +1,15 @@
 #include "application/StateStack/MenuState.hpp"
 
+#include "application/StateStack/GameState.hpp"
+
 #include <iostream>
 
-Application::MenuState::MenuState( Core::StateStack& stack, std::string stateIdentifier, SharedObjects sharedObjects ) :
-    State( stack, stateIdentifier, sharedObjects )
+std::string Application::MenuState::IDENTIFIER = "MENU";
+
+Application::MenuState::MenuState() :
+    State( IDENTIFIER )
 {
-    std::cout << "Creating MenuState " << std::endl;
+    std::cout << "Creating " << getStateName() << " State" << std::endl;
 
     std::cout << "Controls: --------------------------------" << std::endl;
     std::cout << "G: Print message" << std::endl;
@@ -17,10 +21,7 @@ void Application::MenuState::draw()
 {
     // Draw Menu related things to window here
 
-    // Retrieve window from sharedObjects struct
-    sf::RenderWindow& window = *getSharedObjects().window;
-
-    window.setView( window.getDefaultView() );
+    // window.setView( window.getDefaultView() );
     // window.draw(mBackgroundSprite);
 }
 
@@ -31,16 +32,18 @@ bool Application::MenuState::update( sf::Time fixedTimeStep )
 
 bool Application::MenuState::handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent )
 {
-    if ( keyPressedEvent.scancode == sf::Keyboard::Scancode::G )
+    if (keyPressedEvent.scancode == sf::Keyboard::Scancode::G)
     {
         std::cout << "Handling Events in Menustate. You Pressed the G Key " << std::endl;
     }
-    else if ( keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter )
+    else if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter)
     {
         requestStackPop();
-        requestStackPush( States::Game );
+
+        // Push GameState
+        requestStackPush< Application::GameState >();
     }
-    else if ( keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape )
+    else if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape)
     {
         requestStackPop();
     }

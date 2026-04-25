@@ -11,7 +11,7 @@ Here you will find all of the necessary third party tools needed to build the ap
 - CMake (at least 3.30)
 
 ## Windows Dependencies
-- Visual Studio 2022 / 2019
+- Visual Studio 2022 / 2025
 
 ## Linux Dependencies
 In order to build the application, the CMake script will first pull SFML from github and build into static libraries. If you are using linux, ensure the dependencies listed below are installed on your system.
@@ -43,8 +43,8 @@ Presets:
     - Release build using Unix Makefiles Generator
 3. windows-VS22
     - Build using Visual Studio 2022 multi generator
-4. windows-VS19
-    - Build using Visual Studio 2019 multi generator
+4. windows-VS25
+    - Build using Visual Studio 2025 multi generator
 
 #### Command Line (CMake Presets) RECOMMENDED
 ```
@@ -68,7 +68,7 @@ In VSCode open the command pallete with ```Ctrl+Shift+P ``` Type CMake for a lis
 When running, you need to make sure you select the correct launch configuration. In the RUN AND DEBUG panel, If you configured with the Release option, ensure you are running with the Release launch config. Then, select the Play button in the panel, OR press 'F5'.
 
 ### Windows
-#### Visual Studio 2019 / 2022
+#### Visual Studio 2025 / 2022
 ```
 cmake --list-presets # Gives you a list of optional config presets
 cmake --preset windows-VS22

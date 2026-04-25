@@ -10,7 +10,8 @@
 namespace Core
 {
     /**
-     * All objects that are configurable from the configuration files will inherit from this class
+     * Defines an object in the application that is Configurable
+     * through configuration files
      */
     class Configurable
     {

@@ -24,52 +24,46 @@ Core::ConfigSpec::ConfigSpec() :
     configReader( nullptr )
 {}
 
-Core::ConfigSpec::ConfigSpec( const ConfigSpec& other ) :
-    rootConfigFile( other.rootConfigFile ),
-    configDirectory( other.configDirectory ),
-    configReader( other.configReader )
-{}
-
-Core::Configuration::Configuration( const ConfigSpec& configSpec ) :
-    mConfigReader( std::move( configSpec.configReader ) ),
-    mConfigFiles(),
+Core::Configuration::Configuration( ConfigSpec configSpec ) :
     mProjectDirectory( PROJECT_DIR ),
-    mRootFile( configSpec.rootConfigFile ),
-    mConfigDirectory( configSpec.configDirectory ),
+    mRootFile( std::move( configSpec.rootConfigFile ) ),
+    mConfigDirectory( std::move( configSpec.configDirectory ) ),
     mConfigDirPath( mProjectDirectory + "/" + mConfigDirectory ),
     mOutputDirPath(),
     mAssetDirPath(),
     mAssetFontsDirPath(),
     mAssetTexturesDirPath(),
+    mConfigReader( std::move( configSpec.configReader ) ),
+    mConfigFiles(),
     mDirectoryBits( 0 )
 {
-    if constexpr ( Utility::CAN_LOG )
+    if constexpr (Utility::CAN_LOG)
     {
         Utility::createGlobalLogger();
         initializeGlobalLogger();
     }
 
     // Check to see if config directory is valid
-    if ( !( std::filesystem::is_directory( mConfigDirPath ) ) )
+    if (!( std::filesystem::is_directory( mConfigDirPath ) ))
     {
-        if constexpr ( Utility::CAN_LOG )
+        if constexpr (Utility::CAN_LOG)
             Utility::LogRegistry::instance()->getGlobalLogger()->logError(
                 "Config Directory WAS NOT FOUND --> " + mConfigDirPath );
 
         throw ConfigurationException( std::string( "Config directory could NOT be found" + mConfigDirPath ).c_str() );
     }
 
-    if ( mRootFile.empty() )
+    if (mRootFile.empty())
     {
-        if constexpr ( Utility::CAN_LOG )
+        if constexpr (Utility::CAN_LOG)
             Utility::LogRegistry::instance()->getGlobalLogger()->logError( "Root file was NOT populated " );
 
         throw ConfigurationException( std::string( "Root file was NOT populated" ).c_str() );
     }
 
-    if ( !mConfigReader )
+    if (!mConfigReader)
     {
-        if constexpr ( Utility::CAN_LOG )
+        if constexpr (Utility::CAN_LOG)
             Utility::LogRegistry::instance()->getGlobalLogger()->logError( "ConfigReader is NULL" );
 
         throw ConfigurationException( std::string( "ConfigReader is NULL" ).c_str() );
@@ -101,26 +95,20 @@ void Core::Configuration::initializeOutputDirectory()
     auto configuredOutDirectory =
         ConfigUtils::findValueByNode< std::string >( rootNode, "root.Configuration", "out_directory" );
 
-    std::string outputDirectoryPath = mProjectDirectory + "/";
-    if ( configuredOutDirectory )
-    {
-        outputDirectoryPath += *configuredOutDirectory;
-    }
-    else
-    {
-        outputDirectoryPath += DEFAULT_OUTPUT_DIR_NAME;
-    }
+    std::filesystem::path outputDirectoryPath = mProjectDirectory + "/";
+    outputDirectoryPath += configuredOutDirectory.value_or( DEFAULT_OUTPUT_DIR_NAME );
 
     // Creates the "output" directory
-    if ( !( std::filesystem::is_directory( outputDirectoryPath ) ) )
+    if (!( std::filesystem::is_directory( outputDirectoryPath ) ))
     {
-        if ( !( std::filesystem::create_directory( outputDirectoryPath ) ) )
+        if (!( std::filesystem::create_directory( outputDirectoryPath ) ))
         {
-            if constexpr ( Utility::CAN_LOG )
+            if constexpr (Utility::CAN_LOG)
                 Utility::LogRegistry::instance()->getGlobalLogger()->logError(
-                    "Could NOT create output DIRECTORY --> " + outputDirectoryPath );
+                    "Could NOT create output DIRECTORY --> " + outputDirectoryPath.string() );
 
-            std::string exceptionMessage = "Output Directory: " + outputDirectoryPath + " could NOT be created";
+            std::string exceptionMessage =
+                "Output Directory: " + outputDirectoryPath.string() + " could NOT be created";
             throw ConfigurationException( exceptionMessage.c_str() );
         }
     }
@@ -134,12 +122,12 @@ void Core::Configuration::initializeOutputDirectory()
 
     // Add folderName to already existing output directory path
     outputDirectoryPath += "/" + folderName.str();
-    mOutputDirPath = outputDirectoryPath;
+    mOutputDirPath = outputDirectoryPath.string();
 
     // Creates the "App_" directory with the current time
-    if ( !( std::filesystem::create_directory( mOutputDirPath ) ) )
+    if (!( std::filesystem::create_directory( mOutputDirPath ) ))
     {
-        if constexpr ( Utility::CAN_LOG )
+        if constexpr (Utility::CAN_LOG)
             Utility::LogRegistry::instance()->getGlobalLogger()->logError(
                 "Could NOT create output APP_ DIRECTORY --> " + mOutputDirPath );
 
@@ -170,45 +158,19 @@ void Core::Configuration::initializeAssetsDirectory()
         ConfigUtils::findValueByNode< std::string >( rootNode, "root.Configuration", "asset_texture_directory" );
 
     // Get and save the Asset file path
-    std::string assetDirectoryPath = mProjectDirectory + "/";
-    if ( configuredAssetDir )
-    {
-        assetDirectoryPath += *configuredAssetDir;
-    }
-    else
-    {
-        assetDirectoryPath += DEFAULT_ASSET_DIR_NAME;
-    }
-    mAssetDirPath = assetDirectoryPath;
+    mAssetDirPath = mProjectDirectory + "/";
+    mAssetDirPath += configuredAssetDir.value_or( DEFAULT_ASSET_DIR_NAME );
 
-    std::string assetFontDirPath = mAssetDirPath + "/";
-    if ( configuredAssetFontDir )
-    {
-        assetFontDirPath += *configuredAssetFontDir;
-    }
-    else
-    {
-        assetFontDirPath += DEFAULT_ASSET_FONTS_DIR_NAME;
-    }
+    mAssetFontsDirPath = mAssetDirPath + "/";
+    mAssetFontsDirPath += configuredAssetFontDir.value_or( DEFAULT_ASSET_FONTS_DIR_NAME );
 
-    std::string assetTextureDirPath = mAssetDirPath + "/";
-    if ( configuredAssetTextureDir )
-    {
-        assetTextureDirPath += *configuredAssetTextureDir;
-    }
-    else
-    {
-        assetTextureDirPath += DEFAULT_ASSET_TEXTURES_DIR_NAME;
-    }
-
-    // Set convenience path for fonts / textures
-    mAssetFontsDirPath = assetFontDirPath;
-    mAssetTexturesDirPath = assetTextureDirPath;
+    mAssetTexturesDirPath = mAssetDirPath + "/";
+    mAssetTexturesDirPath += configuredAssetTextureDir.value_or( DEFAULT_ASSET_FONTS_DIR_NAME );
 
     // Check to see if directory is valid
-    if ( !( std::filesystem::is_directory( mAssetDirPath ) ) )
+    if (!( std::filesystem::is_directory( mAssetDirPath ) ))
     {
-        if constexpr ( Utility::CAN_LOG )
+        if constexpr (Utility::CAN_LOG)
             Utility::LogRegistry::instance()->getGlobalLogger()->logError(
                 "Asset Directory WAS NOT FOUND --> " + mAssetDirPath );
 
@@ -216,9 +178,9 @@ void Core::Configuration::initializeAssetsDirectory()
         throw ConfigurationException( exceptionMessage.c_str() );
     }
 
-    if ( !( std::filesystem::is_directory( mAssetFontsDirPath ) ) )
+    if (!( std::filesystem::is_directory( mAssetFontsDirPath ) ))
     {
-        if constexpr ( Utility::CAN_LOG )
+        if constexpr (Utility::CAN_LOG)
             Utility::LogRegistry::instance()->getGlobalLogger()->logError(
                 "Asset Font Directory WAS NOT FOUND --> " + mAssetFontsDirPath );
 
@@ -226,9 +188,9 @@ void Core::Configuration::initializeAssetsDirectory()
         throw ConfigurationException( exceptionMessage.c_str() );
     }
 
-    if ( !( std::filesystem::is_directory( mAssetTexturesDirPath ) ) )
+    if (!( std::filesystem::is_directory( mAssetTexturesDirPath ) ))
     {
-        if constexpr ( Utility::CAN_LOG )
+        if constexpr (Utility::CAN_LOG)
             Utility::LogRegistry::instance()->getGlobalLogger()->logError(
                 "Asset Texture Directory WAS NOT FOUND --> " + mAssetTexturesDirPath );
 
@@ -244,44 +206,44 @@ void Core::Configuration::initializeAssetsDirectory()
 // Parses the configuration files, and populates the ConfigurationTree
 void Core::Configuration::parse()
 {
-    if ( !isConfigInitialized() )
+    if (!isConfigInitialized())
     {
         std::string message = "Could NOT parse, Config DIRECTORY was NOT SET";
 
-        if constexpr ( Utility::CAN_LOG )
+        if constexpr (Utility::CAN_LOG)
             Utility::LogRegistry::instance()->getGlobalLogger()->logError( message );
 
         throw ConfigurationException( message.c_str() );
     }
 
-    if ( !mConfigReader )
+    if (!mConfigReader)
     {
         std::string message = "Could NOT parse, ConfigReader is NULL";
 
-        if constexpr ( Utility::CAN_LOG )
+        if constexpr (Utility::CAN_LOG)
             Utility::LogRegistry::instance()->getGlobalLogger()->logError( message );
 
         throw ConfigurationException( message.c_str() );
     }
 
     // PARSE ROOT FILE ---- Populates ConfigurationTree
-    auto retRootPair = parseRootFile();
-    if ( !retRootPair.first )
+    const auto& [ rootFileParsed, rootLogStr ] = parseRootFile();
+    if (!rootFileParsed)
     {
-        if constexpr ( Utility::CAN_LOG )
-            Utility::LogRegistry::instance()->getGlobalLogger()->logError( retRootPair.second );
+        if constexpr (Utility::CAN_LOG)
+            Utility::LogRegistry::instance()->getGlobalLogger()->logError( rootLogStr );
 
-        throw ConfigurationException( retRootPair.second.c_str() );
+        throw ConfigurationException( rootLogStr.c_str() );
     }
 
     // PARSE CONFIG FILES ---- Populates ConfigurationTree
-    auto retConfigPair = parseConfigFiles();
-    if ( !retConfigPair.first )
+    const auto& [ configFilesParsed, configLogStr ] = parseConfigFiles();
+    if (!configFilesParsed)
     {
-        if constexpr ( Utility::CAN_LOG )
-            Utility::LogRegistry::instance()->getGlobalLogger()->logError( retConfigPair.second );
+        if constexpr (Utility::CAN_LOG)
+            Utility::LogRegistry::instance()->getGlobalLogger()->logError( configLogStr );
 
-        throw ConfigurationException( retRootPair.second.c_str() );
+        throw ConfigurationException( configLogStr.c_str() );
     }
 
     return;
@@ -292,7 +254,7 @@ std::pair< bool, std::string > Core::Configuration::parseRootFile()
     // Build RootfilePath
     std::string rootFilePath = mConfigDirPath + "/" + mRootFile;
 
-    if constexpr ( Utility::CAN_LOG )
+    if constexpr (Utility::CAN_LOG)
         Utility::LogRegistry::instance()->getGlobalLogger()->logDebug( "Parsing config file: " + rootFilePath );
 
     std::shared_ptr< ConfigNode > rootConfigNode = nullptr;
@@ -300,7 +262,7 @@ std::pair< bool, std::string > Core::Configuration::parseRootFile()
     {
         auto retStatus = mConfigReader->readFile( std::filesystem::path( rootFilePath ), rootConfigNode );
 
-        if ( !retStatus.first )
+        if (!retStatus.first)
             return retStatus;
 
         ConfigurationTree::instance()->attachConfigNode( rootConfigNode );
@@ -311,16 +273,16 @@ std::pair< bool, std::string > Core::Configuration::parseRootFile()
         auto coreConfigFile =
             ConfigUtils::findValueByNode< std::string >( rootNode, "root.Configuration_Files", "core_configurables" );
 
-        if ( coreConfigFile )
+        if (coreConfigFile)
             mConfigFiles.push_back( std::string( mConfigDirPath + "/" + *coreConfigFile ) );
 
         auto prefabConfigFile =
             ConfigUtils::findValueByNode< std::string >( rootNode, "root.Configuration_Files", "prefabs" );
 
-        if ( prefabConfigFile )
+        if (prefabConfigFile)
             mConfigFiles.push_back( std::string( mConfigDirPath + "/" + *prefabConfigFile ) );
     }
-    catch ( const toml::parse_error& e )
+    catch (const toml::parse_error& e)
     {
         return std::make_pair( false, "TOML parse error in file: " + rootFilePath + " - " + e.what() );
     }
@@ -330,9 +292,9 @@ std::pair< bool, std::string > Core::Configuration::parseRootFile()
 
 std::pair< bool, std::string > Core::Configuration::parseConfigFiles()
 {
-    for ( const auto& configFile : mConfigFiles )
+    for (const auto& configFile : mConfigFiles)
     {
-        if constexpr ( Utility::CAN_LOG )
+        if constexpr (Utility::CAN_LOG)
             Utility::LogRegistry::instance()->getGlobalLogger()->logDebug( "Parsing config file: " + configFile );
 
         std::shared_ptr< ConfigNode > fileConfigNode = nullptr;
@@ -341,12 +303,12 @@ std::pair< bool, std::string > Core::Configuration::parseConfigFiles()
             auto retStatus = mConfigReader->readFile( std::filesystem::path( configFile ), fileConfigNode );
 
             // IF we fail to read a file, then just fail fast
-            if ( !retStatus.first )
+            if (!retStatus.first)
                 return retStatus;
 
             ConfigurationTree::instance()->attachConfigNode( fileConfigNode );
         }
-        catch ( const toml::parse_error& e )
+        catch (const toml::parse_error& e)
         {
             return std::make_pair( false, "TOML parse error in file: " + configFile + " - " + e.what() );
         }
@@ -358,13 +320,13 @@ std::pair< bool, std::string > Core::Configuration::parseConfigFiles()
 std::pair< bool, std::filesystem::path > Core::Configuration::buildConfigFilePath( const std::string& configFile )
 {
     bool fileExists = true;
-    std::string configFilePath = mConfigDirPath + "/" + configFile;
+    std::filesystem::path configFilePath = mConfigDirPath + "/" + configFile;
 
     // Check if file exists
-    if ( ( !std::filesystem::is_regular_file( configFilePath ) ) )
+    if (!std::filesystem::is_regular_file( configFilePath ))
         fileExists = false;
 
-    return std::make_pair( fileExists, std::filesystem::path( configFilePath ) );
+    return std::make_pair( fileExists, configFilePath );
 }
 
 void Core::Configuration::initializeGlobalLogger()
@@ -372,7 +334,7 @@ void Core::Configuration::initializeGlobalLogger()
     // Get Global Logger
     std::shared_ptr< Utility::Logger > cLogger = Utility::LogRegistry::instance()->getGlobalLogger();
 
-    if ( cLogger )
+    if (cLogger)
     {
         auto globalConsoleSink = std::make_shared< Utility::ColorConsoleSink >();
         cLogger->addSink( globalConsoleSink );
