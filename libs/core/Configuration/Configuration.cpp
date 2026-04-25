@@ -122,7 +122,7 @@ void Core::Configuration::initializeOutputDirectory()
 
     // Add folderName to already existing output directory path
     outputDirectoryPath += "/" + folderName.str();
-    mOutputDirPath = outputDirectoryPath;
+    mOutputDirPath = outputDirectoryPath.string();
 
     // Creates the "App_" directory with the current time
     if (!( std::filesystem::create_directory( mOutputDirPath ) ))
