@@ -20,7 +20,7 @@ namespace Utility
         TextFileSink( const std::string& outputDirectory, const std::string& fileName, const std::string& logExtension,
             LogLevel level = LogLevel::NONE );
 
-        const std::string getFilePath() const;
+        std::string getFilePath() const;
 
         void sinkData( std::string_view message, LogLevel level, const std::source_location location ) override;
 

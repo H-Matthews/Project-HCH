@@ -1,28 +1,24 @@
 #include "core/StateStack/StateStack.hpp"
 
+#include "core/Configuration/LoggerBuilder.hpp"
 #include "core/StateStack/State.hpp"
-
-#include "utility/Logging/Sinks/TextFileSink.hpp"
-#include "utility/Logging/Formatters/KeyValueFormatter.hpp"
-
 #include "core/Application.hpp"
+
+#include "utility/Logging/LogRegistry.hpp"
 
 #include <cassert>
 
-const std::string Core::StateStack::TYPE_NAME = "StateStack";
-
 Core::StateStack::~StateStack() = default;
 
-Core::StateStack::StateStack( Application& application ) :
-    Configurable( TYPE_NAME ),
+Core::StateStack::StateStack( Application& application, std::unique_ptr< ConfigSection > config ) :
     mStack(),
     mPendingRequests(),
-    applicationRef( application )
+    applicationRef( application ),
+    mLogger( config ? Core::buildLogger( *config ) : nullptr )
 {}
 
 void Core::StateStack::update( sf::Time fixedTimeStep )
 {
-    // We should only update the relative state on the stack
     for (auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr)
     {
         if (!( *itr )->update( fixedTimeStep ))
@@ -35,14 +31,11 @@ void Core::StateStack::update( sf::Time fixedTimeStep )
 void Core::StateStack::draw()
 {
     for (auto& state : mStack)
-    {
         state->draw();
-    }
 }
 
 void Core::StateStack::handleKeyPressed( const sf::Event::KeyPressed& keyPressed )
 {
-    // Depending on Event Type, Call different function
     for (auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr)
     {
         if (!( *itr )->handleKeyPressed( keyPressed ))
@@ -52,7 +45,6 @@ void Core::StateStack::handleKeyPressed( const sf::Event::KeyPressed& keyPressed
 
 void Core::StateStack::handleMouseMoved( const sf::Event::MouseMoved& mouseMoved )
 {
-    // Depending on Event Type, Call different function
     for (auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr)
     {
         if (!( *itr )->handleMouseMoved( mouseMoved ))
@@ -62,7 +54,6 @@ void Core::StateStack::handleMouseMoved( const sf::Event::MouseMoved& mouseMoved
 
 void Core::StateStack::handleRealTimeInput()
 {
-    // Depending on Event Type, Call different function
     for (auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr)
     {
         if (!( *itr )->handleRealTimeInput())
@@ -73,8 +64,6 @@ void Core::StateStack::handleRealTimeInput()
 void Core::StateStack::popState()
 {
     mPendingRequests.push_back( PendingStateRequest( Action::POP ) );
-
-    return;
 }
 
 void Core::StateStack::clearStates()
@@ -103,7 +92,6 @@ std::unique_ptr< Core::State > Core::StateStack::createState(
     auto createdState( changeRequest.stateConstructor() );
     createdState->setStackRef( this );
     createdState->initializeState();
-
     return createdState;
 }
 
@@ -145,7 +133,10 @@ void Core::StateStack::applyPendingChanges()
         }
 
         if constexpr (Utility::CAN_LOG)
-            mLogger->logInfo( logMessage );
+        {
+            if (mLogger)
+                mLogger->logInfo( logMessage );
+        }
     }
 
     mPendingRequests.clear();

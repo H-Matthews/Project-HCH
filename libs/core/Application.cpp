@@ -1,4 +1,5 @@
 #include "core/Application.hpp"
+#include "core/Configuration/LoggerBuilder.hpp"
 #include "core/Exceptions/ConfigurationException.hpp"
 
 #include "utility/Logging/Sinks/ColorConsoleSink.hpp"
@@ -11,18 +12,21 @@
 #include <iostream>
 
 const sf::Time Core::Application::TIME_PER_FRAME = sf::seconds( 1.0f / 120.0f );
-const std::string Core::Application::TYPE_NAME = "Application";
 
 Core::Application::Application( Core::ConfigSpec configSpec ) :
-    Configurable( TYPE_NAME ),
     mConfiguration( std::make_unique< Core::Configuration >( std::move( configSpec ) ) ),
     mState( State::NONE ),
     mTextures(),
-    mNetwork(),
-    mStateStack( *this ),
+    mNetwork( mConfiguration->getSection( "MessageNetwork" ) ),
+    mStateStack( *this, mConfiguration->getSection( "StateStack" ) ),
     mWindow( sf::VideoMode( { 640, 480 } ), "Application Window", sf::Style::Close )
 {
-    return;
+    if constexpr (Utility::CAN_LOG)
+    {
+        auto appSection = mConfiguration->getSection( "Application" );
+        if (appSection)
+            mLogger = Core::buildLogger( *appSection );
+    }
 }
 
 void Core::Application::initialize()

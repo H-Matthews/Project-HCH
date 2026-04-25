@@ -1,8 +1,8 @@
 #pragma once
 
-#include "core/Configuration/Configurables/Configurable.hpp"
+#include "core/Configuration/ConfigSection/ConfigSection.hpp"
 
-#include "utility/Logging/LogRegistry.hpp"
+#include "utility/Logging/Logger.hpp"
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
@@ -20,11 +20,9 @@ namespace Core
     class State;
     class MessageNetwork;
 
-    class StateStack : public Configurable
+    class StateStack
     {
       public:
-        static const std::string TYPE_NAME;
-
         enum class Action
         {
             PUSH = 0,
@@ -33,8 +31,8 @@ namespace Core
         };
 
       public:
-        explicit StateStack( Application& application );
-        ~StateStack() final;
+        explicit StateStack( Application& application, std::unique_ptr< ConfigSection > config = nullptr );
+        ~StateStack();
 
         void update( sf::Time fixedTimeStep );
         void draw();
@@ -73,6 +71,8 @@ namespace Core
         std::vector< PendingStateRequest > mPendingRequests;
 
         Application& applicationRef;
+
+        std::shared_ptr< Utility::Logger > mLogger;
     };
 
     template < typename TState >
@@ -81,10 +81,6 @@ namespace Core
     {
         PendingStateRequest request( Action::PUSH );
         request.stateConstructor = []() { return std::unique_ptr< Core::State >( new TState() ); };
-
         mPendingRequests.push_back( request );
-
-        return;
     }
-
 }

@@ -11,7 +11,7 @@ namespace Utility
     class TextFileSinkBuilder
     {
       public:
-        TextFileSinkBuilder( TextFileSink* sink );
+        explicit TextFileSinkBuilder( TextFileSink* sink );
 
         TextFileSinkBuilder& outputDirectory( const std::string& outputDirectory );
 

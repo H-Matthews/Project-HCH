@@ -2,7 +2,6 @@
 
 #include "application/Settings/KeyBindings.hpp"
 
-#include "core/Configuration/Configurables/Configurable.hpp"
 #include "core/Configuration/Configuration.hpp"
 #include "core/StateStack/StateStack.hpp"
 #include "core/Messaging/MessageNetwork.hpp"
@@ -20,12 +19,12 @@
 
 namespace Core
 {
-    class Application : public Core::Configurable
+    class Application
     {
       public:
         enum class State
         {
-            NONE = 0, // This IS NOT a valid value, just used for default values
+            NONE = 0,
             INITIALIZED,
             RUNNING,
             SHUTTING_DOWN
@@ -35,8 +34,6 @@ namespace Core
         State convertStringToAppStateEnum( std::string_view stringState ) const;
 
       public:
-        static const std::string TYPE_NAME;
-
         explicit Application( Core::ConfigSpec configSpec );
 
         MessageNetwork* getNetwork();
@@ -80,6 +77,8 @@ namespace Core
         // TODO: These need to go into a CORE Class
         // Application::KeyBindings mPlayerKeyBindings;
         sf::RenderWindow mWindow;
+
+        std::shared_ptr< Utility::Logger > mLogger;
     };
 
     inline MessageNetwork* Application::getNetwork()
@@ -101,13 +100,9 @@ namespace Core
         requires( std::is_base_of_v< Core::State, TState > )
     void Application::pushState()
     {
-
         if ((int)mState <= 0)
             return;
 
         mStateStack.pushState< TState >();
-
-        return;
     }
-
 }

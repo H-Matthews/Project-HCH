@@ -24,18 +24,18 @@ Utility::TextFileSink::TextFileSink(
     openFile();
 }
 
-const std::string Utility::TextFileSink::getFilePath() const
+std::string Utility::TextFileSink::getFilePath() const
 {
     return mEntireFilePath;
 }
 
 void Utility::TextFileSink::sinkData( std::string_view message, LogLevel level, const std::source_location location )
 {
-    if ( mFormatter )
+    if (mFormatter)
     {
         std::string formattedMessage = mFormatter->format( std::string( message ), level, location );
 
-        if ( mFileHandle.is_open() )
+        if (mFileHandle.is_open())
             mFileHandle << formattedMessage << std::endl;
     }
     else

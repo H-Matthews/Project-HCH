@@ -1,12 +1,11 @@
 #include "core/Messaging/MessageNetwork.hpp"
 
+#include "core/Configuration/LoggerBuilder.hpp"
+
 #include "utility/Logging/Sinks/TextFileSink.hpp"
 #include "utility/Logging/Formatters/KeyValueFormatter.hpp"
 
-const std::string Core::MessageNetwork::TYPE_NAME = "MessageNetwork";
-
-Core::MessageNetwork::MessageNetwork() :
-    Configurable( TYPE_NAME ),
+Core::MessageNetwork::MessageNetwork(std::unique_ptr<ConfigSection> config) :
     mMessageQueue(),
     mSubscriberNodes(),
     mPublisherNodes(),
@@ -14,7 +13,8 @@ Core::MessageNetwork::MessageNetwork() :
     mPublisherRecords(),
     mPendingPublisherRequests(),
     mPendingSubscriberRequests(),
-    mHash()
+    mHash(),
+    mLogger(config ? Core::buildLogger(*config) : nullptr)
 {}
 
 void Core::MessageNetwork::registerSubscriberNode(
