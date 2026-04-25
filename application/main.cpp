@@ -17,13 +17,13 @@ int main()
     Core::ConfigSpec configSpecification;
     configSpecification.configDirectory = CONFIG_DIR_NAME;
     configSpecification.rootConfigFile = ROOT_FILE_NAME;
-    configSpecification.configReader = std::make_unique< Core::TOMLConfigReader >().release();
+    configSpecification.configReader = std::make_unique< Core::TOMLConfigReader >();
 
     try
     {
         // TODO: Change this to an App Spec Type that
         // contains the Config Spec
-        Core::Application application( configSpecification );
+        Core::Application application( std::move( configSpecification ) );
 
         application.initialize();
         application.pushState< Application::MenuState >();

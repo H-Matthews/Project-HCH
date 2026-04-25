@@ -15,21 +15,13 @@ const std::string Core::Application::TYPE_NAME = "Application";
 
 Core::Application::Application( Core::ConfigSpec configSpec ) :
     Configurable( TYPE_NAME ),
-    mConfiguration( std::make_unique< Core::Configuration >( configSpec ) ),
+    mConfiguration( std::make_unique< Core::Configuration >( std::move( configSpec ) ) ),
     mState( State::NONE ),
     mTextures(),
     mNetwork(),
     mStateStack( *this ),
     mWindow( sf::VideoMode( { 640, 480 } ), "Application Window", sf::Style::Close )
 {
-    // Must call back up to the Configurable
-    std::shared_ptr< ConfigNode > rootNode = ConfigurationTree::instance()->getRootNode();
-    std::vector< std::shared_ptr< Core::ConfigNode > > childrenNodes = rootNode->getChildren();
-    if (childrenNodes.empty())
-        throw ConfigurationException( "Children were not populated for RootNode" );
-
-    Configurable::configure( rootNode );
-
     return;
 }
 

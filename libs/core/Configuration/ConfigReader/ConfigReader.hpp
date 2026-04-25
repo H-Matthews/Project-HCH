@@ -1,25 +1,16 @@
 #pragma once
 
+#include "core/Configuration/ConfigSection/ConfigSection.hpp"
+
 #include <filesystem>
-#include <string>
+#include <memory>
 
 namespace Core
 {
-    class ConfigNode;
-
-    /**
-     * Interface class for config readers
-     * Config Reader implementations should return a ConfigNode that contains the parsed data
-     *
-     * Primarily used in the Configuration class
-     */
     class ConfigReader
     {
       public:
-        virtual void init()
-        {}
-
-        virtual std::pair< bool, std::string > readFile(
-            const std::filesystem::path& filePath, std::shared_ptr< ConfigNode >& configNode ) = 0;
+        virtual ~ConfigReader() = default;
+        virtual std::unique_ptr<ConfigSection> readFile(const std::filesystem::path& filePath) = 0;
     };
 }

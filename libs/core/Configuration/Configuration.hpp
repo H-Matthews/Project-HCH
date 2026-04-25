@@ -2,6 +2,7 @@
 
 #include "core/Exceptions/ConfigurationException.hpp"
 #include "core/Configuration/ConfigReader/ConfigReader.hpp"
+#include "core/Configuration/ConfigSection/ConfigSection.hpp"
 
 #include "utility/Logging/Sinks/ColorConsoleSink.hpp"
 #include "utility/Logging/LogRegistry.hpp"
@@ -10,6 +11,7 @@
 #include <cmath>
 #include <functional>
 #include <map>
+#include <memory>
 #include <vector>
 #include <filesystem>
 
@@ -20,10 +22,11 @@ namespace Core
         std::string rootConfigFile;
         std::string configDirectory;
 
-        ConfigReader* configReader;
+        std::unique_ptr<ConfigReader> configReader;
 
-        ConfigSpec();
-        ConfigSpec( const ConfigSpec& other ) = default;
+        ConfigSpec() = default;
+        ConfigSpec(ConfigSpec&&) = default;
+        ConfigSpec& operator=(ConfigSpec&&) = default;
     };
 
     enum DirectoryIDs
@@ -34,19 +37,16 @@ namespace Core
         SIZE
     };
 
-    /**
-     * Configuration sets up the Config Directory, Output Directory, Game asset file paths
-     * Utilizes a TOML parser
-     */
     class Configuration
     {
       public:
-        explicit Configuration( ConfigSpec configSpec );
+        explicit Configuration(ConfigSpec configSpec);
 
-        void setDirectoryInit( DirectoryIDs directoryID );
+        std::unique_ptr<ConfigSection> getSection(std::string_view name) const;
+
+        void setDirectoryInit(DirectoryIDs directoryID);
 
         bool isInitialized() const;
-
         bool isConfigInitialized() const;
 
         ~Configuration() = default;
@@ -58,10 +58,8 @@ namespace Core
         void initializeAssetsDirectory();
 
         void parse();
-        std::pair< bool, std::string > parseRootFile();
-        std::pair< bool, std::string > parseConfigFiles();
-
-        std::pair< bool, std::filesystem::path > buildConfigFilePath( const std::string& configFile );
+        std::pair<bool, std::string> parseRootFile();
+        std::pair<bool, std::string> parseConfigFiles();
 
         void initializeGlobalLogger();
 
@@ -79,11 +77,13 @@ namespace Core
         std::string mAssetTexturesDirPath;
 
       private:
-        std::unique_ptr< ConfigReader > mConfigReader;
+        std::unique_ptr<ConfigReader> mConfigReader;
 
-        std::vector< std::string > mConfigFiles;
+        std::unique_ptr<ConfigSection> mRootSection;
+        std::vector<std::unique_ptr<ConfigSection>> mParsedSections;
 
-        // Default Filepath information
+        std::vector<std::string> mConfigFiles;
+
         static const std::string DEFAULT_OUTPUT_DIR_NAME;
         static const std::string DEFAULT_ASSET_DIR_NAME;
         static const std::string DEFAULT_ASSET_FONTS_DIR_NAME;
@@ -93,22 +93,18 @@ namespace Core
         unsigned int mDirectoryBits : 3;
     };
 
-    inline void Configuration::setDirectoryInit( DirectoryIDs directoryID )
+    inline void Configuration::setDirectoryInit(DirectoryIDs directoryID)
     {
         mDirectoryBits = mDirectoryBits | 1 << directoryID;
-
-        return;
     }
 
     inline bool Configuration::isInitialized() const
     {
-        // 7 is from 2^3 - 1
-        return mDirectoryBits == ( std::pow( 2, (float)DirectoryIDs::SIZE ) ) - 1;
+        return mDirectoryBits == (std::pow(2, (float)DirectoryIDs::SIZE)) - 1;
     }
 
     inline bool Configuration::isConfigInitialized() const
     {
-        // 2 is the ENUM value for CONFIG
-        return mDirectoryBits == std::pow( 2, (float)DirectoryIDs::CONFIG );
+        return mDirectoryBits == std::pow(2, (float)DirectoryIDs::CONFIG);
     }
 }

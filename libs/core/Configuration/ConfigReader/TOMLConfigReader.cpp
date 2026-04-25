@@ -1,145 +1,20 @@
 #include "core/Configuration/ConfigReader/TOMLConfigReader.hpp"
+#include "core/Configuration/ConfigSection/TOMLConfigSection.hpp"
+#include "core/Exceptions/ConfigurationException.hpp"
 
-#include "core/Configuration/ConfigTree/ConfigNode.hpp"
-
-#include <iostream>
-#include <limits>
-
-std::pair< bool, std::string > Core::TOMLConfigReader::readFile(
-    const std::filesystem::path& filePath, std::shared_ptr< ConfigNode >& configNode )
+std::unique_ptr<Core::ConfigSection> Core::TOMLConfigReader::readFile(const std::filesystem::path& filePath)
 {
-    // Ensure the file exists
-    if ( ( !std::filesystem::is_regular_file( filePath ) ) )
+    if (!std::filesystem::is_regular_file(filePath))
+        return nullptr;
+
+    try
     {
-        const std::string errString = "Could NOT FIND file ----> " + filePath.string();
-
-        return std::make_pair( false, errString );
+        toml::table table = toml::parse_file(filePath.string());
+        return std::make_unique<TOMLConfigSection>(std::move(table));
     }
-
-    if ( !configNode )
-        configNode = std::make_shared< ConfigNode >( filePath.filename().stem().string() );
-
-    toml::table config;
-    config = toml::parse_file( filePath.string() );
-
-    // BEGIN PARSING TOML DATA TO CONFIG TREE-----------------------------------------------------------
-    processTOMLData( config, configNode );
-
-    return std::make_pair( true, "" );
-}
-
-void Core::TOMLConfigReader::processTOMLData( const toml::node& tomlNode, std::shared_ptr< ConfigNode > configNode )
-{
-    // Determine Node Type
-    if ( tomlNode.is_table() )
+    catch (const toml::parse_error& e)
     {
-
-        const auto& tomlTable = tomlNode.as_table();
-        for ( auto&& [ key, value ] : *tomlTable )
-        {
-            std::string keyString( key.str() );
-
-            // TABLE -------------------------- Recursive function call
-            if ( value.is_table() )
-            {
-                auto newConfigNode = std::make_shared< ConfigNode >( keyString, configNode );
-                configNode->addChild( newConfigNode );
-
-                processTOMLData( value, newConfigNode );
-            }
-            else if ( value.is_array() )
-            {
-                processArrayTOMLData( keyString, value, configNode );
-            }
-            else // For arrays, we must iterate over all elements
-            {
-                processPrimitiveTOMLData( keyString, value, configNode );
-            }
-        }
+        throw ConfigurationException(
+            (std::string("TOML parse error in: ") + filePath.string() + " - " + e.what()).c_str());
     }
-
-    return;
-}
-
-// BEGIN HELPER FUNCTIONS ------------------------------------------------------------------------------
-
-void Core::TOMLConfigReader::processArrayTOMLData(
-    const std::string& keyNode, const toml::node& tomlNode, std::shared_ptr< ConfigNode > configNode )
-{
-
-    const auto& tomlArray = tomlNode.as_array();
-
-    // For now, we are not gonna deal with heterogenous data in arrays
-    // even though it is supported in TOML
-    if ( tomlArray->empty() || !tomlArray->is_homogeneous() )
-        return;
-
-    const auto& firstElement = tomlArray->at( 0 );
-    if ( firstElement.is_string() )
-    {
-        std::vector< std::string > values;
-        for ( const auto& elem : *tomlArray )
-        {
-            values.push_back( elem.as_string()->value_or( "" ) );
-        }
-
-        configNode->insertValuePair( keyNode, std::move( values ) );
-    }
-    else if ( firstElement.is_integer() )
-    {
-        std::vector< int64_t > values;
-        for ( const auto& elem : *tomlArray )
-        {
-            values.push_back( elem.as_integer()->value_or( std::numeric_limits< int >::max() ) );
-        }
-
-        configNode->insertValuePair( keyNode, std::move( values ) );
-    }
-    else if ( firstElement.is_floating_point() )
-    {
-        std::vector< double > values;
-        for ( const auto& elem : *tomlArray )
-        {
-            values.push_back( elem.as_floating_point()->value_or( std::numeric_limits< double >::max() ) );
-        }
-
-        configNode->insertValuePair( keyNode, std::move( values ) );
-    }
-    else if ( firstElement.is_boolean() )
-    {
-        std::vector< bool > values;
-        for ( const auto& elem : *tomlArray )
-        {
-            values.push_back( elem.as_boolean()->value_or( false ) );
-        }
-
-        configNode->insertValuePair( keyNode, std::move( values ) );
-    }
-
-    return;
-}
-
-void Core::TOMLConfigReader::processPrimitiveTOMLData(
-    const std::string& keyNode, const toml::node& tomlNode, std::shared_ptr< ConfigNode > configNode )
-{
-
-    if ( tomlNode.is_string() )
-    {
-        configNode->insertValuePair( keyNode, tomlNode.as_string()->value_or( "" ) );
-    }
-    else if ( tomlNode.is_integer() )
-    {
-        configNode->insertValuePair( keyNode, tomlNode.as_integer()->value_or( std::numeric_limits< int >::max() ) );
-    }
-    else if ( tomlNode.is_floating_point() )
-    {
-        configNode->insertValuePair(
-            keyNode, tomlNode.as_floating_point()->value_or( std::numeric_limits< double >::max() ) );
-    }
-    else if ( tomlNode.is_boolean() )
-    {
-        configNode->insertValuePair( keyNode, tomlNode.as_boolean()->value_or( false ) );
-    }
-
-    return;
 }
