@@ -34,6 +34,8 @@ namespace Core
         State convertStringToAppStateEnum( std::string_view stringState ) const;
 
       public:
+        static constexpr std::string_view SECTION_NAME = "Application";
+
         explicit Application( Core::ConfigSpec configSpec );
 
         MessageNetwork* getNetwork();

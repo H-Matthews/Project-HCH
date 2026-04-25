@@ -17,13 +17,13 @@ Core::Application::Application( Core::ConfigSpec configSpec ) :
     mConfiguration( std::make_unique< Core::Configuration >( std::move( configSpec ) ) ),
     mState( State::NONE ),
     mTextures(),
-    mNetwork( mConfiguration->getSection( "MessageNetwork" ) ),
-    mStateStack( *this, mConfiguration->getSection( "StateStack" ) ),
+    mNetwork( mConfiguration->getSection( MessageNetwork::SECTION_NAME ) ),
+    mStateStack( *this, mConfiguration->getSection( StateStack::SECTION_NAME ) ),
     mWindow( sf::VideoMode( { 640, 480 } ), "Application Window", sf::Style::Close )
 {
     if constexpr (Utility::CAN_LOG)
     {
-        auto appSection = mConfiguration->getSection( "Application" );
+        auto appSection = mConfiguration->getSection( SECTION_NAME );
         if (appSection)
             mLogger = Core::buildLogger( *appSection );
     }

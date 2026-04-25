@@ -26,11 +26,11 @@ namespace Core
         std::string rootConfigFile;
         std::string configDirectory;
 
-        std::unique_ptr<ConfigReader> configReader;
+        std::unique_ptr< ConfigReader > configReader;
 
         ConfigSpec() = default;
-        ConfigSpec(ConfigSpec&&) = default;
-        ConfigSpec& operator=(ConfigSpec&&) = default;
+        ConfigSpec( ConfigSpec&& ) = default;
+        ConfigSpec& operator=( ConfigSpec&& ) = default;
     };
 
     enum DirectoryIDs
@@ -50,11 +50,11 @@ namespace Core
     class Configuration
     {
       public:
-        explicit Configuration(ConfigSpec configSpec);
+        explicit Configuration( ConfigSpec configSpec );
 
-        std::unique_ptr<ConfigSection> getSection(std::string_view name) const;
+        std::unique_ptr< ConfigSection > getSection( std::string_view name ) const;
 
-        void setDirectoryInit(DirectoryIDs directoryID);
+        void setDirectoryInit( DirectoryIDs directoryID );
 
         bool isInitialized() const;
         bool isConfigInitialized() const;
@@ -68,10 +68,10 @@ namespace Core
         void initializeAssetsDirectory();
 
         void parse();
-        std::pair<bool, std::string> parseRootFile();
-        std::pair<bool, std::string> parseConfigFiles();
+        std::pair< bool, std::string > parseRootFile();
+        std::pair< bool, std::string > parseConfigFiles();
 
-        void initializeGlobalLogger();
+        void initializeGlobalLogger() const;
 
       public:
         std::string mProjectDirectory;
@@ -87,12 +87,12 @@ namespace Core
         std::string mAssetTexturesDirPath;
 
       private:
-        std::unique_ptr<ConfigReader> mConfigReader;
+        std::unique_ptr< ConfigReader > mConfigReader;
 
-        std::unique_ptr<ConfigSection> mRootSection;
-        std::vector<std::unique_ptr<ConfigSection>> mParsedSections;
+        std::unique_ptr< ConfigSection > mRootSection;
+        std::vector< std::unique_ptr< ConfigSection > > mParsedSections;
 
-        std::vector<std::string> mConfigFiles;
+        std::vector< std::string > mConfigFiles;
 
         static const std::string DEFAULT_OUTPUT_DIR_NAME;
         static const std::string DEFAULT_ASSET_DIR_NAME;
@@ -100,21 +100,37 @@ namespace Core
         static const std::string DEFAULT_ASSET_TEXTURES_DIR_NAME;
 
       private:
+        struct RootConfigSection
+        {
+            static constexpr std::string_view NAME = "Configuration";
+            static constexpr std::string_view OUT_DIR = "out_directory";
+            static constexpr std::string_view ASSET_DIR = "asset_directory";
+            static constexpr std::string_view FONT_DIR = "asset_font_directory";
+            static constexpr std::string_view TEXTURE_DIR = "asset_texture_directory";
+        };
+
+        struct RootFilesSection
+        {
+            static constexpr std::string_view NAME = "Configuration_Files";
+            static constexpr std::string_view CORE_CONFIGURABLES = "core_configurables";
+            static constexpr std::string_view PREFABS = "prefabs";
+        };
+
         unsigned int mDirectoryBits : 3;
     };
 
-    inline void Configuration::setDirectoryInit(DirectoryIDs directoryID)
+    inline void Configuration::setDirectoryInit( DirectoryIDs directoryID )
     {
         mDirectoryBits = mDirectoryBits | 1 << directoryID;
     }
 
     inline bool Configuration::isInitialized() const
     {
-        return mDirectoryBits == (std::pow(2, (float)DirectoryIDs::SIZE)) - 1;
+        return mDirectoryBits == ( std::pow( 2, (float)DirectoryIDs::SIZE ) ) - 1;
     }
 
     inline bool Configuration::isConfigInitialized() const
     {
-        return mDirectoryBits == std::pow(2, (float)DirectoryIDs::CONFIG);
+        return mDirectoryBits == std::pow( 2, (float)DirectoryIDs::CONFIG );
     }
 }

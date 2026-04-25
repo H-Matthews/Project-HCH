@@ -23,6 +23,8 @@ namespace Core
     class StateStack
     {
       public:
+        static constexpr std::string_view SECTION_NAME = "StateStack";
+
         enum class Action
         {
             PUSH = 0,
