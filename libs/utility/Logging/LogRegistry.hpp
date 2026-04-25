@@ -21,8 +21,9 @@ namespace Utility
     class LogRegistry
     {
       public:
-        // Delete the Copy Constructor
+        // Delete the Copy Constructor & Assignment operator
         LogRegistry( const LogRegistry& obj ) = delete;
+        LogRegistry& operator=( const LogRegistry& ) = delete;
 
         static std::shared_ptr< LogRegistry > instance();
 

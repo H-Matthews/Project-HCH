@@ -2,8 +2,6 @@
 
 #include "utility/Logging/Logger.hpp"
 
-#include "utility/Logging/Builder/TextFileSinkBuilder.hpp"
-
 #include <fstream>
 
 namespace Utility
@@ -16,6 +14,23 @@ namespace Utility
         static const std::string SINK_IDENTIFIER;
 
       public:
+        class Builder
+        {
+          public:
+            Builder();
+            Builder& outputDirectory( std::string outputDirectory );
+            Builder& fileName( std::string fileName );
+            Builder& logExtension( std::string logExtension );
+            Builder& logLevel( const std::string& level );
+            Builder& formatter( std::unique_ptr< LogFormatter > f );
+            std::shared_ptr< TextFileSink > build();
+
+          private:
+            std::shared_ptr< TextFileSink > mSink;
+        };
+
+        static Builder make();
+
         TextFileSink();
         TextFileSink( const std::string& outputDirectory, const std::string& fileName, const std::string& logExtension,
             LogLevel level = LogLevel::NONE );
@@ -26,11 +41,7 @@ namespace Utility
 
         void openFile();
 
-        ~TextFileSink()
-        {}
-
-        inline static TextFileSinkBuilder build();
-        friend class TextFileSinkBuilder;
+        ~TextFileSink() override = default;
 
       private:
         std::string mOutputDirectory;
@@ -40,13 +51,6 @@ namespace Utility
 
         std::ofstream mFileHandle;
     };
-
-    Utility::TextFileSinkBuilder Utility::TextFileSink::build()
-    {
-        TextFileSink* sink = new TextFileSink();
-
-        return Utility::TextFileSinkBuilder( sink );
-    }
 
     // Convenience function
     // Creates Logger with the necessary Sink. Registers with LogRegistry

@@ -13,6 +13,6 @@ namespace Utility
         ERROR
     };
 
-    const std::string logLevelEnumToString( const LogLevel identifier );
-    LogLevel stringToLogLevelEnum( const std::string& logLevel );
+    std::string logLevelEnumToString( const LogLevel identifier );
+    LogLevel stringToLogLevelEnum( std::string_view logLevel );
 }

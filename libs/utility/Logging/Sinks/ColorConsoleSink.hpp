@@ -2,39 +2,47 @@
 
 #include "utility/Logging/Logger.hpp"
 
-#include "utility/Logging/Builder/ColorConsoleSinkBuilder.hpp"
-
 namespace Utility
 {
 
     /**
-     * ColorConsoleSink writes output to std::cout, and inserts ANSI color codes into the buffer.
-     *
-     * NOTE: If the terminal does not support ANSI codes, then the output will be gibberish
+     * ColorConsoleSink writes output to std::cout with ANSI color codes when stdout is a TTY.
+     * Color codes are automatically disabled when output is redirected to a file or pipe.
      */
     class ColorConsoleSink : public LogSink
     {
         static const std::string sinkIdentifier;
 
       public:
+        class Builder
+        {
+          public:
+            Builder();
+            Builder& logLevel( const std::string& level );
+            Builder& formatter( std::unique_ptr< LogFormatter > f );
+            std::shared_ptr< ColorConsoleSink > build();
+
+          private:
+            std::shared_ptr< ColorConsoleSink > mSink;
+        };
+
+        static Builder make();
+
         ColorConsoleSink();
 
         void sinkData(
             std::string_view message, Utility::LogLevel level, const std::source_location location ) override;
 
-        ~ColorConsoleSink()
-        {}
-
-        inline static ColorConsoleSinkBuilder build();
-        friend class ColorConsoleSinkBuilder;
+        ~ColorConsoleSink() override = default;
 
       private:
-        void insertColorCodes( std::string& message, std::string colorCode );
+        void insertColorCodes( std::string& message, const std::string& colorCode ) const;
 
-        const std::string getColorCode( LogLevel level ) const;
+        std::string getColorCode( LogLevel level ) const;
 
       private:
         std::ostream& mOutputStream;
+        bool mUseColor;
 
         // ANSI Color Codes
         const std::string mDebugColorCode = "\033[34m";   // Blue
@@ -43,12 +51,6 @@ namespace Utility
         const std::string mErrorColorCode = "\033[31m";   // Red
         const std::string mDefaultColorCode = "\033[0m";  // Reset
     };
-
-    Utility::ColorConsoleSinkBuilder Utility::ColorConsoleSink::build()
-    {
-        ColorConsoleSink* sink = new ColorConsoleSink();
-        return Utility::ColorConsoleSinkBuilder( sink );
-    }
 
     // Convenience function
     // Creates Logger with the necessary Sink. Registers with LogRegistry
