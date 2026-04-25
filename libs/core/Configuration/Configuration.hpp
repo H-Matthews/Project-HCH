@@ -23,7 +23,7 @@ namespace Core
         ConfigReader* configReader;
 
         ConfigSpec();
-        ConfigSpec( const ConfigSpec& other );
+        ConfigSpec( const ConfigSpec& other ) = default;
     };
 
     enum DirectoryIDs
@@ -41,16 +41,15 @@ namespace Core
     class Configuration
     {
       public:
-        Configuration( const ConfigSpec& configSpec );
+        explicit Configuration( ConfigSpec configSpec );
 
-        inline void setDirectoryInit( DirectoryIDs directoryID );
+        void setDirectoryInit( DirectoryIDs directoryID );
 
-        inline bool isInitialized();
+        bool isInitialized() const;
 
-        inline bool isConfigInitialized();
+        bool isConfigInitialized() const;
 
-        ~Configuration()
-        {}
+        ~Configuration() = default;
 
       private:
         void configure();
@@ -66,17 +65,6 @@ namespace Core
 
         void initializeGlobalLogger();
 
-      private:
-        std::unique_ptr< ConfigReader > mConfigReader;
-
-        std::vector< std::string > mConfigFiles;
-
-        // Default Filepath information
-        static const std::string DEFAULT_OUTPUT_DIR_NAME;
-        static const std::string DEFAULT_ASSET_DIR_NAME;
-        static const std::string DEFAULT_ASSET_FONTS_DIR_NAME;
-        static const std::string DEFAULT_ASSET_TEXTURES_DIR_NAME;
-
       public:
         std::string mProjectDirectory;
 
@@ -91,23 +79,34 @@ namespace Core
         std::string mAssetTexturesDirPath;
 
       private:
+        std::unique_ptr< ConfigReader > mConfigReader;
+
+        std::vector< std::string > mConfigFiles;
+
+        // Default Filepath information
+        static const std::string DEFAULT_OUTPUT_DIR_NAME;
+        static const std::string DEFAULT_ASSET_DIR_NAME;
+        static const std::string DEFAULT_ASSET_FONTS_DIR_NAME;
+        static const std::string DEFAULT_ASSET_TEXTURES_DIR_NAME;
+
+      private:
         unsigned int mDirectoryBits : 3;
     };
 
-    void Configuration::setDirectoryInit( DirectoryIDs directoryID )
+    inline void Configuration::setDirectoryInit( DirectoryIDs directoryID )
     {
         mDirectoryBits = mDirectoryBits | 1 << directoryID;
 
         return;
     }
 
-    bool Configuration::isInitialized()
+    inline bool Configuration::isInitialized() const
     {
         // 7 is from 2^3 - 1
         return mDirectoryBits == ( std::pow( 2, (float)DirectoryIDs::SIZE ) ) - 1;
     }
 
-    bool Configuration::isConfigInitialized()
+    inline bool Configuration::isConfigInitialized() const
     {
         // 2 is the ENUM value for CONFIG
         return mDirectoryBits == std::pow( 2, (float)DirectoryIDs::CONFIG );

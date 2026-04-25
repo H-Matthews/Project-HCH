@@ -31,15 +31,15 @@ namespace Core
             SHUTTING_DOWN
         };
 
-        std::string convertAppStateEnumToString( const State& state );
-        State convertStringToAppStateEnum( const std::string& stringState );
+        std::string convertAppStateEnumToString( const State& state ) const;
+        State convertStringToAppStateEnum( std::string_view stringState ) const;
 
       public:
         static const std::string TYPE_NAME;
 
-        Application( Core::ConfigSpec configSpec );
+        explicit Application( Core::ConfigSpec configSpec );
 
-        inline MessageNetwork* getNetwork();
+        MessageNetwork* getNetwork();
 
         void registerState(
             const std::string& stateIdentifier, std::function< std::unique_ptr< Core::State >() > registerFunc );
@@ -82,7 +82,7 @@ namespace Core
         sf::RenderWindow mWindow;
     };
 
-    MessageNetwork* Application::getNetwork()
+    inline MessageNetwork* Application::getNetwork()
     {
         return &mNetwork;
     }

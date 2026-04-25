@@ -28,7 +28,7 @@ Core::Application::Application( Core::ConfigSpec configSpec ) :
     if (childrenNodes.empty())
         throw ConfigurationException( "Children were not populated for RootNode" );
 
-    configure( rootNode );
+    Configurable::configure( rootNode );
 
     return;
 }
@@ -155,17 +155,19 @@ bool Core::Application::transitionState( State statusToTransfer )
     if (mState == statusToTransfer)
         return retStatus;
 
+    using enum Core::Application::State;
+
     switch (statusToTransfer)
     {
-        case State::NONE:
+        case NONE:
         {
             // DO NOTHING
 
             break;
         }
-        case State::INITIALIZED:
+        case INITIALIZED:
         {
-            if (mState == State::NONE)
+            if (mState == NONE)
             {
                 mState = statusToTransfer;
                 retStatus = true;
@@ -173,9 +175,9 @@ bool Core::Application::transitionState( State statusToTransfer )
 
             break;
         }
-        case State::RUNNING:
+        case RUNNING:
         {
-            if (mState == State::INITIALIZED && !mStateStack.isPendingListEmpty())
+            if (mState == INITIALIZED && !mStateStack.isPendingListEmpty())
             {
                 mState = statusToTransfer;
                 retStatus = true;
@@ -183,9 +185,9 @@ bool Core::Application::transitionState( State statusToTransfer )
 
             break;
         }
-        case State::SHUTTING_DOWN:
+        case SHUTTING_DOWN:
         {
-            if (mState == State::RUNNING)
+            if (mState == RUNNING)
             {
                 mState = statusToTransfer;
                 retStatus = true;
@@ -198,31 +200,33 @@ bool Core::Application::transitionState( State statusToTransfer )
     return retStatus;
 }
 
-std::string Core::Application::convertAppStateEnumToString( const State& state )
+std::string Core::Application::convertAppStateEnumToString( const State& state ) const
 {
     std::string retString;
 
+    using enum Core::Application::State;
+
     switch (state)
     {
-        case State::NONE:
+        case NONE:
         {
             retString = "NONE";
 
             break;
         }
-        case State::INITIALIZED:
+        case INITIALIZED:
         {
             retString = "INITIALIZED";
 
             break;
         }
-        case State::RUNNING:
+        case RUNNING:
         {
             retString = "RUNNING";
 
             break;
         }
-        case State::SHUTTING_DOWN:
+        case SHUTTING_DOWN:
         {
             retString = "SHUTTING_DOWN";
 
@@ -233,21 +237,23 @@ std::string Core::Application::convertAppStateEnumToString( const State& state )
     return retString;
 }
 
-Core::Application::State Core::Application::convertStringToAppStateEnum( const std::string& stringState )
+Core::Application::State Core::Application::convertStringToAppStateEnum( std::string_view stringState ) const
 {
-    State retState = State::NONE;
+    using enum Core::Application::State;
+
+    State retState = NONE;
 
     if (stringState == "INITIALIZED")
     {
-        retState = State::INITIALIZED;
+        retState = INITIALIZED;
     }
     else if (stringState == "RUNNING")
     {
-        retState = State::RUNNING;
+        retState = RUNNING;
     }
     else if (stringState == "SHUTTING_DOWN")
     {
-        retState = State::SHUTTING_DOWN;
+        retState = SHUTTING_DOWN;
     }
 
     return retState;

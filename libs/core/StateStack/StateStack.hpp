@@ -25,7 +25,7 @@ namespace Core
       public:
         static const std::string TYPE_NAME;
 
-        enum Action
+        enum class Action
         {
             PUSH = 0,
             POP,
@@ -33,8 +33,8 @@ namespace Core
         };
 
       public:
-        StateStack( Application& application );
-        ~StateStack();
+        explicit StateStack( Application& application );
+        ~StateStack() final;
 
         void update( sf::Time fixedTimeStep );
         void draw();
@@ -79,7 +79,6 @@ namespace Core
         requires( std::is_base_of_v< Core::State, TState > )
     void StateStack::pushState()
     {
-
         PendingStateRequest request( Action::PUSH );
         request.stateConstructor = []() { return std::unique_ptr< Core::State >( new TState() ); };
 

@@ -10,18 +10,18 @@ namespace Core
 
         std::optional< std::shared_ptr< ConfigNode > > result = std::nullopt;
 
-        if ( startNode == nullptr )
+        if (startNode == nullptr)
             return result;
 
         std::stack< std::shared_ptr< ConfigNode > > nodeStack;
         nodeStack.push( startNode );
 
-        while ( !nodeStack.empty() )
+        while (!nodeStack.empty())
         {
             auto currentNode = nodeStack.top();
             nodeStack.pop();
 
-            if ( currentNode->mName == nodeName )
+            if (currentNode->mName == nodeName)
             {
                 result = currentNode;
 
@@ -30,7 +30,7 @@ namespace Core
 
             std::vector< std::shared_ptr< Core::ConfigNode > > children = currentNode->getChildren();
 
-            for ( const auto& child : children )
+            for (const auto& child : children)
                 nodeStack.push( child );
         }
 

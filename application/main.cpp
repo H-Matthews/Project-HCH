@@ -17,7 +17,7 @@ int main()
     Core::ConfigSpec configSpecification;
     configSpecification.configDirectory = CONFIG_DIR_NAME;
     configSpecification.rootConfigFile = ROOT_FILE_NAME;
-    configSpecification.configReader = new Core::TOMLConfigReader();
+    configSpecification.configReader = std::make_unique< Core::TOMLConfigReader >().release();
 
     try
     {
