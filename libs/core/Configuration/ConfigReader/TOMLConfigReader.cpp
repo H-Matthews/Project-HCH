@@ -14,7 +14,6 @@ std::unique_ptr<Core::ConfigSection> Core::TOMLConfigReader::readFile(const std:
     }
     catch (const toml::parse_error& e)
     {
-        throw ConfigurationException(
-            (std::string("TOML parse error in: ") + filePath.string() + " - " + e.what()).c_str());
+        throw ConfigurationException( "TOML parse error in: " + filePath.string() + " - " + e.what() );
     }
 }

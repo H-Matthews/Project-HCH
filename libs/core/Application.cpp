@@ -3,14 +3,8 @@
 #include "core/Exceptions/ConfigurationException.hpp"
 
 #include "utility/Logging/LogRegistry.hpp"
-#include "utility/Logging/Sinks/ColorConsoleSink.hpp"
-#include "utility/Logging/Sinks/TextFileSink.hpp"
-#include "utility/Logging/Formatters/KeyValueFormatter.hpp"
 
 #include <SFML/Graphics.hpp>
-
-#include <stdexcept>
-#include <iostream>
 
 const sf::Time Core::Application::TIME_PER_FRAME = sf::seconds( 1.0f / 120.0f );
 
@@ -66,7 +60,7 @@ void Core::Application::run()
                 mLogger->logError( exceptionMessage );
         }
 
-        throw ConfigurationException( exceptionMessage.c_str() );
+        throw ConfigurationException( exceptionMessage );
     }
 
     if constexpr (Utility::CAN_LOG)

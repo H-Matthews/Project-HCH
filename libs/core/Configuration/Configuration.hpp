@@ -24,6 +24,8 @@ namespace Core
         std::unique_ptr< ConfigReader > configReader;
 
         ConfigSpec() = default;
+        ConfigSpec( const ConfigSpec& ) = delete;
+        ConfigSpec& operator=( const ConfigSpec& ) = delete;
         ConfigSpec( ConfigSpec&& ) = default;
         ConfigSpec& operator=( ConfigSpec&& ) = default;
     };
@@ -52,7 +54,8 @@ namespace Core
         std::unique_ptr< ConfigSection > parseRootFile();
         std::vector< std::unique_ptr< ConfigSection > > parseConfigFiles();
 
-        void indexFile( const ConfigSection& fileRoot, const std::string& sourcePath );
+        void indexFile( const ConfigSection& fileRoot, const std::string& sourcePath,
+                        std::map< std::string, std::string >& sectionSource );
 
         std::string mConfigDirPath;
         std::string mRootFile;
@@ -63,13 +66,11 @@ namespace Core
 
         std::vector< std::unique_ptr< ConfigSection > > mOwnedSections;
         std::map< std::string, const ConfigSection*, std::less<> > mIndex;
-        std::map< std::string, std::string, std::less<> > mSectionSource;
 
         struct RootFilesSection
         {
             static constexpr std::string_view NAME = "Configuration_Files";
-            static constexpr std::string_view CORE_CONFIGURABLES = "core_configurables";
-            static constexpr std::string_view PREFABS = "prefabs";
+            static constexpr std::string_view FILES = "files";
         };
     };
 }

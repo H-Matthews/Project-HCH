@@ -9,5 +9,4 @@
 # asset_texture_directory = 'textures'
 
 [Configuration_Files]
-core_configurables = 'core_configurables.toml'
-prefabs = 'prefabs.toml' # Not currently used, will be used in future
+files = ['core_configurables.toml', 'prefabs.toml']

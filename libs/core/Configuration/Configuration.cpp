@@ -1,6 +1,7 @@
 #include "core/Configuration/Configuration.hpp"
 
 #include <filesystem>
+#include <map>
 
 Core::Configuration::Configuration( ConfigSpec configSpec ) :
     mConfigDirPath( std::string( PROJECT_DIR ) + "/" + configSpec.configDirectory ),
@@ -8,11 +9,10 @@ Core::Configuration::Configuration( ConfigSpec configSpec ) :
     mConfigReader( std::move( configSpec.configReader ) ),
     mConfigFiles(),
     mOwnedSections(),
-    mIndex(),
-    mSectionSource()
+    mIndex()
 {
     if (!( std::filesystem::is_directory( mConfigDirPath ) ))
-        throw ConfigurationException( ( "Config directory could NOT be found: " + mConfigDirPath ).c_str() );
+        throw ConfigurationException( "Config directory could NOT be found: " + mConfigDirPath );
 
     if (mRootFile.empty())
         throw ConfigurationException( "Root file was NOT populated" );
@@ -28,9 +28,11 @@ void Core::Configuration::parse()
     auto rootSection = parseRootFile();
     auto childSections = parseConfigFiles();
 
-    indexFile( *rootSection, mConfigDirPath + "/" + mRootFile );
+    std::map< std::string, std::string > sectionSource;
+
+    indexFile( *rootSection, mConfigDirPath + "/" + mRootFile, sectionSource );
     for (std::size_t i = 0; i < childSections.size(); ++i)
-        indexFile( *childSections[ i ], mConfigFiles[ i ] );
+        indexFile( *childSections[ i ], mConfigFiles[ i ], sectionSource );
 }
 
 std::unique_ptr< Core::ConfigSection > Core::Configuration::parseRootFile()
@@ -39,16 +41,13 @@ std::unique_ptr< Core::ConfigSection > Core::Configuration::parseRootFile()
 
     auto rootSection = mConfigReader->readFile( std::filesystem::path( rootFilePath ) );
     if (!rootSection)
-        throw ConfigurationException( ( "Could not find root config file: " + rootFilePath ).c_str() );
+        throw ConfigurationException( "Could not find root config file: " + rootFilePath );
 
     auto filesSection = rootSection->getSection( RootFilesSection::NAME );
     if (filesSection)
     {
-        if (auto coreConfigFile = filesSection->getString( RootFilesSection::CORE_CONFIGURABLES ))
-            mConfigFiles.push_back( mConfigDirPath + "/" + *coreConfigFile );
-
-        if (auto prefabConfigFile = filesSection->getString( RootFilesSection::PREFABS ))
-            mConfigFiles.push_back( mConfigDirPath + "/" + *prefabConfigFile );
+        for (const auto& file : filesSection->getStringVector( RootFilesSection::FILES ))
+            mConfigFiles.push_back( mConfigDirPath + "/" + file );
     }
 
     return rootSection;
@@ -63,7 +62,7 @@ std::vector< std::unique_ptr< Core::ConfigSection > > Core::Configuration::parse
     {
         auto section = mConfigReader->readFile( std::filesystem::path( configFile ) );
         if (!section)
-            throw ConfigurationException( ( "Could not find config file: " + configFile ).c_str() );
+            throw ConfigurationException( "Could not find config file: " + configFile );
 
         sections.push_back( std::move( section ) );
     }
@@ -71,17 +70,18 @@ std::vector< std::unique_ptr< Core::ConfigSection > > Core::Configuration::parse
     return sections;
 }
 
-void Core::Configuration::indexFile( const ConfigSection& fileRoot, const std::string& sourcePath )
+void Core::Configuration::indexFile(
+    const ConfigSection& fileRoot,
+    const std::string& sourcePath,
+    std::map< std::string, std::string >& sectionSource )
 {
     for (const auto& sectionName : fileRoot.sectionNames())
     {
-        auto existing = mSectionSource.find( sectionName );
-        if (existing != mSectionSource.end())
+        auto existing = sectionSource.find( sectionName );
+        if (existing != sectionSource.end())
         {
-            throw ConfigurationException(
-                ( "Duplicate config section [" + sectionName + "] declared in " + sourcePath +
-                  "; first declared in " + existing->second )
-                    .c_str() );
+            throw ConfigurationException( "Duplicate config section [" + sectionName + "] declared in " +
+                                          sourcePath + "; first declared in " + existing->second );
         }
 
         auto owned = fileRoot.getSection( sectionName );
@@ -89,7 +89,7 @@ void Core::Configuration::indexFile( const ConfigSection& fileRoot, const std::s
             continue;
 
         mIndex.emplace( sectionName, owned.get() );
-        mSectionSource.emplace( sectionName, sourcePath );
+        sectionSource.emplace( sectionName, sourcePath );
         mOwnedSections.push_back( std::move( owned ) );
     }
 }

@@ -29,7 +29,7 @@ void Core::DirectoryLayout::initializeOutputDirectory( const ConfigSection* conf
         if (!( std::filesystem::create_directory( outputDirectoryPath ) ))
         {
             throw ConfigurationException(
-                ( "Output Directory: " + outputDirectoryPath.string() + " could NOT be created" ).c_str() );
+                ( "Output Directory: " + outputDirectoryPath.string() + " could NOT be created" ) );
         }
     }
 
@@ -44,7 +44,7 @@ void Core::DirectoryLayout::initializeOutputDirectory( const ConfigSection* conf
 
     if (!( std::filesystem::create_directory( mOutputDirPath ) ))
     {
-        throw ConfigurationException( ( "APP_ Directory: " + mOutputDirPath + " could NOT be created" ).c_str() );
+        throw ConfigurationException( ( "APP_ Directory: " + mOutputDirPath + " could NOT be created" ) );
     }
 }
 
@@ -71,17 +71,17 @@ void Core::DirectoryLayout::initializeAssetsDirectory( const ConfigSection* conf
     mAssetTexturesDirPath += configuredAssetTextureDir.value_or( std::string( DEFAULT_ASSET_TEXTURES_DIR_NAME ) );
 
     if (!( std::filesystem::is_directory( mAssetDirPath ) ))
-        throw ConfigurationException( ( "Asset Directory: " + mAssetDirPath + " could NOT be found" ).c_str() );
+        throw ConfigurationException( ( "Asset Directory: " + mAssetDirPath + " could NOT be found" ) );
 
     if (!( std::filesystem::is_directory( mAssetFontsDirPath ) ))
     {
         throw ConfigurationException(
-            ( "Asset Font Directory: " + mAssetFontsDirPath + " could NOT be found" ).c_str() );
+            ( "Asset Font Directory: " + mAssetFontsDirPath + " could NOT be found" ) );
     }
 
     if (!( std::filesystem::is_directory( mAssetTexturesDirPath ) ))
     {
         throw ConfigurationException(
-            ( "Asset Texture Directory: " + mAssetTexturesDirPath + " could NOT be found" ).c_str() );
+            ( "Asset Texture Directory: " + mAssetTexturesDirPath + " could NOT be found" ) );
     }
 }
