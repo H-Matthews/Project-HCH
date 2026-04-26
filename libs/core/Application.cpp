@@ -54,7 +54,7 @@ void Core::Application::run()
             exceptionMessage += " The Application is NOT initialized, call initialize()";
         }
 
-        if constexpr (Utility::CAN_LOG)
+        if constexpr (Utility::CAN_LOG_ERROR)
         {
             if (mLogger)
                 mLogger->logError( exceptionMessage );
@@ -63,7 +63,7 @@ void Core::Application::run()
         throw ConfigurationException( exceptionMessage );
     }
 
-    if constexpr (Utility::CAN_LOG)
+    if constexpr (Utility::CAN_LOG_INFO)
         mLogger->logInfo( "Entering main RUN loop" );
 
     sf::Clock clock;
@@ -85,7 +85,7 @@ void Core::Application::run()
             {
                 mWindow.close();
 
-                if constexpr (Utility::CAN_LOG)
+                if constexpr (Utility::CAN_LOG_INFO)
                     mLogger->logInfo( "Closing Window...." );
             }
         }
@@ -93,7 +93,7 @@ void Core::Application::run()
         render();
     }
 
-    if constexpr (Utility::CAN_LOG)
+    if constexpr (Utility::CAN_LOG_INFO)
         mLogger->logInfo( "Exiting main RUN loop" );
 }
 

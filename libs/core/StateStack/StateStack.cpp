@@ -101,22 +101,26 @@ void Core::StateStack::applyPendingChanges()
 
     for (Core::StateStack::PendingStateRequest change : mPendingRequests)
     {
-        logMessage.clear();
-        logMessage += "State Transition --> ";
+        if constexpr (Utility::CAN_LOG_INFO)
+        {
+            logMessage.clear();
+            logMessage += "State Transition --> ";
+        }
+
         switch (change.action)
         {
             case Action::PUSH:
             {
                 mStack.push_back( createState( change ) );
 
-                if constexpr (Utility::CAN_LOG)
+                if constexpr (Utility::CAN_LOG_INFO)
                     logMessage += "PUSHING state: " + mStack.back()->getStateName();
 
                 break;
             }
             case Action::POP:
             {
-                if constexpr (Utility::CAN_LOG)
+                if constexpr (Utility::CAN_LOG_INFO)
                     logMessage += "REMOVING state: " + mStack[ mStack.size() - 1 ]->getStateName();
 
                 mStack.pop_back();
@@ -124,7 +128,7 @@ void Core::StateStack::applyPendingChanges()
             }
             case Action::CLEAR:
             {
-                if constexpr (Utility::CAN_LOG)
+                if constexpr (Utility::CAN_LOG_INFO)
                     logMessage += "CLEARING all states on stack";
 
                 mStack.clear();
@@ -132,7 +136,7 @@ void Core::StateStack::applyPendingChanges()
             }
         }
 
-        if constexpr (Utility::CAN_LOG)
+        if constexpr (Utility::CAN_LOG_INFO)
         {
             if (mLogger)
                 mLogger->logInfo( logMessage );

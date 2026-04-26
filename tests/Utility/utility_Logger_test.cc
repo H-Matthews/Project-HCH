@@ -560,6 +560,9 @@ TEST_F( UtilityLoggerTest, sinkLogLevelNone )
 */
 TEST_F( UtilityLoggerTest, logDebug_ConsoleLogger_Test )
 {
+    if constexpr (!Utility::CAN_LOG_DEBUG)
+        GTEST_SKIP() << "logDebug compiled out at this LOG_LEVEL";
+
     // Ensure logger is NOT NULL
     ASSERT_NE( logger_oneSink, nullptr );
 
@@ -579,6 +582,9 @@ TEST_F( UtilityLoggerTest, logDebug_ConsoleLogger_Test )
 */
 TEST_F( UtilityLoggerTest, logInfo_ConsoleLogger_Test )
 {
+    if constexpr (!Utility::CAN_LOG_INFO)
+        GTEST_SKIP() << "logInfo compiled out at this LOG_LEVEL";
+
     // Ensure logger is NOT NULL
     ASSERT_NE( logger_oneSink, nullptr );
 
@@ -598,6 +604,9 @@ TEST_F( UtilityLoggerTest, logInfo_ConsoleLogger_Test )
 */
 TEST_F( UtilityLoggerTest, logWarn_ConsoleLogger_Test )
 {
+    if constexpr (!Utility::CAN_LOG_WARN)
+        GTEST_SKIP() << "logWarn compiled out at this LOG_LEVEL";
+
     // Ensure logger is NOT NULL
     ASSERT_NE( logger_oneSink, nullptr );
 
@@ -617,6 +626,9 @@ TEST_F( UtilityLoggerTest, logWarn_ConsoleLogger_Test )
 */
 TEST_F( UtilityLoggerTest, logError_ConsoleLogger_Test )
 {
+    if constexpr (!Utility::CAN_LOG_ERROR)
+        GTEST_SKIP() << "logError compiled out at this LOG_LEVEL";
+
     // Ensure logger is NOT NULL
     ASSERT_NE( logger_oneSink, nullptr );
 

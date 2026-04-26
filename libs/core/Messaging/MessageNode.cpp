@@ -161,7 +161,7 @@ void Core::MessageNode::publish( std::shared_ptr< Message > message )
     }
     else
     {
-        if constexpr ( Utility::CAN_LOG )
+        if constexpr ( Utility::CAN_LOG_ERROR )
             mNetworkLogger->logError( "Could not Publisher message from Node " + message->getSenderName() +
                                       " due to no topic being associated with Message" );
     }
@@ -169,7 +169,7 @@ void Core::MessageNode::publish( std::shared_ptr< Message > message )
 
 void Core::MessageNode::onNotify( Message* )
 {
-    if constexpr ( Utility::CAN_LOG )
+    if constexpr ( Utility::CAN_LOG_ERROR )
         mNetworkLogger->logError( "onNotify(Message) IS NOT implemented for Node " + mNodeName );
 }
 

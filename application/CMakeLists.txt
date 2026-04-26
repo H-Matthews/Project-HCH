@@ -14,5 +14,7 @@ target_link_libraries(${BINARY_NAME} PRIVATE application)
 
 # Compiler Options
 target_compile_features(${BINARY_NAME} PRIVATE cxx_std_20)
-target_compile_definitions(${BINARY_NAME} PRIVATE "$<$<CONFIG:DEBUG>:APP_DEBUG>")
+target_compile_definitions(${BINARY_NAME} PRIVATE
+    "$<$<CONFIG:DEBUG>:APP_DEBUG>"
+    "$<$<BOOL:${LOG_LEVEL_DEFINE}>:${LOG_LEVEL_DEFINE}>")
 target_include_directories(${BINARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR} ${LIBS_INC_DIR} ${SFML_INC_DIR})

@@ -7,15 +7,36 @@
 namespace Utility
 {
 
-// APP_DEBUG is defined by the CMake build for Debug configurations
-#ifdef APP_DEBUG
+// This define can be passed as a CMake Define to control the LOG_LEVEL gates
+// If building in DEBUG and no LOG_LEVEL is defined via CMake, then it defaults to DEBUG;
+// Release defaults to WARN.
+//
+// If a LOG_LEVEL is defined via CMake, then its set to that level
+#if defined( LOG_LEVEL_NONE )
+    constexpr LogLevel MIN_LOG_LEVEL( LogLevel::NONE );
+#elif defined( LOG_LEVEL_DEBUG )
+    constexpr LogLevel MIN_LOG_LEVEL( LogLevel::DEBUG );
+#elif defined( LOG_LEVEL_INFO )
+    constexpr LogLevel MIN_LOG_LEVEL( LogLevel::INFO );
+#elif defined( LOG_LEVEL_WARN )
+    constexpr LogLevel MIN_LOG_LEVEL( LogLevel::WARN );
+#elif defined( LOG_LEVEL_ERROR )
+    constexpr LogLevel MIN_LOG_LEVEL( LogLevel::ERROR );
+#elif defined( APP_DEBUG )
     constexpr LogLevel MIN_LOG_LEVEL( LogLevel::DEBUG );
 #else
     constexpr LogLevel MIN_LOG_LEVEL( LogLevel::WARN );
 #endif
 
-    // CAN_LOG is true whenever any level is enabled (i.e. not completely silenced)
+    // True if MIN_LOG_LEVEL is NOT None
     constexpr bool CAN_LOG( MIN_LOG_LEVEL != LogLevel::NONE );
+
+    // Per-level gates: Wraps call sites so message construction is also stripped
+    // when the level is disabled.
+    constexpr bool CAN_LOG_DEBUG( CAN_LOG && LogLevel::DEBUG >= MIN_LOG_LEVEL );
+    constexpr bool CAN_LOG_INFO( CAN_LOG && LogLevel::INFO >= MIN_LOG_LEVEL );
+    constexpr bool CAN_LOG_WARN( CAN_LOG && LogLevel::WARN >= MIN_LOG_LEVEL );
+    constexpr bool CAN_LOG_ERROR( CAN_LOG && LogLevel::ERROR >= MIN_LOG_LEVEL );
 
     /**
      * Main Logger Class

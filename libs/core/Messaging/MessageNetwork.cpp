@@ -33,7 +33,7 @@ void Core::MessageNetwork::registerSubscriberNode(
         SubscriberNodeInfo info( nodeName, callback );
         mSubscriberRecords.insert( { hashValue, info } );
 
-        if constexpr (Utility::CAN_LOG)
+        if constexpr (Utility::CAN_LOG_INFO)
         {
             if (mLogger)
                 mLogger->logInfo( "Registering Subscriber Node -- \"" + nodeName + "\"" );
@@ -41,7 +41,7 @@ void Core::MessageNetwork::registerSubscriberNode(
     }
     else
     {
-        if constexpr (Utility::CAN_LOG)
+        if constexpr (Utility::CAN_LOG_ERROR)
         {
             if (mLogger)
                 mLogger->logError( "Node: \"" + nodeName + "\" is already registered as a subscriber " );
@@ -63,7 +63,7 @@ void Core::MessageNetwork::registerPublisherNode( const std::string& nodeName )
         PublisherNodeInfo info( nodeName );
         mPublisherRecords.insert( { hashValue, info } );
 
-        if constexpr (Utility::CAN_LOG)
+        if constexpr (Utility::CAN_LOG_INFO)
         {
             if (mLogger)
                 mLogger->logInfo( "Registering Publisher Node -- \"" + nodeName + "\"" );
@@ -71,7 +71,7 @@ void Core::MessageNetwork::registerPublisherNode( const std::string& nodeName )
     }
     else
     {
-        if constexpr (Utility::CAN_LOG)
+        if constexpr (Utility::CAN_LOG_ERROR)
         {
             if (mLogger)
                 mLogger->logError( "Node: \"" + nodeName + "\" is already registered as a publisher " );
@@ -86,7 +86,7 @@ void Core::MessageNetwork::addSubscriberTopic( const std::string& nodeName, Mess
     auto it = mSubscriberNodes.find( hashValue );
     if (it == mSubscriberNodes.end())
     {
-        if constexpr (Utility::CAN_LOG)
+        if constexpr (Utility::CAN_LOG_ERROR)
         {
             if (mLogger)
                 mLogger->logError( "Node: \"" + nodeName + "\" is NOT registered as a Subscriber" );
@@ -97,7 +97,7 @@ void Core::MessageNetwork::addSubscriberTopic( const std::string& nodeName, Mess
         auto retPair = it->second.insert( messageID );
         if (!retPair.second)
         {
-            if constexpr (Utility::CAN_LOG)
+            if constexpr (Utility::CAN_LOG_ERROR)
             {
                 if (mLogger)
                 {
@@ -108,7 +108,7 @@ void Core::MessageNetwork::addSubscriberTopic( const std::string& nodeName, Mess
         }
         else
         {
-            if constexpr (Utility::CAN_LOG)
+            if constexpr (Utility::CAN_LOG_INFO)
             {
                 if (mLogger)
                 {
@@ -129,7 +129,7 @@ void Core::MessageNetwork::addPublisherTopic( const std::string& nodeName, Messa
     auto it = mPublisherNodes.find( hashValue );
     if (it == mPublisherNodes.end())
     {
-        if constexpr (Utility::CAN_LOG)
+        if constexpr (Utility::CAN_LOG_ERROR)
         {
             if (mLogger)
                 mLogger->logError( "Node: \"" + nodeName + "\" is NOT registered as a Publisher" );
@@ -140,7 +140,7 @@ void Core::MessageNetwork::addPublisherTopic( const std::string& nodeName, Messa
         auto retPair = it->second.insert( messageID );
         if (!retPair.second)
         {
-            if constexpr (Utility::CAN_LOG)
+            if constexpr (Utility::CAN_LOG_ERROR)
             {
                 if (mLogger)
                 {
@@ -151,7 +151,7 @@ void Core::MessageNetwork::addPublisherTopic( const std::string& nodeName, Messa
         }
         else
         {
-            if constexpr (Utility::CAN_LOG)
+            if constexpr (Utility::CAN_LOG_INFO)
             {
                 if (mLogger)
                 {
@@ -180,7 +180,7 @@ void Core::MessageNetwork::unRegisterSubscriberNode( const std::string& nodeName
         if (subscriberRecordIT != mSubscriberRecords.end())
             mSubscriberRecords.erase( subscriberRecordIT );
 
-        if constexpr (Utility::CAN_LOG)
+        if constexpr (Utility::CAN_LOG_INFO)
         {
             if (mLogger)
                 mLogger->logInfo( "Successfully Unregistered Subscriber Node " + nodeName );
@@ -188,7 +188,7 @@ void Core::MessageNetwork::unRegisterSubscriberNode( const std::string& nodeName
     }
     else
     {
-        if constexpr (Utility::CAN_LOG)
+        if constexpr (Utility::CAN_LOG_ERROR)
         {
             if (mLogger)
             {
@@ -216,7 +216,7 @@ void Core::MessageNetwork::unRegisterPublisherNode( const std::string& nodeName 
         if (publisherRecordIT != mPublisherRecords.end())
             mPublisherRecords.erase( publisherRecordIT );
 
-        if constexpr (Utility::CAN_LOG)
+        if constexpr (Utility::CAN_LOG_INFO)
         {
             if (mLogger)
                 mLogger->logInfo( "Successfully Unregistered Publisher Node " + nodeName );
@@ -224,7 +224,7 @@ void Core::MessageNetwork::unRegisterPublisherNode( const std::string& nodeName 
     }
     else
     {
-        if constexpr (Utility::CAN_LOG)
+        if constexpr (Utility::CAN_LOG_ERROR)
         {
             if (mLogger)
             {
@@ -244,7 +244,7 @@ void Core::MessageNetwork::removeTopicFromPublisher( const std::string& nodeName
     auto it = mPublisherNodes.find( hashValue );
     if (it == mPublisherNodes.end())
     {
-        if constexpr (Utility::CAN_LOG)
+        if constexpr (Utility::CAN_LOG_ERROR)
         {
             if (mLogger)
                 mLogger->logError( "Node: \"" + nodeName + "\" was NOT registered as a publisher " );
@@ -274,7 +274,7 @@ void Core::MessageNetwork::removeTopicFromSubscriber( const std::string& nodeNam
     auto it = mSubscriberNodes.find( hashValue );
     if (it == mSubscriberNodes.end())
     {
-        if constexpr (Utility::CAN_LOG)
+        if constexpr (Utility::CAN_LOG_ERROR)
         {
             if (mLogger)
                 mLogger->logError( "Node: \"" + nodeName + "\" was NOT registered as a publisher " );
@@ -306,7 +306,7 @@ void Core::MessageNetwork::notifySubscribers()
     {
         messageID = mMessageQueue.front().get()->getMessageID();
 
-        if constexpr (Utility::CAN_LOG)
+        if constexpr (Utility::CAN_LOG_DEBUG)
             logMessage += "Sending Message \"" + messageIDEnumToString( messageID ) + "\" published by \"" +
                           mMessageQueue.front()->getSenderName() + "\" to subscribers";
 
@@ -323,7 +323,7 @@ void Core::MessageNetwork::notifySubscribers()
             }
         }
 
-        if constexpr (Utility::CAN_LOG)
+        if constexpr (Utility::CAN_LOG_DEBUG)
         {
             if (mLogger)
                 mLogger->logDebug( logMessage );
@@ -341,7 +341,7 @@ void Core::MessageNetwork::notifySubscribers()
 
 void Core::MessageNetwork::publishMessage( std::shared_ptr< Message > message )
 {
-    if constexpr (Utility::CAN_LOG)
+    if constexpr (Utility::CAN_LOG_DEBUG)
     {
         if (mLogger)
         {
@@ -370,7 +370,7 @@ void Core::MessageNetwork::addressPendingRequests()
             auto messageIT = publisherNodesIT->second.find( *( messageSetIT ) );
             if (messageIT != messageSet.end())
             {
-                if constexpr (Utility::CAN_LOG)
+                if constexpr (Utility::CAN_LOG_INFO)
                 {
                     if (mLogger)
                     {
@@ -398,7 +398,7 @@ void Core::MessageNetwork::addressPendingRequests()
             auto messageIT = subscriberNodesIT->second.find( *( messageSetIT ) );
             if (messageIT != messageSet.end())
             {
-                if constexpr (Utility::CAN_LOG)
+                if constexpr (Utility::CAN_LOG_INFO)
                 {
                     if (mLogger)
                     {

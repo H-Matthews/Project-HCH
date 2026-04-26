@@ -62,34 +62,26 @@ Utility::Logger::Logger( std::string loggerName, Logger::SinkList sinks, LogLeve
 
 void Utility::Logger::logDebug( std::string_view message, const std::source_location location )
 {
-    LogLevel level = LogLevel::DEBUG;
-
-    // Log
-    sinkIt( message, level, location );
+    if constexpr (CAN_LOG_DEBUG)
+        sinkIt( message, LogLevel::DEBUG, location );
 }
 
 void Utility::Logger::logInfo( std::string_view message, const std::source_location location )
 {
-    LogLevel level = LogLevel::INFO;
-
-    // Log
-    sinkIt( message, level, location );
+    if constexpr (CAN_LOG_INFO)
+        sinkIt( message, LogLevel::INFO, location );
 }
 
 void Utility::Logger::logWarn( std::string_view message, const std::source_location location )
 {
-    LogLevel level = LogLevel::WARN;
-
-    // Log
-    sinkIt( message, level, location );
+    if constexpr (CAN_LOG_WARN)
+        sinkIt( message, LogLevel::WARN, location );
 }
 
 void Utility::Logger::logError( std::string_view message, const std::source_location location )
 {
-    LogLevel level = LogLevel::ERROR;
-
-    // Log
-    sinkIt( message, level, location );
+    if constexpr (CAN_LOG_ERROR)
+        sinkIt( message, LogLevel::ERROR, location );
 }
 
 void Utility::Logger::sinkIt( std::string_view message, LogLevel level, const std::source_location location )
