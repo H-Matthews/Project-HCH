@@ -33,7 +33,7 @@ namespace Core
         };
 
       public:
-        explicit StateStack( Application& application, std::unique_ptr< ConfigSection > config = nullptr );
+        explicit StateStack( Application& application, const ConfigSection* config = nullptr );
         ~StateStack();
 
         void update( sf::Time fixedTimeStep );

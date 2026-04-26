@@ -24,6 +24,7 @@ namespace Core
         std::vector< std::string > getStringVector( std::string_view key ) const override;
 
         std::unique_ptr< ConfigSection > getSection( std::string_view name ) const override;
+        std::vector< std::string > sectionNames() const override;
 
       private:
         toml::table mTable;

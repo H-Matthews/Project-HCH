@@ -50,3 +50,14 @@ std::unique_ptr< Core::ConfigSection > Core::TOMLConfigSection::getSection( std:
         return nullptr;
     return std::make_unique< TOMLConfigSection >( *nested );
 }
+
+std::vector< std::string > Core::TOMLConfigSection::sectionNames() const
+{
+    std::vector< std::string > names;
+    for (const auto& [ key, value ] : mTable)
+    {
+        if (value.is_table())
+            names.emplace_back( key.str() );
+    }
+    return names;
+}

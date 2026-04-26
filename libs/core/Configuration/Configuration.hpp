@@ -4,16 +4,11 @@
 #include "core/Configuration/ConfigReader/ConfigReader.hpp"
 #include "core/Configuration/ConfigSection/ConfigSection.hpp"
 
-#include "utility/Logging/Sinks/ColorConsoleSink.hpp"
-#include "utility/Logging/LogRegistry.hpp"
-
-#include <string>
-#include <cmath>
-#include <functional>
 #include <map>
 #include <memory>
+#include <string>
+#include <string_view>
 #include <vector>
-#include <filesystem>
 
 namespace Core
 {
@@ -33,81 +28,42 @@ namespace Core
         ConfigSpec& operator=( ConfigSpec&& ) = default;
     };
 
-    enum DirectoryIDs
-    {
-        OUTPUT = 0,
-        CONFIG,
-        ASSETS,
-        SIZE
-    };
-
     /**
-     * Parses the project's config files and makes their contents available to subsystems
-     * as scoped ConfigSection objects. Also initialises the output and asset directories
-     * required before any file-backed logging can begin.
-     * Constructed once by Application; subsystems receive their section via getSection().
+     * Parses the project's config files and serves their contents to subsystems
+     * as scoped ConfigSection objects
      */
     class Configuration
     {
       public:
+        static constexpr std::string_view SECTION_NAME = "Configuration";
+
         explicit Configuration( ConfigSpec configSpec );
-
-        std::unique_ptr< ConfigSection > getSection( std::string_view name ) const;
-
-        void setDirectoryInit( DirectoryIDs directoryID );
-
-        bool isInitialized() const;
-        bool isConfigInitialized() const;
-
         ~Configuration() = default;
 
+        /**
+         * Returns a non-owning pointer to the named top-level section, or nullptr
+         * if the section is not present. The returned pointer is valid for the
+         * lifetime of this Configuration object.
+         */
+        const ConfigSection* getSection( std::string_view name ) const;
+
       private:
-        void configure();
-
-        void initializeOutputDirectory();
-        void initializeAssetsDirectory();
-
         void parse();
-        std::pair< bool, std::string > parseRootFile();
-        std::pair< bool, std::string > parseConfigFiles();
+        std::unique_ptr< ConfigSection > parseRootFile();
+        std::vector< std::unique_ptr< ConfigSection > > parseConfigFiles();
 
-        void initializeGlobalLogger() const;
-
-      public:
-        std::string mProjectDirectory;
-
-        std::string mRootFile;
-        std::string mConfigDirectory;
+        void indexFile( const ConfigSection& fileRoot, const std::string& sourcePath );
 
         std::string mConfigDirPath;
-        std::string mOutputDirPath;
+        std::string mRootFile;
 
-        std::string mAssetDirPath;
-        std::string mAssetFontsDirPath;
-        std::string mAssetTexturesDirPath;
-
-      private:
         std::unique_ptr< ConfigReader > mConfigReader;
-
-        std::unique_ptr< ConfigSection > mRootSection;
-        std::vector< std::unique_ptr< ConfigSection > > mParsedSections;
 
         std::vector< std::string > mConfigFiles;
 
-        static const std::string DEFAULT_OUTPUT_DIR_NAME;
-        static const std::string DEFAULT_ASSET_DIR_NAME;
-        static const std::string DEFAULT_ASSET_FONTS_DIR_NAME;
-        static const std::string DEFAULT_ASSET_TEXTURES_DIR_NAME;
-
-      private:
-        struct RootConfigSection
-        {
-            static constexpr std::string_view NAME = "Configuration";
-            static constexpr std::string_view OUT_DIR = "out_directory";
-            static constexpr std::string_view ASSET_DIR = "asset_directory";
-            static constexpr std::string_view FONT_DIR = "asset_font_directory";
-            static constexpr std::string_view TEXTURE_DIR = "asset_texture_directory";
-        };
+        std::vector< std::unique_ptr< ConfigSection > > mOwnedSections;
+        std::map< std::string, const ConfigSection*, std::less<> > mIndex;
+        std::map< std::string, std::string, std::less<> > mSectionSource;
 
         struct RootFilesSection
         {
@@ -115,22 +71,5 @@ namespace Core
             static constexpr std::string_view CORE_CONFIGURABLES = "core_configurables";
             static constexpr std::string_view PREFABS = "prefabs";
         };
-
-        unsigned int mDirectoryBits : 3;
     };
-
-    inline void Configuration::setDirectoryInit( DirectoryIDs directoryID )
-    {
-        mDirectoryBits = mDirectoryBits | 1 << directoryID;
-    }
-
-    inline bool Configuration::isInitialized() const
-    {
-        return mDirectoryBits == ( std::pow( 2, (float)DirectoryIDs::SIZE ) ) - 1;
-    }
-
-    inline bool Configuration::isConfigInitialized() const
-    {
-        return mDirectoryBits == std::pow( 2, (float)DirectoryIDs::CONFIG );
-    }
 }

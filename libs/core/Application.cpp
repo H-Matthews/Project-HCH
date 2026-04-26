@@ -2,6 +2,7 @@
 #include "core/Configuration/LoggerBuilder.hpp"
 #include "core/Exceptions/ConfigurationException.hpp"
 
+#include "utility/Logging/LogRegistry.hpp"
 #include "utility/Logging/Sinks/ColorConsoleSink.hpp"
 #include "utility/Logging/Sinks/TextFileSink.hpp"
 #include "utility/Logging/Formatters/KeyValueFormatter.hpp"
@@ -15,6 +16,7 @@ const sf::Time Core::Application::TIME_PER_FRAME = sf::seconds( 1.0f / 120.0f );
 
 Core::Application::Application( Core::ConfigSpec configSpec ) :
     mConfiguration( std::make_unique< Core::Configuration >( std::move( configSpec ) ) ),
+    mDirectories( mConfiguration->getSection( Configuration::SECTION_NAME ) ),
     mState( State::NONE ),
     mTextures(),
     mNetwork( mConfiguration->getSection( MessageNetwork::SECTION_NAME ) ),
@@ -23,8 +25,9 @@ Core::Application::Application( Core::ConfigSpec configSpec ) :
 {
     if constexpr (Utility::CAN_LOG)
     {
-        auto appSection = mConfiguration->getSection( SECTION_NAME );
-        if (appSection)
+        Utility::LogRegistry::instance()->configureRegistry( mDirectories.outputDirectory() );
+
+        if (auto appSection = mConfiguration->getSection( SECTION_NAME ))
             mLogger = Core::buildLogger( *appSection );
     }
 }

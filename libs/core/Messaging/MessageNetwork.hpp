@@ -39,7 +39,7 @@ namespace Core
       public:
         static constexpr std::string_view SECTION_NAME = "MessageNetwork";
 
-        explicit MessageNetwork(std::unique_ptr<ConfigSection> config = nullptr);
+        explicit MessageNetwork(const ConfigSection* config = nullptr);
 
         void notifySubscribers();
 

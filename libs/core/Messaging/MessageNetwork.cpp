@@ -5,7 +5,7 @@
 #include "utility/Logging/Sinks/TextFileSink.hpp"
 #include "utility/Logging/Formatters/KeyValueFormatter.hpp"
 
-Core::MessageNetwork::MessageNetwork(std::unique_ptr<ConfigSection> config) :
+Core::MessageNetwork::MessageNetwork(const ConfigSection* config) :
     mMessageQueue(),
     mSubscriberNodes(),
     mPublisherNodes(),

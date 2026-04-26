@@ -3,6 +3,7 @@
 #include "application/Settings/KeyBindings.hpp"
 
 #include "core/Configuration/Configuration.hpp"
+#include "core/Configuration/DirectoryLayout.hpp"
 #include "core/StateStack/StateStack.hpp"
 #include "core/Messaging/MessageNetwork.hpp"
 #include "core/GameAssetContainer/GameAssetContainer.hpp"
@@ -66,6 +67,7 @@ namespace Core
         static const sf::Time TIME_PER_FRAME;
 
         std::unique_ptr< Core::Configuration > mConfiguration;
+        Core::DirectoryLayout mDirectories;
 
         State mState;
 

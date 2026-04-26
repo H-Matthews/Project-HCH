@@ -26,6 +26,7 @@ namespace Core
         virtual std::vector< std::string > getStringVector( std::string_view key ) const = 0;
 
         virtual std::unique_ptr< ConfigSection > getSection( std::string_view name ) const = 0;
+        virtual std::vector< std::string > sectionNames() const = 0;
     };
 
 } // namespace Core

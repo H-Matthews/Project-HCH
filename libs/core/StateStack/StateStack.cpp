@@ -10,7 +10,7 @@
 
 Core::StateStack::~StateStack() = default;
 
-Core::StateStack::StateStack( Application& application, std::unique_ptr< ConfigSection > config ) :
+Core::StateStack::StateStack( Application& application, const ConfigSection* config ) :
     mStack(),
     mPendingRequests(),
     applicationRef( application ),

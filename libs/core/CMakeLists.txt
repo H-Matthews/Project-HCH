@@ -15,6 +15,7 @@ set(INC Application.hpp
         StateStack/StateStack.hpp
         Exceptions/ConfigurationException.hpp
         Configuration/Configuration.hpp
+        Configuration/DirectoryLayout.hpp
         Configuration/ConfigReader/ConfigReader.hpp
         Configuration/ConfigReader/TOMLConfigReader.hpp
         Configuration/ConfigSection/ConfigSection.hpp
@@ -32,6 +33,7 @@ set(SRC Application.cpp
         StateStack/State.cpp 
         StateStack/StateStack.cpp
         Configuration/Configuration.cpp
+        Configuration/DirectoryLayout.cpp
         Configuration/ConfigReader/TOMLConfigReader.cpp
         Configuration/ConfigSection/TOMLConfigSection.cpp
         Configuration/LoggerBuilder.cpp
