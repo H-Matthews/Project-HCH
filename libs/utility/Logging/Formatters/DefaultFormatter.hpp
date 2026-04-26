@@ -14,6 +14,6 @@ namespace Utility
         DefaultFormatter();
 
         // From FormatterI
-        std::string format( std::string message, LogLevel level, const std::source_location location ) override;
+        std::string format( const std::string& message, LogLevel level, const std::source_location location ) override;
     };
 }

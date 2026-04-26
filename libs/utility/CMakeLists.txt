@@ -5,9 +5,6 @@ project(utilLibrary LANGUAGES CXX)
 set(LIBRARY_NAME "utility")
 
 set(SRC Logging/LogRegistry.cpp
-        Logging/Builder/LoggerBuilder.cpp
-        Logging/Builder/ColorConsoleSinkBuilder.cpp
-        Logging/Builder/TextFileSinkBuilder.cpp
         Logging/Logger.cpp
         Logging/Sinks/ColorConsoleSink.cpp
         Logging/Sinks/TextFileSink.cpp
@@ -18,9 +15,6 @@ set(SRC Logging/LogRegistry.cpp
         Time.cpp )
 
 set(INC Logging/LogRegistry.hpp
-        Logging/Builder/LoggerBuilder.hpp
-        Logging/Builder/ColorConsoleSinkBuilder.hpp
-        Logging/Builder/TextFileSinkBuilder.hpp
         Logging/Logger.hpp
         Logging/Sinks/LogSink.hpp
         Logging/Sinks/ColorConsoleSink.hpp

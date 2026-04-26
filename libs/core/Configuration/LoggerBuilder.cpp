@@ -39,29 +39,34 @@ std::shared_ptr< Utility::Logger > Core::buildLogger( const Core::ConfigSection&
 
         if (sinkName == "ColorConsoleSink")
         {
-            Utility::ColorConsoleSink* sink =
-                Utility::ColorConsoleSink::build().logLevel( logLevel ).formatter( makeFormatter( formatterName ) );
-            sinks.push_back( std::shared_ptr< Utility::LogSink >( sink ) );
+            auto sink = Utility::ColorConsoleSink::make()
+                            .logLevel( logLevel )
+                            .formatter( makeFormatter( formatterName ) )
+                            .build();
+            sinks.push_back( sink );
         }
         else if (sinkName == "TextFileSink")
         {
             const auto fileName = sinkSection->getString( "log_file_name" ).value_or( "log" );
             const auto fileExtension = sinkSection->getString( "log_file_extension" ).value_or( ".log" );
 
-            Utility::TextFileSink* sink = Utility::TextFileSink::build()
-                             .outputDirectory( Utility::LogRegistry::instance()->getOutputDir() )
-                             .fileName( fileName )
-                             .logExtension( fileExtension )
-                             .logLevel( logLevel )
-                             .formatter( makeFormatter( formatterName ) );
-            sink->openFile();
-            sinks.push_back( std::shared_ptr< Utility::LogSink >( sink ) );
+            auto sink = Utility::TextFileSink::make()
+                            .outputDirectory( Utility::LogRegistry::instance()->getOutputDir() )
+                            .fileName( fileName )
+                            .logExtension( fileExtension )
+                            .logLevel( logLevel )
+                            .formatter( makeFormatter( formatterName ) )
+                            .build();
+            sinks.push_back( sink );
         }
     }
 
-    Utility::Logger* rawLogger = Utility::Logger::build().name( loggerName ).globalLogLevel( globalLogLevel ).sinks( sinks );
+    auto logger = Utility::Logger::make()
+                      .name( loggerName )
+                      .globalLogLevel( Utility::stringToLogLevelEnum( globalLogLevel ) )
+                      .sinks( sinks )
+                      .build();
 
-    auto logger = std::shared_ptr< Utility::Logger >( rawLogger );
     Utility::LogRegistry::instance()->registerLogger( logger );
     return logger;
 }

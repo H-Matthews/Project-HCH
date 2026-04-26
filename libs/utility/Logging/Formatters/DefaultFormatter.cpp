@@ -2,16 +2,14 @@
 
 #include "utility/Time.hpp"
 
-#include <chrono>
 #include <iomanip>
-#include <filesystem>
 
 Utility::DefaultFormatter::DefaultFormatter() :
     LogFormatter( "Default" )
 {}
 
 std::string Utility::DefaultFormatter::format(
-    std::string message, LogLevel level, const std::source_location location )
+    const std::string& message, LogLevel level, const std::source_location location )
 {
     std::stringstream tempBuffer;
 
@@ -23,8 +21,10 @@ std::string Utility::DefaultFormatter::format(
     // BEGIN FORMATTING
 
     // File / Line Information
-    std::filesystem::path filePath( location.file_name() );
-    tempBuffer << " [" << filePath.filename().string() << ":" << location.line() << "]";
+    std::string_view fullPath = location.file_name();
+    auto slash = fullPath.rfind( '/' );
+    std::string_view filename = ( slash == std::string_view::npos ) ? fullPath : fullPath.substr( slash + 1 );
+    tempBuffer << " [" << filename << ":" << location.line() << "]";
 
     // LogLevel
     const std::string logLevelString = logLevelEnumToString( level );
