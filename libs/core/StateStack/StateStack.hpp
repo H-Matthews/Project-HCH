@@ -55,6 +55,8 @@ namespace Core
 
         MessageNetwork* getMessageNetworkRef();
 
+        void initializeLogger();
+
       private:
         void applyPendingChanges();
 
@@ -71,6 +73,7 @@ namespace Core
       private:
         std::vector< std::unique_ptr< Core::State > > mStack;
         std::vector< PendingStateRequest > mPendingRequests;
+        const ConfigSection* mConfig;
 
         Application& applicationRef;
 

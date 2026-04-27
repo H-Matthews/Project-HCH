@@ -14,7 +14,8 @@ Core::MessageNetwork::MessageNetwork(const ConfigSection* config) :
     mPendingPublisherRequests(),
     mPendingSubscriberRequests(),
     mHash(),
-    mLogger(config ? Core::buildLogger(*config) : nullptr)
+    mConfig(config),
+    mLogger(nullptr)
 {}
 
 void Core::MessageNetwork::registerSubscriberNode(
@@ -430,4 +431,13 @@ void Core::MessageNetwork::shutdownNetwork()
 
     // This "clears" the Queue
     mMessageQueue = {};
+}
+
+void Core::MessageNetwork::initializeLogger()
+{
+    if constexpr (Utility::CAN_LOG)
+    {
+        if (!mLogger && mConfig)
+            mLogger = Core::buildLogger( *mConfig );
+    }
 }

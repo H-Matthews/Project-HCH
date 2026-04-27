@@ -13,8 +13,9 @@ Core::StateStack::~StateStack() = default;
 Core::StateStack::StateStack( Application& application, const ConfigSection* config ) :
     mStack(),
     mPendingRequests(),
+    mConfig(config),
     applicationRef( application ),
-    mLogger( config ? Core::buildLogger( *config ) : nullptr )
+    mLogger( nullptr )
 {}
 
 void Core::StateStack::update( sf::Time fixedTimeStep )
@@ -84,6 +85,15 @@ bool Core::StateStack::isPendingListEmpty() const
 Core::MessageNetwork* Core::StateStack::getMessageNetworkRef()
 {
     return applicationRef.getNetwork();
+}
+
+void Core::StateStack::initializeLogger()
+{
+    if constexpr (Utility::CAN_LOG)
+    {
+        if (!mLogger && mConfig)
+            mLogger = Core::buildLogger( *mConfig );
+    }
 }
 
 std::unique_ptr< Core::State > Core::StateStack::createState(

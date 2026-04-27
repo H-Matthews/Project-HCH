@@ -57,6 +57,7 @@ namespace Core
         void render();
 
         void loadResources();
+        void buildSubsystemLoggers();
 
         bool transitionState( State statusToTransfer );
 

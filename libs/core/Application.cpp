@@ -23,6 +23,10 @@ Core::Application::Application( Core::ConfigSpec configSpec ) :
 
         if (auto appSection = mConfiguration->getSection( SECTION_NAME ))
             mLogger = Core::buildLogger( *appSection );
+
+        // NOTE: This call MUST be after LogRegistry::configureRegistry. If not, then the Logger
+        //       May not get initialized correctly
+        this->buildSubsystemLoggers();
     }
 }
 
@@ -139,6 +143,12 @@ void Core::Application::loadResources()
     // mTextures.load( Textures::ID::ENEMY, texturePath + "/" + "enemySprite.png" );
 
     return;
+}
+
+void Core::Application::buildSubsystemLoggers()
+{
+    mNetwork.initializeLogger();
+    mStateStack.initializeLogger();
 }
 
 bool Core::Application::transitionState( State statusToTransfer )

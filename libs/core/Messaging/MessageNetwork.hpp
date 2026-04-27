@@ -45,6 +45,8 @@ namespace Core
 
         void shutdownNetwork();
 
+        void initializeLogger();
+
       private:
         void registerSubscriberNode(const std::string& nodeName, std::function<void(Message*)> callback);
         void registerPublisherNode(const std::string& nodeName);
@@ -75,6 +77,8 @@ namespace Core
         std::map<std::size_t, std::set<Messages::ID>> mPendingSubscriberRequests;
 
         std::hash<std::string> mHash;
+
+        const ConfigSection* mConfig;
 
         std::shared_ptr<Utility::Logger> mLogger;
 
