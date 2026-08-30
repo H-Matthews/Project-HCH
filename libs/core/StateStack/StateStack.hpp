@@ -1,39 +1,40 @@
 #pragma once
 
-#include "core/StateStack/State.hpp"
 #include "core/Configuration/Configurables/Configurable.hpp"
 
 #include "utility/Logging/LogRegistry.hpp"
 
 #include <SFML/System/Time.hpp>
+#include <SFML/Window/Event.hpp>
 
 #include <vector>
 #include <functional>
 #include <map>
 #include <memory>
 
+#include <iostream>
+
 namespace Core
 {
+    class Application;
+    class State;
+    class MessageNetwork;
 
     class StateStack : public Configurable
     {
       public:
         static const std::string TYPE_NAME;
 
-        enum Action
+        enum class Action
         {
-            Push,
-            Pop,
-            Clear
+            PUSH = 0,
+            POP,
+            CLEAR
         };
 
       public:
-        StateStack();
-        explicit StateStack( Core::State::SharedObjects sObjects );
-
-        // Needs to be a template so that we can treat registerState as a factory
-        template < typename T >
-        void registerState( States::ID stateID );
+        explicit StateStack( Application& application );
+        ~StateStack() final;
 
         void update( sf::Time fixedTimeStep );
         void draw();
@@ -42,49 +43,48 @@ namespace Core
         void handleMouseMoved( const sf::Event::MouseMoved& mouseMoved );
         void handleRealTimeInput();
 
-        void pushState( States::ID stateID );
+        template < typename TState >
+            requires( std::is_base_of_v< Core::State, TState > )
+        void pushState();
+
         void popState();
         void clearStates();
 
         bool isEmpty() const;
         bool isPendingListEmpty() const;
 
-        void initializeLogger();
+        MessageNetwork* getMessageNetworkRef();
 
       private:
-        std::unique_ptr< Core::State > createState( States::ID stateID );
         void applyPendingChanges();
 
-        struct pendingStateRequests
+        struct PendingStateRequest
         {
-            explicit pendingStateRequests( Action action, States::ID stateID = States::NONE );
+            explicit PendingStateRequest( Action action );
 
             Action action;
-            States::ID stateID;
+            std::function< std::unique_ptr< Core::State >() > stateConstructor;
         };
+
+        std::unique_ptr< Core::State > createState( const Core::StateStack::PendingStateRequest& changeRequest );
 
       private:
         std::vector< std::unique_ptr< Core::State > > mStack;
-        std::vector< pendingStateRequests > mPendingList;
-        Core::State::SharedObjects mSharedObjects;
-        std::map< States::ID, std::function< std::unique_ptr< Core::State >() > > mRegistry;
+        std::vector< PendingStateRequest > mPendingRequests;
+
+        Application& applicationRef;
     };
 
-}
-
-template < typename T >
-void Core::StateStack::registerState( States::ID stateID )
-{
-    const std::string identifierString( States::statesEnumToString( stateID ) );
-
-    // Stores a Lambda in mRegistry
-    mRegistry[ stateID ] = [ this, identifierString ]()
-    { return std::unique_ptr< State >( new T( *this, identifierString, mSharedObjects ) ); };
-
-    if constexpr ( Utility::CAN_LOG )
+    template < typename TState >
+        requires( std::is_base_of_v< Core::State, TState > )
+    void StateStack::pushState()
     {
-        std::string logMessage;
-        logMessage = "Registered State: " + identifierString;
-        mLogger->logInfo( logMessage );
+        PendingStateRequest request( Action::PUSH );
+        request.stateConstructor = []() { return std::unique_ptr< Core::State >( new TState() ); };
+
+        mPendingRequests.push_back( request );
+
+        return;
     }
+
 }

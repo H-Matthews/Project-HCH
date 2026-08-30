@@ -1,7 +1,7 @@
 #pragma once
 
-#include "core/StateStack/StateTypes.hpp"
 #include "core/Messaging/MessageNetwork.hpp"
+#include "core/StateStack/StateStack.hpp"
 
 #include "core/GameAssetContainer/ResourceEnums.hpp"
 
@@ -14,24 +14,18 @@
 
 namespace Core
 {
-    class StateStack;
 
     class State
     {
       public:
-        struct SharedObjects
-        {
-            SharedObjects( sf::RenderWindow& window, Core::MessageNetwork& network, TextureHolder& textures );
-            SharedObjects();
-
-            sf::RenderWindow* window;
-            Core::MessageNetwork* network;
-            TextureHolder* textures;
-        };
-
-      public:
-        State( StateStack& stack, std::string mStateIdentifierString, SharedObjects sObjects );
+        State( std::string stateIdentifier );
         virtual ~State();
+
+        // To be called after setting the StateStack reference
+        virtual bool initializeState()
+        {
+            return true;
+        }
 
         virtual void draw() = 0;
         virtual bool update( sf::Time fixedTimeStep ) = 0;
@@ -45,19 +39,31 @@ namespace Core
             return false;
         }
 
-        const std::string getStateAsString();
+        const std::string getStateName();
+        void setStackRef( StateStack* stack );
 
       protected:
-        void requestStackPush( States::ID stateID );
+        template < typename TState >
+            requires( std::is_base_of_v< Core::State, TState > )
+        void requestStackPush();
+
         void requestStackPop();
         void requestStateClear();
 
-        SharedObjects getSharedObjects() const;
+      protected:
+        StateStack* mStackRef;
 
       private:
-        StateStack* mStack;
         std::string mStateIdentifierString;
-        SharedObjects mSharedObjects;
     };
+
+    template < typename TState >
+        requires( std::is_base_of_v< Core::State, TState > )
+    void State::requestStackPush()
+    {
+        mStackRef->pushState< TState >();
+
+        return;
+    }
 
 }

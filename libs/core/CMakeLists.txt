@@ -34,7 +34,6 @@ set(SRC Application.cpp
         Messaging/MessageTypes.cpp
         StateStack/State.cpp 
         StateStack/StateStack.cpp
-        StateStack/StateTypes.cpp
         Configuration/Configuration.cpp
         Configuration/ConfigTree/ConfigurationTree.cpp
         Configuration/ConfigTree/ConfigNode.cpp
