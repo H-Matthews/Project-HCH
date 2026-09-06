@@ -2,32 +2,25 @@
 
 #include "core/StateStack/StateStack.hpp"
 
-Core::State::State( std::string stateIdentifier ) :
-    mStackRef( nullptr ),
-    mStateIdentifierString( stateIdentifier )
-{}
+Core::State::State(std::string stateIdentifier)
+    : mStackRef(nullptr), mStateIdentifierString(stateIdentifier) {}
 
-Core::State::~State()
-{}
+Core::State::~State() {}
 
-const std::string Core::State::getStateName()
-{
+const std::string Core::State::getStateName() {
     return mStateIdentifierString;
 }
 
-void Core::State::setStackRef( StateStack* stack )
-{
+void Core::State::setStackRef(StateStack* stack) {
     mStackRef = stack;
 
     return;
 }
 
-void Core::State::requestStackPop()
-{
+void Core::State::requestStackPop() {
     mStackRef->popState();
 }
 
-void Core::State::requestStateClear()
-{
+void Core::State::requestStateClear() {
     mStackRef->clearStates();
 }

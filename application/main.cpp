@@ -12,31 +12,25 @@
 constexpr const char* CONFIG_DIR_NAME = "configs";
 constexpr const char* ROOT_FILE_NAME = "root.toml";
 
-int main()
-{
+int main() {
     Core::ConfigSpec configSpecification;
     configSpecification.configDirectory = CONFIG_DIR_NAME;
     configSpecification.rootConfigFile = ROOT_FILE_NAME;
-    configSpecification.configReader = std::make_unique< Core::TOMLConfigReader >().release();
+    configSpecification.configReader = std::make_unique<Core::TOMLConfigReader>().release();
 
-    try
-    {
+    try {
         // TODO: Change this to an App Spec Type that
         // contains the Config Spec
-        Core::Application application( configSpecification );
+        Core::Application application(configSpecification);
 
         application.initialize();
-        application.pushState< Application::MenuState >();
+        application.pushState<Application::MenuState>();
         application.run();
-    }
-    catch (const Core::ConfigurationException& e)
-    {
+    } catch (const Core::ConfigurationException& e) {
         std::cerr << e.what() << '\n';
 
         return -1;
-    }
-    catch (const std::exception& e)
-    {
+    } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
 
         return -1;

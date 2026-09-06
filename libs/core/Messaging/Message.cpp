@@ -1,40 +1,30 @@
 #include "core/Messaging/Message.hpp"
 
-Core::Message::Info::Info()
-{
+Core::Message::Info::Info() {
     sender = "";
     messageID = Messages::ID::NONE;
 }
 
-Core::Message::Info::Info( const Messages::ID messageID, const std::string& stringMessageID ) :
-    messageID( messageID ),
-    stringMessageID( stringMessageID ),
-    sender( "" )
-{}
+Core::Message::Info::Info(const Messages::ID messageID, const std::string& stringMessageID)
+    : messageID(messageID), stringMessageID(stringMessageID), sender("") {}
 
-Core::Message::Message( const Messages::ID messageID, const std::string& stringMessageID ) :
-    mMessageInfo( messageID, stringMessageID )
-{}
+Core::Message::Message(const Messages::ID messageID, const std::string& stringMessageID)
+    : mMessageInfo(messageID, stringMessageID) {}
 
-Core::Message::~Message()
-{}
+Core::Message::~Message() {}
 
-void Core::Message::setSender( const std::string& sender )
-{
+void Core::Message::setSender(const std::string& sender) {
     mMessageInfo.sender = sender;
 }
 
-std::string Core::Message::getSenderName() const
-{
+std::string Core::Message::getSenderName() const {
     return mMessageInfo.sender;
 }
 
-Messages::ID Core::Message::getMessageID() const
-{
+Messages::ID Core::Message::getMessageID() const {
     return mMessageInfo.messageID;
 }
 
-const std::string& Core::Message::getStringMessageID() const
-{
+const std::string& Core::Message::getStringMessageID() const {
     return mMessageInfo.stringMessageID;
 }

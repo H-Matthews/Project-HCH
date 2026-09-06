@@ -9,9 +9,7 @@
 
 std::string Application::GameState::IDENTIFIER = "GAME";
 
-Application::GameState::GameState() :
-    State( IDENTIFIER )
-{
+Application::GameState::GameState() : State(IDENTIFIER) {
     std::cout << "Creating " << getStateName() << " State" << std::endl;
 
     std::cout << "Controls: --------------------------------" << std::endl;
@@ -21,8 +19,7 @@ Application::GameState::GameState() :
 }
 
 // Used to set references to external subsystems
-bool Application::GameState::initializeState()
-{
+bool Application::GameState::initializeState() {
     if (!mStackRef)
         return false;
 
@@ -31,42 +28,33 @@ bool Application::GameState::initializeState()
     return true;
 }
 
-void Application::GameState::draw()
-{
+void Application::GameState::draw() {
     // mScene.draw();
 }
 
-bool Application::GameState::update( sf::Time fixedTimeStep )
-{
+bool Application::GameState::update(sf::Time fixedTimeStep) {
     // mScene.update( fixedTimeStep );
 
     return true;
 }
 
-bool Application::GameState::handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent )
-{
+bool Application::GameState::handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) {
     // Handle Event based Key Presses
     // mPlayerInputPublisher.handleKeyPressed( keyPressedEvent );
 
-    if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter)
-    {
+    if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter) {
         std::cout << "Handling Events in GameState. You pressed the enter key " << std::endl;
-    }
-    else if (keyPressedEvent.scancode == sf::Keyboard::Scancode::P)
-    {
-        requestStackPush< Application::PauseState >();
-    }
-    else if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape)
-    {
+    } else if (keyPressedEvent.scancode == sf::Keyboard::Scancode::P) {
+        requestStackPush<Application::PauseState>();
+    } else if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape) {
         requestStackPop();
-        requestStackPush< Application::MenuState >();
+        requestStackPush<Application::MenuState>();
     }
 
     return true;
 }
 
-bool Application::GameState::handleRealTimeInput()
-{
+bool Application::GameState::handleRealTimeInput() {
     // Handle RealTime Input KeyPresses
     // Usually movement based
     // mPlayerInputPublisher.handleRealTimeInput();
@@ -74,8 +62,7 @@ bool Application::GameState::handleRealTimeInput()
     return true;
 }
 
-Application::GameState::~GameState()
-{
+Application::GameState::~GameState() {
     // Any objects that persist over different States such as MessageNetwork, will need to
     // cleanup their resources
     // mGameNetwork.shutdownNetwork();

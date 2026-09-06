@@ -4,7 +4,6 @@
 #include <optional>
 #include <memory>
 
-namespace Utility
-{
-    std::tm getCurrentSystemTime();
+namespace Utility {
+std::tm getCurrentSystemTime();
 }

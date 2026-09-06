@@ -4,18 +4,16 @@
 
 #include <string>
 
-namespace Application
-{
-    class PauseState : public Core::State
-    {
-      public:
-        static std::string IDENTIFIER;
+namespace Application {
+class PauseState : public Core::State {
+  public:
+    static std::string IDENTIFIER;
 
-        PauseState();
+    PauseState();
 
-        virtual void draw();
+    virtual void draw();
 
-        virtual bool update( sf::Time fixedTimeStep );
-        bool handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent ) override;
-    };
-}
+    virtual bool update(sf::Time fixedTimeStep);
+    bool handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) override;
+};
+} // namespace Application

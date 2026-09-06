@@ -6,51 +6,50 @@
 
 #include <fstream>
 
-namespace Utility
-{
-    /**
-     * TextFileSink writes output to a specific file
-     */
-    class TextFileSink : public LogSink
-    {
-        static const std::string SINK_IDENTIFIER;
+namespace Utility {
+/**
+ * TextFileSink writes output to a specific file
+ */
+class TextFileSink : public LogSink {
+    static const std::string SINK_IDENTIFIER;
 
-      public:
-        TextFileSink();
-        TextFileSink( const std::string& outputDirectory, const std::string& fileName, const std::string& logExtension,
-            LogLevel level = LogLevel::NONE );
+  public:
+    TextFileSink();
+    TextFileSink(const std::string& outputDirectory, const std::string& fileName,
+                 const std::string& logExtension, LogLevel level = LogLevel::NONE);
 
-        const std::string getFilePath() const;
+    const std::string getFilePath() const;
 
-        void sinkData( std::string_view message, LogLevel level, const std::source_location location ) override;
+    void sinkData(std::string_view message, LogLevel level,
+                  const std::source_location location) override;
 
-        void openFile();
+    void openFile();
 
-        ~TextFileSink()
-        {}
+    ~TextFileSink() {}
 
-        inline static TextFileSinkBuilder build();
-        friend class TextFileSinkBuilder;
+    inline static TextFileSinkBuilder build();
+    friend class TextFileSinkBuilder;
 
-      private:
-        std::string mOutputDirectory;
-        std::string mFileName;
-        std::string mLogExtension;
-        std::string mEntireFilePath;
+  private:
+    std::string mOutputDirectory;
+    std::string mFileName;
+    std::string mLogExtension;
+    std::string mEntireFilePath;
 
-        std::ofstream mFileHandle;
-    };
+    std::ofstream mFileHandle;
+};
 
-    Utility::TextFileSinkBuilder Utility::TextFileSink::build()
-    {
-        TextFileSink* sink = new TextFileSink();
+Utility::TextFileSinkBuilder Utility::TextFileSink::build() {
+    TextFileSink* sink = new TextFileSink();
 
-        return Utility::TextFileSinkBuilder( sink );
-    }
-
-    // Convenience function
-    // Creates Logger with the necessary Sink. Registers with LogRegistry
-    std::shared_ptr< Utility::Logger > createTextFileLogger( const std::string& loggerName,
-        const std::string& outputDirectory, const std::string& fileName, const std::string& logExtension,
-        LogLevel level = LogLevel::NONE );
+    return Utility::TextFileSinkBuilder(sink);
 }
+
+// Convenience function
+// Creates Logger with the necessary Sink. Registers with LogRegistry
+std::shared_ptr<Utility::Logger> createTextFileLogger(const std::string& loggerName,
+                                                      const std::string& outputDirectory,
+                                                      const std::string& fileName,
+                                                      const std::string& logExtension,
+                                                      LogLevel level = LogLevel::NONE);
+} // namespace Utility

@@ -8,43 +8,38 @@
 #include <memory>
 
 const std::string Application::Scene::TYPE_NAME = "SCENE";
-Application::Scene::Scene( sf::RenderWindow& window, Core::MessageNetwork& gameNetwork, TextureHolder& textures ) :
-    mWindow( window ),
-    mEntityManager( textures )
-{
-    initializeGameSystems( gameNetwork );
+Application::Scene::Scene(sf::RenderWindow& window, Core::MessageNetwork& gameNetwork,
+                          TextureHolder& textures)
+    : mWindow(window), mEntityManager(textures) {
+    initializeGameSystems(gameNetwork);
 
     initializePlayerEntity();
 }
 
-void Application::Scene::initializeGameSystems( Core::MessageNetwork& gameNetwork )
-{
-    mEntityManager.registerSystem( std::make_unique< System::PlayerMovementSystem >() );
-    mEntityManager.registerSystem( std::make_unique< System::PlayerInputSystem >( gameNetwork ) );
+void Application::Scene::initializeGameSystems(Core::MessageNetwork& gameNetwork) {
+    mEntityManager.registerSystem(std::make_unique<System::PlayerMovementSystem>());
+    mEntityManager.registerSystem(std::make_unique<System::PlayerInputSystem>(gameNetwork));
 
-    mEntityManager.registerRenderingSystem( std::make_unique< System::RenderSystem >( mWindow ) );
+    mEntityManager.registerRenderingSystem(std::make_unique<System::RenderSystem>(mWindow));
 
     return;
 }
 
-void Application::Scene::initializePlayerEntity()
-{
+void Application::Scene::initializePlayerEntity() {
     // TODO: Should be relative to the window
-    sf::Vector2f initialPosition( { 320.f, 240.f } );
-    sf::Vector2f initialVelocity( { 0.f, 0.f } );
+    sf::Vector2f initialPosition({320.f, 240.f});
+    sf::Vector2f initialVelocity({0.f, 0.f});
 
-    mEntityManager.createPlayerEntity( initialPosition, initialVelocity );
+    mEntityManager.createPlayerEntity(initialPosition, initialVelocity);
 }
 
-void Application::Scene::update( sf::Time fixedTimeStep )
-{
-    mEntityManager.update( fixedTimeStep );
+void Application::Scene::update(sf::Time fixedTimeStep) {
+    mEntityManager.update(fixedTimeStep);
 
     return;
 }
 
-void Application::Scene::draw()
-{
+void Application::Scene::draw() {
     mEntityManager.render();
 
     return;

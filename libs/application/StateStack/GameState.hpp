@@ -9,33 +9,31 @@
 
 #include <string>
 
-namespace Application
-{
+namespace Application {
 
-    /**
-     * High Level class that contains everything the game would need to run when playing the game
-     */
-    class GameState : public Core::State
-    {
-      public:
-        static std::string IDENTIFIER;
+/**
+ * High Level class that contains everything the game would need to run when playing the game
+ */
+class GameState : public Core::State {
+  public:
+    static std::string IDENTIFIER;
 
-        GameState();
+    GameState();
 
-        bool initializeState() override;
+    bool initializeState() override;
 
-        virtual void draw() override;
-        virtual bool update( sf::Time fixedTimeStep ) override;
-        bool handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent ) override;
-        bool handleRealTimeInput() override;
+    virtual void draw() override;
+    virtual bool update(sf::Time fixedTimeStep) override;
+    bool handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) override;
+    bool handleRealTimeInput() override;
 
-        ~GameState();
+    ~GameState();
 
-      private:
-        Core::MessageNetwork* mGameNetwork;
+  private:
+    Core::MessageNetwork* mGameNetwork;
 
-        // Application::Scene mScene;
-        // Application::KeyBindings mKeyBindings;
-        // Application::PlayerInputPublisher mPlayerInputPublisher;
-    };
-}
+    // Application::Scene mScene;
+    // Application::KeyBindings mKeyBindings;
+    // Application::PlayerInputPublisher mPlayerInputPublisher;
+};
+} // namespace Application

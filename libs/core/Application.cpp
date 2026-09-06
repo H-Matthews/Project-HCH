@@ -10,90 +10,76 @@
 #include <stdexcept>
 #include <iostream>
 
-const sf::Time Core::Application::TIME_PER_FRAME = sf::seconds( 1.0f / 120.0f );
+const sf::Time Core::Application::TIME_PER_FRAME = sf::seconds(1.0f / 120.0f);
 const std::string Core::Application::TYPE_NAME = "Application";
 
-Core::Application::Application( Core::ConfigSpec configSpec ) :
-    Configurable( TYPE_NAME ),
-    mConfiguration( std::make_unique< Core::Configuration >( configSpec ) ),
-    mState( State::NONE ),
-    mTextures(),
-    mNetwork(),
-    mStateStack( *this ),
-    mWindow( sf::VideoMode( { 640, 480 } ), "Application Window", sf::Style::Close )
-{
+Core::Application::Application(Core::ConfigSpec configSpec)
+    : Configurable(TYPE_NAME), mConfiguration(std::make_unique<Core::Configuration>(configSpec)),
+      mState(State::NONE), mTextures(), mNetwork(), mStateStack(*this),
+      mWindow(sf::VideoMode({640, 480}), "Application Window", sf::Style::Close) {
     // Must call back up to the Configurable
-    std::shared_ptr< ConfigNode > rootNode = ConfigurationTree::instance()->getRootNode();
-    std::vector< std::shared_ptr< Core::ConfigNode > > childrenNodes = rootNode->getChildren();
+    std::shared_ptr<ConfigNode> rootNode = ConfigurationTree::instance()->getRootNode();
+    std::vector<std::shared_ptr<Core::ConfigNode>> childrenNodes = rootNode->getChildren();
     if (childrenNodes.empty())
-        throw ConfigurationException( "Children were not populated for RootNode" );
+        throw ConfigurationException("Children were not populated for RootNode");
 
-    Configurable::configure( rootNode );
+    Configurable::configure(rootNode);
 
     return;
 }
 
-void Core::Application::initialize()
-{
+void Core::Application::initialize() {
     if (!mConfiguration)
-        throw ConfigurationException( "Configuration is NULL" );
+        throw ConfigurationException("Configuration is NULL");
 
     loadResources();
 
-    transitionState( State::INITIALIZED );
+    transitionState(State::INITIALIZED);
 
     return;
 }
 
-void Core::Application::run()
-{
-    if (!transitionState( State::RUNNING ))
-    {
-        std::string exceptionMessage = "Application is unable to transition to STATE:RUNNING; Currently: STATE:" +
-                                       convertAppStateEnumToString( mState );
+void Core::Application::run() {
+    if (!transitionState(State::RUNNING)) {
+        std::string exceptionMessage =
+            "Application is unable to transition to STATE:RUNNING; Currently: STATE:" +
+            convertAppStateEnumToString(mState);
 
-        if (isInitialized())
-        {
+        if (isInitialized()) {
             exceptionMessage += " The application requires a State to be pushed onto the Stack";
-        }
-        else
-        {
+        } else {
             exceptionMessage += " The Application is NOT initialized, call initialize()";
         }
 
-        if constexpr (Utility::CAN_LOG)
-        {
+        if constexpr (Utility::CAN_LOG) {
             if (mLogger)
-                mLogger->logError( exceptionMessage );
+                mLogger->logError(exceptionMessage);
         }
 
-        throw ConfigurationException( exceptionMessage.c_str() );
+        throw ConfigurationException(exceptionMessage.c_str());
     }
 
     if constexpr (Utility::CAN_LOG)
-        mLogger->logInfo( "Entering main RUN loop" );
+        mLogger->logInfo("Entering main RUN loop");
 
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
-    while (mWindow.isOpen())
-    {
+    while (mWindow.isOpen()) {
         sf::Time elapsedTime = clock.restart();
         timeSinceLastUpdate += elapsedTime;
 
-        while (timeSinceLastUpdate > TIME_PER_FRAME)
-        {
+        while (timeSinceLastUpdate > TIME_PER_FRAME) {
             timeSinceLastUpdate -= TIME_PER_FRAME;
 
             processInput();
-            update( TIME_PER_FRAME );
+            update(TIME_PER_FRAME);
 
-            if (mStateStack.isEmpty())
-            {
+            if (mStateStack.isEmpty()) {
                 mWindow.close();
 
                 if constexpr (Utility::CAN_LOG)
-                    mLogger->logInfo( "Closing Window...." );
+                    mLogger->logInfo("Closing Window....");
             }
         }
 
@@ -101,40 +87,40 @@ void Core::Application::run()
     }
 
     if constexpr (Utility::CAN_LOG)
-        mLogger->logInfo( "Exiting main RUN loop" );
+        mLogger->logInfo("Exiting main RUN loop");
 }
 
-void Core::Application::processInput()
-{
+void Core::Application::processInput() {
     // SFMLs Window Class will detect events and then call these functions if the event matches
     // When needed, Add Event Subtypes here
 
-    mWindow.handleEvents( [ this ]( const sf::Event::Closed& ) { mWindow.close(); },
-        [ this ]( const sf::Event::KeyPressed& keyPressedEvent ) { mStateStack.handleKeyPressed( keyPressedEvent ); },
-        [ this ]( const sf::Event::MouseMoved& mouseMovedEvent ) { mStateStack.handleMouseMoved( mouseMovedEvent ); } );
+    mWindow.handleEvents([this](const sf::Event::Closed&) { mWindow.close(); },
+                         [this](const sf::Event::KeyPressed& keyPressedEvent) {
+                             mStateStack.handleKeyPressed(keyPressedEvent);
+                         },
+                         [this](const sf::Event::MouseMoved& mouseMovedEvent) {
+                             mStateStack.handleMouseMoved(mouseMovedEvent);
+                         });
 
     mStateStack.handleRealTimeInput();
 
     mNetwork.notifySubscribers();
 }
 
-void Core::Application::update( sf::Time fixedTimeStep )
-{
-    mStateStack.update( fixedTimeStep );
+void Core::Application::update(sf::Time fixedTimeStep) {
+    mStateStack.update(fixedTimeStep);
 }
 
-void Core::Application::render()
-{
-    mWindow.clear( sf::Color::Cyan );
+void Core::Application::render() {
+    mWindow.clear(sf::Color::Cyan);
 
     mStateStack.draw();
 
-    mWindow.setView( mWindow.getDefaultView() );
+    mWindow.setView(mWindow.getDefaultView());
     mWindow.display();
 }
 
-void Core::Application::loadResources()
-{
+void Core::Application::loadResources() {
     // auto fontTexturePaths = mConfiguration->getAssetPaths();
     // std::string texturePath = fontTexturePaths.first;
     // std::string fontPath = fontTexturePaths.second;
@@ -148,8 +134,7 @@ void Core::Application::loadResources()
     return;
 }
 
-bool Core::Application::transitionState( State statusToTransfer )
-{
+bool Core::Application::transitionState(State statusToTransfer) {
     bool retStatus = false;
 
     if (mState == statusToTransfer)
@@ -157,102 +142,83 @@ bool Core::Application::transitionState( State statusToTransfer )
 
     using enum Core::Application::State;
 
-    switch (statusToTransfer)
-    {
-        case NONE:
-        {
-            // DO NOTHING
+    switch (statusToTransfer) {
+    case NONE: {
+        // DO NOTHING
 
-            break;
+        break;
+    }
+    case INITIALIZED: {
+        if (mState == NONE) {
+            mState = statusToTransfer;
+            retStatus = true;
         }
-        case INITIALIZED:
-        {
-            if (mState == NONE)
-            {
-                mState = statusToTransfer;
-                retStatus = true;
-            }
 
-            break;
+        break;
+    }
+    case RUNNING: {
+        if (mState == INITIALIZED && !mStateStack.isPendingListEmpty()) {
+            mState = statusToTransfer;
+            retStatus = true;
         }
-        case RUNNING:
-        {
-            if (mState == INITIALIZED && !mStateStack.isPendingListEmpty())
-            {
-                mState = statusToTransfer;
-                retStatus = true;
-            }
 
-            break;
+        break;
+    }
+    case SHUTTING_DOWN: {
+        if (mState == RUNNING) {
+            mState = statusToTransfer;
+            retStatus = true;
         }
-        case SHUTTING_DOWN:
-        {
-            if (mState == RUNNING)
-            {
-                mState = statusToTransfer;
-                retStatus = true;
-            }
 
-            break;
-        }
+        break;
+    }
     }
 
     return retStatus;
 }
 
-std::string Core::Application::convertAppStateEnumToString( const State& state ) const
-{
+std::string Core::Application::convertAppStateEnumToString(const State& state) const {
     std::string retString;
 
     using enum Core::Application::State;
 
-    switch (state)
-    {
-        case NONE:
-        {
-            retString = "NONE";
+    switch (state) {
+    case NONE: {
+        retString = "NONE";
 
-            break;
-        }
-        case INITIALIZED:
-        {
-            retString = "INITIALIZED";
+        break;
+    }
+    case INITIALIZED: {
+        retString = "INITIALIZED";
 
-            break;
-        }
-        case RUNNING:
-        {
-            retString = "RUNNING";
+        break;
+    }
+    case RUNNING: {
+        retString = "RUNNING";
 
-            break;
-        }
-        case SHUTTING_DOWN:
-        {
-            retString = "SHUTTING_DOWN";
+        break;
+    }
+    case SHUTTING_DOWN: {
+        retString = "SHUTTING_DOWN";
 
-            break;
-        }
+        break;
+    }
     }
 
     return retString;
 }
 
-Core::Application::State Core::Application::convertStringToAppStateEnum( std::string_view stringState ) const
-{
+Core::Application::State
+Core::Application::convertStringToAppStateEnum(std::string_view stringState) const {
     using enum Core::Application::State;
 
     State retState = NONE;
 
-    if (stringState == "INITIALIZED")
-    {
+    if (stringState == "INITIALIZED") {
         retState = INITIALIZED;
-    }
-    else if (stringState == "RUNNING")
-    {
+    } else if (stringState == "RUNNING") {
         retState = RUNNING;
-    }
-    else if (stringState == "SHUTTING_DOWN")
-    {
+    } else if (stringState == "SHUTTING_DOWN") {
         retState = SHUTTING_DOWN;
     }
 

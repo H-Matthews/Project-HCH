@@ -7,30 +7,28 @@
 
 #include <string>
 
-namespace Core
-{
-    /**
-     * Defines an object in the application that is Configurable
-     * through configuration files
-     */
-    class Configurable
-    {
-      public:
-        Configurable( const std::string& typeName );
+namespace Core {
+/**
+ * Defines an object in the application that is Configurable
+ * through configuration files
+ */
+class Configurable {
+  public:
+    Configurable(const std::string& typeName);
 
-        virtual ~Configurable() = default;
+    virtual ~Configurable() = default;
 
-      protected:
-        void configure( std::shared_ptr< ConfigNode > rootNode );
+  protected:
+    void configure(std::shared_ptr<ConfigNode> rootNode);
 
-      protected:
-        std::shared_ptr< ConfigNode > mConfigNode;
+  protected:
+    std::shared_ptr<ConfigNode> mConfigNode;
 
-        std::shared_ptr< Utility::Logger > mLogger;
+    std::shared_ptr<Utility::Logger> mLogger;
 
-      private:
-        ConfigurableDirector mDirector;
+  private:
+    ConfigurableDirector mDirector;
 
-        std::string mTypeName;
-    };
-}
+    std::string mTypeName;
+};
+} // namespace Core

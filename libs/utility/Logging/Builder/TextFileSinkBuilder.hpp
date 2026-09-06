@@ -3,36 +3,30 @@
 #include <string>
 #include <memory>
 
-namespace Utility
-{
-    class TextFileSink;
-    class LogFormatter;
+namespace Utility {
+class TextFileSink;
+class LogFormatter;
 
-    class TextFileSinkBuilder
-    {
-      public:
-        TextFileSinkBuilder( TextFileSink* sink );
+class TextFileSinkBuilder {
+  public:
+    TextFileSinkBuilder(TextFileSink* sink);
 
-        TextFileSinkBuilder& outputDirectory( const std::string& outputDirectory );
+    TextFileSinkBuilder& outputDirectory(const std::string& outputDirectory);
 
-        TextFileSinkBuilder& fileName( const std::string& fileName );
+    TextFileSinkBuilder& fileName(const std::string& fileName);
 
-        TextFileSinkBuilder& logExtension( const std::string& logExtension );
+    TextFileSinkBuilder& logExtension(const std::string& logExtension);
 
-        TextFileSinkBuilder& logLevel( const std::string& logLevel );
+    TextFileSinkBuilder& logLevel(const std::string& logLevel);
 
-        TextFileSinkBuilder& formatter( std::unique_ptr< LogFormatter > formatter );
+    TextFileSinkBuilder& formatter(std::unique_ptr<LogFormatter> formatter);
 
-        ~TextFileSinkBuilder()
-        {}
+    ~TextFileSinkBuilder() {}
 
-        // Conversion Function
-        operator TextFileSink*()
-        {
-            return this->mSink;
-        }
+    // Conversion Function
+    operator TextFileSink*() { return this->mSink; }
 
-      private:
-        TextFileSink* mSink;
-    };
-}
+  private:
+    TextFileSink* mSink;
+};
+} // namespace Utility

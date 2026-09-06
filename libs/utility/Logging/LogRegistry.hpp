@@ -6,51 +6,50 @@
 #include <map>
 #include <memory>
 
-namespace Utility
-{
+namespace Utility {
 
-    class Logger;
+class Logger;
 
-    /**
-     * LogRegistry is a Singleton that defines a registry of loggers
-     * When creating a core Logger, it should be registered into this registry
-     *
-     * NOTE: There is a Global Logger defined in the registry that is used for printing output
-     * to the Console when debugging. This should be utilized over using std::cout, due to formatting benefits
-     */
-    class LogRegistry
-    {
-      public:
-        // Delete the Copy Constructor
-        LogRegistry( const LogRegistry& obj ) = delete;
+/**
+ * LogRegistry is a Singleton that defines a registry of loggers
+ * When creating a core Logger, it should be registered into this registry
+ *
+ * NOTE: There is a Global Logger defined in the registry that is used for printing output
+ * to the Console when debugging. This should be utilized over using std::cout, due to formatting
+ * benefits
+ */
+class LogRegistry {
+  public:
+    // Delete the Copy Constructor
+    LogRegistry(const LogRegistry& obj) = delete;
 
-        static std::shared_ptr< LogRegistry > instance();
+    static std::shared_ptr<LogRegistry> instance();
 
-        // Configure the output directory
-        void configureRegistry( const std::string outputDirPath );
+    // Configure the output directory
+    void configureRegistry(const std::string outputDirPath);
 
-        // Associate Logger with hashed value, store in mRegistry
-        void registerLogger( std::shared_ptr< Logger > logger );
+    // Associate Logger with hashed value, store in mRegistry
+    void registerLogger(std::shared_ptr<Logger> logger);
 
-        // If the Logger was NOT found, it returns a nullptr
-        std::shared_ptr< Logger > getLogger( const std::string& fileName );
+    // If the Logger was NOT found, it returns a nullptr
+    std::shared_ptr<Logger> getLogger(const std::string& fileName);
 
-        std::shared_ptr< Logger > getGlobalLogger() const;
+    std::shared_ptr<Logger> getGlobalLogger() const;
 
-        const std::string getOutputDir() const;
+    const std::string getOutputDir() const;
 
-      private:
-        LogRegistry();
+  private:
+    LogRegistry();
 
-        // Static pointer to our object
-        static std::shared_ptr< LogRegistry > mRegistryInstance;
+    // Static pointer to our object
+    static std::shared_ptr<LogRegistry> mRegistryInstance;
 
-        // Key is Hashed String (Logger Name)
-        std::map< std::size_t, std::shared_ptr< Logger > > mRegistry;
+    // Key is Hashed String (Logger Name)
+    std::map<std::size_t, std::shared_ptr<Logger>> mRegistry;
 
-        // Hash Function
-        std::hash< std::string > mHash;
+    // Hash Function
+    std::hash<std::string> mHash;
 
-        std::string mOutputDirectory;
-    };
-}
+    std::string mOutputDirectory;
+};
+} // namespace Utility

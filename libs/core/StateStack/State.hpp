@@ -12,58 +12,44 @@
 
 #include <string>
 
-namespace Core
-{
+namespace Core {
 
-    class State
-    {
-      public:
-        State( std::string stateIdentifier );
-        virtual ~State();
+class State {
+  public:
+    State(std::string stateIdentifier);
+    virtual ~State();
 
-        // To be called after setting the StateStack reference
-        virtual bool initializeState()
-        {
-            return true;
-        }
+    // To be called after setting the StateStack reference
+    virtual bool initializeState() { return true; }
 
-        virtual void draw() = 0;
-        virtual bool update( sf::Time fixedTimeStep ) = 0;
-        virtual bool handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent ) = 0;
-        virtual bool handleMouseMoved( const sf::Event::MouseMoved& )
-        {
-            return false;
-        }
-        virtual bool handleRealTimeInput()
-        {
-            return false;
-        }
+    virtual void draw() = 0;
+    virtual bool update(sf::Time fixedTimeStep) = 0;
+    virtual bool handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) = 0;
+    virtual bool handleMouseMoved(const sf::Event::MouseMoved&) { return false; }
+    virtual bool handleRealTimeInput() { return false; }
 
-        const std::string getStateName();
-        void setStackRef( StateStack* stack );
+    const std::string getStateName();
+    void setStackRef(StateStack* stack);
 
-      protected:
-        template < typename TState >
-            requires( std::is_base_of_v< Core::State, TState > )
-        void requestStackPush();
+  protected:
+    template <typename TState>
+    requires(std::is_base_of_v<Core::State, TState>) void requestStackPush();
 
-        void requestStackPop();
-        void requestStateClear();
+    void requestStackPop();
+    void requestStateClear();
 
-      protected:
-        StateStack* mStackRef;
+  protected:
+    StateStack* mStackRef;
 
-      private:
-        std::string mStateIdentifierString;
-    };
+  private:
+    std::string mStateIdentifierString;
+};
 
-    template < typename TState >
-        requires( std::is_base_of_v< Core::State, TState > )
-    void State::requestStackPush()
-    {
-        mStackRef->pushState< TState >();
+template <typename TState>
+requires(std::is_base_of_v<Core::State, TState>) void State::requestStackPush() {
+    mStackRef->pushState<TState>();
 
-        return;
-    }
-
+    return;
 }
+
+} // namespace Core

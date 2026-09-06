@@ -2,25 +2,20 @@
 
 #include <exception>
 
-namespace Core
-{
-    class ConfigurationException : public std::exception
-    {
-      public:
-        ConfigurationException( const char* message ) :
-            mMessage( message )
-        {}
+namespace Core {
+class ConfigurationException : public std::exception {
+  public:
+    ConfigurationException(const char* message) : mMessage(message) {}
 
-        ~ConfigurationException() = default;
+    ~ConfigurationException() = default;
 
-        inline const char* what() const noexcept override;
+    inline const char* what() const noexcept override;
 
-      private:
-        const char* mMessage;
-    };
+  private:
+    const char* mMessage;
+};
 
-    const char* ConfigurationException::what() const noexcept
-    {
-        return mMessage;
-    }
+const char* ConfigurationException::what() const noexcept {
+    return mMessage;
 }
+} // namespace Core
