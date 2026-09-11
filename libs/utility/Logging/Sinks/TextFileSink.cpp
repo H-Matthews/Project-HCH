@@ -7,6 +7,47 @@
 
 const std::string Utility::TextFileSink::SINK_IDENTIFIER = "TextFileSink";
 
+// Builder implementation
+
+Utility::TextFileSink::Builder::Builder() : mSink(std::make_shared<TextFileSink>()) {}
+
+Utility::TextFileSink::Builder&
+Utility::TextFileSink::Builder::outputDirectory(std::string outputDirectory) {
+    mSink->mOutputDirectory = std::move(outputDirectory);
+    return *this;
+}
+
+Utility::TextFileSink::Builder& Utility::TextFileSink::Builder::fileName(std::string fileName) {
+    mSink->mFileName = std::move(fileName);
+    return *this;
+}
+
+Utility::TextFileSink::Builder&
+Utility::TextFileSink::Builder::logExtension(std::string logExtension) {
+    mSink->mLogExtension = std::move(logExtension);
+    return *this;
+}
+
+Utility::TextFileSink::Builder& Utility::TextFileSink::Builder::logLevel(const std::string& level) {
+    mSink->setSinkLogLevel(stringToLogLevelEnum(level));
+    return *this;
+}
+
+Utility::TextFileSink::Builder&
+Utility::TextFileSink::Builder::formatter(std::unique_ptr<LogFormatter> f) {
+    mSink->setFormatter(std::move(f));
+    return *this;
+}
+
+std::shared_ptr<Utility::TextFileSink> Utility::TextFileSink::Builder::build() {
+    mSink->openFile();
+    return mSink;
+}
+
+Utility::TextFileSink::Builder Utility::TextFileSink::make() {
+    return Builder{};
+}
+
 Utility::TextFileSink::TextFileSink()
     : LogSink(SINK_IDENTIFIER), mOutputDirectory(""), mFileName(""), mLogExtension("") {}
 
@@ -17,7 +58,7 @@ Utility::TextFileSink::TextFileSink(const std::string& outputDirectory, const st
     openFile();
 }
 
-const std::string Utility::TextFileSink::getFilePath() const {
+std::string Utility::TextFileSink::getFilePath() const {
     return mEntireFilePath;
 }
 
@@ -26,8 +67,15 @@ void Utility::TextFileSink::sinkData(std::string_view message, LogLevel level,
     if (mFormatter) {
         std::string formattedMessage = mFormatter->format(std::string(message), level, location);
 
-        if (mFileHandle.is_open())
+        if (mFileHandle.is_open()) {
+#ifdef APP_DEBUG
             mFileHandle << formattedMessage << std::endl;
+#else
+            mFileHandle << formattedMessage << '\n';
+            if (level >= LogLevel::WARN)
+                mFileHandle.flush();
+#endif
+        }
     } else {
         LogRegistry::instance()->getGlobalLogger()->logError("Logger: " + LogSink::mSinkIdentifier +
                                                              " DOES NOT have a formatter");

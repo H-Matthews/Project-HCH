@@ -1,31 +1,29 @@
 #include "core/Application.hpp"
+#include "core/Configuration/LoggerBuilder.hpp"
 #include "core/Exceptions/ConfigurationException.hpp"
 
-#include "utility/Logging/Sinks/ColorConsoleSink.hpp"
-#include "utility/Logging/Sinks/TextFileSink.hpp"
-#include "utility/Logging/Formatters/KeyValueFormatter.hpp"
+#include "utility/Logging/LogRegistry.hpp"
 
 #include <SFML/Graphics.hpp>
 
-#include <stdexcept>
-#include <iostream>
-
 const sf::Time Core::Application::TIME_PER_FRAME = sf::seconds(1.0f / 120.0f);
-const std::string Core::Application::TYPE_NAME = "Application";
 
 Core::Application::Application(Core::ConfigSpec configSpec)
-    : Configurable(TYPE_NAME), mConfiguration(std::make_unique<Core::Configuration>(configSpec)),
-      mState(State::NONE), mTextures(), mNetwork(), mStateStack(*this),
+    : mConfiguration(std::make_unique<Core::Configuration>(std::move(configSpec))),
+      mDirectories(mConfiguration->getSection(Configuration::SECTION_NAME)), mState(State::NONE),
+      mTextures(), mNetwork(mConfiguration->getSection(MessageNetwork::SECTION_NAME)),
+      mStateStack(*this, mConfiguration->getSection(StateStack::SECTION_NAME)),
       mWindow(sf::VideoMode({640, 480}), "Application Window", sf::Style::Close) {
-    // Must call back up to the Configurable
-    std::shared_ptr<ConfigNode> rootNode = ConfigurationTree::instance()->getRootNode();
-    std::vector<std::shared_ptr<Core::ConfigNode>> childrenNodes = rootNode->getChildren();
-    if (childrenNodes.empty())
-        throw ConfigurationException("Children were not populated for RootNode");
+    if constexpr (Utility::CAN_LOG) {
+        Utility::LogRegistry::instance()->configureRegistry(mDirectories.outputDirectory());
 
-    Configurable::configure(rootNode);
+        if (auto appSection = mConfiguration->getSection(SECTION_NAME))
+            mLogger = Core::buildLogger(*appSection);
 
-    return;
+        // NOTE: This call MUST be after LogRegistry::configureRegistry. If not, then the Logger
+        //       May not get initialized correctly
+        this->buildSubsystemLoggers();
+    }
 }
 
 void Core::Application::initialize() {
@@ -51,15 +49,15 @@ void Core::Application::run() {
             exceptionMessage += " The Application is NOT initialized, call initialize()";
         }
 
-        if constexpr (Utility::CAN_LOG) {
+        if constexpr (Utility::CAN_LOG_ERROR) {
             if (mLogger)
                 mLogger->logError(exceptionMessage);
         }
 
-        throw ConfigurationException(exceptionMessage.c_str());
+        throw ConfigurationException(exceptionMessage);
     }
 
-    if constexpr (Utility::CAN_LOG)
+    if constexpr (Utility::CAN_LOG_INFO)
         mLogger->logInfo("Entering main RUN loop");
 
     sf::Clock clock;
@@ -78,7 +76,7 @@ void Core::Application::run() {
             if (mStateStack.isEmpty()) {
                 mWindow.close();
 
-                if constexpr (Utility::CAN_LOG)
+                if constexpr (Utility::CAN_LOG_INFO)
                     mLogger->logInfo("Closing Window....");
             }
         }
@@ -86,7 +84,7 @@ void Core::Application::run() {
         render();
     }
 
-    if constexpr (Utility::CAN_LOG)
+    if constexpr (Utility::CAN_LOG_INFO)
         mLogger->logInfo("Exiting main RUN loop");
 }
 
@@ -132,6 +130,11 @@ void Core::Application::loadResources() {
     // mTextures.load( Textures::ID::ENEMY, texturePath + "/" + "enemySprite.png" );
 
     return;
+}
+
+void Core::Application::buildSubsystemLoggers() {
+    mNetwork.initializeLogger();
+    mStateStack.initializeLogger();
 }
 
 bool Core::Application::transitionState(State statusToTransfer) {

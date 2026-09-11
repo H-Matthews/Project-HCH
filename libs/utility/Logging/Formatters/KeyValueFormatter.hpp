@@ -14,9 +14,9 @@ class KeyValueFormatter : public LogFormatter {
     KeyValueFormatter();
 
     // From FormatterI
-    std::string format(std::string message, LogLevel level,
+    std::string format(const std::string& message, LogLevel level,
                        const std::source_location location) override;
 };
 
-const std::string keysEnumToString(const Keys identifier);
+std::string keysEnumToString(const Keys identifier);
 } // namespace Utility

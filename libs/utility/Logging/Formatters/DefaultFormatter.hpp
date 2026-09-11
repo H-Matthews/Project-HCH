@@ -12,7 +12,7 @@ class DefaultFormatter : public LogFormatter {
     DefaultFormatter();
 
     // From FormatterI
-    std::string format(std::string message, LogLevel level,
+    std::string format(const std::string& message, LogLevel level,
                        const std::source_location location) override;
 };
 } // namespace Utility

@@ -5,68 +5,82 @@
 
 #include <iostream>
 
+#if defined(_WIN32)
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
+namespace {
+bool detectTTY() {
+#if defined(_WIN32)
+    return _isatty(_fileno(stdout)) != 0;
+#else
+    return isatty(fileno(stdout)) != 0;
+#endif
+}
+} // namespace
+
 const std::string Utility::ColorConsoleSink::sinkIdentifier = "ColorConsoleSink";
 
-Utility::ColorConsoleSink::ColorConsoleSink() : LogSink(sinkIdentifier), mOutputStream(std::cout) {}
+Utility::ColorConsoleSink::ColorConsoleSink()
+    : LogSink(sinkIdentifier), mOutputStream(std::cout), mUseColor(detectTTY()) {}
+
+// Builder implementation
+
+Utility::ColorConsoleSink::Builder::Builder() : mSink(std::make_shared<ColorConsoleSink>()) {}
+
+Utility::ColorConsoleSink::Builder&
+Utility::ColorConsoleSink::Builder::logLevel(const std::string& level) {
+    mSink->setSinkLogLevel(stringToLogLevelEnum(level));
+    return *this;
+}
+
+Utility::ColorConsoleSink::Builder&
+Utility::ColorConsoleSink::Builder::formatter(std::unique_ptr<LogFormatter> f) {
+    mSink->setFormatter(std::move(f));
+    return *this;
+}
+
+std::shared_ptr<Utility::ColorConsoleSink> Utility::ColorConsoleSink::Builder::build() {
+    return mSink;
+}
+
+Utility::ColorConsoleSink::Builder Utility::ColorConsoleSink::make() {
+    return Builder{};
+}
 
 void Utility::ColorConsoleSink::sinkData(std::string_view message, LogLevel level,
                                          const std::source_location location) {
     if (mFormatter) {
         std::string formattedMessage = mFormatter->format(std::string(message), level, location);
 
-        const std::string colorCode = getColorCode(level);
-        insertColorCodes(formattedMessage, colorCode);
+        if (mUseColor) {
+            const std::string colorCode = getColorCode(level);
+            insertColorCodes(formattedMessage, colorCode);
+        }
 
-        // Write Log
-        mOutputStream << formattedMessage << std::endl;
+        mOutputStream << formattedMessage << '\n';
     }
-
-    return;
 }
 
-void Utility::ColorConsoleSink::insertColorCodes(std::string& message, std::string colorCode) {
-    // Insert color codes into message
+void Utility::ColorConsoleSink::insertColorCodes(std::string& message,
+                                                 const std::string& colorCode) const {
     message.insert(0, colorCode);
     message.insert(message.size(), mDefaultColorCode);
 }
 
-const std::string Utility::ColorConsoleSink::getColorCode(LogLevel level) const {
-    std::string colorCode;
+std::string Utility::ColorConsoleSink::getColorCode(LogLevel level) const {
     switch (level) {
-    // ANSI Color Codes
-    case LogLevel::DEBUG: {
-        colorCode = mDebugColorCode; // Blue
-        break;
+    case LogLevel::DEBUG:
+        return mDebugColorCode;
+    case LogLevel::INFO:
+        return mInfoColorCode;
+    case LogLevel::WARN:
+        return mWarningColorCode;
+    case LogLevel::ERROR:
+        return mErrorColorCode;
+    default:
+        return mDefaultColorCode;
     }
-    case LogLevel::INFO: {
-        colorCode = mInfoColorCode; // Green
-        break;
-    }
-    case LogLevel::WARN: {
-        colorCode = mWarningColorCode; // Yellow
-        break;
-    }
-    case LogLevel::ERROR: {
-        colorCode = mErrorColorCode; // Red
-        break;
-    }
-    default: {
-        colorCode = mDefaultColorCode; // Reset
-        break;
-    }
-    }
-
-    return colorCode;
 }
-
-// Convenience function to create a logger that has the ColorConsoleSink
-// std::shared_ptr< Utility::Logger > Utility::createColorConsoleLogger( const std::string&
-// loggerName, LogLevel level )
-// {
-//     auto colorConsoleSink = std::make_shared< Utility::ColorConsoleSink >( level );
-
-//     auto logger = std::make_shared< Utility::Logger >( loggerName, colorConsoleSink );
-//     Utility::LogRegistry::instance()->registerLogger( logger );
-
-//     return logger;
-// }

@@ -2,47 +2,62 @@
 
 #include "utility/Logging/LogRegistry.hpp"
 
+// Builder implementation
+
+Utility::Logger::Builder::Builder() : mLogger(std::make_shared<Logger>()) {}
+
+Utility::Logger::Builder& Utility::Logger::Builder::name(std::string n) {
+    mLogger->mLoggerName = std::move(n);
+    return *this;
+}
+
+Utility::Logger::Builder& Utility::Logger::Builder::globalLogLevel(LogLevel level) {
+    mLogger->mGlobalLogLevel = level;
+    return *this;
+}
+
+Utility::Logger::Builder& Utility::Logger::Builder::sinks(SinkList sinks) {
+    mLogger->mSinks = std::move(sinks);
+    return *this;
+}
+
+std::shared_ptr<Utility::Logger> Utility::Logger::Builder::build() {
+    return mLogger;
+}
+
+Utility::Logger::Builder Utility::Logger::make() {
+    return Builder{};
+}
+
 Utility::Logger::Logger() : mSinks(), mLoggerName(""), mGlobalLogLevel(LogLevel::NONE) {}
 
-// Creates a logger with no sinks
-Utility::Logger::Logger(const std::string& loggerName, LogLevel level)
-    : mSinks(), mLoggerName(loggerName), mGlobalLogLevel(level) {}
+Utility::Logger::Logger(std::string loggerName, LogLevel level)
+    : mSinks(), mLoggerName(std::move(loggerName)), mGlobalLogLevel(level) {}
 
-// Creates a logger with a single sink
-Utility::Logger::Logger(const std::string& loggerName, std::shared_ptr<LogSink> sink,
-                        LogLevel level)
-    : mSinks({sink}), mLoggerName(loggerName), mGlobalLogLevel(level) {}
+Utility::Logger::Logger(std::string loggerName, std::shared_ptr<LogSink> sink, LogLevel level)
+    : mSinks({sink}), mLoggerName(std::move(loggerName)), mGlobalLogLevel(level) {}
 
-// Creates a logger with a sinkList
-Utility::Logger::Logger(const std::string& loggerName, Logger::SinkList sinks, LogLevel level)
-    : mSinks(sinks), mLoggerName(loggerName), mGlobalLogLevel(level) {}
+Utility::Logger::Logger(std::string loggerName, Logger::SinkList sinks, LogLevel level)
+    : mSinks(std::move(sinks)), mLoggerName(std::move(loggerName)), mGlobalLogLevel(level) {}
 
 void Utility::Logger::logDebug(std::string_view message, const std::source_location location) {
-    LogLevel level = LogLevel::DEBUG;
-
-    // Log
-    sinkIt(message, level, location);
+    if constexpr (CAN_LOG_DEBUG)
+        sinkIt(message, LogLevel::DEBUG, location);
 }
 
 void Utility::Logger::logInfo(std::string_view message, const std::source_location location) {
-    LogLevel level = LogLevel::INFO;
-
-    // Log
-    sinkIt(message, level, location);
+    if constexpr (CAN_LOG_INFO)
+        sinkIt(message, LogLevel::INFO, location);
 }
 
 void Utility::Logger::logWarn(std::string_view message, const std::source_location location) {
-    LogLevel level = LogLevel::WARN;
-
-    // Log
-    sinkIt(message, level, location);
+    if constexpr (CAN_LOG_WARN)
+        sinkIt(message, LogLevel::WARN, location);
 }
 
 void Utility::Logger::logError(std::string_view message, const std::source_location location) {
-    LogLevel level = LogLevel::ERROR;
-
-    // Log
-    sinkIt(message, level, location);
+    if constexpr (CAN_LOG_ERROR)
+        sinkIt(message, LogLevel::ERROR, location);
 }
 
 void Utility::Logger::sinkIt(std::string_view message, LogLevel level,
@@ -66,9 +81,8 @@ bool Utility::Logger::shouldLog(LogLevel level, LogLevel sinkLevel) const {
     bool canLog = false;
 
     // First, check to see if sink level is high enough
-    if (sinkLevel != LogLevel::NONE) {
-        if (level >= sinkLevel)
-            canLog = true;
+    if (sinkLevel != LogLevel::NONE && level >= sinkLevel) {
+        canLog = true;
     }
 
     // If still false, check to see if global allows us to log
@@ -87,7 +101,7 @@ void Utility::Logger::addSink(std::shared_ptr<LogSink> sink) {
 }
 
 void Utility::Logger::addSinkList(SinkList list) {
-    for (auto sink : list) {
+    for (const auto& sink : list) {
         if (sink != nullptr)
             mSinks.push_back(sink);
     }

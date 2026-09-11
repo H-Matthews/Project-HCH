@@ -15,6 +15,9 @@ foreach(_test_file ${TEST_SRC_FILES})
   target_include_directories(${_test_name} PUBLIC ${LIBS_INC_DIR} ${APP_INC_DIR} ${SFML_INC_DIR})
   target_link_libraries(${_test_name} GTest::gtest_main utility core utility application)
   target_compile_features(${_test_name} PRIVATE cxx_std_20)
+  target_compile_definitions(${_test_name} PRIVATE
+      "$<$<CONFIG:DEBUG>:APP_DEBUG>"
+      "$<$<BOOL:${LOG_LEVEL_DEFINE}>:${LOG_LEVEL_DEFINE}>")
 
   # CTest 
   add_test(NAME ${_test_name} 

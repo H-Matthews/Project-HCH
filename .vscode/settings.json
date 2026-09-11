@@ -3,7 +3,7 @@
     "editor.insertSpaces": true,
     "editor.detectIndentation": false,
     "editor.defaultFormatter": "ms-vscode.cpptools",
-    "editor.formatOnSave": true,
+    "editor.formatOnSave": false,
     "C_Cpp.formatting": "clangFormat",
 
     "files.associations": {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "core/Configuration/Configurables/Configurable.hpp"
+#include "core/Configuration/ConfigSection/ConfigSection.hpp"
 
-#include "utility/Logging/LogRegistry.hpp"
+#include "utility/Logging/Logger.hpp"
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
@@ -19,15 +19,15 @@ class Application;
 class State;
 class MessageNetwork;
 
-class StateStack : public Configurable {
+class StateStack {
   public:
-    static const std::string TYPE_NAME;
+    static constexpr std::string_view SECTION_NAME = "StateStack";
 
     enum class Action { PUSH = 0, POP, CLEAR };
 
   public:
-    explicit StateStack(Application& application);
-    ~StateStack() final;
+    explicit StateStack(Application& application, const ConfigSection* config = nullptr);
+    ~StateStack();
 
     void update(sf::Time fixedTimeStep);
     void draw();
@@ -46,6 +46,8 @@ class StateStack : public Configurable {
 
     MessageNetwork* getMessageNetworkRef();
 
+    void initializeLogger();
+
   private:
     void applyPendingChanges();
 
@@ -62,18 +64,17 @@ class StateStack : public Configurable {
   private:
     std::vector<std::unique_ptr<Core::State>> mStack;
     std::vector<PendingStateRequest> mPendingRequests;
+    const ConfigSection* mConfig;
 
     Application& applicationRef;
+
+    std::shared_ptr<Utility::Logger> mLogger;
 };
 
 template <typename TState>
 requires(std::is_base_of_v<Core::State, TState>) void StateStack::pushState() {
     PendingStateRequest request(Action::PUSH);
     request.stateConstructor = []() { return std::unique_ptr<Core::State>(new TState()); };
-
     mPendingRequests.push_back(request);
-
-    return;
 }
-
 } // namespace Core

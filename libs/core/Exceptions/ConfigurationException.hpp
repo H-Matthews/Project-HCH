@@ -1,21 +1,18 @@
 #pragma once
 
 #include <exception>
+#include <string>
 
 namespace Core {
 class ConfigurationException : public std::exception {
   public:
-    ConfigurationException(const char* message) : mMessage(message) {}
+    explicit ConfigurationException(std::string message) : mMessage(std::move(message)) {}
 
     ~ConfigurationException() = default;
 
-    inline const char* what() const noexcept override;
+    const char* what() const noexcept override { return mMessage.c_str(); }
 
   private:
-    const char* mMessage;
+    std::string mMessage;
 };
-
-const char* ConfigurationException::what() const noexcept {
-    return mMessage;
-}
 } // namespace Core

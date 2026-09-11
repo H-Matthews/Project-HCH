@@ -2,13 +2,13 @@
 
 #include "core/Messaging/Message.hpp"
 #include "core/Messaging/MessageNode.hpp"
+#include "core/Configuration/ConfigSection/ConfigSection.hpp"
 
-#include "core/Configuration/Configurables/Configurable.hpp"
-
-#include "utility/Logging/LogRegistry.hpp"
+#include "utility/Logging/Logger.hpp"
 
 #include <queue>
 #include <map>
+#include <memory>
 #include <set>
 
 namespace Core {
@@ -27,20 +27,17 @@ struct PublisherNodeInfo {
     PublisherNodeInfo(const std::string& nodeName) : mNodeName(nodeName) {}
 };
 
-/**
- * MessageNetwork defines a basic Pub / Sub system. This class contains the data structures that
- * operate as the "network" NOTE: Not Thread safe
- */
-class MessageNetwork : public Configurable {
+class MessageNetwork {
   public:
-    static const std::string TYPE_NAME;
+    static constexpr std::string_view SECTION_NAME = "MessageNetwork";
 
-  public:
-    MessageNetwork();
+    explicit MessageNetwork(const ConfigSection* config = nullptr);
 
     void notifySubscribers();
 
     void shutdownNetwork();
+
+    void initializeLogger();
 
   private:
     void registerSubscriberNode(const std::string& nodeName,
@@ -53,9 +50,6 @@ class MessageNetwork : public Configurable {
     void unRegisterSubscriberNode(const std::string& nodeName);
     void unRegisterPublisherNode(const std::string& nodeName);
 
-    // These functions do not Immediately remove the topics from each Node. It puts the request into
-    // the data structures mPendingPublisherRequests & mPendingSubscriberRequests The function
-    // addressPendingRequests does the actual removal
     void removeTopicFromPublisher(const std::string& nodeName, Messages::ID messageID);
     void removeTopicFromSubscriber(const std::string& nodeName, Messages::ID messageID);
 
@@ -69,7 +63,6 @@ class MessageNetwork : public Configurable {
     std::map<std::size_t, std::set<Messages::ID>> mSubscriberNodes;
     std::map<std::size_t, std::set<Messages::ID>> mPublisherNodes;
 
-    // Used for storing information about the Publisher / Subscriber Node
     std::map<std::size_t, SubscriberNodeInfo> mSubscriberRecords;
     std::map<std::size_t, PublisherNodeInfo> mPublisherRecords;
 
@@ -77,6 +70,10 @@ class MessageNetwork : public Configurable {
     std::map<std::size_t, std::set<Messages::ID>> mPendingSubscriberRequests;
 
     std::hash<std::string> mHash;
+
+    const ConfigSection* mConfig;
+
+    std::shared_ptr<Utility::Logger> mLogger;
 
   public:
     friend class Core::MessageNode;

@@ -1,6 +1,6 @@
 #include "utility/Logging/LogLevel.hpp"
 
-const std::string Utility::logLevelEnumToString(const LogLevel identifier) {
+std::string Utility::logLevelEnumToString(const LogLevel identifier) {
     std::string tempString;
 
     switch (identifier) {
@@ -29,7 +29,7 @@ const std::string Utility::logLevelEnumToString(const LogLevel identifier) {
     return tempString;
 }
 
-Utility::LogLevel Utility::stringToLogLevelEnum(const std::string& logLevel) {
+Utility::LogLevel Utility::stringToLogLevelEnum(std::string_view logLevel) {
     LogLevel tempLevel = LogLevel::NONE;
 
     if (logLevel == "DEBUG") {

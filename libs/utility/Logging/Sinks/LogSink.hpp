@@ -19,22 +19,22 @@ class LogSink {
     virtual void sinkData(std::string_view message, LogLevel level,
                           const std::source_location location) = 0;
 
-    inline void setSinkLogLevel(LogLevel level);
+    void setSinkLogLevel(LogLevel level);
 
-    inline LogLevel getSinkLogLevel();
+    LogLevel getSinkLogLevel() const;
 
-    inline void setFormatter(std::unique_ptr<LogFormatter> formatter);
+    void setFormatter(std::unique_ptr<LogFormatter> formatter);
 
-    inline LogFormatter* getFormatter();
+    LogFormatter* getFormatter();
 
-    virtual ~LogSink() {}
+    virtual ~LogSink() = default;
 
   protected:
-    inline LogSink(const std::string& sinkIdentifier)
+    explicit LogSink(const std::string& sinkIdentifier)
         : mFormatter(nullptr), mSinkIdentifier(sinkIdentifier), mLevel(LogLevel::NONE){};
 
-    inline LogSink(const std::string& sinkIdentifier, std::unique_ptr<LogFormatter> formatter,
-                   LogLevel level = LogLevel::NONE)
+    explicit LogSink(const std::string& sinkIdentifier, std::unique_ptr<LogFormatter> formatter,
+                     LogLevel level = LogLevel::NONE)
         : mFormatter(std::move(formatter)), mSinkIdentifier(sinkIdentifier), mLevel(level){};
 
     // Pointer to the Format type
@@ -46,19 +46,19 @@ class LogSink {
     LogLevel mLevel;
 };
 
-void LogSink::setSinkLogLevel(LogLevel level) {
+inline void LogSink::setSinkLogLevel(LogLevel level) {
     mLevel = level;
 }
 
-LogLevel LogSink::getSinkLogLevel() {
+inline LogLevel LogSink::getSinkLogLevel() const {
     return mLevel;
 }
 
-void LogSink::setFormatter(std::unique_ptr<LogFormatter> formatter) {
+inline void LogSink::setFormatter(std::unique_ptr<LogFormatter> formatter) {
     mFormatter.swap(formatter);
 }
 
-LogFormatter* LogSink::getFormatter() {
+inline LogFormatter* LogSink::getFormatter() {
     return mFormatter.get();
 }
 } // namespace Utility

@@ -3,77 +3,52 @@
 #include "utility/Time.hpp"
 
 #include <iomanip>
-#include <iostream>
-#include <chrono>
+#include <sstream>
 
 Utility::KeyValueFormatter::KeyValueFormatter() : LogFormatter("KeyValue") {}
 
-std::string Utility::KeyValueFormatter::format(std::string message, LogLevel level,
-                                               const std::source_location location) {
-    std::stringstream tempBuffer;
-
-    // BEGIN FORMATTING
-
-    tempBuffer << "{ \n\t";
-
-    // Key: File
-    tempBuffer << "\"" << keysEnumToString(Keys::FILE) << "\"" << ":" << location.file_name()
-               << "\n\t";
-
-    // Key: Line
-    tempBuffer << "\"" << keysEnumToString(Keys::LINE) << "\"" << ":" << location.line() << "\n\t";
-
-    // Key: Function
-    tempBuffer << "\"" << keysEnumToString(Keys::FUNCTION) << "\"" << ":"
-               << location.function_name() << "\n\t";
-
-    // Key: Message
-    tempBuffer << "\"" << keysEnumToString(Keys::MESSAGE) << "\"" << ":" << message << "\n\t";
-
-    // Key: Log Level
-    tempBuffer << "\"" << keysEnumToString(Keys::LOG_LEVEL) << "\"" << ":"
-               << logLevelEnumToString(level) << "\n\t";
-
-    std::tm now_tm = Utility::getCurrentSystemTime();
-    // Key: Time
-    tempBuffer << "\"" << keysEnumToString(Keys::TIME) << "\"" << ":"
-               << std::put_time(&now_tm, "%H:%M:%S") << "\n";
-
-    // END
-    tempBuffer << "},";
-
-    return tempBuffer.str();
+static std::string jsonEscape(const std::string& s) {
+    std::string out;
+    out.reserve(s.size());
+    for (char c : s) {
+        if (c == '"')
+            out += "\\\"";
+        else if (c == '\\')
+            out += "\\\\";
+        else
+            out += c;
+    }
+    return out;
 }
 
-const std::string Utility::keysEnumToString(const Keys identifier) {
-    std::string buffer;
+std::string Utility::KeyValueFormatter::format(const std::string& message, LogLevel level,
+                                               const std::source_location location) {
+    std::tm now_tm = Utility::getCurrentSystemTime();
 
+    std::stringstream ss;
+    ss << "{" << "\"file\":\"" << jsonEscape(location.file_name()) << "\","
+       << "\"line\":" << location.line() << "," << "\"function\":\""
+       << jsonEscape(location.function_name()) << "\"," << "\"message\":\"" << jsonEscape(message)
+       << "\"," << "\"loglevel\":\"" << logLevelEnumToString(level) << "\"," << "\"time\":\""
+       << std::put_time(&now_tm, "%H:%M:%S") << "\"" << "}";
+
+    return ss.str();
+}
+
+std::string Utility::keysEnumToString(const Keys identifier) {
     switch (identifier) {
-    case Keys::FILE: {
-        buffer = "file";
-        break;
+    case Keys::FILE:
+        return "file";
+    case Keys::LINE:
+        return "line";
+    case Keys::FUNCTION:
+        return "function";
+    case Keys::TIME:
+        return "time";
+    case Keys::LOG_LEVEL:
+        return "loglevel";
+    case Keys::MESSAGE:
+        return "message";
     }
-    case Keys::LINE: {
-        buffer = "line";
-        break;
-    }
-    case Keys::FUNCTION: {
-        buffer = "function";
-        break;
-    }
-    case Keys::TIME: {
-        buffer = "time";
-        break;
-    }
-    case Keys::LOG_LEVEL: {
-        buffer = "loglevel";
-        break;
-    }
-    case Keys::MESSAGE: {
-        buffer = "message";
-        break;
-    }
-    }
-
-    return buffer;
+    return "";
 }

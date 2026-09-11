@@ -2,8 +2,8 @@
 
 #include "application/Settings/KeyBindings.hpp"
 
-#include "core/Configuration/Configurables/Configurable.hpp"
 #include "core/Configuration/Configuration.hpp"
+#include "core/Configuration/DirectoryLayout.hpp"
 #include "core/StateStack/StateStack.hpp"
 #include "core/Messaging/MessageNetwork.hpp"
 #include "core/GameAssetContainer/GameAssetContainer.hpp"
@@ -19,20 +19,15 @@
 #include <functional>
 
 namespace Core {
-class Application : public Core::Configurable {
+class Application {
   public:
-    enum class State {
-        NONE = 0, // This IS NOT a valid value, just used for default values
-        INITIALIZED,
-        RUNNING,
-        SHUTTING_DOWN
-    };
+    enum class State { NONE = 0, INITIALIZED, RUNNING, SHUTTING_DOWN };
 
     std::string convertAppStateEnumToString(const State& state) const;
     State convertStringToAppStateEnum(std::string_view stringState) const;
 
   public:
-    static const std::string TYPE_NAME;
+    static constexpr std::string_view SECTION_NAME = "Application";
 
     explicit Application(Core::ConfigSpec configSpec);
 
@@ -52,6 +47,7 @@ class Application : public Core::Configurable {
     void render();
 
     void loadResources();
+    void buildSubsystemLoggers();
 
     bool transitionState(State statusToTransfer);
 
@@ -62,6 +58,7 @@ class Application : public Core::Configurable {
     static const sf::Time TIME_PER_FRAME;
 
     std::unique_ptr<Core::Configuration> mConfiguration;
+    Core::DirectoryLayout mDirectories;
 
     State mState;
 
@@ -75,6 +72,8 @@ class Application : public Core::Configurable {
     // TODO: These need to go into a CORE Class
     // Application::KeyBindings mPlayerKeyBindings;
     sf::RenderWindow mWindow;
+
+    std::shared_ptr<Utility::Logger> mLogger;
 };
 
 inline MessageNetwork* Application::getNetwork() {
@@ -91,13 +90,9 @@ bool Application::isRunning() const {
 
 template <typename TState>
 requires(std::is_base_of_v<Core::State, TState>) void Application::pushState() {
-
     if ((int)mState <= 0)
         return;
 
     mStateStack.pushState<TState>();
-
-    return;
 }
-
 } // namespace Core

@@ -2,101 +2,71 @@
 
 #include "core/Exceptions/ConfigurationException.hpp"
 #include "core/Configuration/ConfigReader/ConfigReader.hpp"
+#include "core/Configuration/ConfigSection/ConfigSection.hpp"
 
-#include "utility/Logging/Sinks/ColorConsoleSink.hpp"
-#include "utility/Logging/LogRegistry.hpp"
-
-#include <string>
-#include <cmath>
-#include <functional>
 #include <map>
+#include <memory>
+#include <string>
+#include <string_view>
 #include <vector>
-#include <filesystem>
 
 namespace Core {
+/**
+ * Startup parameters passed to Configuration. Owns the ConfigReader implementation
+ * so the caller decides which file format is used without touching Configuration itself.
+ */
 struct ConfigSpec {
     std::string rootConfigFile;
     std::string configDirectory;
 
-    ConfigReader* configReader;
+    std::unique_ptr<ConfigReader> configReader;
 
-    ConfigSpec();
-    ConfigSpec(const ConfigSpec& other) = default;
+    ConfigSpec() = default;
+    ConfigSpec(const ConfigSpec&) = delete;
+    ConfigSpec& operator=(const ConfigSpec&) = delete;
+    ConfigSpec(ConfigSpec&&) = default;
+    ConfigSpec& operator=(ConfigSpec&&) = default;
 };
 
-enum DirectoryIDs { OUTPUT = 0, CONFIG, ASSETS, SIZE };
-
 /**
- * Configuration sets up the Config Directory, Output Directory, Game asset file paths
- * Utilizes a TOML parser
+ * Parses the project's config files and serves their contents to subsystems
+ * as scoped ConfigSection objects
  */
 class Configuration {
   public:
+    static constexpr std::string_view SECTION_NAME = "Configuration";
+
     explicit Configuration(ConfigSpec configSpec);
-
-    void setDirectoryInit(DirectoryIDs directoryID);
-
-    bool isInitialized() const;
-
-    bool isConfigInitialized() const;
-
     ~Configuration() = default;
 
+    /**
+     * Returns a non-owning pointer to the named top-level section, or nullptr
+     * if the section is not present. The returned pointer is valid for the
+     * lifetime of this Configuration object.
+     */
+    const ConfigSection* getSection(std::string_view name) const;
+
   private:
-    void configure();
-
-    void initializeOutputDirectory();
-    void initializeAssetsDirectory();
-
     void parse();
-    std::pair<bool, std::string> parseRootFile();
-    std::pair<bool, std::string> parseConfigFiles();
+    std::unique_ptr<ConfigSection> parseRootFile();
+    std::vector<std::unique_ptr<ConfigSection>> parseConfigFiles();
 
-    std::pair<bool, std::filesystem::path> buildConfigFilePath(const std::string& configFile);
-
-    void initializeGlobalLogger();
-
-  public:
-    std::string mProjectDirectory;
-
-    std::string mRootFile;
-    std::string mConfigDirectory;
+    void indexFile(const ConfigSection& fileRoot, const std::string& sourcePath,
+                   std::map<std::string, std::string>& sectionSource);
 
     std::string mConfigDirPath;
-    std::string mOutputDirPath;
+    std::string mRootFile;
 
-    std::string mAssetDirPath;
-    std::string mAssetFontsDirPath;
-    std::string mAssetTexturesDirPath;
-
-  private:
     std::unique_ptr<ConfigReader> mConfigReader;
 
     std::vector<std::string> mConfigFiles;
 
-    // Default Filepath information
-    static const std::string DEFAULT_OUTPUT_DIR_NAME;
-    static const std::string DEFAULT_ASSET_DIR_NAME;
-    static const std::string DEFAULT_ASSET_FONTS_DIR_NAME;
-    static const std::string DEFAULT_ASSET_TEXTURES_DIR_NAME;
+    std::vector<std::unique_ptr<ConfigSection>> mOwnedSections;
+    std::map<std::string, const ConfigSection*, std::less<>> mIndex;
 
-  private:
-    unsigned int mDirectoryBits : 3;
+    struct RootFilesSection {
+        static constexpr std::string_view NAME = "Configuration_Files";
+        static constexpr std::string_view FILES = "files";
+    };
 };
-
-inline void Configuration::setDirectoryInit(DirectoryIDs directoryID) {
-    mDirectoryBits = mDirectoryBits | 1 << directoryID;
-
-    return;
-}
-
-inline bool Configuration::isInitialized() const {
-    // 7 is from 2^3 - 1
-    return mDirectoryBits == (std::pow(2, (float)DirectoryIDs::SIZE)) - 1;
-}
-
-inline bool Configuration::isConfigInitialized() const {
-    // 2 is the ENUM value for CONFIG
-    return mDirectoryBits == std::pow(2, (float)DirectoryIDs::CONFIG);
-}
 } // namespace Core

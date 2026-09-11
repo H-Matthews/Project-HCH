@@ -1,18 +1,41 @@
 #pragma once
 
 #include "utility/Logging/Sinks/LogSink.hpp"
-#include "utility/Logging/Builder/LoggerBuilder.hpp"
 
 #include <vector>
 
 namespace Utility {
 
-// APP_DEBUG is defined by the CMake build
-#ifdef APP_DEBUG
-constexpr bool CAN_LOG(true);
+// This define can be passed as a CMake Define to control the LOG_LEVEL gates
+// If building in DEBUG and no LOG_LEVEL is defined via CMake, then it defaults to DEBUG;
+// Release defaults to WARN.
+//
+// If a LOG_LEVEL is defined via CMake, then its set to that level
+#if defined(LOG_LEVEL_NONE)
+constexpr LogLevel MIN_LOG_LEVEL(LogLevel::NONE);
+#elif defined(LOG_LEVEL_DEBUG)
+constexpr LogLevel MIN_LOG_LEVEL(LogLevel::DEBUG);
+#elif defined(LOG_LEVEL_INFO)
+constexpr LogLevel MIN_LOG_LEVEL(LogLevel::INFO);
+#elif defined(LOG_LEVEL_WARN)
+constexpr LogLevel MIN_LOG_LEVEL(LogLevel::WARN);
+#elif defined(LOG_LEVEL_ERROR)
+constexpr LogLevel MIN_LOG_LEVEL(LogLevel::ERROR);
+#elif defined(APP_DEBUG)
+constexpr LogLevel MIN_LOG_LEVEL(LogLevel::DEBUG);
 #else
-constexpr bool CAN_LOG(false);
+constexpr LogLevel MIN_LOG_LEVEL(LogLevel::WARN);
 #endif
+
+// True if MIN_LOG_LEVEL is NOT None
+constexpr bool CAN_LOG(MIN_LOG_LEVEL != LogLevel::NONE);
+
+// Per-level gates: Wraps call sites so message construction is also stripped
+// when the level is disabled.
+constexpr bool CAN_LOG_DEBUG(CAN_LOG&& LogLevel::DEBUG >= MIN_LOG_LEVEL);
+constexpr bool CAN_LOG_INFO(CAN_LOG&& LogLevel::INFO >= MIN_LOG_LEVEL);
+constexpr bool CAN_LOG_WARN(CAN_LOG&& LogLevel::WARN >= MIN_LOG_LEVEL);
+constexpr bool CAN_LOG_ERROR(CAN_LOG&& LogLevel::ERROR >= MIN_LOG_LEVEL);
 
 /**
  * Main Logger Class
@@ -22,15 +45,33 @@ constexpr bool CAN_LOG(false);
  */
 class Logger {
   public:
-    typedef std::vector<std::shared_ptr<LogSink>> SinkList;
+    using SinkList = std::vector<std::shared_ptr<LogSink>>;
+
+    class Builder {
+      public:
+        Builder();
+        Builder& name(std::string n);
+        Builder& globalLogLevel(LogLevel level);
+        Builder& sinks(SinkList sinks);
+        std::shared_ptr<Logger> build();
+
+      private:
+        std::shared_ptr<Logger> mLogger;
+    };
+
+    static Builder make();
 
     Logger();
-    Logger(const std::string& loggerName, Utility::LogLevel level = Utility::LogLevel::NONE);
 
-    Logger(const std::string& loggerName, std::shared_ptr<Utility::LogSink> sink,
+    // Creates a logger with no sinks
+    explicit Logger(std::string loggerName, Utility::LogLevel level = Utility::LogLevel::NONE);
+
+    // Creates a logger with a single sink
+    Logger(std::string loggerName, std::shared_ptr<Utility::LogSink> sink,
            Utility::LogLevel level = Utility::LogLevel::NONE);
 
-    Logger(const std::string& loggerName, Utility::Logger::SinkList sinks,
+    // Creates a logger with potentiall multiple sinks
+    Logger(std::string loggerName, Utility::Logger::SinkList sinks,
            Utility::LogLevel level = Utility::LogLevel::NONE);
 
     void logDebug(std::string_view message,
@@ -44,13 +85,13 @@ class Logger {
 
     bool shouldLog(LogLevel level, LogLevel sinkLevel) const;
 
-    inline void setGlobalLogLevel(LogLevel gLevel);
+    void setGlobalLogLevel(LogLevel gLevel);
 
-    inline LogLevel getGlobalLogLevel() const;
-    inline const std::string getGlobalLogLevelAsString() const;
+    LogLevel getGlobalLogLevel() const;
+    std::string getGlobalLogLevelAsString() const;
 
-    inline void setLoggerName(const std::string& name);
-    inline const std::string& getLoggerName() const;
+    void setLoggerName(std::string name);
+    const std::string& getLoggerName() const;
 
     // Inserts a single sink into mSinks
     void addSink(std::shared_ptr<LogSink> sink);
@@ -65,9 +106,6 @@ class Logger {
     // Define as a friend
     friend void createGlobalLogger();
 
-    inline static LoggerBuilder build();
-    friend class LoggerBuilder;
-
   private:
     void sinkIt(std::string_view message, LogLevel level, const std::source_location location);
     void toggleGlobalLogger();
@@ -80,30 +118,25 @@ class Logger {
     bool mIsGlobalLogger = false;
 };
 
-void Logger::setGlobalLogLevel(Utility::LogLevel gLevel) {
+inline void Logger::setGlobalLogLevel(Utility::LogLevel gLevel) {
     mGlobalLogLevel = gLevel;
 }
 
-LogLevel Logger::getGlobalLogLevel() const {
+inline LogLevel Logger::getGlobalLogLevel() const {
     return mGlobalLogLevel;
 }
 
-const std::string Logger::getGlobalLogLevelAsString() const {
+inline std::string Logger::getGlobalLogLevelAsString() const {
     const std::string loggerAsString = Utility::logLevelEnumToString(mGlobalLogLevel);
     return loggerAsString;
 }
 
-void Logger::setLoggerName(const std::string& name) {
-    mLoggerName = name;
+inline void Logger::setLoggerName(std::string name) {
+    mLoggerName = std::move(name);
 }
 
-const std::string& Logger::getLoggerName() const {
+inline const std::string& Logger::getLoggerName() const {
     return mLoggerName;
-}
-
-Utility::LoggerBuilder Utility::Logger::build() {
-    Logger* logger = new Logger();
-    return Utility::LoggerBuilder(logger);
 }
 
 // Creates a Global Logger

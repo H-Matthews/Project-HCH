@@ -43,6 +43,21 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
+# Compile-time minimum log level. Empty = derive from build config (Debug=>DEBUG, Release=>WARN).
+# Override with -DLOG_LEVEL=<NONE|DEBUG|INFO|WARN|ERROR>.
+set(LOG_LEVEL "" CACHE STRING
+    "Compile-time minimum log level: NONE, DEBUG, INFO, WARN, ERROR. Empty derives from build config.")
+set_property(CACHE LOG_LEVEL PROPERTY STRINGS "" NONE DEBUG INFO WARN ERROR)
+
+set(LOG_LEVEL_DEFINE "")
+if(LOG_LEVEL)
+    set(_VALID_LOG_LEVELS NONE DEBUG INFO WARN ERROR)
+    if(NOT LOG_LEVEL IN_LIST _VALID_LOG_LEVELS)
+        message(FATAL_ERROR "LOG_LEVEL must be one of: ${_VALID_LOG_LEVELS} (got '${LOG_LEVEL}')")
+    endif()
+    set(LOG_LEVEL_DEFINE "LOG_LEVEL_${LOG_LEVEL}")
+endif()
+
 # Determine build type depending on generator used
 if(CMAKE_CONFIGURATION_TYPES)
     set(CONFIG_TYPE "")
