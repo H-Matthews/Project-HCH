@@ -67,12 +67,10 @@ class Logger {
     explicit Logger(std::string loggerName, LogLevel level = LogLevel::NONE);
 
     // Creates a logger with a single sink
-    Logger(std::string loggerName, std::shared_ptr<LogSink> sink,
-           LogLevel level = LogLevel::NONE);
+    Logger(std::string loggerName, std::shared_ptr<LogSink> sink, LogLevel level = LogLevel::NONE);
 
     // Creates a logger with potentiall multiple sinks
-    Logger(std::string loggerName, SinkList sinks,
-           LogLevel level = LogLevel::NONE);
+    Logger(std::string loggerName, SinkList sinks, LogLevel level = LogLevel::NONE);
 
     void logDebug(std::string_view message,
                   const std::source_location location = std::source_location::current());

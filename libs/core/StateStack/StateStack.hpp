@@ -58,8 +58,7 @@ class StateStack {
         std::function<std::unique_ptr<State>()> stateConstructor;
     };
 
-    std::unique_ptr<State>
-    createState(const PendingStateRequest& changeRequest);
+    std::unique_ptr<State> createState(const PendingStateRequest& changeRequest);
 
   private:
     std::vector<std::unique_ptr<State>> mStack;
@@ -71,8 +70,7 @@ class StateStack {
     std::shared_ptr<Utility::Logger> mLogger;
 };
 
-template <typename TState>
-requires(std::is_base_of_v<State, TState>) void StateStack::pushState() {
+template <typename TState> requires(std::is_base_of_v<State, TState>) void StateStack::pushState() {
     PendingStateRequest request(Action::PUSH);
     request.stateConstructor = []() { return std::unique_ptr<State>(new TState()); };
     mPendingRequests.push_back(request);

@@ -32,8 +32,7 @@ class State {
     void setStackRef(StateStack* stack);
 
   protected:
-    template <typename TState>
-    requires(std::is_base_of_v<State, TState>) void requestStackPush();
+    template <typename TState> requires(std::is_base_of_v<State, TState>) void requestStackPush();
 
     void requestStackPop();
     void requestStateClear();

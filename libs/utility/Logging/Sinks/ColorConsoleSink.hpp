@@ -52,5 +52,5 @@ class ColorConsoleSink : public LogSink {
 // Convenience function
 // Creates Logger with the necessary Sink. Registers with LogRegistry
 std::shared_ptr<Logger> createColorConsoleLogger(const std::string& loggerName,
-                                                          LogLevel level = LogLevel::NONE);
+                                                 LogLevel level = LogLevel::NONE);
 } // namespace Utility
