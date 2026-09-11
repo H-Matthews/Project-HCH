@@ -2,53 +2,44 @@
 
 #include "application/Scene/ECS/Components/PlayerInputComponent.hpp"
 
-System::PlayerInputSystem::PlayerInputSystem( Core::MessageNetwork& network ) :
-    Core::MessageNode( network, "PlayerInput System", Core::NodeType::SUBSCRIBER )
-{
+System::PlayerInputSystem::PlayerInputSystem(Core::MessageNetwork& network)
+    : Core::MessageNode(network, "PlayerInput System", Core::NodeType::SUBSCRIBER) {
     // Set Subscriber Topics
-    MessageNode::addTopic( Messages::ID::PlayerActionMessage );
+    MessageNode::addTopic(Messages::ID::PlayerActionMessage);
 }
 
-void System::PlayerInputSystem::onNotify( Core::Message* message )
-{
-    Application::PlayerInputMessage* playerInput = dynamic_cast< Application::PlayerInputMessage* >( message );
-    if ( playerInput )
-    {
+void System::PlayerInputSystem::onNotify(Core::Message* message) {
+    Application::PlayerInputMessage* playerInput =
+        dynamic_cast<Application::PlayerInputMessage*>(message);
+    if (playerInput) {
         // Grab PlayerInput Component data
-        auto view = mRegistry->view< Component::PlayerInputComponent >();
-        auto& playerInputData = view.get< Component::PlayerInputComponent >( *( view.begin() ) );
+        auto view = mRegistry->view<Component::PlayerInputComponent>();
+        auto& playerInputData = view.get<Component::PlayerInputComponent>(*(view.begin()));
 
         // Modify PlayerInputData
-        switch ( playerInput->action )
-        {
-            case Actions::Player::NONE:
-            {
-                break;
-            }
-            case Actions::Player::MOVE_UP:
-            {
-                playerInputData.mPlayerVelocity.y -= playerInputData.SPEED;
-                break;
-            }
-            case Actions::Player::MOVE_DOWN:
-            {
-                playerInputData.mPlayerVelocity.y += playerInputData.SPEED;
-                break;
-            }
-            case Actions::Player::MOVE_LEFT:
-            {
-                playerInputData.mPlayerVelocity.x -= playerInputData.SPEED;
-                break;
-            }
-            case Actions::Player::MOVE_RIGHT:
-            {
-                playerInputData.mPlayerVelocity.x += playerInputData.SPEED;
-                break;
-            }
-            case Actions::Player::JUMP:
-            {
-                break;
-            }
+        switch (playerInput->action) {
+        case Actions::Player::NONE: {
+            break;
+        }
+        case Actions::Player::MOVE_UP: {
+            playerInputData.mPlayerVelocity.y -= playerInputData.SPEED;
+            break;
+        }
+        case Actions::Player::MOVE_DOWN: {
+            playerInputData.mPlayerVelocity.y += playerInputData.SPEED;
+            break;
+        }
+        case Actions::Player::MOVE_LEFT: {
+            playerInputData.mPlayerVelocity.x -= playerInputData.SPEED;
+            break;
+        }
+        case Actions::Player::MOVE_RIGHT: {
+            playerInputData.mPlayerVelocity.x += playerInputData.SPEED;
+            break;
+        }
+        case Actions::Player::JUMP: {
+            break;
+        }
         }
     }
 

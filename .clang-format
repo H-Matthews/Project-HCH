@@ -1,58 +1,49 @@
-# C/C++ Code Style Settings
-
+---
+# Declare the language configuration is for
 Language: Cpp
-AccessModifierOffset: -2
-AlignAfterOpenBracket: DontAlign
-AlignOperands: true
-AllowShortBlocksOnASingleLine: Never
-AllowShortFunctionsOnASingleLine: None
-AllowShortIfStatementsOnASingleLine: Never
-AlwaysBreakTemplateDeclarations: true
-BracedInitializerIndentWidth: 2
-BreakBeforeBraces: Custom
-BraceWrapping:
-  AfterCaseLabel: true
-  AfterClass: true
-  AfterStruct: true
-  AfterControlStatement: Always
-  AfterEnum: true
-  AfterFunction: true
-  AfterNamespace: true
-  AfterUnion: true
-  AfterExternBlock: true
-  BeforeCatch: true
-  BeforeElse: true
-  BeforeLambdaBody: true
-  IndentBraces: false
-  SplitEmptyFunction: false
-  SplitEmptyRecord: false
-  SplitEmptyNamespace: false
-BreakConstructorInitializers: AfterColon
-ColumnLimit: 120
-CompactNamespaces: false
-ContinuationIndentWidth: 4
-Cpp11BracedListStyle: false
-FixNamespaceComments: false
-IndentCaseBlocks: false
-IndentCaseLabels: true
+
+# Base the formatting on the industry-standard LLVM profile
+BasedOnStyle: LLVM
+
+# Use the latest language standards (C++20, C++23) to avoid parsing glitches
+Standard: c++17
+
+# --- INDENTATION & SPACING ---
+# 4 spaces is universally readable for most developers
 IndentWidth: 4
-IncludeBlocks: Preserve
-NamespaceIndentation: All
-PackConstructorInitializers: Never
-PointerAlignment: Left
-SortIncludes: false
-SpaceBeforeAssignmentOperators: true
-SpaceBeforeCtorInitializerColon: true
-SpaceBeforeInheritanceColon: true
-SpacesInAngles: Always
-SpacesInParens: Custom
-SpacesInParensOptions:
-  ExceptDoubleParentheses: false
-  InConditionalStatements: false
-  InCStyleCasts: false
-  InEmptyParentheses: false
-  Other: true
-SpacesInSquareBrackets: true
-Standard: c++20
 TabWidth: 4
 UseTab: Never
+
+# Do not indent code blocks inside namespaces
+NamespaceIndentation: None
+
+# Indent 'public:' and 'private:' keywords by 2 spaces instead of flushing left
+AccessModifierOffset: -2
+
+# --- LINE LIMITS ---
+# 100 characters fits perfectly on modern monitors without wrapping too early
+ColumnLimit: 100
+
+# --- BRACE & WRAPPING RULES ---
+# Attach braces to control statements, functions, and classes (Attach/K&R style)
+BreakBeforeBraces: Attach
+
+# Clean up short blocks so they don't awkwardly squish into one line
+AllowShortBlocksOnASingleLine: Never
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+
+# --- ALIGNMENT ---
+# Pack parameters cleanly if they cross multiple lines
+AlignAfterOpenBracket: Align
+AlignOperands: Align
+AlignTrailingComments: true
+
+# Bind pointers to the type (int* ptr) rather than the variable (int *ptr)
+PointerAlignment: Left
+
+# --- INCLUDES ---
+# Completely disable sorting, grouping, or modifying include directives
+SortIncludes: Never
+...

@@ -4,18 +4,16 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 
-namespace Application
-{
-    class MenuState : public Core::State
-    {
-      public:
-        static std::string IDENTIFIER;
+namespace Application {
+class MenuState : public Core::State {
+  public:
+    static std::string IDENTIFIER;
 
-        MenuState();
+    MenuState();
 
-        virtual void draw();
-        virtual bool update( sf::Time fixedTimeStep );
-        bool handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent ) override;
-        bool handleMouseMoved( const sf::Event::MouseMoved& mouseMovedEvent ) override;
-    };
-}
+    virtual void draw();
+    virtual bool update(sf::Time fixedTimeStep);
+    bool handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) override;
+    bool handleMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent) override;
+};
+} // namespace Application

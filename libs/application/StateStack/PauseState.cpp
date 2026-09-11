@@ -9,9 +9,7 @@
 
 std::string Application::PauseState::IDENTIFIER = "PAUSE";
 
-Application::PauseState::PauseState() :
-    State( IDENTIFIER )
-{
+Application::PauseState::PauseState() : State(IDENTIFIER) {
     std::cout << "Creating " << getStateName() << " State" << std::endl;
 
     std::cout << "Controls: --------------------------------" << std::endl;
@@ -19,28 +17,22 @@ Application::PauseState::PauseState() :
     std::cout << "Escape: Return to Game " << std::endl;
 }
 
-void Application::PauseState::draw()
-{
+void Application::PauseState::draw() {
     // Draw Game related things to window here
 }
 
-bool Application::PauseState::update( sf::Time fixedTimeStep )
-{
+bool Application::PauseState::update(sf::Time fixedTimeStep) {
     return false;
 }
 
-bool Application::PauseState::handleKeyPressed( const sf::Event::KeyPressed& keyPressedEvent )
-{
+bool Application::PauseState::handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) {
     // Pops the Pause State, returning to the GameState
-    if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape)
-    {
+    if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape) {
         requestStackPop();
-    }
-    else if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Backspace)
-    {
+    } else if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Backspace) {
         // Remove all states and push Menu
         requestStateClear();
-        requestStackPush< Application::MenuState >();
+        requestStackPush<Application::MenuState>();
     }
 
     return false;
