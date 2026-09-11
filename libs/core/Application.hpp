@@ -17,19 +17,27 @@
 
 #include <string>
 #include <functional>
+#include <optional>
 
 namespace Core {
+
+enum class ApplicationState {
+    UNINITIALIZED = 0,
+    INITIALIZED,
+    RUNNING,
+    SHUTTING_DOWN
+};
+
+std::string convertAppStateEnumToString(const ApplicationState& appState);
+std::optional<ApplicationState> convertStringToAppStateEnum(std::string_view stringState);
+
 class Application {
-  public:
-    enum class State { NONE = 0, INITIALIZED, RUNNING, SHUTTING_DOWN };
-
-    std::string convertAppStateEnumToString(const State& state) const;
-    State convertStringToAppStateEnum(std::string_view stringState) const;
-
   public:
     static constexpr std::string_view SECTION_NAME = "Application";
 
     explicit Application(ConfigSpec configSpec);
+
+    bool requestTransition(ApplicationState nextState);
 
     MessageNetwork* getNetwork();
 
@@ -50,6 +58,7 @@ class Application {
     void buildSubsystemLoggers();
 
     bool transitionState(State statusToTransfer);
+    bool isValidTransition(ApplicationState from, ApplicationState to) const;
 
     inline bool isInitialized() const;
     inline bool isRunning() const;
@@ -60,7 +69,7 @@ class Application {
     std::unique_ptr<Configuration> mConfiguration;
     DirectoryLayout mDirectories;
 
-    State mState;
+    ApplicationState mState = ApplicationState::UNINITIALIZED;
 
     // Should this go here? or in the GameState?
     TextureHolder mTextures;

@@ -5,6 +5,7 @@
 #include <vector>
 
 namespace Utility {
+
 template <typename T> const std::string toString(const T& value);
 
 template <typename T> const std::string toString(const T& value) {
@@ -22,6 +23,8 @@ bool containsWhiteSpace(const std::string& stringToCheck);
 
 std::string removeAllSpaces(const std::string& stringToModify);
 std::string removeQuotes(const std::string& stringToModify);
+
+void toUpper(std::string inputString);
 
 void splitString(const std::string& stringToSplit, std::vector<std::string>& splitStrings,
                  const char delimiter);

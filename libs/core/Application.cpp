@@ -1,16 +1,58 @@
 #include "core/Application.hpp"
+
 #include "core/Configuration/LoggerBuilder.hpp"
 #include "core/Exceptions/ConfigurationException.hpp"
 
+#include "utility/StringOperations.hpp"
 #include "utility/Logging/LogRegistry.hpp"
 
 #include <SFML/Graphics.hpp>
 
-const sf::Time Core::Application::TIME_PER_FRAME = sf::seconds(1.0f / 120.0f);
+namespace Core {
 
-Core::Application::Application(Core::ConfigSpec configSpec)
-    : mConfiguration(std::make_unique<Core::Configuration>(std::move(configSpec))),
-      mDirectories(mConfiguration->getSection(Configuration::SECTION_NAME)), mState(State::NONE),
+const sf::Time Application::TIME_PER_FRAME = sf::seconds(1.0f / 120.0f);
+
+std::string convertAppStateEnumToString(const ApplicationState& appState) {
+    switch(appState) {
+        case ApplicationState::UNINITIALIZED:
+            return "UNINITIALIZED";
+        case ApplicationState::INITIALIZED:
+            return "INITIALIZED";
+        case ApplicationState::RUNNING:
+            return "RUNNING";
+        case ApplicationState::SHUTTING_DOWN:
+            return "SHUTTING_DOWN";
+        default:
+            return "";
+    }
+}
+
+std::optional<Core::ApplicationState> convertStringToAppStateEnum(std::string_view stringState) {
+    std::string upperStateStr(stringState);
+
+    Utility::toUpper(upperStateStr);
+
+    std::optional<ApplicationState> appStateEnum = std::nullopt;
+
+    if(upperStateStr == "UNINITIALIZED") {
+        appStateEnum = ApplicationState::UNINITIALIZED;
+    }
+    else if(upperStateStr == "INITIALIZED") {
+        appStateEnum = ApplicationState::INITIALIZED;
+    }
+    else if(upperStateStr == "RUNNING") {
+        appStateEnum = ApplicationState::RUNNING;
+    }
+    else if(upperStateStr == "SHUTTING_DOWN") {
+        appStateEnum = ApplicationState::SHUTTING_DOWN;
+    }
+
+    return appStateEnum;
+}
+
+Core::Application::Application(ConfigSpec configSpec)
+    : mConfiguration(std::make_unique<Configuration>(std::move(configSpec))),
+      mDirectories(mConfiguration->getSection(Configuration::SECTION_NAME)), mState(ApplicationState::UNINITIALIZED),
       mTextures(), mNetwork(mConfiguration->getSection(MessageNetwork::SECTION_NAME)),
       mStateStack(*this, mConfiguration->getSection(StateStack::SECTION_NAME)),
       mWindow(sf::VideoMode({640, 480}), "Application Window", sf::Style::Close) {
@@ -18,7 +60,7 @@ Core::Application::Application(Core::ConfigSpec configSpec)
         Utility::LogRegistry::instance()->configureRegistry(mDirectories.outputDirectory());
 
         if (auto appSection = mConfiguration->getSection(SECTION_NAME))
-            mLogger = Core::buildLogger(*appSection);
+            mLogger = buildLogger(*appSection);
 
         // NOTE: This call MUST be after LogRegistry::configureRegistry. If not, then the Logger
         //       May not get initialized correctly
@@ -26,35 +68,54 @@ Core::Application::Application(Core::ConfigSpec configSpec)
     }
 }
 
-void Core::Application::initialize() {
+bool Application::requestTransition(ApplicationState nextState) {
+    if (!isValidTransition(mState, nextState)) {
+        // LOG HERE
+        return false;
+    }
+
+    ApplicationState prev = mState;
+    mState = nextState;
+
+    // Notify state change through event system
+    // mMessageNetwork.broadcast(EngineStatusChangedEvent{prev, mstate});
+
+    return true;
+}
+
+void Application::initialize() {
     if (!mConfiguration)
         throw ConfigurationException("Configuration is NULL");
 
     loadResources();
 
-    transitionState(State::INITIALIZED);
-
-    return;
+    requestTransition(ApplicationState::INITIALIZED);
 }
 
-void Core::Application::run() {
-    if (!transitionState(State::RUNNING)) {
+void Application::run() {
+    // if (!transitionState(State::RUNNING)) {
+    //     std::string exceptionMessage =
+    //         "Application is unable to transition to STATE:RUNNING; Currently: STATE:" +
+    //         convertAppStateEnumToString(mState);
+
+    //     if (isInitialized()) {
+    //         exceptionMessage += " The application requires a State to be pushed onto the Stack";
+    //     } else {
+    //         exceptionMessage += " The Application is NOT initialized, call initialize()";
+    //     }
+
+    //     if constexpr (Utility::CAN_LOG_ERROR) {
+    //         if (mLogger)
+    //             mLogger->logError(exceptionMessage);
+    //     }
+
+    //     throw ConfigurationException(exceptionMessage);
+    // }
+
+    if (!requestTransition(ApplicationState::RUNNING)) {
         std::string exceptionMessage =
             "Application is unable to transition to STATE:RUNNING; Currently: STATE:" +
             convertAppStateEnumToString(mState);
-
-        if (isInitialized()) {
-            exceptionMessage += " The application requires a State to be pushed onto the Stack";
-        } else {
-            exceptionMessage += " The Application is NOT initialized, call initialize()";
-        }
-
-        if constexpr (Utility::CAN_LOG_ERROR) {
-            if (mLogger)
-                mLogger->logError(exceptionMessage);
-        }
-
-        throw ConfigurationException(exceptionMessage);
     }
 
     if constexpr (Utility::CAN_LOG_INFO)
@@ -88,7 +149,7 @@ void Core::Application::run() {
         mLogger->logInfo("Exiting main RUN loop");
 }
 
-void Core::Application::processInput() {
+void Application::processInput() {
     // SFMLs Window Class will detect events and then call these functions if the event matches
     // When needed, Add Event Subtypes here
 
@@ -105,11 +166,11 @@ void Core::Application::processInput() {
     mNetwork.notifySubscribers();
 }
 
-void Core::Application::update(sf::Time fixedTimeStep) {
+void Application::update(sf::Time fixedTimeStep) {
     mStateStack.update(fixedTimeStep);
 }
 
-void Core::Application::render() {
+void Application::render() {
     mWindow.clear(sf::Color::Cyan);
 
     mStateStack.draw();
@@ -118,7 +179,7 @@ void Core::Application::render() {
     mWindow.display();
 }
 
-void Core::Application::loadResources() {
+void Application::loadResources() {
     // auto fontTexturePaths = mConfiguration->getAssetPaths();
     // std::string texturePath = fontTexturePaths.first;
     // std::string fontPath = fontTexturePaths.second;
@@ -132,98 +193,26 @@ void Core::Application::loadResources() {
     return;
 }
 
-void Core::Application::buildSubsystemLoggers() {
+void Application::buildSubsystemLoggers() {
     mNetwork.initializeLogger();
     mStateStack.initializeLogger();
 }
 
-bool Core::Application::transitionState(State statusToTransfer) {
-    bool retStatus = false;
-
-    if (mState == statusToTransfer)
-        return retStatus;
-
-    using enum Core::Application::State;
-
-    switch (statusToTransfer) {
-    case NONE: {
-        // DO NOTHING
-
-        break;
-    }
-    case INITIALIZED: {
-        if (mState == NONE) {
-            mState = statusToTransfer;
-            retStatus = true;
+bool Application::isValidTransition(ApplicationState from, ApplicationState to) const {
+    switch(from) {
+        case ApplicationState::UNINITIALIZED: {
+            return to == ApplicationState::INITIALIZED;
         }
-
-        break;
-    }
-    case RUNNING: {
-        if (mState == INITIALIZED && !mStateStack.isPendingListEmpty()) {
-            mState = statusToTransfer;
-            retStatus = true;
+        case ApplicationState::INITIALIZED: {
+            return to == ApplicationState::RUNNING;
         }
-
-        break;
-    }
-    case SHUTTING_DOWN: {
-        if (mState == RUNNING) {
-            mState = statusToTransfer;
-            retStatus = true;
+        case ApplicationState::RUNNING: {
+            return to == ApplicationState::SHUTTING_DOWN;
         }
-
-        break;
+        default: {
+            return false;
+        }
     }
-    }
-
-    return retStatus;
 }
 
-std::string Core::Application::convertAppStateEnumToString(const State& state) const {
-    std::string retString;
-
-    using enum Core::Application::State;
-
-    switch (state) {
-    case NONE: {
-        retString = "NONE";
-
-        break;
-    }
-    case INITIALIZED: {
-        retString = "INITIALIZED";
-
-        break;
-    }
-    case RUNNING: {
-        retString = "RUNNING";
-
-        break;
-    }
-    case SHUTTING_DOWN: {
-        retString = "SHUTTING_DOWN";
-
-        break;
-    }
-    }
-
-    return retString;
-}
-
-Core::Application::State
-Core::Application::convertStringToAppStateEnum(std::string_view stringState) const {
-    using enum Core::Application::State;
-
-    State retState = NONE;
-
-    if (stringState == "INITIALIZED") {
-        retState = INITIALIZED;
-    } else if (stringState == "RUNNING") {
-        retState = RUNNING;
-    } else if (stringState == "SHUTTING_DOWN") {
-        retState = SHUTTING_DOWN;
-    }
-
-    return retState;
-}
+} // NAMESPACE CORE
