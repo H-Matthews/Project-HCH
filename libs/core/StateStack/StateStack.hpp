@@ -36,7 +36,7 @@ class StateStack {
     void handleMouseMoved(const sf::Event::MouseMoved& mouseMoved);
     void handleRealTimeInput();
 
-    template <typename TState> requires(std::is_base_of_v<Core::State, TState>) void pushState();
+    template <typename TState> requires(std::is_base_of_v<State, TState>) void pushState();
 
     void popState();
     void clearStates();
@@ -55,14 +55,13 @@ class StateStack {
         explicit PendingStateRequest(Action action);
 
         Action action;
-        std::function<std::unique_ptr<Core::State>()> stateConstructor;
+        std::function<std::unique_ptr<State>()> stateConstructor;
     };
 
-    std::unique_ptr<Core::State>
-    createState(const Core::StateStack::PendingStateRequest& changeRequest);
+    std::unique_ptr<State> createState(const PendingStateRequest& changeRequest);
 
   private:
-    std::vector<std::unique_ptr<Core::State>> mStack;
+    std::vector<std::unique_ptr<State>> mStack;
     std::vector<PendingStateRequest> mPendingRequests;
     const ConfigSection* mConfig;
 
@@ -71,10 +70,9 @@ class StateStack {
     std::shared_ptr<Utility::Logger> mLogger;
 };
 
-template <typename TState>
-requires(std::is_base_of_v<Core::State, TState>) void StateStack::pushState() {
+template <typename TState> requires(std::is_base_of_v<State, TState>) void StateStack::pushState() {
     PendingStateRequest request(Action::PUSH);
-    request.stateConstructor = []() { return std::unique_ptr<Core::State>(new TState()); };
+    request.stateConstructor = []() { return std::unique_ptr<State>(new TState()); };
     mPendingRequests.push_back(request);
 }
 } // namespace Core

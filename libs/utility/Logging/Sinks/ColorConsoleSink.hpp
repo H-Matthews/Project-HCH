@@ -27,7 +27,7 @@ class ColorConsoleSink : public LogSink {
 
     ColorConsoleSink();
 
-    void sinkData(std::string_view message, Utility::LogLevel level,
+    void sinkData(std::string_view message, LogLevel level,
                   const std::source_location location) override;
 
     ~ColorConsoleSink() override = default;
@@ -51,6 +51,6 @@ class ColorConsoleSink : public LogSink {
 
 // Convenience function
 // Creates Logger with the necessary Sink. Registers with LogRegistry
-std::shared_ptr<Utility::Logger> createColorConsoleLogger(const std::string& loggerName,
-                                                          LogLevel level = LogLevel::NONE);
+std::shared_ptr<Logger> createColorConsoleLogger(const std::string& loggerName,
+                                                 LogLevel level = LogLevel::NONE);
 } // namespace Utility

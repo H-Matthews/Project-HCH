@@ -17,5 +17,5 @@ enum class Player {
     JUMP,
 };
 
-const std::string playerActionsEnumToString(const Actions::Player identifier);
+const std::string playerActionsEnumToString(const Player identifier);
 } // namespace Actions
