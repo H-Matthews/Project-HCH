@@ -11,79 +11,72 @@
 #include <memory>
 #include <set>
 
-namespace Core
-{
+namespace Core {
 
-    struct SubscriberNodeInfo
-    {
-        std::string mNodename;
-        std::function<void(Message*)> mCallback;
+struct SubscriberNodeInfo {
+    std::string mNodename;
+    std::function<void(Message*)> mCallback;
 
-        SubscriberNodeInfo(const std::string& nodeName, std::function<void(Message*)> func) :
-            mNodename(nodeName),
-            mCallback(func)
-        {}
-    };
+    SubscriberNodeInfo(const std::string& nodeName, std::function<void(Message*)> func)
+        : mNodename(nodeName), mCallback(func) {}
+};
 
-    struct PublisherNodeInfo
-    {
-        std::string mNodeName;
+struct PublisherNodeInfo {
+    std::string mNodeName;
 
-        PublisherNodeInfo(const std::string& nodeName) :
-            mNodeName(nodeName)
-        {}
-    };
+    PublisherNodeInfo(const std::string& nodeName) : mNodeName(nodeName) {}
+};
 
-    class MessageNetwork
-    {
-      public:
-        static constexpr std::string_view SECTION_NAME = "MessageNetwork";
+class MessageNetwork {
+  public:
+    static constexpr std::string_view SECTION_NAME = "MessageNetwork";
 
-        explicit MessageNetwork(const ConfigSection* config = nullptr);
+    explicit MessageNetwork(const ConfigSection* config = nullptr);
 
-        void notifySubscribers();
+    void notifySubscribers();
 
-        void shutdownNetwork();
+    void shutdownNetwork();
 
-        void initializeLogger();
+    void initializeLogger();
 
-      private:
-        void registerSubscriberNode(const std::string& nodeName, std::function<void(Message*)> callback);
-        void registerPublisherNode(const std::string& nodeName);
+  private:
+    void registerSubscriberNode(const std::string& nodeName,
+                                std::function<void(Message*)> callback);
+    void registerPublisherNode(const std::string& nodeName);
 
-        void addSubscriberTopic(const std::string& nodeName, Messages::ID messageID);
-        void addPublisherTopic(const std::string& nodeName, Messages::ID messageID);
+    void addSubscriberTopic(const std::string& nodeName, Messages::ID messageID);
+    void addPublisherTopic(const std::string& nodeName, Messages::ID messageID);
 
-        void unRegisterSubscriberNode(const std::string& nodeName);
-        void unRegisterPublisherNode(const std::string& nodeName);
+    void unRegisterSubscriberNode(const std::string& nodeName);
+    void unRegisterPublisherNode(const std::string& nodeName);
 
-        void removeTopicFromPublisher(const std::string& nodeName, Messages::ID messageID);
-        void removeTopicFromSubscriber(const std::string& nodeName, Messages::ID messageID);
+    void removeTopicFromPublisher(const std::string& nodeName, Messages::ID messageID);
+    void removeTopicFromSubscriber(const std::string& nodeName, Messages::ID messageID);
 
-        void publishMessage(std::shared_ptr<Message> message);
+    void publishMessage(std::shared_ptr<Message> message);
 
-        void addressPendingRequests();
+    void addressPendingRequests();
 
-      private:
-        std::queue<std::shared_ptr<Message>> mMessageQueue;
+  private:
+    std::queue<std::shared_ptr<Message>> mMessageQueue;
 
-        std::map<std::size_t, std::set<Messages::ID>> mSubscriberNodes;
-        std::map<std::size_t, std::set<Messages::ID>> mPublisherNodes;
+    std::map<std::size_t, std::set<Messages::ID>> mSubscriberNodes;
+    std::map<std::size_t, std::set<Messages::ID>> mPublisherNodes;
 
-        std::map<std::size_t, SubscriberNodeInfo> mSubscriberRecords;
-        std::map<std::size_t, PublisherNodeInfo> mPublisherRecords;
+    std::map<std::size_t, SubscriberNodeInfo> mSubscriberRecords;
+    std::map<std::size_t, PublisherNodeInfo> mPublisherRecords;
 
-        std::map<std::size_t, std::set<Messages::ID>> mPendingPublisherRequests;
-        std::map<std::size_t, std::set<Messages::ID>> mPendingSubscriberRequests;
+    std::map<std::size_t, std::set<Messages::ID>> mPendingPublisherRequests;
+    std::map<std::size_t, std::set<Messages::ID>> mPendingSubscriberRequests;
 
-        std::hash<std::string> mHash;
+    std::hash<std::string> mHash;
 
-        const ConfigSection* mConfig;
+    const ConfigSection* mConfig;
 
-        std::shared_ptr<Utility::Logger> mLogger;
+    std::shared_ptr<Utility::Logger> mLogger;
 
-      public:
-        friend class Core::MessageNode;
-    };
+  public:
+    friend class Core::MessageNode;
+};
 
-}
+} // namespace Core

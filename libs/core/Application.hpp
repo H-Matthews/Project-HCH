@@ -18,96 +18,81 @@
 #include <string>
 #include <functional>
 
-namespace Core
-{
-    class Application
-    {
-      public:
-        enum class State
-        {
-            NONE = 0,
-            INITIALIZED,
-            RUNNING,
-            SHUTTING_DOWN
-        };
+namespace Core {
+class Application {
+  public:
+    enum class State { NONE = 0, INITIALIZED, RUNNING, SHUTTING_DOWN };
 
-        std::string convertAppStateEnumToString( const State& state ) const;
-        State convertStringToAppStateEnum( std::string_view stringState ) const;
+    std::string convertAppStateEnumToString(const State& state) const;
+    State convertStringToAppStateEnum(std::string_view stringState) const;
 
-      public:
-        static constexpr std::string_view SECTION_NAME = "Application";
+  public:
+    static constexpr std::string_view SECTION_NAME = "Application";
 
-        explicit Application( Core::ConfigSpec configSpec );
+    explicit Application(Core::ConfigSpec configSpec);
 
-        MessageNetwork* getNetwork();
+    MessageNetwork* getNetwork();
 
-        void registerState(
-            const std::string& stateIdentifier, std::function< std::unique_ptr< Core::State >() > registerFunc );
+    void registerState(const std::string& stateIdentifier,
+                       std::function<std::unique_ptr<Core::State>()> registerFunc);
 
-        template < typename TState >
-            requires( std::is_base_of_v< Core::State, TState > )
-        void pushState();
+    template <typename TState> requires(std::is_base_of_v<Core::State, TState>) void pushState();
 
-        void initialize();
-        void run();
+    void initialize();
+    void run();
 
-      private:
-        void processInput();
-        void update( sf::Time fixedTimeStep );
-        void render();
+  private:
+    void processInput();
+    void update(sf::Time fixedTimeStep);
+    void render();
 
-        void loadResources();
-        void buildSubsystemLoggers();
+    void loadResources();
+    void buildSubsystemLoggers();
 
-        bool transitionState( State statusToTransfer );
+    bool transitionState(State statusToTransfer);
 
-        inline bool isInitialized() const;
-        inline bool isRunning() const;
+    inline bool isInitialized() const;
+    inline bool isRunning() const;
 
-      private:
-        static const sf::Time TIME_PER_FRAME;
+  private:
+    static const sf::Time TIME_PER_FRAME;
 
-        std::unique_ptr< Core::Configuration > mConfiguration;
-        Core::DirectoryLayout mDirectories;
+    std::unique_ptr<Core::Configuration> mConfiguration;
+    Core::DirectoryLayout mDirectories;
 
-        State mState;
+    State mState;
 
-        // Should this go here? or in the GameState?
-        TextureHolder mTextures;
+    // Should this go here? or in the GameState?
+    TextureHolder mTextures;
 
-        // CORE APPLICATION CLASSES
-        MessageNetwork mNetwork;
-        StateStack mStateStack;
+    // CORE APPLICATION CLASSES
+    MessageNetwork mNetwork;
+    StateStack mStateStack;
 
-        // TODO: These need to go into a CORE Class
-        // Application::KeyBindings mPlayerKeyBindings;
-        sf::RenderWindow mWindow;
+    // TODO: These need to go into a CORE Class
+    // Application::KeyBindings mPlayerKeyBindings;
+    sf::RenderWindow mWindow;
 
-        std::shared_ptr< Utility::Logger > mLogger;
-    };
+    std::shared_ptr<Utility::Logger> mLogger;
+};
 
-    inline MessageNetwork* Application::getNetwork()
-    {
-        return &mNetwork;
-    }
-
-    bool Application::isInitialized() const
-    {
-        return mState == State::INITIALIZED;
-    }
-
-    bool Application::isRunning() const
-    {
-        return mState == State::RUNNING;
-    }
-
-    template < typename TState >
-        requires( std::is_base_of_v< Core::State, TState > )
-    void Application::pushState()
-    {
-        if ((int)mState <= 0)
-            return;
-
-        mStateStack.pushState< TState >();
-    }
+inline MessageNetwork* Application::getNetwork() {
+    return &mNetwork;
 }
+
+bool Application::isInitialized() const {
+    return mState == State::INITIALIZED;
+}
+
+bool Application::isRunning() const {
+    return mState == State::RUNNING;
+}
+
+template <typename TState>
+requires(std::is_base_of_v<Core::State, TState>) void Application::pushState() {
+    if ((int)mState <= 0)
+        return;
+
+    mStateStack.pushState<TState>();
+}
+} // namespace Core
