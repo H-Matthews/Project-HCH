@@ -29,7 +29,7 @@ class Application {
   public:
     static constexpr std::string_view SECTION_NAME = "Application";
 
-    explicit Application(Core::ConfigSpec configSpec);
+    explicit Application(ConfigSpec configSpec);
 
     MessageNetwork* getNetwork();
 
@@ -57,8 +57,8 @@ class Application {
   private:
     static const sf::Time TIME_PER_FRAME;
 
-    std::unique_ptr<Core::Configuration> mConfiguration;
-    Core::DirectoryLayout mDirectories;
+    std::unique_ptr<Configuration> mConfiguration;
+    DirectoryLayout mDirectories;
 
     State mState;
 

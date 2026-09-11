@@ -8,5 +8,5 @@ namespace Messages {
  */
 enum class ID { NONE = 0, PlayerActionMessage, EnemySpawnMessage };
 
-const std::string messageIDEnumToString(const Messages::ID identifier);
+const std::string messageIDEnumToString(const ID identifier);
 } // namespace Messages

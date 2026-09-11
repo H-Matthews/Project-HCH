@@ -76,7 +76,7 @@ class MessageNetwork {
     std::shared_ptr<Utility::Logger> mLogger;
 
   public:
-    friend class Core::MessageNode;
+    friend class MessageNode;
 };
 
 } // namespace Core

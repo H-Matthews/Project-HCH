@@ -33,7 +33,7 @@ class State {
 
   protected:
     template <typename TState>
-    requires(std::is_base_of_v<Core::State, TState>) void requestStackPush();
+    requires(std::is_base_of_v<State, TState>) void requestStackPush();
 
     void requestStackPop();
     void requestStateClear();
@@ -46,7 +46,7 @@ class State {
 };
 
 template <typename TState>
-requires(std::is_base_of_v<Core::State, TState>) void State::requestStackPush() {
+requires(std::is_base_of_v<State, TState>) void State::requestStackPush() {
     mStackRef->pushState<TState>();
 
     return;

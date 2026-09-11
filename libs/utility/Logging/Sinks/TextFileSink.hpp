@@ -52,7 +52,7 @@ class TextFileSink : public LogSink {
 
 // Convenience function
 // Creates Logger with the necessary Sink. Registers with LogRegistry
-std::shared_ptr<Utility::Logger> createTextFileLogger(const std::string& loggerName,
+std::shared_ptr<Logger> createTextFileLogger(const std::string& loggerName,
                                                       const std::string& outputDirectory,
                                                       const std::string& fileName,
                                                       const std::string& logExtension,

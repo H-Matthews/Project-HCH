@@ -64,15 +64,15 @@ class Logger {
     Logger();
 
     // Creates a logger with no sinks
-    explicit Logger(std::string loggerName, Utility::LogLevel level = Utility::LogLevel::NONE);
+    explicit Logger(std::string loggerName, LogLevel level = LogLevel::NONE);
 
     // Creates a logger with a single sink
-    Logger(std::string loggerName, std::shared_ptr<Utility::LogSink> sink,
-           Utility::LogLevel level = Utility::LogLevel::NONE);
+    Logger(std::string loggerName, std::shared_ptr<LogSink> sink,
+           LogLevel level = LogLevel::NONE);
 
     // Creates a logger with potentiall multiple sinks
-    Logger(std::string loggerName, Utility::Logger::SinkList sinks,
-           Utility::LogLevel level = Utility::LogLevel::NONE);
+    Logger(std::string loggerName, SinkList sinks,
+           LogLevel level = LogLevel::NONE);
 
     void logDebug(std::string_view message,
                   const std::source_location location = std::source_location::current());
@@ -118,7 +118,7 @@ class Logger {
     bool mIsGlobalLogger = false;
 };
 
-inline void Logger::setGlobalLogLevel(Utility::LogLevel gLevel) {
+inline void Logger::setGlobalLogLevel(LogLevel gLevel) {
     mGlobalLogLevel = gLevel;
 }
 
@@ -127,7 +127,7 @@ inline LogLevel Logger::getGlobalLogLevel() const {
 }
 
 inline std::string Logger::getGlobalLogLevelAsString() const {
-    const std::string loggerAsString = Utility::logLevelEnumToString(mGlobalLogLevel);
+    const std::string loggerAsString = logLevelEnumToString(mGlobalLogLevel);
     return loggerAsString;
 }
 
