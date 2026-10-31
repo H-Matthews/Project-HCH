@@ -21,12 +21,7 @@
 
 namespace Core {
 
-enum class ApplicationState {
-    UNINITIALIZED = 0,
-    INITIALIZED,
-    RUNNING,
-    SHUTTING_DOWN
-};
+enum class ApplicationState { UNINITIALIZED = 0, INITIALIZED, RUNNING, SHUTTING_DOWN };
 
 std::string convertAppStateEnumToString(const ApplicationState& appState);
 std::optional<ApplicationState> convertStringToAppStateEnum(std::string_view stringState);

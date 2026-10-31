@@ -13,17 +13,17 @@ namespace Core {
 const sf::Time Application::TIME_PER_FRAME = sf::seconds(1.0f / 120.0f);
 
 std::string convertAppStateEnumToString(const ApplicationState& appState) {
-    switch(appState) {
-        case ApplicationState::UNINITIALIZED:
-            return "UNINITIALIZED";
-        case ApplicationState::INITIALIZED:
-            return "INITIALIZED";
-        case ApplicationState::RUNNING:
-            return "RUNNING";
-        case ApplicationState::SHUTTING_DOWN:
-            return "SHUTTING_DOWN";
-        default:
-            return "";
+    switch (appState) {
+    case ApplicationState::UNINITIALIZED:
+        return "UNINITIALIZED";
+    case ApplicationState::INITIALIZED:
+        return "INITIALIZED";
+    case ApplicationState::RUNNING:
+        return "RUNNING";
+    case ApplicationState::SHUTTING_DOWN:
+        return "SHUTTING_DOWN";
+    default:
+        return "";
     }
 }
 
@@ -34,16 +34,13 @@ std::optional<Core::ApplicationState> convertStringToAppStateEnum(std::string_vi
 
     std::optional<ApplicationState> appStateEnum = std::nullopt;
 
-    if(upperStateStr == "UNINITIALIZED") {
+    if (upperStateStr == "UNINITIALIZED") {
         appStateEnum = ApplicationState::UNINITIALIZED;
-    }
-    else if(upperStateStr == "INITIALIZED") {
+    } else if (upperStateStr == "INITIALIZED") {
         appStateEnum = ApplicationState::INITIALIZED;
-    }
-    else if(upperStateStr == "RUNNING") {
+    } else if (upperStateStr == "RUNNING") {
         appStateEnum = ApplicationState::RUNNING;
-    }
-    else if(upperStateStr == "SHUTTING_DOWN") {
+    } else if (upperStateStr == "SHUTTING_DOWN") {
         appStateEnum = ApplicationState::SHUTTING_DOWN;
     }
 
@@ -52,8 +49,9 @@ std::optional<Core::ApplicationState> convertStringToAppStateEnum(std::string_vi
 
 Core::Application::Application(ConfigSpec configSpec)
     : mConfiguration(std::make_unique<Configuration>(std::move(configSpec))),
-      mDirectories(mConfiguration->getSection(Configuration::SECTION_NAME)), mState(ApplicationState::UNINITIALIZED),
-      mTextures(), mNetwork(mConfiguration->getSection(MessageNetwork::SECTION_NAME)),
+      mDirectories(mConfiguration->getSection(Configuration::SECTION_NAME)),
+      mState(ApplicationState::UNINITIALIZED), mTextures(),
+      mNetwork(mConfiguration->getSection(MessageNetwork::SECTION_NAME)),
       mStateStack(*this, mConfiguration->getSection(StateStack::SECTION_NAME)),
       mWindow(sf::VideoMode({640, 480}), "Application Window", sf::Style::Close) {
     if constexpr (Utility::CAN_LOG) {
@@ -199,20 +197,20 @@ void Application::buildSubsystemLoggers() {
 }
 
 bool Application::isValidTransition(ApplicationState from, ApplicationState to) const {
-    switch(from) {
-        case ApplicationState::UNINITIALIZED: {
-            return to == ApplicationState::INITIALIZED;
-        }
-        case ApplicationState::INITIALIZED: {
-            return to == ApplicationState::RUNNING;
-        }
-        case ApplicationState::RUNNING: {
-            return to == ApplicationState::SHUTTING_DOWN;
-        }
-        default: {
-            return false;
-        }
+    switch (from) {
+    case ApplicationState::UNINITIALIZED: {
+        return to == ApplicationState::INITIALIZED;
+    }
+    case ApplicationState::INITIALIZED: {
+        return to == ApplicationState::RUNNING;
+    }
+    case ApplicationState::RUNNING: {
+        return to == ApplicationState::SHUTTING_DOWN;
+    }
+    default: {
+        return false;
+    }
     }
 }
 
-} // NAMESPACE CORE
+} // namespace Core
