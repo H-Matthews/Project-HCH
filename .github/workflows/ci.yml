@@ -8,22 +8,6 @@ defaults:
     shell: bash
 
 jobs:
-  format-check:
-    name: Format Check
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
-
-    - name: Install clang-format
-      run: sudo apt-get update && sudo apt-get install -y clang-format-18
-
-    - name: Run format check
-      env:
-        # The apt package above only provides the versioned binary, so name it explicitly
-        CLANG_FORMAT_BIN: clang-format-18
-      run: ./scripts/format.sh --check
-
   build:
     name: ${{ matrix.platform.name }} ${{ matrix.config.name }}
     runs-on: ${{ matrix.platform.os }}

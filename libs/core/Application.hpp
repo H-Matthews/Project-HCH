@@ -20,12 +20,7 @@
 
 namespace Core {
 
-enum class ApplicationState {
-    UNINITIALIZED = 0,
-    INITIALIZED,
-    RUNNING,
-    SHUTTING_DOWN
-};
+enum class ApplicationState { UNINITIALIZED = 0, INITIALIZED, RUNNING, SHUTTING_DOWN };
 
 std::string convertAppStateEnumToString(const ApplicationState& appState);
 std::optional<ApplicationState> convertStringToAppStateEnum(std::string_view stringState);
@@ -98,11 +93,11 @@ inline MessageNetwork* Application::getNetwork() {
 }
 
 bool Application::isInitialized() const {
-    return mState == State::INITIALIZED;
+    return mState == ApplicationState::INITIALIZED;
 }
 
 bool Application::isRunning() const {
-    return mState == State::RUNNING;
+    return mState == ApplicationState::RUNNING;
 }
 
 template <typename TState>

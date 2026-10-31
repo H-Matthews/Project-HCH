@@ -50,10 +50,9 @@ std::string Utility::removeQuotes(const std::string& stringToModify) {
     return modifiedString;
 }
 
-void toUpper(std::string& str) {
-    std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) {
-        return std::toupper(c);
-    });
+void Utility::toUpper(std::string& str) {
+    std::transform(str.begin(), str.end(), str.begin(),
+                   [](unsigned char c) { return std::toupper(c); });
 }
 
 void Utility::splitString(const std::string& stringToSplit, std::vector<std::string>& splitStrings,
