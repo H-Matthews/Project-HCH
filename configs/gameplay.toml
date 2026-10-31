@@ -38,7 +38,7 @@ knockback = 300.0
 invulnerable = 0.15
 
 [Gameplay.Waves]
-base_enemies = 1000
+base_enemies = 3
 enemies_per_wave = 2     # Extra enemies each wave
 delay = 2.0              # Pause after clearing a wave
 first_delay = 1.5        # Pause before wave 1
