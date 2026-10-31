@@ -50,7 +50,7 @@ std::string Utility::removeQuotes(const std::string& stringToModify) {
     return modifiedString;
 }
 
-void toUpper(std::string& str) {
+void Utility::toUpper(std::string& str) {
     std::transform(str.begin(), str.end(), str.begin(),
                    [](unsigned char c) { return std::toupper(c); });
 }

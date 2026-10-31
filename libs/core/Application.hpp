@@ -85,11 +85,11 @@ inline MessageNetwork* Application::getNetwork() {
 }
 
 bool Application::isInitialized() const {
-    return mState == State::INITIALIZED;
+    return mState == ApplicationState::INITIALIZED;
 }
 
 bool Application::isRunning() const {
-    return mState == State::RUNNING;
+    return mState == ApplicationState::RUNNING;
 }
 
 template <typename TState>
