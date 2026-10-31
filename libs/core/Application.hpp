@@ -21,12 +21,7 @@
 
 namespace Core {
 
-enum class ApplicationState {
-    UNINITIALIZED = 0,
-    INITIALIZED,
-    RUNNING,
-    SHUTTING_DOWN
-};
+enum class ApplicationState { UNINITIALIZED = 0, INITIALIZED, RUNNING, SHUTTING_DOWN };
 
 std::string convertAppStateEnumToString(const ApplicationState& appState);
 std::optional<ApplicationState> convertStringToAppStateEnum(std::string_view stringState);
@@ -60,8 +55,8 @@ class Application {
     bool transitionState(State statusToTransfer);
     bool isValidTransition(ApplicationState from, ApplicationState to) const;
 
-    inline bool isInitialized() const;
-    inline bool isRunning() const;
+    bool isInitialized() const;
+    bool isRunning() const;
 
   private:
     static const sf::Time TIME_PER_FRAME;
@@ -87,14 +82,6 @@ class Application {
 
 inline MessageNetwork* Application::getNetwork() {
     return &mNetwork;
-}
-
-bool Application::isInitialized() const {
-    return mState == State::INITIALIZED;
-}
-
-bool Application::isRunning() const {
-    return mState == State::RUNNING;
 }
 
 template <typename TState>
