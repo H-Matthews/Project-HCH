@@ -131,7 +131,7 @@ TEST(App_GameTuning_Test, maxSpeedNeverBelowBaseSpeed) {
 TEST(App_GameTuning_Test, shippedConfigMatchesBuiltInDefaults) {
     const Application::GameTuning defaults;
     Core::TOMLConfigSection root(
-        toml::parse_file(std::string(PROJECT_DIR) + "/configs/gameplay.toml"));
+        toml::parse_file(std::string(GAME_DIR) + "/configs/gameplay.toml"));
     auto gameplay = root.getSection(Application::GameTuning::SECTION_NAME);
     ASSERT_NE(gameplay, nullptr);
     const auto loaded = Application::GameTuning::fromConfig(gameplay.get());
@@ -172,6 +172,7 @@ TEST(App_GameTuning_Test, shippedConfigMatchesBuiltInDefaults) {
 // Full path used by the game: root.toml -> Configuration -> getSection("Gameplay") -> GameTuning
 TEST(App_GameTuning_Test, loadsThroughRealConfigurationFromRootFile) {
     Core::ConfigSpec spec;
+    spec.rootDirectory = GAME_DIR;
     spec.configDirectory = "configs";
     spec.rootConfigFile = "root.toml";
     spec.configReader = std::make_unique<Core::TOMLConfigReader>();

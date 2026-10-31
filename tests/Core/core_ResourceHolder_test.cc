@@ -9,8 +9,9 @@ namespace {
 // Stand-in resource so the test needs no graphics context or real files
 struct FakeResource {
     bool loadFromFile(const std::string& fileName) {
-        if (fileName == "missing")
+        if (fileName == "missing") {
             return false;
+        }
         loadedFrom = fileName;
         return true;
     }

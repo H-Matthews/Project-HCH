@@ -11,7 +11,7 @@ CLANG_FORMAT_BIN="${CLANG_FORMAT_BIN:-}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CLANG_FORMAT_STYLE_ARG="--style=file"
 FORMAT_EXTENSIONS=("cpp" "hpp" "cc")
-EXCLUDE_DIRS=("${REPO_ROOT}/libs/vendor" "${REPO_ROOT}/build")
+EXCLUDE_DIRS=("${REPO_ROOT}/engine/vendor" "${REPO_ROOT}/build")
 COLOR_BLUE="$(tput setaf 4 2>/dev/null || true)"
 COLOR_WHITE="$(tput setaf 7 2>/dev/null || true)"
 COLOR_GREEN="$(tput setaf 2 2>/dev/null || true)"

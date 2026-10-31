@@ -30,7 +30,7 @@ struct World {
     Component::GameStats& stats() { return registry.ctx().get<Component::GameStats>(); }
 
     entt::registry registry;
-    std::vector<std::unique_ptr<System::BaseSystem>> owned;
+    std::vector<std::unique_ptr<Core::BaseSystem>> owned;
 };
 
 int countEnemies(entt::registry& registry) {

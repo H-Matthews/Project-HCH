@@ -65,18 +65,7 @@ else() # Single Generator
     set(CONFIG_TYPE ${CMAKE_BUILD_TYPE})
 endif()
 
-# This changes depending on Single VS Multi generator
-set(BUILD_DIRECTORY "${PROJECT_SOURCE_DIR}/build/${CONFIG_TYPE}")
-
-# Dependency Include Directories
-set(SFML_INC_DIR ${BUILD_DIRECTORY}/_deps/sfml-src/include)
-set(GTEST_INC_DIR ${BUILD_DIRECTORY}/_deps/googletest-src/googletest/include)
-
-# Include Directories
-set(LIBS_INC_DIR ${PROJECT_SOURCE_DIR}/libs)
-
+add_subdirectory(engine)
+add_subdirectory(games/HCH)
+add_subdirectory(sandbox)
 add_subdirectory(tests)
-add_subdirectory(libs/core)
-add_subdirectory(libs/utility)
-add_subdirectory(libs/application)
-add_subdirectory(application)

@@ -64,8 +64,9 @@ void TestPublisher::update(Action action) {
     }
     }
 
-    if (testMessage->action != Action::NONE)
+    if (testMessage->action != Action::NONE) {
         MessageNode::publish(testMessage);
+    }
 }
 
 class TestSubscriberOne : public Core::MessageNode {

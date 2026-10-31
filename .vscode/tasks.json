@@ -1,0 +1,47 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build all (Debug)",
+            "type": "shell",
+            "command": "cmake --build --preset debug-unix_makefiles",
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Build HCH (Debug)",
+            "type": "shell",
+            "command": "cmake --build --preset debug-unix_makefiles --target Project-HCH",
+            "group": "build",
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Build Sandbox (Debug)",
+            "type": "shell",
+            "command": "cmake --build --preset debug-unix_makefiles --target Sandbox",
+            "group": "build",
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Build all (Release)",
+            "type": "shell",
+            "command": "cmake --build --preset release-unix_makefiles",
+            "group": "build",
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Build HCH (Release)",
+            "type": "shell",
+            "command": "cmake --build --preset release-unix_makefiles --target Project-HCH",
+            "group": "build",
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Build Sandbox (Release)",
+            "type": "shell",
+            "command": "cmake --build --preset release-unix_makefiles --target Sandbox",
+            "group": "build",
+            "problemMatcher": ["$gcc"]
+        }
+    ]
+}

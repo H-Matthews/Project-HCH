@@ -1,0 +1,95 @@
+#include "core/Configuration/Configuration.hpp"
+
+#include <filesystem>
+#include <map>
+
+Core::Configuration::Configuration(ConfigSpec configSpec)
+    : mRootDirectory(configSpec.rootDirectory),
+      mConfigDirPath(configSpec.rootDirectory + "/" + configSpec.configDirectory),
+      mRootFile(std::move(configSpec.rootConfigFile)),
+      mConfigReader(std::move(configSpec.configReader)), mConfigFiles(), mOwnedSections(),
+      mIndex() {
+    if (!(std::filesystem::is_directory(mConfigDirPath))) {
+        throw ConfigurationException("Config directory could NOT be found: " + mConfigDirPath);
+    }
+
+    if (mRootFile.empty()) {
+        throw ConfigurationException("Root file was NOT populated");
+    }
+
+    if (!mConfigReader) {
+        throw ConfigurationException("ConfigReader is NULL");
+    }
+
+    parse();
+}
+
+void Core::Configuration::parse() {
+    auto rootSection = parseRootFile();
+    auto childSections = parseConfigFiles();
+
+    std::map<std::string, std::string> sectionSource;
+
+    indexFile(*rootSection, mConfigDirPath + "/" + mRootFile, sectionSource);
+    for (std::size_t i = 0; i < childSections.size(); ++i)
+        indexFile(*childSections[i], mConfigFiles[i], sectionSource);
+}
+
+std::unique_ptr<Core::ConfigSection> Core::Configuration::parseRootFile() {
+    const std::string rootFilePath = mConfigDirPath + "/" + mRootFile;
+
+    auto rootSection = mConfigReader->readFile(std::filesystem::path(rootFilePath));
+    if (!rootSection) {
+        throw ConfigurationException("Could not find root config file: " + rootFilePath);
+    }
+
+    auto filesSection = rootSection->getSection(RootFilesSection::NAME);
+    if (filesSection) {
+        for (const auto& file : filesSection->getStringVector(RootFilesSection::FILES))
+            mConfigFiles.push_back(mConfigDirPath + "/" + file);
+    }
+
+    return rootSection;
+}
+
+std::vector<std::unique_ptr<Core::ConfigSection>> Core::Configuration::parseConfigFiles() {
+    std::vector<std::unique_ptr<ConfigSection>> sections;
+    sections.reserve(mConfigFiles.size());
+
+    for (const auto& configFile : mConfigFiles) {
+        auto section = mConfigReader->readFile(std::filesystem::path(configFile));
+        if (!section) {
+            throw ConfigurationException("Could not find config file: " + configFile);
+        }
+
+        sections.push_back(std::move(section));
+    }
+
+    return sections;
+}
+
+void Core::Configuration::indexFile(const ConfigSection& fileRoot, const std::string& sourcePath,
+                                    std::map<std::string, std::string>& sectionSource) {
+    for (const auto& sectionName : fileRoot.sectionNames()) {
+        auto existing = sectionSource.find(sectionName);
+        if (existing != sectionSource.end()) {
+            throw ConfigurationException("Duplicate config section [" + sectionName +
+                                         "] declared in " + sourcePath + "; first declared in " +
+                                         existing->second);
+        }
+
+        auto owned = fileRoot.getSection(sectionName);
+        if (!owned) {
+            continue;
+        }
+
+        mIndex.emplace(sectionName, owned.get());
+        sectionSource.emplace(sectionName, sourcePath);
+        mOwnedSections.push_back(std::move(owned));
+    }
+}
+
+const Core::ConfigSection* Core::Configuration::getSection(std::string_view name) const {
+    auto it = mIndex.find(name);
+    return it != mIndex.end() ? it->second : nullptr;
+}
