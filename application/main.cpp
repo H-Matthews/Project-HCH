@@ -3,6 +3,8 @@
 #include "core/Configuration/Configuration.hpp"
 #include "core/Configuration/ConfigReader/TOMLConfigReader.hpp"
 
+#include "application/Data/GameResources.hpp"
+#include "application/Messaging/MessageIds.hpp"
 #include "application/StateStack/MenuState.hpp"
 #include "application/StateStack/GameState.hpp"
 #include "application/StateStack/PauseState.hpp"
@@ -42,6 +44,8 @@ int main() {
         Core::Application application(std::move(configSpecification));
 
         application.initialize();
+        Application::loadGameResources(application);
+        Messages::registerMessageNames(*application.getNetwork());
         application.pushState<Application::MenuState>();
         application.run();
     } catch (const Core::ConfigurationException& e) {

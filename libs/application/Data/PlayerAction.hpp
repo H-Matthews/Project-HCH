@@ -14,7 +14,7 @@ enum class Player {
     MOVE_RIGHT,
     MOVE_DOWN,
     MOVE_UP,
-    JUMP,
+    ATTACK,
 };
 
 const std::string playerActionsEnumToString(const Player identifier);

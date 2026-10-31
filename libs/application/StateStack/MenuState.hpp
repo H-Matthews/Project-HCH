@@ -2,7 +2,7 @@
 
 #include "core/StateStack/State.hpp"
 
-#include <SFML/Graphics/Sprite.hpp>
+#include <string>
 
 namespace Application {
 class MenuState : public Core::State {
@@ -11,9 +11,8 @@ class MenuState : public Core::State {
 
     MenuState();
 
-    virtual void draw();
-    virtual bool update(sf::Time fixedTimeStep);
+    virtual void draw() override;
+    virtual bool update(sf::Time fixedTimeStep) override;
     bool handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) override;
-    bool handleMouseMoved(const sf::Event::MouseMoved& mouseMovedEvent) override;
 };
 } // namespace Application

@@ -10,16 +10,22 @@ set(SRC Settings/KeyBindings.cpp
         Messaging/Publishers/PlayerInputPublisher.cpp
         Messaging/Messages/PlayerInputMessage.cpp
         Data/PlayerAction.cpp
+        Data/GameResources.cpp
         Scene/Scene.cpp
-        Scene/ECS/Components/SpriteComponent.cpp
-        Scene/ECS/Components/PlayerInputComponent.cpp
+        Scene/ECS/EntityFactory.cpp
+        Scene/ECS/GameTuning.cpp
         Scene/ECS/Systems/BaseSystem.cpp
-        Scene/ECS/Systems/RenderSystem.cpp
-        Scene/ECS/Systems/PlayerMovementSystem.cpp
+        Scene/ECS/Systems/CombatSystem.cpp
+        Scene/ECS/Systems/EnemyAISystem.cpp
+        Scene/ECS/Systems/HealthSystem.cpp
+        Scene/ECS/Systems/MovementSystem.cpp
         Scene/ECS/Systems/PlayerInputSystem.cpp
+        Scene/ECS/Systems/RenderSystem.cpp
+        Scene/ECS/Systems/SpawnSystem.cpp
         Scene/ECS/Entity.cpp
         Scene/ECS/EntityManager.cpp
         StateStack/GameState.cpp
+        StateStack/GameOverState.cpp
         StateStack/MenuState.cpp
         StateStack/PauseState.cpp)
 
@@ -27,18 +33,29 @@ set(INC Settings/KeyBindings.hpp
         Messaging/Publishers/PlayerInputPublisher.hpp
         Messaging/Messages/PlayerInputMessage.hpp
         Data/PlayerAction.hpp
+        Data/GameResources.hpp
+        Messaging/MessageIds.hpp
         Scene/Scene.hpp
+        Scene/ECS/EntityFactory.hpp
+        Scene/ECS/GameTuning.hpp
         Scene/ECS/Components/Components.hpp
-        Scene/ECS/Components/SpriteComponent.hpp
+        Scene/ECS/Components/GameplayComponents.hpp
         Scene/ECS/Components/PlayerInputComponent.hpp
         Scene/ECS/Systems/Systems.hpp
+        Scene/ECS/Systems/VectorMath.hpp
         Scene/ECS/Systems/BaseSystem.hpp
-        Scene/ECS/Systems/RenderSystem.hpp
-        Scene/ECS/Systems/PlayerMovementSystem.hpp
+        Scene/ECS/Systems/CombatSystem.hpp
+        Scene/ECS/Systems/EnemyAISystem.hpp
+        Scene/ECS/Systems/HealthSystem.hpp
+        Scene/ECS/Systems/MovementSystem.hpp
         Scene/ECS/Systems/PlayerInputSystem.hpp
+        Scene/ECS/Systems/RenderSystem.hpp
+        Scene/ECS/Systems/SpawnSystem.hpp
         Scene/ECS/Entity.hpp
         Scene/ECS/EntityManager.hpp
+        UI/TextUtil.hpp
         StateStack/GameState.hpp
+        StateStack/GameOverState.hpp
         StateStack/MenuState.hpp
         StateStack/PauseState.hpp)
 

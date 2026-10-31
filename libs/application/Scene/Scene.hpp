@@ -1,12 +1,12 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <array>
 
 #include "core/Messaging/MessageNetwork.hpp"
-#include "core/GameAssetContainer/ResourceEnums.hpp"
 
+#include "application/Scene/ECS/Components/GameplayComponents.hpp"
 #include "application/Scene/ECS/EntityManager.hpp"
+#include "application/Scene/ECS/GameTuning.hpp"
 
 namespace Application {
 
@@ -20,10 +20,17 @@ class Scene {
 
   public:
     explicit Scene(sf::RenderWindow& window, Core::MessageNetwork& gameNetwork,
-                   TextureHolder& textures);
+                   const GameTuning& tuning = GameTuning());
 
     void update(sf::Time fixedTimeStep);
     void draw();
+
+    // Game progress (wave, score, death) shared by the systems through the registry context
+    const Component::GameStats& stats() const;
+
+    // Player health for the HUD; both 0 if there is no player
+    float playerHealth() const;
+    float playerMaxHealth() const;
 
   private:
     void initializeGameSystems(Core::MessageNetwork& gameNetwork);

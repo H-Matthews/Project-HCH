@@ -4,9 +4,6 @@
 
 #include "application/Scene/ECS/Systems/BaseSystem.hpp"
 
-#include "core/GameAssetContainer/ResourceHolder.hpp"
-#include "core/GameAssetContainer/ResourceEnums.hpp"
-
 #include <SFML/Graphics.hpp>
 
 namespace Application {
@@ -19,10 +16,14 @@ class Entity;
 
 class EntityManager {
   public:
-    EntityManager(TextureHolder& textures);
+    EntityManager() = default;
 
     Entity createEntity();
-    Entity createPlayerEntity(sf::Vector2f initialPosition, sf::Vector2f initialVelocity);
+    Entity createPlayerEntity(sf::Vector2f initialPosition);
+    Entity createEnemyEntity(sf::Vector2f initialPosition, int wave);
+
+    entt::registry& registry() { return mEntityRegistry; }
+    const entt::registry& registry() const { return mEntityRegistry; }
 
     void registerSystem(std::unique_ptr<System::BaseSystem> system);
     void registerRenderingSystem(std::unique_ptr<System::BaseSystem> renderSystem);
@@ -35,9 +36,6 @@ class EntityManager {
 
     std::vector<std::unique_ptr<System::BaseSystem>> systemsContainer;
     std::vector<std::unique_ptr<System::BaseSystem>> renderingSystemsContainer;
-
-    // This is a reference passed from the top level class application
-    TextureHolder& mTextures;
 
   public:
     friend class Entity;

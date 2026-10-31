@@ -1,6 +1,6 @@
-#include "core/StateStack/State.hpp"
+#pragma once
 
-#include <SFML/Graphics/Sprite.hpp>
+#include "core/StateStack/State.hpp"
 
 #include <string>
 
@@ -11,9 +11,9 @@ class PauseState : public Core::State {
 
     PauseState();
 
-    virtual void draw();
+    virtual void draw() override;
 
-    virtual bool update(sf::Time fixedTimeStep);
+    virtual bool update(sf::Time fixedTimeStep) override;
     bool handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) override;
 };
 } // namespace Application

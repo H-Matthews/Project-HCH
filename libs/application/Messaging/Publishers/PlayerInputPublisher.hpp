@@ -30,7 +30,6 @@ class PlayerInputPublisher : public Core::MessageNode {
     KeyBindings mKeyBindings;
 
     std::vector<std::shared_ptr<PlayerInputMessage>> mPlayerActionMessages;
-    std::shared_ptr<PlayerInputMessage> mPlayerEventMessage;
     static const int VECTOR_MESSAGE_SIZE;
 };
 } // namespace Application

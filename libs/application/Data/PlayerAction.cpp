@@ -24,8 +24,8 @@ const std::string Actions::playerActionsEnumToString(const Actions::Player ident
         sStream << "Move up";
         break;
     }
-    case Actions::Player::JUMP: {
-        sStream << "Jump";
+    case Actions::Player::ATTACK: {
+        sStream << "Attack";
         break;
     }
     }

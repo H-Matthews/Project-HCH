@@ -6,7 +6,12 @@ Application::KeyBindings::KeyBindings() {
     mKeyBindings[sf::Keyboard::Scan::D] = Actions::Player::MOVE_RIGHT;
     mKeyBindings[sf::Keyboard::Scan::S] = Actions::Player::MOVE_DOWN;
     mKeyBindings[sf::Keyboard::Scan::W] = Actions::Player::MOVE_UP;
-    mKeyBindings[sf::Keyboard::Scan::Space] = Actions::Player::JUMP;
+    mKeyBindings[sf::Keyboard::Scan::Left] = Actions::Player::MOVE_LEFT;
+    mKeyBindings[sf::Keyboard::Scan::Right] = Actions::Player::MOVE_RIGHT;
+    mKeyBindings[sf::Keyboard::Scan::Down] = Actions::Player::MOVE_DOWN;
+    mKeyBindings[sf::Keyboard::Scan::Up] = Actions::Player::MOVE_UP;
+    mKeyBindings[sf::Keyboard::Scan::Space] = Actions::Player::ATTACK;
+    mKeyBindings[sf::Keyboard::Scan::J] = Actions::Player::ATTACK;
 }
 
 void Application::KeyBindings::assignKey(Actions::Player action, sf::Keyboard::Scan scanCode) {

@@ -1,14 +1,15 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
+#include <SFML/System/Vector2.hpp>
 
 namespace Component {
+/**
+ * Raw player intent collected from the message network during a step.
+ * PlayerInputSystem converts it into velocity / attack requests, then clears it.
+ */
 struct PlayerInputComponent {
-    PlayerInputComponent(sf::Vector2f playerVelocity);
-
-    sf::Vector2f mPlayerVelocity;
-
-    const float SPEED = 400.f;
+    sf::Vector2f direction{0.f, 0.f}; // Sum of held movement keys (each axis -1..1)
+    bool attackRequested = false;
 };
 
 } // namespace Component

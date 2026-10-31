@@ -1,8 +1,6 @@
 #include "application/Scene/ECS/EntityManager.hpp"
 #include "application/Scene/ECS/Entity.hpp"
-#include "application/Scene/ECS/Components/Components.hpp"
-
-Application::EntityManager::EntityManager(TextureHolder& textures) : mTextures(textures) {}
+#include "application/Scene/ECS/EntityFactory.hpp"
 
 Application::Entity Application::EntityManager::createEntity() {
     Entity entity(mEntityRegistry.create(), this);
@@ -10,18 +8,13 @@ Application::Entity Application::EntityManager::createEntity() {
     return entity;
 }
 
-Application::Entity Application::EntityManager::createPlayerEntity(sf::Vector2f initialPosition,
-                                                                   sf::Vector2f initialVelocity) {
-    Entity entity(mEntityRegistry.create(), this);
+Application::Entity Application::EntityManager::createPlayerEntity(sf::Vector2f initialPosition) {
+    return Entity(EntityFactory::createPlayer(mEntityRegistry, initialPosition), this);
+}
 
-    // Grab TextureID
-    sf::Texture& texture = mTextures.get(Textures::ID::PLAYER);
-    sf::Sprite sprite(texture);
-
-    entity.addComponent<Component::SpriteComponent>(sprite, initialPosition, initialVelocity);
-    entity.addComponent<Component::PlayerInputComponent>(sf::Vector2f{0.f, 0.f});
-
-    return entity;
+Application::Entity Application::EntityManager::createEnemyEntity(sf::Vector2f initialPosition,
+                                                                  int wave) {
+    return Entity(EntityFactory::createEnemy(mEntityRegistry, initialPosition, wave), this);
 }
 
 void Application::EntityManager::registerSystem(std::unique_ptr<System::BaseSystem> system) {

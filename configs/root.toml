@@ -9,4 +9,4 @@
 # asset_texture_directory = 'textures'
 
 [Configuration_Files]
-files = ['core_configurables.toml', 'prefabs.toml']
+files = ['core_configurables.toml', 'prefabs.toml', 'gameplay.toml']

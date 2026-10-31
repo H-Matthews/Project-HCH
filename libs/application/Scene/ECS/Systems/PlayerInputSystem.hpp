@@ -8,14 +8,16 @@
 
 namespace System {
 /**
- * This Class is a subscriber on the Message Network that listens to PlayerActions.
- * When Receiving a PlayerAction Message, it manipulates the data in the PlayerInput Component
- * depending on the received Action
+ * Subscriber on the Message Network that listens to PlayerActions. Messages accumulate intent in
+ * the PlayerInputComponent; update() then turns that intent into velocity, facing and attack
+ * requests for the player entity and clears it for the next step.
  */
 
 class PlayerInputSystem : public BaseSystem, public Core::MessageNode {
   public:
     PlayerInputSystem(Core::MessageNetwork& network);
+
+    void update(const sf::Time deltaTime) override;
 
   private:
     void onNotify(Core::Message* message) override;

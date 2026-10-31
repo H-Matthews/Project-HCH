@@ -1,0 +1,45 @@
+# Gameplay tuning. Every value here is optional: delete a line (or the whole file) and the
+# built-in default (shown) is used. Out-of-range values are clamped. Restart the game to apply
+# changes - no rebuild needed. Distances are in world units (pixels), times in seconds.
+
+[Gameplay]
+# How quickly knockback fades. Higher = shorter shove.
+knockback_decay = 9.0
+
+[Gameplay.World]
+width = 2000.0
+height = 1400.0
+
+[Gameplay.Player]
+speed = 260.0
+radius = 16.0
+health = 100.0
+damage = 12.0
+attack_cooldown = 0.35   # Seconds between swings
+attack_reach = 34.0      # Distance in front of the player where the swing lands
+attack_radius = 30.0     # Size of the swing area
+knockback = 520.0
+invulnerable = 0.6       # Damage immunity after being hit
+
+[Gameplay.Enemy]
+radius = 14.0
+base_health = 24.0
+health_per_wave = 4.0
+base_speed = 95.0
+speed_per_wave = 6.0
+max_speed = 190.0
+damage = 8.0
+attack_cooldown = 1.2
+first_attack_delay = 0.6 # Grace period after spawning
+attack_reach = 26.0
+attack_radius = 22.0
+attack_distance = 46.0   # Distance to the player at which it starts attacking
+knockback = 300.0
+invulnerable = 0.15
+
+[Gameplay.Waves]
+base_enemies = 1000
+enemies_per_wave = 2     # Extra enemies each wave
+delay = 2.0              # Pause after clearing a wave
+first_delay = 1.5        # Pause before wave 1
+min_spawn_distance = 450.0

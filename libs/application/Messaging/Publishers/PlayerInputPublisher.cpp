@@ -7,8 +7,7 @@ const int Application::PlayerInputPublisher::VECTOR_MESSAGE_SIZE = 10;
 Application::PlayerInputPublisher::PlayerInputPublisher(Core::MessageNetwork& network,
                                                         Application::KeyBindings keyBindings)
     : Core::MessageNode(network, "PlayerInput Pub", Core::NodeType::PUBLISHER),
-      mKeyBindings(keyBindings), mPlayerActionMessages(),
-      mPlayerEventMessage(std::make_shared<PlayerInputMessage>(Messages::ID::PlayerActionMessage)) {
+      mKeyBindings(keyBindings), mPlayerActionMessages() {
     // Add Topic to publish to
     addTopic(Messages::ID::PlayerActionMessage);
 
@@ -32,8 +31,11 @@ void Application::PlayerInputPublisher::handleKeyPressed(
     if (playerAction == Actions::Player::NONE || mKeyBindings.isRealTimeAction(playerAction))
         return;
 
-    mPlayerEventMessage->action = playerAction;
-    MessageNode::publish(mPlayerEventMessage);
+    // A fresh message per press: the network queues shared_ptrs, so reusing one object would
+    // make two presses in the same step both report the most recent action
+    auto message = std::make_shared<PlayerInputMessage>(Messages::ID::PlayerActionMessage);
+    message->action = playerAction;
+    MessageNode::publish(message);
 }
 
 /*
@@ -47,7 +49,8 @@ void Application::PlayerInputPublisher::handleKeyPressed(
 void Application::PlayerInputPublisher::handleRealTimeInput() {
     std::size_t keyCounter = 0;
     for (const auto& pair : mKeyBindings.getKeyBindings()) {
-        if (sf::Keyboard::isKeyPressed(pair.first) && mKeyBindings.isRealTimeAction(pair.second)) {
+        if (keyCounter < mPlayerActionMessages.size() && sf::Keyboard::isKeyPressed(pair.first) &&
+            mKeyBindings.isRealTimeAction(pair.second)) {
             std::shared_ptr<PlayerInputMessage> message(getMessage(keyCounter++));
 
             message->action = pair.second;

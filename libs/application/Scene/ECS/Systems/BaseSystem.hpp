@@ -13,6 +13,8 @@ namespace System {
  */
 class BaseSystem {
   public:
+    virtual ~BaseSystem() = default;
+
     void init(entt::registry& registry);
 
     virtual void update(const sf::Time) { return; }
@@ -20,6 +22,6 @@ class BaseSystem {
     virtual void render() { return; }
 
   protected:
-    entt::registry* mRegistry;
+    entt::registry* mRegistry = nullptr;
 };
 } // namespace System

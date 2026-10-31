@@ -3,6 +3,7 @@
 #include "core/Messaging/Message.hpp"
 
 #include "application/Data/PlayerAction.hpp"
+#include "application/Messaging/MessageIds.hpp"
 
 namespace Application {
 struct PlayerInputMessage : public Core::Message {

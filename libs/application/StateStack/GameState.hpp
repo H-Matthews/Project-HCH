@@ -2,11 +2,11 @@
 
 #include "application/Scene/Scene.hpp"
 #include "application/Messaging/Publishers/PlayerInputPublisher.hpp"
+#include "application/Settings/KeyBindings.hpp"
 
 #include "core/StateStack/State.hpp"
-#include "core/GameAssetContainer/ResourceHolder.hpp"
-#include "core/GameAssetContainer/ResourceEnums.hpp"
 
+#include <memory>
 #include <string>
 
 namespace Application {
@@ -30,10 +30,16 @@ class GameState : public Core::State {
     ~GameState();
 
   private:
-    Core::MessageNetwork* mGameNetwork;
+    void drawHud();
 
-    // Application::Scene mScene;
-    // Application::KeyBindings mKeyBindings;
-    // Application::PlayerInputPublisher mPlayerInputPublisher;
+  private:
+    Application::KeyBindings mKeyBindings;
+
+    // Destruction order matters: the publisher unregisters from the network, and the scene owns
+    // the subscriber system, so both are released before the state goes away
+    std::unique_ptr<Scene> mScene;
+    std::unique_ptr<PlayerInputPublisher> mPlayerInputPublisher;
+
+    bool mGameOverRequested = false;
 };
 } // namespace Application
