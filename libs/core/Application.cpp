@@ -2,7 +2,6 @@
 
 #include "core/Configuration/LoggerBuilder.hpp"
 #include "core/Exceptions/ConfigurationException.hpp"
-#include "core/StateStack/State.hpp"
 
 #include "utility/StringOperations.hpp"
 #include "utility/Logging/LogRegistry.hpp"
@@ -16,17 +15,17 @@ namespace Core {
 const sf::Time Application::TIME_PER_FRAME = sf::seconds(1.0f / 120.0f);
 
 std::string convertAppStateEnumToString(const ApplicationState& appState) {
-    switch (appState) {
-    case ApplicationState::UNINITIALIZED:
-        return "UNINITIALIZED";
-    case ApplicationState::INITIALIZED:
-        return "INITIALIZED";
-    case ApplicationState::RUNNING:
-        return "RUNNING";
-    case ApplicationState::SHUTTING_DOWN:
-        return "SHUTTING_DOWN";
-    default:
-        return "";
+    switch(appState) {
+        case ApplicationState::UNINITIALIZED:
+            return "UNINITIALIZED";
+        case ApplicationState::INITIALIZED:
+            return "INITIALIZED";
+        case ApplicationState::RUNNING:
+            return "RUNNING";
+        case ApplicationState::SHUTTING_DOWN:
+            return "SHUTTING_DOWN";
+        default:
+            return "";
     }
 }
 
@@ -37,13 +36,16 @@ std::optional<Core::ApplicationState> convertStringToAppStateEnum(std::string_vi
 
     std::optional<ApplicationState> appStateEnum = std::nullopt;
 
-    if (upperStateStr == "UNINITIALIZED") {
+    if(upperStateStr == "UNINITIALIZED") {
         appStateEnum = ApplicationState::UNINITIALIZED;
-    } else if (upperStateStr == "INITIALIZED") {
+    }
+    else if(upperStateStr == "INITIALIZED") {
         appStateEnum = ApplicationState::INITIALIZED;
-    } else if (upperStateStr == "RUNNING") {
+    }
+    else if(upperStateStr == "RUNNING") {
         appStateEnum = ApplicationState::RUNNING;
-    } else if (upperStateStr == "SHUTTING_DOWN") {
+    }
+    else if(upperStateStr == "SHUTTING_DOWN") {
         appStateEnum = ApplicationState::SHUTTING_DOWN;
     }
 
@@ -71,6 +73,7 @@ Core::Application::Application(ConfigSpec configSpec)
 
 bool Application::requestTransition(ApplicationState nextState) {
     if (!isValidTransition(mState, nextState)) {
+        // LOG HERE
         return false;
     }
 
@@ -91,23 +94,33 @@ void Application::initialize() {
 }
 
 void Application::run() {
+    // if (!transitionState(State::RUNNING)) {
+    //     std::string exceptionMessage =
+    //         "Application is unable to transition to STATE:RUNNING; Currently: STATE:" +
+    //         convertAppStateEnumToString(mState);
+
+    //     if (isInitialized()) {
+    //         exceptionMessage += " The application requires a State to be pushed onto the Stack";
+    //     } else {
+    //         exceptionMessage += " The Application is NOT initialized, call initialize()";
+    //     }
+
+    //     if constexpr (Utility::CAN_LOG_ERROR) {
+    //         if (mLogger)
+    //             mLogger->logError(exceptionMessage);
+    //     }
+
+    //     throw ConfigurationException(exceptionMessage);
+    // }
+
     if (!requestTransition(ApplicationState::RUNNING)) {
         std::string exceptionMessage =
             "Application is unable to transition to STATE:RUNNING; Currently: STATE:" +
             convertAppStateEnumToString(mState);
-
-        if constexpr (Utility::CAN_LOG_ERROR) {
-            if (mLogger) {
-                mLogger->logError(exceptionMessage);
-            }
-        }
-
-        throw ConfigurationException(exceptionMessage);
     }
 
-    if constexpr (Utility::CAN_LOG_INFO) {
+    if constexpr (Utility::CAN_LOG_INFO)
         mLogger->logInfo("Entering main RUN loop");
-    }
 
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -174,28 +187,20 @@ void Application::buildSubsystemLoggers() {
 }
 
 bool Application::isValidTransition(ApplicationState from, ApplicationState to) const {
-    switch (from) {
-    case ApplicationState::UNINITIALIZED: {
-        return to == ApplicationState::INITIALIZED;
-    }
-    case ApplicationState::INITIALIZED: {
-        return to == ApplicationState::RUNNING;
-    }
-    case ApplicationState::RUNNING: {
-        return to == ApplicationState::SHUTTING_DOWN;
-    }
-    default: {
-        return false;
-    }
+    switch(from) {
+        case ApplicationState::UNINITIALIZED: {
+            return to == ApplicationState::INITIALIZED;
+        }
+        case ApplicationState::INITIALIZED: {
+            return to == ApplicationState::RUNNING;
+        }
+        case ApplicationState::RUNNING: {
+            return to == ApplicationState::SHUTTING_DOWN;
+        }
+        default: {
+            return false;
+        }
     }
 }
 
-bool Application::isRunning() const {
-    return mState == ApplicationState::RUNNING;
-}
-
-bool Application::isInitialized() const {
-    return mState == ApplicationState::INITIALIZED;
-}
-
-} // namespace Core
+} // NAMESPACE CORE
