@@ -2,13 +2,13 @@
 
 Core::Message::Info::Info() {
     sender = "";
-    messageID = Messages::ID::NONE;
+    messageID = NO_MESSAGE;
 }
 
-Core::Message::Info::Info(const Messages::ID messageID, const std::string& stringMessageID)
+Core::Message::Info::Info(const MessageID messageID, const std::string& stringMessageID)
     : messageID(messageID), stringMessageID(stringMessageID), sender("") {}
 
-Core::Message::Message(const Messages::ID messageID, const std::string& stringMessageID)
+Core::Message::Message(const MessageID messageID, const std::string& stringMessageID)
     : mMessageInfo(messageID, stringMessageID) {}
 
 Core::Message::~Message() {}
@@ -21,7 +21,7 @@ std::string Core::Message::getSenderName() const {
     return mMessageInfo.sender;
 }
 
-Messages::ID Core::Message::getMessageID() const {
+Core::MessageID Core::Message::getMessageID() const {
     return mMessageInfo.messageID;
 }
 

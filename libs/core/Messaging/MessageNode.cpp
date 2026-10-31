@@ -27,10 +27,15 @@ Core::MessageNode::MessageNode(MessageNetwork& messageNetwork, const std::string
     }
 }
 
+Core::MessageNode::~MessageNode() {
+    // Remove this node from the network so the network never calls into a destroyed node
+    unRegisterNode();
+}
+
 // ONLY use this function if the node is BOTH a publisher and subscriber
 // AND you wish to subscribe to the topic as a subscriber and publisher
 // OTHERWISE, use the other functions addSubscriberTopic, addPublisherTopic
-void Core::MessageNode::addTopic(Messages::ID messageID) {
+void Core::MessageNode::addTopic(MessageID messageID) {
     switch (mNodeType) {
     case Core::NodeType::PUBLISHER: {
         mMessageNetwork.addPublisherTopic(mNodeName, messageID);
@@ -50,12 +55,12 @@ void Core::MessageNode::addTopic(Messages::ID messageID) {
     return;
 }
 
-void Core::MessageNode::addSubscriberTopic(Messages::ID messageID) {
+void Core::MessageNode::addSubscriberTopic(MessageID messageID) {
     mMessageNetwork.addSubscriberTopic(mNodeName, messageID);
 
     return;
 }
-void Core::MessageNode::addPublisherTopic(Messages::ID messageID) {
+void Core::MessageNode::addPublisherTopic(MessageID messageID) {
     mMessageNetwork.addPublisherTopic(mNodeName, messageID);
 
     return;
@@ -64,30 +69,30 @@ void Core::MessageNode::addPublisherTopic(Messages::ID messageID) {
 // ONLY use this function if the node is BOTH a publisher and subscriber
 // AND you wish to subscribe to the topic as a subscriber and publisher
 // OTHERWISE, use the other functions addSubscriberTopic, addPublisherTopic
-void Core::MessageNode::removeTopic(Messages::ID messageID) {
+void Core::MessageNode::removeTopic(MessageID messageID) {
     switch (mNodeType) {
     case Core::NodeType::PUBLISHER: {
-        mMessageNetwork.addPublisherTopic(mNodeName, messageID);
+        mMessageNetwork.removeTopicFromPublisher(mNodeName, messageID);
         break;
     }
     case Core::NodeType::SUBSCRIBER: {
-        mMessageNetwork.addSubscriberTopic(mNodeName, messageID);
+        mMessageNetwork.removeTopicFromSubscriber(mNodeName, messageID);
         break;
     }
     case Core::NodeType::SUB_AND_PUB: {
-        mMessageNetwork.addPublisherTopic(mNodeName, messageID);
-        mMessageNetwork.addSubscriberTopic(mNodeName, messageID);
+        mMessageNetwork.removeTopicFromPublisher(mNodeName, messageID);
+        mMessageNetwork.removeTopicFromSubscriber(mNodeName, messageID);
         break;
     }
     }
 }
 
-void Core::MessageNode::removeSubscriberTopic(Messages::ID messageID) {
+void Core::MessageNode::removeSubscriberTopic(MessageID messageID) {
     mMessageNetwork.removeTopicFromSubscriber(mNodeName, messageID);
 
     return;
 }
-void Core::MessageNode::removePublisherTopic(Messages::ID messageID) {
+void Core::MessageNode::removePublisherTopic(MessageID messageID) {
     mMessageNetwork.removeTopicFromPublisher(mNodeName, messageID);
 
     return;
@@ -125,7 +130,7 @@ void Core::MessageNode::unRegisterpublisherNode() {
 void Core::MessageNode::publish(std::shared_ptr<Message> message) {
     message->setSender(mNodeName);
 
-    if (message->getMessageID() != Messages::ID::NONE) {
+    if (message->getMessageID() != NO_MESSAGE) {
         mMessageNetwork.publishMessage(message);
     } else {
         if constexpr (Utility::CAN_LOG_ERROR)

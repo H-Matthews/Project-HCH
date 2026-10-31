@@ -19,15 +19,19 @@ class MessageNode {
   public:
     MessageNode(MessageNetwork& messageNetwork, const std::string& messageNodeName,
                 NodeType nodeType);
+    virtual ~MessageNode();
+
+    MessageNode(const MessageNode&) = delete;
+    MessageNode& operator=(const MessageNode&) = delete;
 
   protected:
-    void addTopic(Messages::ID messageID);
-    void addSubscriberTopic(Messages::ID messageID);
-    void addPublisherTopic(Messages::ID messageID);
+    void addTopic(MessageID messageID);
+    void addSubscriberTopic(MessageID messageID);
+    void addPublisherTopic(MessageID messageID);
 
-    void removeTopic(Messages::ID messageID);
-    void removeSubscriberTopic(Messages::ID messageID);
-    void removePublisherTopic(Messages::ID messageID);
+    void removeTopic(MessageID messageID);
+    void removeSubscriberTopic(MessageID messageID);
+    void removePublisherTopic(MessageID messageID);
 
     void unRegisterNode();
     void unRegisterSubscriberNode();

@@ -10,6 +10,7 @@ set(LIBRARY_NAME "core")
 set(INC Application.hpp
         Messaging/Message.hpp
         Messaging/MessageNetwork.hpp
+        Messaging/MessageTypes.hpp
         Messaging/MessageNode.hpp
         StateStack/State.hpp 
         StateStack/StateStack.hpp
@@ -21,23 +22,20 @@ set(INC Application.hpp
         Configuration/ConfigSection/ConfigSection.hpp
         Configuration/ConfigSection/TOMLConfigSection.hpp
         Configuration/LoggerBuilder.hpp
-        GameAssetContainer/GameAssetContainer.hpp
         GameAssetContainer/ResourceHolder.hpp
-        GameAssetContainer/ResourceEnums.hpp )
+        GameAssetContainer/ResourceTypes.hpp )
 
 set(SRC Application.cpp
         Messaging/Message.cpp
         Messaging/MessageNetwork.cpp
         Messaging/MessageNode.cpp
-        Messaging/MessageTypes.cpp
         StateStack/State.cpp 
         StateStack/StateStack.cpp
         Configuration/Configuration.cpp
         Configuration/DirectoryLayout.cpp
         Configuration/ConfigReader/TOMLConfigReader.cpp
         Configuration/ConfigSection/TOMLConfigSection.cpp
-        Configuration/LoggerBuilder.cpp
-        GameAssetContainer/GameAssetContainer.cpp )
+        Configuration/LoggerBuilder.cpp )
 
 add_library(${LIBRARY_NAME} STATIC ${SRC} ${INC})
 

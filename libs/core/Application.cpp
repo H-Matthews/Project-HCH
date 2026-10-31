@@ -9,6 +9,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <algorithm>
+
 namespace Core {
 
 const sf::Time Application::TIME_PER_FRAME = sf::seconds(1.0f / 120.0f);
@@ -51,10 +53,10 @@ std::optional<Core::ApplicationState> convertStringToAppStateEnum(std::string_vi
 Core::Application::Application(ConfigSpec configSpec)
     : mConfiguration(std::make_unique<Configuration>(std::move(configSpec))),
       mDirectories(mConfiguration->getSection(Configuration::SECTION_NAME)),
-      mState(ApplicationState::UNINITIALIZED), mTextures(),
+      mState(ApplicationState::UNINITIALIZED), mTextures(), mFonts(),
       mNetwork(mConfiguration->getSection(MessageNetwork::SECTION_NAME)),
       mStateStack(*this, mConfiguration->getSection(StateStack::SECTION_NAME)),
-      mWindow(sf::VideoMode({640, 480}), "Application Window", sf::Style::Close) {
+      mWindow(sf::VideoMode({1280, 720}), "Project HCH", sf::Style::Close) {
     if constexpr (Utility::CAN_LOG) {
         Utility::LogRegistry::instance()->configureRegistry(mDirectories.outputDirectory());
 
@@ -85,8 +87,6 @@ void Application::initialize() {
     if (!mConfiguration)
         throw ConfigurationException("Configuration is NULL");
 
-    loadResources();
-
     requestTransition(ApplicationState::INITIALIZED);
 }
 
@@ -113,7 +113,8 @@ void Application::run() {
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
     while (mWindow.isOpen()) {
-        sf::Time elapsedTime = clock.restart();
+        // Clamp so a long stall (window drag, breakpoint) cannot cause a spiral of updates
+        sf::Time elapsedTime = std::min(clock.restart(), sf::seconds(0.25f));
         timeSinceLastUpdate += elapsedTime;
 
         while (timeSinceLastUpdate > TIME_PER_FRAME) {
@@ -159,26 +160,12 @@ void Application::update(sf::Time fixedTimeStep) {
 }
 
 void Application::render() {
-    mWindow.clear(sf::Color::Cyan);
+    mWindow.clear(sf::Color(18, 18, 24));
 
     mStateStack.draw();
 
     mWindow.setView(mWindow.getDefaultView());
     mWindow.display();
-}
-
-void Application::loadResources() {
-    // auto fontTexturePaths = mConfiguration->getAssetPaths();
-    // std::string texturePath = fontTexturePaths.first;
-    // std::string fontPath = fontTexturePaths.second;
-
-    // TODO: This needs to be reexamined. Shouldn't hardcode file names like this
-    // Should tie this to the config file...
-    // mTextures.load( Textures::ID::PLAYER, texturePath + "/" + "playerSprite.png" );
-    // mTextures.load( Textures::ID::BACKGROUND, texturePath + "/" + "background.png" );
-    // mTextures.load( Textures::ID::ENEMY, texturePath + "/" + "enemySprite.png" );
-
-    return;
 }
 
 void Application::buildSubsystemLoggers() {

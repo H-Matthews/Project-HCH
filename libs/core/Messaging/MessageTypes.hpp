@@ -1,12 +1,15 @@
 #pragma once
 
-#include <string>
+#include <cstdint>
 
-namespace Messages {
+namespace Core {
 /**
- * Defines application specific Message IDs
+ * Identifies a kind of message (a "topic") on the MessageNetwork.
+ *
+ * Core does not know which messages exist: the game layer defines its own IDs (an enum or
+ * constants) and passes them in. 0 is reserved for "no message".
  */
-enum class ID { NONE = 0, PlayerActionMessage, EnemySpawnMessage };
+using MessageID = std::uint32_t;
 
-const std::string messageIDEnumToString(const ID identifier);
-} // namespace Messages
+inline constexpr MessageID NO_MESSAGE = 0;
+} // namespace Core

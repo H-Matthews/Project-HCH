@@ -14,12 +14,12 @@ class MessageNetwork;
 class Message {
   public:
     struct Info {
-        Messages::ID messageID;
+        MessageID messageID;
         std::string stringMessageID;
         std::string sender;
 
         Info();
-        Info(Messages::ID messageID, const std::string& stringMessageID);
+        Info(MessageID messageID, const std::string& stringMessageID);
     };
 
   public:
@@ -29,11 +29,11 @@ class Message {
     void setSender(const std::string& sender);
 
     std::string getSenderName() const;
-    Messages::ID getMessageID() const;
+    MessageID getMessageID() const;
     const std::string& getStringMessageID() const;
 
   protected:
-    Message(const Messages::ID messageID, const std::string& stringMessageID);
+    Message(const MessageID messageID, const std::string& stringMessageID);
 
   protected:
     Info mMessageInfo;

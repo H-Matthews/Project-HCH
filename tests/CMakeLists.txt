@@ -24,3 +24,9 @@ foreach(_test_file ${TEST_SRC_FILES})
            COMMAND ${_test_name})
   set_tests_properties(${_test_name} PROPERTIES TIMEOUT 5)
 endforeach()
+
+
+# Architecture guard: the engine core must never include the game (application) layer
+add_test(NAME core_independence_check
+         COMMAND ${CMAKE_COMMAND} -DCORE_DIR=${PROJECT_SOURCE_DIR}/libs/core
+                 -P ${CMAKE_CURRENT_SOURCE_DIR}/check_core_independence.cmake)

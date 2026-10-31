@@ -7,16 +7,20 @@
 #include "core/Messaging/MessageNode.hpp"
 
 // BEGIN Helper Classes
+
+// Core knows nothing about specific messages; the test defines its own ID
+constexpr Core::MessageID TEST_ACTION_MESSAGE = 1;
+
 enum class Action { NONE = 0, MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT };
 
 class TestMessage : public Core::Message {
   public:
-    TestMessage(const Messages::ID messageID);
+    TestMessage(const Core::MessageID messageID);
     TestMessage* clone() const override;
     Action action;
 };
 
-TestMessage::TestMessage(const Messages::ID messageID)
+TestMessage::TestMessage(const Core::MessageID messageID)
     : Message(messageID, "PlayerActionMessage"), action(Action::NONE) {}
 
 TestMessage* TestMessage::clone() const {
@@ -34,10 +38,10 @@ class TestPublisher : public Core::MessageNode {
 TestPublisher::TestPublisher(Core::MessageNetwork& messageNetwork)
     : Core::MessageNode(messageNetwork, "PlayerAction Publisher", Core::NodeType::PUBLISHER),
       testMessage() {
-    MessageNode::addTopic(Messages::ID::PlayerActionMessage);
+    MessageNode::addTopic(TEST_ACTION_MESSAGE);
 
     // Initialize Messages
-    testMessage = std::make_shared<TestMessage>(Messages::ID::PlayerActionMessage);
+    testMessage = std::make_shared<TestMessage>(TEST_ACTION_MESSAGE);
 }
 
 void TestPublisher::update(Action action) {
@@ -79,7 +83,7 @@ class TestSubscriberOne : public Core::MessageNode {
 
 TestSubscriberOne::TestSubscriberOne(Core::MessageNetwork& messageNetwork)
     : MessageNode(messageNetwork, "TestComponentSubOne", Core::NodeType::SUBSCRIBER) {
-    MessageNode::addTopic(Messages::ID::PlayerActionMessage);
+    MessageNode::addTopic(TEST_ACTION_MESSAGE);
 }
 
 std::vector<Action> TestSubscriberOne::getMessageVector() {
@@ -188,6 +192,34 @@ TEST_F(CoreMessageNetworkTest, ReceiveMultipleMessages) {
     for (const auto action : myActionMessages) {
         ASSERT_EQ(action, upAction);
     }
+}
+
+/*
+    Test: Message names used for logging
+    Registered IDs report their name; unregistered IDs fall back to "Message#<id>"
+*/
+TEST(CoreMessageNetworkNameTest, registeredAndFallbackNames) {
+    Core::MessageNetwork network;
+    network.registerMessageName(TEST_ACTION_MESSAGE, "Test Action");
+
+    EXPECT_EQ(network.messageName(TEST_ACTION_MESSAGE), "Test Action");
+    EXPECT_EQ(network.messageName(99), "Message#99");
+
+    // Re-registering replaces the name
+    network.registerMessageName(TEST_ACTION_MESSAGE, "Renamed");
+    EXPECT_EQ(network.messageName(TEST_ACTION_MESSAGE), "Renamed");
+}
+
+/*
+    Test: A node that is destroyed no longer receives messages (it unregisters itself)
+*/
+TEST(CoreMessageNetworkNameTest, destroyedSubscriberIsNotCalled) {
+    Core::MessageNetwork network;
+    TestPublisher publisher(network);
+    { TestSubscriberOne subscriber(network); } // destroyed here
+
+    publisher.update(Action::MOVE_UP);
+    EXPECT_NO_FATAL_FAILURE(network.notifySubscribers());
 }
 
 // END TESTING

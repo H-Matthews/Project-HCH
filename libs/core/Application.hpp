@@ -1,17 +1,16 @@
 #pragma once
 
-#include "application/Settings/KeyBindings.hpp"
-
 #include "core/Configuration/Configuration.hpp"
 #include "core/Configuration/DirectoryLayout.hpp"
 #include "core/StateStack/StateStack.hpp"
 #include "core/Messaging/MessageNetwork.hpp"
-#include "core/GameAssetContainer/GameAssetContainer.hpp"
 #include "core/GameAssetContainer/ResourceHolder.hpp"
-#include "core/GameAssetContainer/ResourceEnums.hpp"
+#include "core/GameAssetContainer/ResourceTypes.hpp"
 
 #include "utility/Logging/Logger.hpp"
 
+#include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Time.hpp>
 
@@ -36,6 +35,15 @@ class Application {
 
     MessageNetwork* getNetwork();
 
+    // Top-level table from the loaded TOML files, or nullptr if it does not exist
+    const ConfigSection* getConfigSection(std::string_view name) const {
+        return mConfiguration->getSection(name);
+    }
+    sf::RenderWindow& getWindow() { return mWindow; }
+    TextureHolder& getTextures() { return mTextures; }
+    FontHolder& getFonts() { return mFonts; }
+    const DirectoryLayout& getDirectories() const { return mDirectories; }
+
     void registerState(const std::string& stateIdentifier,
                        std::function<std::unique_ptr<Core::State>()> registerFunc);
 
@@ -49,7 +57,6 @@ class Application {
     void update(sf::Time fixedTimeStep);
     void render();
 
-    void loadResources();
     void buildSubsystemLoggers();
 
     bool transitionState(State statusToTransfer);
@@ -68,6 +75,7 @@ class Application {
 
     // Should this go here? or in the GameState?
     TextureHolder mTextures;
+    FontHolder mFonts;
 
     // CORE APPLICATION CLASSES
     MessageNetwork mNetwork;

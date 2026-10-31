@@ -35,6 +35,11 @@ class MessageNetwork {
 
     void notifySubscribers();
 
+    /// Optional: gives a MessageID a readable name in log output. Unregistered IDs are logged as
+    /// "Message#<id>".
+    void registerMessageName(MessageID messageID, std::string name);
+    std::string messageName(MessageID messageID) const;
+
     void shutdownNetwork();
 
     void initializeLogger();
@@ -44,14 +49,14 @@ class MessageNetwork {
                                 std::function<void(Message*)> callback);
     void registerPublisherNode(const std::string& nodeName);
 
-    void addSubscriberTopic(const std::string& nodeName, Messages::ID messageID);
-    void addPublisherTopic(const std::string& nodeName, Messages::ID messageID);
+    void addSubscriberTopic(const std::string& nodeName, MessageID messageID);
+    void addPublisherTopic(const std::string& nodeName, MessageID messageID);
 
     void unRegisterSubscriberNode(const std::string& nodeName);
     void unRegisterPublisherNode(const std::string& nodeName);
 
-    void removeTopicFromPublisher(const std::string& nodeName, Messages::ID messageID);
-    void removeTopicFromSubscriber(const std::string& nodeName, Messages::ID messageID);
+    void removeTopicFromPublisher(const std::string& nodeName, MessageID messageID);
+    void removeTopicFromSubscriber(const std::string& nodeName, MessageID messageID);
 
     void publishMessage(std::shared_ptr<Message> message);
 
@@ -60,14 +65,16 @@ class MessageNetwork {
   private:
     std::queue<std::shared_ptr<Message>> mMessageQueue;
 
-    std::map<std::size_t, std::set<Messages::ID>> mSubscriberNodes;
-    std::map<std::size_t, std::set<Messages::ID>> mPublisherNodes;
+    std::map<std::size_t, std::set<MessageID>> mSubscriberNodes;
+    std::map<std::size_t, std::set<MessageID>> mPublisherNodes;
 
     std::map<std::size_t, SubscriberNodeInfo> mSubscriberRecords;
     std::map<std::size_t, PublisherNodeInfo> mPublisherRecords;
 
-    std::map<std::size_t, std::set<Messages::ID>> mPendingPublisherRequests;
-    std::map<std::size_t, std::set<Messages::ID>> mPendingSubscriberRequests;
+    std::map<std::size_t, std::set<MessageID>> mPendingPublisherRequests;
+    std::map<std::size_t, std::set<MessageID>> mPendingSubscriberRequests;
+
+    std::map<MessageID, std::string> mMessageNames;
 
     std::hash<std::string> mHash;
 

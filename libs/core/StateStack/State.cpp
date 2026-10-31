@@ -1,6 +1,7 @@
 #include "core/StateStack/State.hpp"
 
 #include "core/StateStack/StateStack.hpp"
+#include "core/Application.hpp"
 
 Core::State::State(std::string stateIdentifier)
     : mStackRef(nullptr), mStateIdentifierString(stateIdentifier) {}
@@ -23,4 +24,8 @@ void Core::State::requestStackPop() {
 
 void Core::State::requestStateClear() {
     mStackRef->clearStates();
+}
+
+Core::Application& Core::State::getApplication() {
+    return mStackRef->getApplication();
 }

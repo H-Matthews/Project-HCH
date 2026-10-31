@@ -3,7 +3,7 @@
 #include "core/Messaging/MessageNetwork.hpp"
 #include "core/StateStack/StateStack.hpp"
 
-#include "core/GameAssetContainer/ResourceEnums.hpp"
+#include "core/GameAssetContainer/ResourceTypes.hpp"
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
@@ -33,6 +33,8 @@ class State {
 
   protected:
     template <typename TState> requires(std::is_base_of_v<State, TState>) void requestStackPush();
+
+    Application& getApplication();
 
     void requestStackPop();
     void requestStateClear();
