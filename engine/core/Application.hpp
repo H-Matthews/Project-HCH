@@ -25,11 +25,24 @@ enum class ApplicationState { UNINITIALIZED = 0, INITIALIZED, RUNNING, SHUTTING_
 std::string convertAppStateEnumToString(const ApplicationState& appState);
 std::optional<ApplicationState> convertStringToAppStateEnum(std::string_view stringState);
 
+struct AppSpec {
+    Core::ConfigSpec configSpec;
+    std::string windowName;
+    sf::Vector2u windowSize;
+
+    explicit AppSpec(Core::ConfigSpec config) :
+        configSpec(std::move(config)) {}
+    AppSpec(const AppSpec&) = delete;
+    AppSpec& operator=(const AppSpec&) = delete;
+    AppSpec(AppSpec&&) = default;
+    AppSpec& operator=(AppSpec&&) = default;
+};
+
 class Application {
   public:
     static constexpr std::string_view SECTION_NAME = "Application";
 
-    explicit Application(ConfigSpec configSpec);
+    explicit Application(AppSpec appSpec);
 
     bool requestTransition(ApplicationState nextState);
 
@@ -73,17 +86,17 @@ class Application {
 
     ApplicationState mState = ApplicationState::UNINITIALIZED;
 
-    // Should this go here? or in the GameState?
     TextureHolder mTextures;
     FontHolder mFonts;
 
     // CORE APPLICATION CLASSES
     MessageNetwork mNetwork;
-    StateStack mStateStack;
 
     // TODO: These need to go into a CORE Class
     // Application::KeyBindings mPlayerKeyBindings;
     sf::RenderWindow mWindow;
+
+    StateStack mStateStack;
 
     std::shared_ptr<Utility::Logger> mLogger;
 };

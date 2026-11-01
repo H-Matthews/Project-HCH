@@ -49,14 +49,14 @@ std::optional<Core::ApplicationState> convertStringToAppStateEnum(std::string_vi
     return appStateEnum;
 }
 
-Core::Application::Application(ConfigSpec configSpec)
-    : mConfiguration(std::make_unique<Configuration>(std::move(configSpec))),
+Core::Application::Application(AppSpec appSpec)
+    : mConfiguration(std::make_unique<Configuration>(std::move(appSpec.configSpec))),
       mDirectories(mConfiguration->rootDirectory(),
                    mConfiguration->getSection(Configuration::SECTION_NAME)),
       mState(ApplicationState::UNINITIALIZED), mTextures(), mFonts(),
       mNetwork(mConfiguration->getSection(MessageNetwork::SECTION_NAME)),
-      mStateStack(*this, mConfiguration->getSection(StateStack::SECTION_NAME)),
-      mWindow(sf::VideoMode({1280, 720}), "Project HCH", sf::Style::Close) {
+      mWindow(sf::VideoMode(appSpec.windowSize), appSpec.windowName, sf::Style::Close),
+      mStateStack(*this, mConfiguration->getSection(StateStack::SECTION_NAME)) {
     if constexpr (Utility::CAN_LOG) {
         Utility::LogRegistry::instance()->configureRegistry(mDirectories.outputDirectory());
 
@@ -72,7 +72,6 @@ Core::Application::Application(ConfigSpec configSpec)
 
 bool Application::requestTransition(ApplicationState nextState) {
     if (!isValidTransition(mState, nextState)) {
-        // LOG HERE
         return false;
     }
 
@@ -94,29 +93,18 @@ void Application::initialize() {
 }
 
 void Application::run() {
-    // if (!transitionState(State::RUNNING)) {
-    //     std::string exceptionMessage =
-    //         "Application is unable to transition to STATE:RUNNING; Currently: STATE:" +
-    //         convertAppStateEnumToString(mState);
-
-    //     if (isInitialized()) {
-    //         exceptionMessage += " The application requires a State to be pushed onto the Stack";
-    //     } else {
-    //         exceptionMessage += " The Application is NOT initialized, call initialize()";
-    //     }
-
-    //     if constexpr (Utility::CAN_LOG_ERROR) {
-    //         if (mLogger)
-    //             mLogger->logError(exceptionMessage);
-    //     }
-
-    //     throw ConfigurationException(exceptionMessage);
-    // }
-
     if (!requestTransition(ApplicationState::RUNNING)) {
         std::string exceptionMessage =
             "Application is unable to transition to STATE:RUNNING; Currently: STATE:" +
             convertAppStateEnumToString(mState);
+
+        if constexpr(Utility::CAN_LOG_ERROR) {
+            if(mLogger) {
+                mLogger->logError(exceptionMessage);
+            }
+        }
+
+        throw ConfigurationException(exceptionMessage);
     }
 
     if constexpr (Utility::CAN_LOG_INFO) {

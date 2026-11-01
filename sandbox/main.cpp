@@ -45,14 +45,18 @@ static void initializeGlobalLogger() {
 int main() {
     initializeGlobalLogger();
 
-    Core::ConfigSpec configSpecification;
-    configSpecification.rootDirectory = SANDBOX_DIR;
-    configSpecification.configDirectory = "configs";
-    configSpecification.rootConfigFile = "root.toml";
-    configSpecification.configReader = std::make_unique<Core::TOMLConfigReader>();
+    Core::ConfigSpec configSpec;
+    configSpec.rootDirectory = SANDBOX_DIR;
+    configSpec.configDirectory = "configs";
+    configSpec.rootConfigFile = "root.toml";
+    configSpec.configReader = std::make_unique<Core::TOMLConfigReader>();
+
+    Core::AppSpec appSpec(std::move(configSpec));
+    appSpec.windowName = "Sandbox";
+    appSpec.windowSize = {1280, 720};
 
     try {
-        Core::Application application(std::move(configSpecification));
+        Core::Application application(std::move(appSpec));
 
         application.initialize();
         application.pushState<SandboxState>();

@@ -33,16 +33,18 @@ static void initializeGlobalLogger() {
 int main() {
     initializeGlobalLogger();
 
-    Core::ConfigSpec configSpecification;
-    configSpecification.rootDirectory = GAME_DIR;
-    configSpecification.configDirectory = CONFIG_DIR_NAME;
-    configSpecification.rootConfigFile = ROOT_FILE_NAME;
-    configSpecification.configReader = std::make_unique<Core::TOMLConfigReader>();
+    Core::ConfigSpec configSpec;
+    configSpec.rootDirectory = GAME_DIR;
+    configSpec.configDirectory = CONFIG_DIR_NAME;
+    configSpec.rootConfigFile = ROOT_FILE_NAME;
+    configSpec.configReader = std::make_unique<Core::TOMLConfigReader>();
+
+    Core::AppSpec appSpec(std::move(configSpec));
+    appSpec.windowName = "Project-HCH";
+    appSpec.windowSize = {1280, 720};
 
     try {
-        // TODO: Change this to an App Spec Type that
-        // contains the Config Spec
-        Core::Application application(std::move(configSpecification));
+        Core::Application application(std::move(appSpec));
 
         application.initialize();
         Application::loadGameResources(application);
