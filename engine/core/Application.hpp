@@ -4,6 +4,7 @@
 #include "core/Configuration/DirectoryLayout.hpp"
 #include "core/StateStack/StateStack.hpp"
 #include "core/Messaging/MessageNetwork.hpp"
+#include "core/Window/Window.hpp"
 #include "core/GameAssetContainer/ResourceHolder.hpp"
 #include "core/GameAssetContainer/ResourceTypes.hpp"
 
@@ -26,17 +27,20 @@ std::string convertAppStateEnumToString(const ApplicationState& appState);
 std::optional<ApplicationState> convertStringToAppStateEnum(std::string_view stringState);
 
 struct AppSpec {
-    Core::ConfigSpec configSpec;
-    std::string windowName;
-    sf::Vector2u windowSize;
+    ConfigSpec configSpec;
+    WindowSpec windowSpec;
 
-    explicit AppSpec(Core::ConfigSpec config) :
-        configSpec(std::move(config)) {}
+    explicit AppSpec(ConfigSpec cSpec, WindowSpec wSpec) :
+        configSpec(std::move(cSpec)),
+        windowSpec(std::move(wSpec)) {}
+
     AppSpec(const AppSpec&) = delete;
     AppSpec& operator=(const AppSpec&) = delete;
     AppSpec(AppSpec&&) = default;
     AppSpec& operator=(AppSpec&&) = default;
 };
+
+class SfmlWindow;
 
 class Application {
   public:
@@ -46,13 +50,14 @@ class Application {
 
     bool requestTransition(ApplicationState nextState);
 
-    MessageNetwork* getNetwork();
-
     // Top-level table from the loaded TOML files, or nullptr if it does not exist
     const ConfigSection* getConfigSection(std::string_view name) const {
         return mConfiguration->getSection(name);
     }
-    sf::RenderWindow& getWindow() { return mWindow; }
+
+    // Subsystem Getters
+    MessageNetwork& getNetwork() { return mNetwork; }
+    Window& getWindow() { return *mWindow; }
     TextureHolder& getTextures() { return mTextures; }
     FontHolder& getFonts() { return mFonts; }
     const DirectoryLayout& getDirectories() const { return mDirectories; }
@@ -66,9 +71,11 @@ class Application {
     void run();
 
   private:
-    void processInput();
+    void processRealtimeInput();
     void update(sf::Time fixedTimeStep);
     void render();
+
+    void handleEvent(const sf::Event& event);
 
     void buildSubsystemLoggers();
 
@@ -92,18 +99,15 @@ class Application {
     // CORE APPLICATION CLASSES
     MessageNetwork mNetwork;
 
-    // TODO: These need to go into a CORE Class
-    // Application::KeyBindings mPlayerKeyBindings;
-    sf::RenderWindow mWindow;
+    std::unique_ptr<Window> mWindow;
+
+    // Unforuntaely necessary for now
+    SfmlWindow* sfmlWindow = nullptr;
 
     StateStack mStateStack;
 
     std::shared_ptr<Utility::Logger> mLogger;
 };
-
-inline MessageNetwork* Application::getNetwork() {
-    return &mNetwork;
-}
 
 bool Application::isInitialized() const {
     return mState == ApplicationState::INITIALIZED;

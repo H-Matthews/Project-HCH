@@ -44,7 +44,6 @@ class StateStack {
     bool isEmpty() const;
     bool isPendingListEmpty() const;
 
-    MessageNetwork* getMessageNetworkRef();
     Application& getApplication() { return applicationRef; }
 
     void initializeLogger();

@@ -22,7 +22,7 @@ bool Application::GameState::initializeState() {
     }
 
     Core::Application& app = getApplication();
-    Core::MessageNetwork& network = *app.getNetwork();
+    Core::MessageNetwork& network = app.getNetwork();
 
     const GameTuning tuning =
         GameTuning::fromConfig(app.getConfigSection(GameTuning::SECTION_NAME));
