@@ -83,7 +83,7 @@ void Core::StateStack::initializeLogger() {
 
 std::unique_ptr<Core::State>
 Core::StateStack::createState(const Core::StateStack::PendingStateRequest& changeRequest) {
-    auto createdState(changeRequest.stateConstructor());
+    std::unique_ptr<Core::State> createdState(changeRequest.stateConstructor());
     createdState->setStackRef(this);
     createdState->initializeState();
     return createdState;
