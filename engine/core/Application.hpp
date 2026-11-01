@@ -58,6 +58,7 @@ class Application {
     // Subsystem Getters
     MessageNetwork& getNetwork() { return mNetwork; }
     Window& getWindow() { return *mWindow; }
+    sf::RenderWindow& getRenderWindow();
     TextureHolder& getTextures() { return mTextures; }
     FontHolder& getFonts() { return mFonts; }
     const DirectoryLayout& getDirectories() const { return mDirectories; }

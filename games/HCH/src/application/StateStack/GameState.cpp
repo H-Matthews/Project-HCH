@@ -26,7 +26,7 @@ bool Application::GameState::initializeState() {
 
     const GameTuning tuning =
         GameTuning::fromConfig(app.getConfigSection(GameTuning::SECTION_NAME));
-    mScene = std::make_unique<Scene>(app.getWindow(), network, tuning);
+    mScene = std::make_unique<Scene>(app.getRenderWindow(), network, tuning);
     mPlayerInputPublisher = std::make_unique<PlayerInputPublisher>(network, mKeyBindings);
 
     return true;
@@ -38,7 +38,7 @@ void Application::GameState::draw() {
 }
 
 void Application::GameState::drawHud() {
-    sf::RenderWindow& window = getApplication().getWindow();
+    sf::RenderWindow& window = getApplication().getRenderWindow();
     const sf::Font& font = getApplication().getFonts().get(Fonts::ARIAL);
 
     window.setView(window.getDefaultView());

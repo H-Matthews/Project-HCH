@@ -20,6 +20,7 @@ struct WindowSpec {
     uint32_t height = 720;
     bool vSync = true;
 
+    WindowSpec() = default;
     WindowSpec(const WindowSpec&) = delete;
     WindowSpec& operator=(const WindowSpec&) = delete;
     WindowSpec(WindowSpec&&) = default;
@@ -40,7 +41,7 @@ public:
     virtual uint32_t getWidth() const = 0;
     virtual uint32_t getHeight() const = 0;
 
-    virtual void* getNativeWindowHandle() const;
+    virtual void* getNativeWindowHandle() const = 0;
     virtual void setEventCallback(EventCallbackFn callback) = 0;
 };
 

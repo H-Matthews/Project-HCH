@@ -27,6 +27,7 @@ public:
     // graphics renderer into a single object. So, these must be here
     void clear(const sf::Color& color) { mSfmlWindow.clear(color); }
     void setView(const sf::View& view) { mSfmlWindow.setView(view); }
+    sf::RenderWindow& getRenderWindow() { return mSfmlWindow; }
     sf::View getDefaultView() const { return mSfmlWindow.getDefaultView(); }
 
 private:

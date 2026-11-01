@@ -18,7 +18,7 @@ class SandboxState : public Core::State {
   public:
     SandboxState() : State("SANDBOX") {}
 
-    void draw() override { getApplication().getWindow().clear(sf::Color(30, 30, 40)); }
+    void draw() override { getApplication().getRenderWindow().clear(sf::Color(30, 30, 40)); }
 
     bool update(sf::Time) override { return false; }
 
@@ -51,9 +51,12 @@ int main() {
     configSpec.rootConfigFile = "root.toml";
     configSpec.configReader = std::make_unique<Core::TOMLConfigReader>();
 
-    Core::AppSpec appSpec(std::move(configSpec));
-    appSpec.windowName = "Sandbox";
-    appSpec.windowSize = {1280, 720};
+    Core::WindowSpec windowSpec;
+    windowSpec.windowName = "Sandbox";
+    windowSpec.width = 1280;
+    windowSpec.height = 720;
+
+    Core::AppSpec appSpec(std::move(configSpec), std::move(windowSpec));
 
     try {
         Core::Application application(std::move(appSpec));

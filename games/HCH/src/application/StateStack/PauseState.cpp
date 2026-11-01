@@ -11,7 +11,7 @@ std::string Application::PauseState::IDENTIFIER = "PAUSE";
 Application::PauseState::PauseState() : State(IDENTIFIER) {}
 
 void Application::PauseState::draw() {
-    sf::RenderWindow& window = getApplication().getWindow();
+    sf::RenderWindow& window = getApplication().getRenderWindow();
     const sf::Font& font = getApplication().getFonts().get(Fonts::ARIAL);
     const sf::Vector2f size(window.getSize());
     const sf::Vector2f middle = size / 2.f;

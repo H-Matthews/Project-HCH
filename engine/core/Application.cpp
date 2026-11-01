@@ -106,6 +106,13 @@ void Application::initialize() {
     requestTransition(ApplicationState::INITIALIZED);
 }
 
+sf::RenderWindow& Application::getRenderWindow() {
+    if (!sfmlWindow) {
+        throw ConfigurationException("Window backend is not SFML");
+    }
+    return sfmlWindow->getRenderWindow();
+}
+
 void Application::run() {
     if (!requestTransition(ApplicationState::RUNNING)) {
         std::string exceptionMessage =
@@ -131,6 +138,8 @@ void Application::run() {
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
     while (mWindow->isOpen()) {
+        mWindow->pollEvents();
+
         // Clamp so a long stall (window drag, breakpoint) cannot cause a spiral of updates
         sf::Time elapsedTime = std::min(clock.restart(), sf::seconds(0.25f));
         timeSinceLastUpdate += elapsedTime;
@@ -169,7 +178,7 @@ void Application::handleEvent(const sf::Event& event) {
     else if(const auto* mouseMoved = event.getIf<sf::Event::MouseMoved>()) {
         mStateStack.handleMouseMoved(*mouseMoved);
     }
-    else if(const auto* closed = event.getIf<sf::Event::Closed>()) {
+    else if(event.is<sf::Event::Closed>()) {
         mWindow->close();
     }
 }

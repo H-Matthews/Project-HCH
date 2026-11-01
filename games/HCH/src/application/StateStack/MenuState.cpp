@@ -11,7 +11,7 @@ std::string Application::MenuState::IDENTIFIER = "MENU";
 Application::MenuState::MenuState() : State(IDENTIFIER) {}
 
 void Application::MenuState::draw() {
-    sf::RenderWindow& window = getApplication().getWindow();
+    sf::RenderWindow& window = getApplication().getRenderWindow();
     const sf::Font& font = getApplication().getFonts().get(Fonts::ARIAL);
     const sf::Vector2f middle = sf::Vector2f(window.getSize()) / 2.f;
 

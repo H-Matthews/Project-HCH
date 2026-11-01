@@ -19,6 +19,10 @@ void SfmlWindow::close() {
     }
 }
 
+bool SfmlWindow::isOpen() const {
+    return mSfmlWindow.isOpen();
+}
+
 // Don't need a shutdown for SFML. When the sf::RenderWindow
 // goes out of scope, its resources are cleaned up (RAII)
 void SfmlWindow::shutdown() {

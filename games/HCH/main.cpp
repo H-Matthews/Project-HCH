@@ -39,16 +39,19 @@ int main() {
     configSpec.rootConfigFile = ROOT_FILE_NAME;
     configSpec.configReader = std::make_unique<Core::TOMLConfigReader>();
 
-    Core::AppSpec appSpec(std::move(configSpec));
-    appSpec.windowName = "Project-HCH";
-    appSpec.windowSize = {1280, 720};
+    Core::WindowSpec windowSpec;
+    windowSpec.windowName = "Project-HCH";
+    windowSpec.width = 1280;
+    windowSpec.height = 720;
+
+    Core::AppSpec appSpec(std::move(configSpec), std::move(windowSpec));
 
     try {
         Core::Application application(std::move(appSpec));
 
         application.initialize();
         Application::loadGameResources(application);
-        Messages::registerMessageNames(*application.getNetwork());
+        Messages::registerMessageNames(application.getNetwork());
         application.pushState<Application::MenuState>();
         application.run();
     } catch (const Core::ConfigurationException& e) {
