@@ -52,6 +52,7 @@ int main() {
         application.initialize();
         Application::loadGameResources(application);
         Messages::registerMessageNames(application.getNetwork());
+
         application.pushState<Application::MenuState>();
         application.run();
     } catch (const Core::ConfigurationException& e) {

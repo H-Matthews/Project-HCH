@@ -58,7 +58,7 @@ Core::Application::Application(AppSpec appSpec)
     : mConfiguration(std::make_unique<Configuration>(std::move(appSpec.configSpec))),
       mDirectories(mConfiguration->rootDirectory(),
                    mConfiguration->getSection(Configuration::SECTION_NAME)),
-      mState(ApplicationState::UNINITIALIZED), mTextures(), mFonts(),
+      mState(ApplicationState::UNINITIALIZED),
       mNetwork(mConfiguration->getSection(MessageNetwork::SECTION_NAME)),
       mStateStack(*this, mConfiguration->getSection(StateStack::SECTION_NAME)) {
     if constexpr (Utility::CAN_LOG) {
