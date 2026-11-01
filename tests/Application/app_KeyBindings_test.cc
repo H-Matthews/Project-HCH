@@ -10,7 +10,7 @@
         D --> MOVE_RIGHT
         W --> MOVE_UP
         S --> MOVE_DOWN
-        SPACE --> JUMP
+        SPACE --> ATTACK
 */
 TEST(App_KeyBindings_Constructor_Test, defaultConstructor) {
     Application::KeyBindings keyBindings;
@@ -29,7 +29,7 @@ TEST(App_KeyBindings_Constructor_Test, defaultConstructor) {
     EXPECT_EQ(action, Actions::Player::MOVE_DOWN);
 
     action = keyBindings.getAssignedAction(sf::Keyboard::Scan::Space);
-    EXPECT_EQ(action, Actions::Player::JUMP);
+    EXPECT_EQ(action, Actions::Player::ATTACK);
 }
 
 /*

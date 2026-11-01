@@ -1,0 +1,65 @@
+# Defines Core Configurable Objects
+# Meaning, Only Configurables that are instantiated once throughout the program
+
+# List of All Core Configurables
+# - Application
+# - StateStack
+# - Message Network
+
+# BEGINNING APPLICATION -------------------------------
+
+[Application]
+logging_enabled = true
+
+[Application.Logger]
+logger_name = "ApplicationLogger"
+global_log_level = "NONE"
+sinks = ["ColorConsoleSink", "TextFileSink"]
+
+[Application.Logger.ColorConsoleSink]
+log_level = "INFO"
+formatter = "DefaultFormatter"
+
+[Application.Logger.TextFileSink]
+log_file_name = "Application"
+log_file_extension = ".log"
+log_level = "INFO"
+formatter = "KeyValueFormatter"
+
+# END APPLICATION -------------------------------------
+
+# BEGINNING STATESTACK ---------------------------
+
+[StateStack]
+logging_enabled = true
+
+[StateStack.Logger]
+logger_name = "StateStackLogger"
+global_log_level = "NONE"
+sinks = ["TextFileSink"]
+
+[StateStack.Logger.TextFileSink]
+log_file_name = "StateStack"
+log_file_extension = ".log"
+log_level = "INFO"
+formatter = "KeyValueFormatter"
+
+# END STATESTACK ---------------------------------
+
+# BEGINNING MESSAGE NETWORK ----------------------
+
+[MessageNetwork]
+logging_enabled = true
+
+[MessageNetwork.Logger]
+logger_name = "MessageNetworkLogger"
+global_log_level = "NONE"
+sinks = ["TextFileSink"]
+
+[MessageNetwork.Logger.TextFileSink]
+log_file_name = "MessageNetwork"
+log_file_extension = ".log"
+log_level = "INFO"
+formatter = "KeyValueFormatter"
+
+# END MESSAGE NETWORK ----------------------------
