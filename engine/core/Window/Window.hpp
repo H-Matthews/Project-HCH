@@ -3,6 +3,7 @@
 #include "core/Configuration/ConfigSection/ConfigSection.hpp"
 
 #include <string>
+#include <string_view>
 #include <cstdint>
 #include <functional>
 
@@ -23,7 +24,7 @@ public:
     // Window Configurable Properties
     static constexpr std::string_view BACKEND = "backend";
     static constexpr std::string_view WIDTH = "width";
-    static constexpr std::string_view HEGIHT = "height";
+    static constexpr std::string_view HEIGHT = "height";
     static constexpr std::string_view TITLE = "title";
     static constexpr std::string_view VSYNC = "vsync";
 

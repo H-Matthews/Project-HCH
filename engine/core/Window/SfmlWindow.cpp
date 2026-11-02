@@ -7,17 +7,23 @@
 namespace Core {
 
 bool SfmlWindow::initialize(const ConfigSection& section) {
-    const auto width =
-        static_cast<uint32_t>(section.getInt(Window::WIDTH).value_or(1280));
-    const auto height =
-        static_cast<uint32_t>(section.getInt(Window::HEGIHT).value_or(720));
+    constexpr int DEFAULT_WIDTH = 1280;
+    constexpr int DEFAULT_HEIGHT = 720;
+
+    // Non-positive sizes would wrap around when cast to unsigned
+    const int rawWidth = section.getInt(Window::WIDTH).value_or(DEFAULT_WIDTH);
+    const int rawHeight = section.getInt(Window::HEIGHT).value_or(DEFAULT_HEIGHT);
+    const auto width = static_cast<uint32_t>(rawWidth > 0 ? rawWidth : DEFAULT_WIDTH);
+    const auto height = static_cast<uint32_t>(rawHeight > 0 ? rawHeight : DEFAULT_HEIGHT);
     const auto title =
         section.getString(Window::TITLE).value_or("default");
+    const bool vsync = section.getBool(Window::VSYNC).value_or(true);
 
     sf::Vector2u windowSize{width, height};
 
     mSfmlWindow.create(
         sf::VideoMode(windowSize), title, sf::Style::Close);
+    mSfmlWindow.setVerticalSyncEnabled(vsync);
 
     return mSfmlWindow.isOpen();
 }

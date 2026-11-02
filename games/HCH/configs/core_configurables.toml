@@ -6,6 +6,7 @@
 # - Window
 # - StateStack
 # - Message Network
+# - Scene
 
 # BEGINNING APPLICATION -------------------------------
 
@@ -74,3 +75,21 @@ log_level = "INFO"
 formatter = "KeyValueFormatter"
 
 # END MESSAGE NETWORK ----------------------------
+
+# BEGINNING SCENE --------------------------------
+
+[Scene]
+logging_enabled = true
+
+[Scene.Logger]
+logger_name = "SceneLogger"
+global_log_level = "NONE"
+sinks = ["TextFileSink"]
+
+[Scene.Logger.TextFileSink]
+log_file_name = "Scene"
+log_file_extension = ".log"
+log_level = "INFO"
+formatter = "KeyValueFormatter"
+
+# END SCENE --------------------------------------

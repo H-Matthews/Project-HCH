@@ -2,8 +2,10 @@
 
 #include "core/Window/SfmlWindow.hpp"
 #include "core/Configuration/ConfigSection/ConfigSection.hpp"
+#include "core/Exceptions/ConfigurationException.hpp"
 
 #include <memory>
+#include <string>
 #include <optional>
 
 namespace Core {
@@ -13,7 +15,7 @@ enum class WindowBackend {
     OpenGL_GLFW // NOT IMPLEMENTED
 };
 
-static std::optional<WindowBackend> convertStringToEnum(
+inline std::optional<WindowBackend> windowBackendFromString(
     const std::string& backendString) {
 
     std::optional<WindowBackend> windowBackendOpt;
@@ -30,7 +32,7 @@ static std::optional<WindowBackend> convertStringToEnum(
 
 namespace WindowFactory {
 
-static std::unique_ptr<Window> create(const ConfigSection& section) {
+inline std::unique_ptr<Window> create(const ConfigSection& section) {
     std::unique_ptr<Window> window;
 
     // Defaults to SFML if property not found
@@ -38,18 +40,20 @@ static std::unique_ptr<Window> create(const ConfigSection& section) {
         section.getString(Window::BACKEND).value_or("SFML");
 
     std::optional<WindowBackend> windowBackendOpt =
-        convertStringToEnum(backendType);
-    if(windowBackendOpt.has_value()) {
-        switch(*windowBackendOpt) {
-            case WindowBackend::SFML: {
-                window = std::make_unique<SfmlWindow>();
-                break;
-            }
-            case WindowBackend::OpenGL_GLFW: {
-                // NOT IMPLEMENTED YET
-                // window = std::make_unique<OpenGlWindow();
-                break;
-            }
+        windowBackendFromString(backendType);
+    if(!windowBackendOpt.has_value()) {
+        throw ConfigurationException("Unknown window backend '" + backendType + "'");
+    }
+
+    switch(*windowBackendOpt) {
+        case WindowBackend::SFML: {
+            window = std::make_unique<SfmlWindow>();
+            break;
+        }
+        case WindowBackend::OpenGL_GLFW: {
+            // NOT IMPLEMENTED YET
+            // window = std::make_unique<OpenGlWindow();
+            throw ConfigurationException("Window backend '" + backendType + "' is not implemented");
         }
     }
 

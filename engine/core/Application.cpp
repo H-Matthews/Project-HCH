@@ -72,8 +72,6 @@ Core::Application::Application(AppSpec appSpec)
         //       May not get initialized correctly
         this->buildSubsystemLoggers();
     }
-
-    // TODO: Make this configurable
 }
 
 bool Application::requestTransition(ApplicationState nextState) {
@@ -91,8 +89,12 @@ void Application::initialize() {
         throw ConfigurationException("Configuration is NULL");
     }
 
-    mWindow = WindowFactory::create(
-        *(mConfiguration->getSection(Window::SECTION_NAME)));
+    const ConfigSection* windowSection = mConfiguration->getSection(Window::SECTION_NAME);
+    if (!windowSection) {
+        throw ConfigurationException("Missing [Window] config section");
+    }
+
+    mWindow = WindowFactory::create(*windowSection);
 
     if(!mWindow) {
         throw ConfigurationException("Window is NULL");
