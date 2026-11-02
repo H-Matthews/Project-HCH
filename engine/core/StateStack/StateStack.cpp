@@ -54,11 +54,11 @@ void Core::StateStack::handleRealTimeInput() {
 }
 
 void Core::StateStack::popState() {
-    mPendingRequests.push_back(PendingStateRequest(Action::POP));
+    mPendingRequests.emplace_back(Action::POP);
 }
 
 void Core::StateStack::clearStates() {
-    mPendingRequests.push_back(PendingStateRequest(Action::CLEAR));
+    mPendingRequests.emplace_back(Action::CLEAR);
 }
 
 bool Core::StateStack::isEmpty() const {
@@ -67,10 +67,6 @@ bool Core::StateStack::isEmpty() const {
 
 bool Core::StateStack::isPendingListEmpty() const {
     return mPendingRequests.empty();
-}
-
-Core::MessageNetwork* Core::StateStack::getMessageNetworkRef() {
-    return applicationRef.getNetwork();
 }
 
 void Core::StateStack::initializeLogger() {

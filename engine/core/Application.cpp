@@ -1,5 +1,10 @@
 #include "core/Application.hpp"
 
+#include "core/Window/WindowFactory.hpp"
+
+// Unfortunately necessary for now
+#include "core/Window/SfmlWindow.hpp"
+
 #include "core/Configuration/LoggerBuilder.hpp"
 #include "core/Exceptions/ConfigurationException.hpp"
 
@@ -53,9 +58,8 @@ Core::Application::Application(AppSpec appSpec)
     : mConfiguration(std::make_unique<Configuration>(std::move(appSpec.configSpec))),
       mDirectories(mConfiguration->rootDirectory(),
                    mConfiguration->getSection(Configuration::SECTION_NAME)),
-      mState(ApplicationState::UNINITIALIZED), mTextures(), mFonts(),
+      mState(ApplicationState::UNINITIALIZED),
       mNetwork(mConfiguration->getSection(MessageNetwork::SECTION_NAME)),
-      mWindow(sf::VideoMode(appSpec.windowSize), appSpec.windowName, sf::Style::Close),
       mStateStack(*this, mConfiguration->getSection(StateStack::SECTION_NAME)) {
     if constexpr (Utility::CAN_LOG) {
         Utility::LogRegistry::instance()->configureRegistry(mDirectories.outputDirectory());
@@ -75,11 +79,7 @@ bool Application::requestTransition(ApplicationState nextState) {
         return false;
     }
 
-    ApplicationState prev = mState;
     mState = nextState;
-
-    // Notify state change through event system
-    // mMessageNetwork.broadcast(EngineStatusChangedEvent{prev, mstate});
 
     return true;
 }
@@ -89,7 +89,32 @@ void Application::initialize() {
         throw ConfigurationException("Configuration is NULL");
     }
 
+    const ConfigSection* windowSection = mConfiguration->getSection(Window::SECTION_NAME);
+    if (!windowSection) {
+        throw ConfigurationException("Missing [Window] config section");
+    }
+
+    mWindow = WindowFactory::create(*windowSection);
+
+    if(!mWindow) {
+        throw ConfigurationException("Window is NULL");
+    }
+
+    // Unfortunately necessary for now
+    sfmlWindow = dynamic_cast<SfmlWindow*>((mWindow.get()));
+
+    mWindow->setEventCallback([this](const sf::Event& event) {
+        this->handleEvent(event);
+    });
+
     requestTransition(ApplicationState::INITIALIZED);
+}
+
+sf::RenderWindow& Application::getRenderWindow() {
+    if (!sfmlWindow) {
+        throw ConfigurationException("Window backend is not SFML");
+    }
+    return sfmlWindow->getRenderWindow();
 }
 
 void Application::run() {
@@ -116,7 +141,9 @@ void Application::run() {
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
-    while (mWindow.isOpen()) {
+    while (mWindow->isOpen()) {
+        mWindow->pollEvents();
+
         // Clamp so a long stall (window drag, breakpoint) cannot cause a spiral of updates
         sf::Time elapsedTime = std::min(clock.restart(), sf::seconds(0.25f));
         timeSinceLastUpdate += elapsedTime;
@@ -124,11 +151,11 @@ void Application::run() {
         while (timeSinceLastUpdate > TIME_PER_FRAME) {
             timeSinceLastUpdate -= TIME_PER_FRAME;
 
-            processInput();
+            processRealtimeInput();
             update(TIME_PER_FRAME);
 
             if (mStateStack.isEmpty()) {
-                mWindow.close();
+                mWindow->close();
 
                 if constexpr (Utility::CAN_LOG_INFO) {
                     if (mLogger) {
@@ -148,20 +175,22 @@ void Application::run() {
     }
 }
 
-void Application::processInput() {
-    // SFMLs Window Class will detect events and then call these functions if the event matches
-    // When needed, Add Event Subtypes here
+void Application::handleEvent(const sf::Event& event) {
+    if(const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
+        mStateStack.handleKeyPressed(*keyPressed);
+    }
+    else if(const auto* mouseMoved = event.getIf<sf::Event::MouseMoved>()) {
+        mStateStack.handleMouseMoved(*mouseMoved);
+    }
+    else if(event.is<sf::Event::Closed>()) {
+        mWindow->close();
+    }
+}
 
-    mWindow.handleEvents([this](const sf::Event::Closed&) { mWindow.close(); },
-                         [this](const sf::Event::KeyPressed& keyPressedEvent) {
-                             mStateStack.handleKeyPressed(keyPressedEvent);
-                         },
-                         [this](const sf::Event::MouseMoved& mouseMovedEvent) {
-                             mStateStack.handleMouseMoved(mouseMovedEvent);
-                         });
-
+void Application::processRealtimeInput() {
     mStateStack.handleRealTimeInput();
 
+    // Notify subscribers of realtime input
     mNetwork.notifySubscribers();
 }
 
@@ -170,12 +199,22 @@ void Application::update(sf::Time fixedTimeStep) {
 }
 
 void Application::render() {
-    mWindow.clear(sf::Color(18, 18, 24));
 
+    // Clear old frame
+    if(sfmlWindow) {
+        sfmlWindow->clear(sf::Color(18, 18, 24));
+    }
+
+    // Draw game states
     mStateStack.draw();
 
-    mWindow.setView(mWindow.getDefaultView());
-    mWindow.display();
+    // Reset view
+    if(sfmlWindow) {
+        sfmlWindow->setView(sfmlWindow->getDefaultView());
+    }
+
+    // Swap buffers (Displays new drawings to screen)
+    mWindow->swapBuffers();
 }
 
 void Application::buildSubsystemLoggers() {

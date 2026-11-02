@@ -9,9 +9,9 @@ namespace Utility {
  * TextFileSink writes output to a specific file
  */
 class TextFileSink : public LogSink {
-    static const std::string SINK_IDENTIFIER;
-
   public:
+    static constexpr std::string_view IDENTIFIER = "TextFileSink";
+
     class Builder {
       public:
         Builder();

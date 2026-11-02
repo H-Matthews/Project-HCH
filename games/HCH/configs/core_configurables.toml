@@ -3,6 +3,7 @@
 
 # List of All Core Configurables
 # - Application
+# - Window
 # - StateStack
 # - Message Network
 # - Scene
@@ -28,6 +29,16 @@ log_level = "INFO"
 formatter = "KeyValueFormatter"
 
 # END APPLICATION -------------------------------------
+
+# BEGINNING WINDOW -------------------------------
+[Window]
+backend = "SFML"
+width = 1280
+height = 720
+title = "ARPG"
+vsync = false
+
+# END WINDOW -------------------------------------
 
 # BEGINNING STATESTACK ---------------------------
 

@@ -11,6 +11,8 @@ enum class Keys { FILE = 0, LINE, FUNCTION, TIME, LOG_LEVEL, MESSAGE };
  */
 class KeyValueFormatter : public LogFormatter {
   public:
+    static constexpr std::string_view IDENTIFIER = "KeyValueFormatter";
+
     KeyValueFormatter();
 
     // From FormatterI

@@ -9,9 +9,9 @@ namespace Utility {
  * Color codes are automatically disabled when output is redirected to a file or pipe.
  */
 class ColorConsoleSink : public LogSink {
-    static const std::string sinkIdentifier;
-
   public:
+    static constexpr std::string_view IDENTIFIER = "ColorConsoleSink";
+
     class Builder {
       public:
         Builder();

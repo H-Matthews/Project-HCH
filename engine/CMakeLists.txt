@@ -10,6 +10,7 @@ set(ENGINE_SRC
     core/Messaging/MessageNode.cpp
     core/StateStack/State.cpp
     core/StateStack/StateStack.cpp
+    core/Window/SfmlWindow.cpp
     core/Configuration/Configuration.cpp
     core/Configuration/DirectoryLayout.cpp
     core/Configuration/ConfigReader/TOMLConfigReader.cpp
@@ -36,6 +37,9 @@ set(ENGINE_INC
     core/Messaging/MessageNode.hpp
     core/StateStack/State.hpp
     core/StateStack/StateStack.hpp
+    core/Window/Window.hpp
+    core/Window/SfmlWindow.hpp
+    core/Window/WindowFactory.hpp
     core/Exceptions/ConfigurationException.hpp
     core/Configuration/Configuration.hpp
     core/Configuration/DirectoryLayout.hpp
