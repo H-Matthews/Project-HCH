@@ -10,7 +10,7 @@ namespace Core {
 class SfmlWindow : public Window {
 public:
     // From Window
-    bool initialize(WindowSpec windowSpec) override;
+    bool initialize(const ConfigSection& section) override;
     void close() override;
     bool isOpen() const override;
     void shutdown() override;

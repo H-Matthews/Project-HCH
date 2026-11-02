@@ -45,6 +45,18 @@ constexpr bool CAN_LOG_ERROR(CAN_LOG&& LogLevel::ERROR >= MIN_LOG_LEVEL);
  */
 class Logger {
   public:
+    static constexpr std::string_view SECTION_NAME = "Logger";
+
+    // Logger Configurable Properties
+    static constexpr std::string_view LOGGING_ENABLED = "logging_enabled";
+    static constexpr std::string_view LOGGER_NAME = "logger_name";
+    static constexpr std::string_view GLOBAL_LOG_LEVEL = "global_log_level";
+    static constexpr std::string_view SINKS = "sinks";
+    static constexpr std::string_view LOG_FILE_NAME = "log_file_name";
+    static constexpr std::string_view LOG_FILE_EXTENSION = "log_file_extension";
+    static constexpr std::string_view LOG_LEVEL = "log_level";
+    static constexpr std::string_view FORMATTER = "formatter";
+
     using SinkList = std::vector<std::shared_ptr<LogSink>>;
 
     class Builder {

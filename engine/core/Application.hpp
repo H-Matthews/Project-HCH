@@ -28,11 +28,9 @@ std::optional<ApplicationState> convertStringToAppStateEnum(std::string_view str
 
 struct AppSpec {
     ConfigSpec configSpec;
-    WindowSpec windowSpec;
 
-    explicit AppSpec(ConfigSpec cSpec, WindowSpec wSpec) :
-        configSpec(std::move(cSpec)),
-        windowSpec(std::move(wSpec)) {}
+    explicit AppSpec(ConfigSpec cSpec) :
+        configSpec(std::move(cSpec)) {}
 
     AppSpec(const AppSpec&) = delete;
     AppSpec& operator=(const AppSpec&) = delete;
@@ -99,12 +97,8 @@ class Application {
 
     // CORE APPLICATION CLASSES
     MessageNetwork mNetwork;
-
     std::unique_ptr<Window> mWindow;
-
-    // Unforuntaely necessary for now
-    SfmlWindow* sfmlWindow = nullptr;
-
+    SfmlWindow* sfmlWindow = nullptr; // Unforuntaely necessary for now
     StateStack mStateStack;
 
     std::shared_ptr<Utility::Logger> mLogger;

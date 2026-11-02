@@ -39,12 +39,7 @@ int main() {
     configSpec.rootConfigFile = ROOT_FILE_NAME;
     configSpec.configReader = std::make_unique<Core::TOMLConfigReader>();
 
-    Core::WindowSpec windowSpec;
-    windowSpec.windowName = "Project-HCH";
-    windowSpec.width = 1280;
-    windowSpec.height = 720;
-
-    Core::AppSpec appSpec(std::move(configSpec), std::move(windowSpec));
+    Core::AppSpec appSpec(std::move(configSpec));
 
     try {
         Core::Application application(std::move(appSpec));

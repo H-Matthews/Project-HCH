@@ -5,8 +5,6 @@
 
 #include <sstream>
 
-const std::string Utility::TextFileSink::SINK_IDENTIFIER = "TextFileSink";
-
 // Builder implementation
 
 Utility::TextFileSink::Builder::Builder() : mSink(std::make_shared<TextFileSink>()) {}
@@ -49,11 +47,11 @@ Utility::TextFileSink::Builder Utility::TextFileSink::make() {
 }
 
 Utility::TextFileSink::TextFileSink()
-    : LogSink(SINK_IDENTIFIER), mOutputDirectory(""), mFileName(""), mLogExtension("") {}
+    : LogSink(std::string(IDENTIFIER)), mOutputDirectory(""), mFileName(""), mLogExtension("") {}
 
 Utility::TextFileSink::TextFileSink(const std::string& outputDirectory, const std::string& fileName,
                                     const std::string& logExtension, LogLevel level)
-    : LogSink(SINK_IDENTIFIER, std::make_unique<KeyValueFormatter>(), level),
+    : LogSink(std::string(IDENTIFIER), std::make_unique<KeyValueFormatter>(), level),
       mOutputDirectory(outputDirectory), mFileName(fileName), mLogExtension(logExtension) {
     openFile();
 }

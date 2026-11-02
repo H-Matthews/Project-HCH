@@ -21,10 +21,8 @@ bool detectTTY() {
 }
 } // namespace
 
-const std::string Utility::ColorConsoleSink::sinkIdentifier = "ColorConsoleSink";
-
 Utility::ColorConsoleSink::ColorConsoleSink()
-    : LogSink(sinkIdentifier), mOutputStream(std::cout), mUseColor(detectTTY()) {}
+    : LogSink(std::string(IDENTIFIER)), mOutputStream(std::cout), mUseColor(detectTTY()) {}
 
 // Builder implementation
 

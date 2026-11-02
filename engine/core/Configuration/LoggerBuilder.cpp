@@ -14,20 +14,23 @@ static std::unique_ptr<Utility::LogFormatter> makeFormatter(const std::string& n
 }
 
 std::shared_ptr<Utility::Logger> Core::buildLogger(const Core::ConfigSection& config) {
-    if (!config.getBool("logging_enabled").value_or(false)) {
+    using namespace Utility;
+
+    if (!config.getBool(Logger::LOGGING_ENABLED).value_or(false)) {
         return nullptr;
     }
 
-    auto loggerSection = config.getSection("Logger");
+    auto loggerSection = config.getSection(Logger::SECTION_NAME);
     if (!loggerSection) {
         return nullptr;
     }
 
-    const auto loggerName = loggerSection->getString("logger_name").value_or("");
-    const auto globalLogLevel = loggerSection->getString("global_log_level").value_or("NONE");
-    const auto sinkNames = loggerSection->getStringVector("sinks");
+    const auto loggerName = loggerSection->getString(Logger::LOGGER_NAME).value_or("");
+    const auto globalLogLevel =
+        loggerSection->getString(Logger::GLOBAL_LOG_LEVEL).value_or("NONE");
+    const auto sinkNames = loggerSection->getStringVector(Logger::SINKS);
 
-    std::vector<std::shared_ptr<Utility::LogSink>> sinks;
+    std::vector<std::shared_ptr<LogSink>> sinks;
 
     for (const auto& sinkName : sinkNames) {
         auto sinkSection = loggerSection->getSection(sinkName);
@@ -35,22 +38,24 @@ std::shared_ptr<Utility::Logger> Core::buildLogger(const Core::ConfigSection& co
             continue;
         }
 
-        const auto logLevel = sinkSection->getString("log_level").value_or("INFO");
-        const auto formatterName = sinkSection->getString("formatter").value_or("DefaultFormatter");
+        const auto logLevel = sinkSection->getString(Logger::LOG_LEVEL).value_or("INFO");
+        const auto formatterName =
+            sinkSection->getString(Logger::FORMATTER).value_or(std::string(DefaultFormatter::IDENTIFIER));
 
-        if (sinkName == "ColorConsoleSink") {
-            auto sink = Utility::ColorConsoleSink::make()
+        if (sinkName == ColorConsoleSink::IDENTIFIER) {
+            auto sink = ColorConsoleSink::make()
                             .logLevel(logLevel)
                             .formatter(makeFormatter(formatterName))
                             .build();
             sinks.push_back(sink);
-        } else if (sinkName == "TextFileSink") {
-            const auto fileName = sinkSection->getString("log_file_name").value_or("log");
+        } else if (sinkName == TextFileSink::IDENTIFIER) {
+            const auto fileName =
+                sinkSection->getString(Logger::LOG_FILE_NAME).value_or("log");
             const auto fileExtension =
-                sinkSection->getString("log_file_extension").value_or(".log");
+                sinkSection->getString(Logger::LOG_FILE_EXTENSION).value_or(".log");
 
             auto sink = Utility::TextFileSink::make()
-                            .outputDirectory(Utility::LogRegistry::instance()->getOutputDir())
+                            .outputDirectory(LogRegistry::instance()->getOutputDir())
                             .fileName(fileName)
                             .logExtension(fileExtension)
                             .logLevel(logLevel)
@@ -60,12 +65,12 @@ std::shared_ptr<Utility::Logger> Core::buildLogger(const Core::ConfigSection& co
         }
     }
 
-    auto logger = Utility::Logger::make()
+    auto logger = Logger::make()
                       .name(loggerName)
-                      .globalLogLevel(Utility::stringToLogLevelEnum(globalLogLevel))
+                      .globalLogLevel(stringToLogLevelEnum(globalLogLevel))
                       .sinks(sinks)
                       .build();
 
-    Utility::LogRegistry::instance()->registerLogger(logger);
+    LogRegistry::instance()->registerLogger(logger);
     return logger;
 }

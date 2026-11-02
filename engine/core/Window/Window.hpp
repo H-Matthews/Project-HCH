@@ -1,5 +1,7 @@
 #pragma once
 
+#include "core/Configuration/ConfigSection/ConfigSection.hpp"
+
 #include <string>
 #include <cstdint>
 #include <functional>
@@ -14,24 +16,20 @@ namespace Core {
 // We are forced to have SFML in the WindowInterface
 using EventCallbackFn = std::function<void(const sf::Event&)>;
 
-struct WindowSpec {
-    std::string windowName = "Default Window";
-    uint32_t width = 1280;
-    uint32_t height = 720;
-    bool vSync = true;
-
-    WindowSpec() = default;
-    WindowSpec(const WindowSpec&) = delete;
-    WindowSpec& operator=(const WindowSpec&) = delete;
-    WindowSpec(WindowSpec&&) = default;
-    WindowSpec& operator=(WindowSpec&&) = default;
-};
-
 class Window {
 public:
+    static constexpr std::string_view SECTION_NAME = "Window";
+
+    // Window Configurable Properties
+    static constexpr std::string_view BACKEND = "backend";
+    static constexpr std::string_view WIDTH = "width";
+    static constexpr std::string_view HEGIHT = "height";
+    static constexpr std::string_view TITLE = "title";
+    static constexpr std::string_view VSYNC = "vsync";
+
     virtual ~Window() = default;
 
-    virtual bool initialize(WindowSpec windowSpec) = 0;
+    virtual bool initialize(const ConfigSection& section) = 0;
     virtual void close() = 0;
     virtual bool isOpen() const = 0;
     virtual void shutdown() = 0;

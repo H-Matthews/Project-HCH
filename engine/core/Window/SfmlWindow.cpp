@@ -1,14 +1,23 @@
 #include "core/Window/SfmlWindow.hpp"
 
+#include "core/Configuration/ConfigSection/ConfigSection.hpp"
+
 #include <SFML/Window/VideoMode.hpp>
 
 namespace Core {
 
-bool SfmlWindow::initialize(WindowSpec windowSpec) {
-    sf::Vector2u windowSize{windowSpec.width,windowSpec.height};
+bool SfmlWindow::initialize(const ConfigSection& section) {
+    const auto width =
+        static_cast<uint32_t>(section.getInt(Window::WIDTH).value_or(1280));
+    const auto height =
+        static_cast<uint32_t>(section.getInt(Window::HEGIHT).value_or(720));
+    const auto title =
+        section.getString(Window::TITLE).value_or("default");
+
+    sf::Vector2u windowSize{width, height};
 
     mSfmlWindow.create(
-        sf::VideoMode(windowSize), windowSpec.windowName, sf::Style::Close);
+        sf::VideoMode(windowSize), title, sf::Style::Close);
 
     return mSfmlWindow.isOpen();
 }

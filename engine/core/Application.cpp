@@ -74,7 +74,6 @@ Core::Application::Application(AppSpec appSpec)
     }
 
     // TODO: Make this configurable
-    mWindow = WindowFactory::create(WindowBackend::SFML, std::move(appSpec.windowSpec));
 }
 
 bool Application::requestTransition(ApplicationState nextState) {
@@ -91,6 +90,9 @@ void Application::initialize() {
     if (!mConfiguration) {
         throw ConfigurationException("Configuration is NULL");
     }
+
+    mWindow = WindowFactory::create(
+        *(mConfiguration->getSection(Window::SECTION_NAME)));
 
     if(!mWindow) {
         throw ConfigurationException("Window is NULL");
