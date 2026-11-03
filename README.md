@@ -44,19 +44,24 @@ cmake --build --preset debug-unix_makefiles
 **Windows** (generates a Visual Studio solution in `build/`)
 ```bash
 cmake --preset windows-VS22                # or windows-VS25
-cmake --build build --config Release
+cmake --build --preset windows-VS22        # Debug; add --config Release for Release
 ```
-Executables land in `build/games/HCH/Release/` and `build/sandbox/Release/`.
+Executables land in `build/games/HCH/Debug/` and `build/sandbox/Debug/` (`Release/` with `--config Release`).
 
 ## Tests
 ```bash
-ctest --test-dir ./build/Debug --output-on-failure          # Linux / macOS
-ctest --test-dir ./build -C Release --output-on-failure     # Windows
+ctest --preset debug-unix_makefiles         # Linux / macOS (or release-unix_makefiles)
+ctest --preset windows-VS22                 # Windows, Debug (or windows-VS25)
+ctest --preset windows-VS22 -C Release      # Windows, Release (build with --config Release first)
 ```
 Each `.cc` file under `tests/` is its own test binary. New test files need a CMake re-configure.
 
 ## VS Code
-Install the C/C++ and CMake Tools extensions. Pick a configure preset (`CMake: Select Configure Preset`), then press F5 and choose a launch config (HCH or Sandbox, Debug or Release). Each one builds its target first.
+Install the C/C++ and CMake Tools extensions. Pick a configure preset (`CMake: Select Configure Preset`), pick a launch target (`CMake: Select Launch/Debug Target`, which can be the game, the sandbox, or any test binary), then press F5.
+- **Debug Selected CMake target (Build first)** builds the target with the active build preset, then debugs it.
+- **Debug Selected CMake target (No Build)** debugs the existing binary.
+
+Tests also appear in the Test Explorer via the test presets. `Build: all targets` is available from `Tasks: Run Task`. See [docs/VSCODE.md](docs/VSCODE.md) for the full guide.
 
 ## Formatting
 `scripts/format.sh` runs clang-format (version 18) over the sources.

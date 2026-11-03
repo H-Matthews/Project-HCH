@@ -1,0 +1,55 @@
+# VS Code setup
+
+How to build, run, debug and test from VS Code. The config lives in `.vscode/` and `CMakePresets.json`.
+
+## One-time setup
+Install the **C/C++** and **CMake Tools** extensions. On Linux/WSL you also need `gdb`.
+
+## Pick your presets
+CMake Tools drives everything from presets. Choose them from the status bar or the command palette:
+
+| What | Command | Example (Linux) | Example (Windows) |
+|---|---|---|---|
+| Configure | `CMake: Select Configure Preset` | `debug-unix_makefiles` | `windows-VS22` |
+| Build | `CMake: Select Build Preset` | `debug-unix_makefiles` | `windows-VS22` |
+| Test | `CMake: Select Test Preset` | `debug-unix_makefiles` | `windows-VS22` |
+
+Use matching names across the three. Linux has `debug-` and `release-` variants. Windows presets build Debug by default.
+
+## Pick a target
+Run `CMake: Select Launch/Debug Target`. The target can be the game (`Project-HCH`), the sandbox (`Sandbox`), or any test binary (one per `.cc` file under `tests/`). The launch configs and the build task below all act on this target.
+
+## Build
+- **Build the selected target:** run the `Build: selected target` task (`Tasks: Run Build Task`, or `Ctrl+Shift+B`).
+- **Build everything:** `Tasks: Run Task` -> `Build: all targets`.
+
+## Debug (F5)
+Open Run and Debug and choose one of:
+- **Debug Selected CMake target (Build first):** builds the selected target once, then starts the debugger. Use this by default.
+- **Debug Selected CMake target (No Build):** starts the existing binary without building. Use it when nothing has changed, or when you're rebuilding some other way.
+
+Both use `gdb`, so debugging from VS Code works on Linux/WSL. The configs don't set up a Windows debugger. On Windows you can still build and run tests from VS Code, and debug in Visual Studio using the generated solution in `build/`.
+
+## Run tests
+- **Test Explorer:** open the Testing panel. It uses the selected test preset and shows each test, with output on failure.
+- **Debug one test:** select that test binary as the launch target and press F5.
+- **Command line:**
+  ```bash
+  ctest --preset debug-unix_makefiles          # Linux / macOS
+  ctest --preset windows-VS22                  # Windows (Debug)
+  ctest --preset windows-VS22 -C Release       # Windows (Release, after building with --config Release)
+  ```
+New test files are picked up on the next CMake configure (`CMake: Configure`).
+
+## Before opening a PR
+Run `Tasks: Run Task` -> `Pre-PR`. It runs, in order, and stops at the first failure:
+1. `Format: check` runs `scripts/format.sh --check`. If it fails, run `Format: fix` and commit the result.
+2. `Build: all targets` builds with the active build preset.
+3. `Test: all` runs every test with the active test preset, including `core_independence_check`.
+
+This mirrors the build and test steps of CI, but only for your platform and the presets you selected. CI builds Release on Windows (VS2022 and VS2025), Linux and macOS from a fresh configure, so select a release preset to get closest to it. A green Pre-PR run doesn't guarantee green CI on the other platforms. The format tasks call `bash`, which on Windows needs Git Bash or WSL.
+
+## Gotchas
+- **No launch target selected:** the build task and launch configs fail or do nothing. Select a target first.
+- **Don't switch the launch configs to `${command:cmake.launchTargetPath}` or `cmake.launchTargetName`.** Those variables make CMake Tools build the target while resolving them, so "No Build" would build and "Build first" would build twice. The `cmake.get...` versions are used on purpose because they only look up the name or path.
+- **Compile errors:** the build tasks use both the `$gcc` and `$msCompile` problem matchers, so errors show up in the Problems panel on either platform.
