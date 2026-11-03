@@ -3,7 +3,11 @@
 How to build, run, debug and test from VS Code. The config lives in `.vscode/` and `CMakePresets.json`.
 
 ## One-time setup
-Install the **C/C++** and **CMake Tools** extensions. On Linux/WSL you also need `gdb`.
+When you open the folder, VS Code offers to install the extensions listed in `.vscode/extensions.json`. Accept, or run `Extensions: Show Recommended Extensions` later.
+- **C/C++** (`ms-vscode.cpptools`) and **CMake Tools** (`ms-vscode.cmake-tools`) are required. The launch configs, tasks and presets don't work without them.
+- **SonarLint** and **Even Better TOML** are optional. SonarLint reads `build/Debug/compile_commands.json`, and TOML is the format of the engine's config files.
+
+On Linux/WSL you also need `gdb`.
 
 ## Pick your presets
 CMake Tools drives everything from presets. Choose them from the status bar or the command palette:

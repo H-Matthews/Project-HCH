@@ -57,7 +57,7 @@ ctest --preset windows-VS22 -C Release      # Windows, Release (build with --con
 Each `.cc` file under `tests/` is its own test binary. New test files need a CMake re-configure.
 
 ## VS Code
-Install the C/C++ and CMake Tools extensions. Pick a configure preset (`CMake: Select Configure Preset`), pick a launch target (`CMake: Select Launch/Debug Target`, which can be the game, the sandbox, or any test binary), then press F5.
+Accept the prompt to install the recommended extensions (listed in `.vscode/extensions.json`). Pick a configure preset (`CMake: Select Configure Preset`), pick a launch target (`CMake: Select Launch/Debug Target`, which can be the game, the sandbox, or any test binary), then press F5.
 - **Debug Selected CMake target - Linux/Windows (Build first)** builds the target with the active build preset, then debugs it.
 - **Debug Selected CMake target - Linux/Windows (No Build)** debugs the existing binary.
 
