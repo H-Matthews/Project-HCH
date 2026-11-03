@@ -1,7 +1,10 @@
 # Workflow Name
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [develop]
+  pull_request:
 
 defaults:
   run:
@@ -37,10 +40,11 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows VS2022, os: windows-2022,  preset: windows-VS22 }
-        - { name: Windows VS2025, os: windows-2025,  preset: windows-VS25 }
-        - { name: Linux GCC,      os: ubuntu-latest, preset: release-unix_makefiles }
-        - { name: macOS,          os: macos-latest,  preset: release-unix_makefiles }
+        # build_dir must match the preset's binaryDir in CMakePresets.json
+        - { name: Windows VS2022, os: windows-2022,  preset: windows-VS22,           build_dir: build }
+        - { name: Windows VS2025, os: windows-2025,  preset: windows-VS25,           build_dir: build }
+        - { name: Linux GCC,      os: ubuntu-latest, preset: release-unix_makefiles, build_dir: build/Release }
+        - { name: macOS,          os: macos-latest,  preset: release-unix_makefiles, build_dir: build/Release }
 
     steps:
     - name: Install Linux Dependencies
@@ -48,6 +52,18 @@ jobs:
       run: sudo apt-get update && sudo apt-get install libxrandr-dev libxcursor-dev libxi-dev libudev-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libdrm-dev libgbm-dev libfreetype-dev
     - name: Checkout Code
       uses: actions/checkout@v4
+
+    # Restores FetchContent downloads and the compiled dependencies (SFML, googletest) so only
+    # project code is rebuilt. The key changes when presets/CMake files or the runner image change.
+    - name: Read runner image version
+      id: image
+      run: echo "version=${ImageVersion:-unknown}" >> "$GITHUB_OUTPUT"
+
+    - name: Cache build directory
+      uses: actions/cache@v4
+      with:
+        path: ${{ matrix.platform.build_dir }}
+        key: build-${{ matrix.platform.preset }}-${{ runner.os }}-${{ steps.image.outputs.version }}-${{ hashFiles('CMakeLists.txt', 'CMakePresets.json') }}
 
     - name: Generate Build Files
       run: cmake --preset ${{ matrix.platform.preset }}
