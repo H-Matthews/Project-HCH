@@ -51,7 +51,7 @@ New test files are picked up on the next CMake configure (`CMake: Configure`).
 
 ## Before opening a PR
 Run `Tasks: Run Task` -> `Pre-PR`. It runs, in order, and stops at the first failure:
-1. `Format: check` runs `scripts/format.sh --check`. If it fails, run `Format: fix` and commit the result.
+1. `Format: check` runs `scripts/format.sh --check`, the same check CI runs in its `Format Check` job. If it fails, run `Format: fix` and commit the result.
 2. `Build: all targets` builds with the active build preset.
 3. `Test: all` runs every test with the active test preset, including `core_independence_check`.
 

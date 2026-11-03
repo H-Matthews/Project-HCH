@@ -328,7 +328,7 @@ The root directory is passed in from the game (`ConfigSpec::rootDirectory`, set 
 
 - **Targets:** `engine` → `application` → `Project-HCH`, plus `sandbox` and one executable per test file. The game library and engine compile with `-Wall -Wextra -Wpedantic` on GCC/Clang (`/W4` on MSVC).
 - **Tests:** every `.cc` file under `tests/Core/`, `tests/Utility/` and `tests/Application/` is compiled into its own GoogleTest binary linked against `engine` and `application`, and registered with CTest (5 s timeout each). `core_independence_check` is registered alongside them.
-- **CI:** `.github/workflows/ci.yml` uses the CMake presets to build in Release on Windows (`windows-VS22`, `windows-VS25`), Linux (GCC) and macOS (`release-unix_makefiles`), then runs all test binaries with `ctest --preset`.
+- **CI:** `.github/workflows/ci.yml` uses the CMake presets to build in Release on Windows (`windows-VS22`, `windows-VS25`), Linux (GCC) and macOS (`release-unix_makefiles`), then runs all test binaries with `ctest --preset`. A separate `Format Check` job runs `scripts/format.sh --check` with clang-format 18.
 - **Formatting:** use `scripts/format.sh`; `.clang-format` defines the style.
 
 ```bash

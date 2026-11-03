@@ -8,6 +8,27 @@ defaults:
     shell: bash
 
 jobs:
+  format-check:
+    name: Format Check
+    # Pinned: scripts/format.sh requires clang-format 18, which newer images may not package.
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Install clang-format
+      run: sudo apt-get update && sudo apt-get install -y clang-format-18
+
+    # Logged so a CI-only failure can be compared against a local run (clang-format version, line endings).
+    - name: Show formatter environment
+      run: |
+        apt-cache policy clang-format-18 | head -n 3
+        clang-format-18 --version
+        git ls-files --eol -- '*.cpp' '*.hpp' '*.cc' | awk '{print $1, $2}' | sort | uniq -c
+
+    - name: Run format check
+      run: ./scripts/format.sh --check
+
   build:
     name: ${{ matrix.platform.name }} Static
     runs-on: ${{ matrix.platform.os }}
