@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Selected CMake target (Build first)",
+            "name": "Debug Selected CMake target - Linux (Build first)",
             "type": "cppdbg",
             "request": "launch",
             "program": "${command:cmake.getLaunchTargetPath}",
@@ -26,7 +26,7 @@
             ]
         },
         {
-            "name": "Debug Selected CMake target (No Build)",
+            "name": "Debug Selected CMake target - Linux (No Build)",
             "type": "cppdbg",
             "request": "launch",
             "program": "${command:cmake.getLaunchTargetPath}",
@@ -47,6 +47,29 @@
                     "ignoreFailures": true
                 }
             ]
+        },
+        {
+            "name": "Debug Selected CMake target - Windows (Build first)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${command:cmake.getLaunchTargetPath}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "console": "integratedTerminal",
+            "preLaunchTask": "Build: selected target"
+        },
+        {
+            "name": "Debug Selected CMake target - Windows (No Build)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${command:cmake.getLaunchTargetPath}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "console": "integratedTerminal"
         }
     ]
 }

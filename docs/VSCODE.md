@@ -24,11 +24,19 @@ Run `CMake: Select Launch/Debug Target`. The target can be the game (`Project-HC
 - **Build everything:** `Tasks: Run Task` -> `Build: all targets`.
 
 ## Debug (F5)
-Open Run and Debug and choose one of:
-- **Debug Selected CMake target (Build first):** builds the selected target once, then starts the debugger. Use this by default.
-- **Debug Selected CMake target (No Build):** starts the existing binary without building. Use it when nothing has changed, or when you're rebuilding some other way.
+Open Run and Debug and choose the config for your OS:
 
-Both use `gdb`, so debugging from VS Code works on Linux/WSL. The configs don't set up a Windows debugger. On Windows you can still build and run tests from VS Code, and debug in Visual Studio using the generated solution in `build/`.
+| Config | OS | Debugger |
+|---|---|---|
+| `Debug Selected CMake target - Linux (Build first)` | Linux / WSL | gdb |
+| `Debug Selected CMake target - Linux (No Build)` | Linux / WSL | gdb |
+| `Debug Selected CMake target - Windows (Build first)` | Windows | Visual Studio debugger (`cppvsdbg`) |
+| `Debug Selected CMake target - Windows (No Build)` | Windows | Visual Studio debugger (`cppvsdbg`) |
+
+- **Build first:** builds the selected target once, then starts the debugger. Use this by default.
+- **No Build:** starts the existing binary without building. Use it when nothing has changed, or when you're rebuilding some other way.
+
+All four configs show up on every machine, and picking the wrong OS's config just fails to launch. The Windows configs need the Visual Studio debugger, which comes with the C/C++ extension on Windows and needs Visual Studio or the Build Tools installed.
 
 ## Run tests
 - **Test Explorer:** open the Testing panel. It uses the selected test preset and shows each test, with output on failure.

@@ -58,8 +58,10 @@ Each `.cc` file under `tests/` is its own test binary. New test files need a CMa
 
 ## VS Code
 Install the C/C++ and CMake Tools extensions. Pick a configure preset (`CMake: Select Configure Preset`), pick a launch target (`CMake: Select Launch/Debug Target`, which can be the game, the sandbox, or any test binary), then press F5.
-- **Debug Selected CMake target (Build first)** builds the target with the active build preset, then debugs it.
-- **Debug Selected CMake target (No Build)** debugs the existing binary.
+- **Debug Selected CMake target - Linux/Windows (Build first)** builds the target with the active build preset, then debugs it.
+- **Debug Selected CMake target - Linux/Windows (No Build)** debugs the existing binary.
+
+Pick the Linux configs (gdb) on Linux/WSL and the Windows configs (Visual Studio debugger) on Windows.
 
 Tests also appear in the Test Explorer via the test presets. `Build: all targets` is available from `Tasks: Run Task`. See [docs/VSCODE.md](docs/VSCODE.md) for the full guide.
 
