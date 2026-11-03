@@ -15,21 +15,19 @@ bool SfmlWindow::initialize(const ConfigSection& section) {
     const int rawHeight = section.getInt(Window::HEIGHT).value_or(DEFAULT_HEIGHT);
     const auto width = static_cast<uint32_t>(rawWidth > 0 ? rawWidth : DEFAULT_WIDTH);
     const auto height = static_cast<uint32_t>(rawHeight > 0 ? rawHeight : DEFAULT_HEIGHT);
-    const auto title =
-        section.getString(Window::TITLE).value_or("default");
+    const auto title = section.getString(Window::TITLE).value_or("default");
     const bool vsync = section.getBool(Window::VSYNC).value_or(true);
 
     sf::Vector2u windowSize{width, height};
 
-    mSfmlWindow.create(
-        sf::VideoMode(windowSize), title, sf::Style::Close);
+    mSfmlWindow.create(sf::VideoMode(windowSize), title, sf::Style::Close);
     mSfmlWindow.setVerticalSyncEnabled(vsync);
 
     return mSfmlWindow.isOpen();
 }
 
 void SfmlWindow::close() {
-    if(mSfmlWindow.isOpen()) {
+    if (mSfmlWindow.isOpen()) {
         mSfmlWindow.close();
     }
 }
@@ -40,12 +38,11 @@ bool SfmlWindow::isOpen() const {
 
 // Don't need a shutdown for SFML. When the sf::RenderWindow
 // goes out of scope, its resources are cleaned up (RAII)
-void SfmlWindow::shutdown() {
-}
+void SfmlWindow::shutdown() {}
 
 void SfmlWindow::pollEvents() {
-    while(const std::optional<sf::Event> sfEvent = mSfmlWindow.pollEvent()) {
-        if(mEventCallback) {
+    while (const std::optional<sf::Event> sfEvent = mSfmlWindow.pollEvent()) {
+        if (mEventCallback) {
             mEventCallback(*sfEvent);
         }
     }
@@ -64,4 +61,4 @@ void SfmlWindow::setEventCallback(EventCallbackFn callback) {
     mEventCallback = std::move(callback);
 }
 
-} // NAMESPACE CORE
+} // namespace Core

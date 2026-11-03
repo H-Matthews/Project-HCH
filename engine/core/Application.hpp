@@ -29,8 +29,7 @@ std::optional<ApplicationState> convertStringToAppStateEnum(std::string_view str
 struct AppSpec {
     ConfigSpec configSpec;
 
-    explicit AppSpec(ConfigSpec cSpec) :
-        configSpec(std::move(cSpec)) {}
+    explicit AppSpec(ConfigSpec cSpec) : configSpec(std::move(cSpec)) {}
 
     AppSpec(const AppSpec&) = delete;
     AppSpec& operator=(const AppSpec&) = delete;

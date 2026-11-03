@@ -8,7 +8,7 @@
 namespace Core {
 
 class SfmlWindow : public Window {
-public:
+  public:
     // From Window
     bool initialize(const ConfigSection& section) override;
     void close() override;
@@ -30,9 +30,9 @@ public:
     sf::RenderWindow& getRenderWindow() { return mSfmlWindow; }
     sf::View getDefaultView() const { return mSfmlWindow.getDefaultView(); }
 
-private:
+  private:
     sf::RenderWindow mSfmlWindow;
     EventCallbackFn mEventCallback;
 };
 
-} // NAMESPACE CORE
+} // namespace Core

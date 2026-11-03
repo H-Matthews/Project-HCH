@@ -26,8 +26,7 @@ std::shared_ptr<Utility::Logger> Core::buildLogger(const Core::ConfigSection& co
     }
 
     const auto loggerName = loggerSection->getString(Logger::LOGGER_NAME).value_or("");
-    const auto globalLogLevel =
-        loggerSection->getString(Logger::GLOBAL_LOG_LEVEL).value_or("NONE");
+    const auto globalLogLevel = loggerSection->getString(Logger::GLOBAL_LOG_LEVEL).value_or("NONE");
     const auto sinkNames = loggerSection->getStringVector(Logger::SINKS);
 
     std::vector<std::shared_ptr<LogSink>> sinks;
@@ -39,8 +38,8 @@ std::shared_ptr<Utility::Logger> Core::buildLogger(const Core::ConfigSection& co
         }
 
         const auto logLevel = sinkSection->getString(Logger::LOG_LEVEL).value_or("INFO");
-        const auto formatterName =
-            sinkSection->getString(Logger::FORMATTER).value_or(std::string(DefaultFormatter::IDENTIFIER));
+        const auto formatterName = sinkSection->getString(Logger::FORMATTER)
+                                       .value_or(std::string(DefaultFormatter::IDENTIFIER));
 
         if (sinkName == ColorConsoleSink::IDENTIFIER) {
             auto sink = ColorConsoleSink::make()
@@ -49,8 +48,7 @@ std::shared_ptr<Utility::Logger> Core::buildLogger(const Core::ConfigSection& co
                             .build();
             sinks.push_back(sink);
         } else if (sinkName == TextFileSink::IDENTIFIER) {
-            const auto fileName =
-                sinkSection->getString(Logger::LOG_FILE_NAME).value_or("log");
+            const auto fileName = sinkSection->getString(Logger::LOG_FILE_NAME).value_or("log");
             const auto fileExtension =
                 sinkSection->getString(Logger::LOG_FILE_EXTENSION).value_or(".log");
 
