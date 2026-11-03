@@ -55,7 +55,7 @@ Run `Tasks: Run Task` -> `Pre-PR`. It runs, in order, and stops at the first fai
 2. `Build: all targets` builds with the active build preset.
 3. `Test: all` runs every test with the active test preset, including `core_independence_check`.
 
-This mirrors the build and test steps of CI, but only for your platform and the presets you selected. CI builds Release on Windows (VS2022 and VS2025), Linux and macOS from a fresh configure, so select a release preset to get closest to it. A green Pre-PR run doesn't guarantee green CI on the other platforms. The format tasks call `bash`, which on Windows needs Git Bash or WSL.
+CI runs the same presets (`release-unix_makefiles` on Linux and macOS, `windows-VS22` and `windows-VS25` on Windows), building and testing Release from a fresh configure. Pre-PR runs the same steps, but only for your platform and the presets you selected, so select a release preset to get closest to CI. A green Pre-PR run doesn't guarantee green CI on the other platforms. The format tasks call `bash`, which on Windows needs Git Bash or WSL.
 
 ## Gotchas
 - **No launch target selected:** the build task and launch configs fail or do nothing. Select a target first.

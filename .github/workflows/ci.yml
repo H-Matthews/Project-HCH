@@ -9,19 +9,17 @@ defaults:
 
 jobs:
   build:
-    name: ${{ matrix.platform.name }} ${{ matrix.config.name }}
+    name: ${{ matrix.platform.name }} Static
     runs-on: ${{ matrix.platform.os }}
 
     strategy:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows VS2022, os: windows-2022  }
-        - { name: Windows VS2025, os: windows-2025  }
-        - { name: Linux GCC,      os: ubuntu-latest }
-        - { name: macOS,          os: macos-latest  }
-        config:
-        - { name: Static, flags: -DBUILD_SHARED_LIBS=FALSE }
+        - { name: Windows VS2022, os: windows-2022,  preset: windows-VS22 }
+        - { name: Windows VS2025, os: windows-2025,  preset: windows-VS25 }
+        - { name: Linux GCC,      os: ubuntu-latest, preset: release-unix_makefiles }
+        - { name: macOS,          os: macos-latest,  preset: release-unix_makefiles }
 
     steps:
     - name: Install Linux Dependencies
@@ -31,15 +29,10 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Generate Build Files
-      run: cmake -B ./build ${{matrix.config.flags}}
+      run: cmake --preset ${{ matrix.platform.preset }}
 
     - name: Build Code
-      run: cmake --build ./build --config Release
+      run: cmake --build --preset ${{ matrix.platform.preset }} --config Release
 
-    - name: Run All GTest Binaries (Linux)
-      if: runner.os != 'Windows'
-      run: ctest --test-dir ./build --output-on-failure
-
-    - name: Run All GTest Binaries (Windows)
-      if: runner.os == 'Windows'
-      run: ctest --test-dir ./build -C Release --output-on-failure
+    - name: Run All GTest Binaries
+      run: ctest --preset ${{ matrix.platform.preset }} -C Release --output-on-failure
