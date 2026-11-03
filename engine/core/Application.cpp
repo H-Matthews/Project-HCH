@@ -96,16 +96,14 @@ void Application::initialize() {
 
     mWindow = WindowFactory::create(*windowSection);
 
-    if(!mWindow) {
+    if (!mWindow) {
         throw ConfigurationException("Window is NULL");
     }
 
     // Unfortunately necessary for now
     sfmlWindow = dynamic_cast<SfmlWindow*>((mWindow.get()));
 
-    mWindow->setEventCallback([this](const sf::Event& event) {
-        this->handleEvent(event);
-    });
+    mWindow->setEventCallback([this](const sf::Event& event) { this->handleEvent(event); });
 
     requestTransition(ApplicationState::INITIALIZED);
 }
@@ -123,8 +121,8 @@ void Application::run() {
             "Application is unable to transition to STATE:RUNNING; Currently: STATE:" +
             convertAppStateEnumToString(mState);
 
-        if constexpr(Utility::CAN_LOG_ERROR) {
-            if(mLogger) {
+        if constexpr (Utility::CAN_LOG_ERROR) {
+            if (mLogger) {
                 mLogger->logError(exceptionMessage);
             }
         }
@@ -176,13 +174,11 @@ void Application::run() {
 }
 
 void Application::handleEvent(const sf::Event& event) {
-    if(const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
+    if (const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
         mStateStack.handleKeyPressed(*keyPressed);
-    }
-    else if(const auto* mouseMoved = event.getIf<sf::Event::MouseMoved>()) {
+    } else if (const auto* mouseMoved = event.getIf<sf::Event::MouseMoved>()) {
         mStateStack.handleMouseMoved(*mouseMoved);
-    }
-    else if(event.is<sf::Event::Closed>()) {
+    } else if (event.is<sf::Event::Closed>()) {
         mWindow->close();
     }
 }
@@ -201,7 +197,7 @@ void Application::update(sf::Time fixedTimeStep) {
 void Application::render() {
 
     // Clear old frame
-    if(sfmlWindow) {
+    if (sfmlWindow) {
         sfmlWindow->clear(sf::Color(18, 18, 24));
     }
 
@@ -209,7 +205,7 @@ void Application::render() {
     mStateStack.draw();
 
     // Reset view
-    if(sfmlWindow) {
+    if (sfmlWindow) {
         sfmlWindow->setView(sfmlWindow->getDefaultView());
     }
 

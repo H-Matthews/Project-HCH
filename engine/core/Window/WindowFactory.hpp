@@ -15,15 +15,13 @@ enum class WindowBackend {
     OpenGL_GLFW // NOT IMPLEMENTED
 };
 
-inline std::optional<WindowBackend> windowBackendFromString(
-    const std::string& backendString) {
+inline std::optional<WindowBackend> windowBackendFromString(const std::string& backendString) {
 
     std::optional<WindowBackend> windowBackendOpt;
 
-    if(backendString == "SFML") {
+    if (backendString == "SFML") {
         windowBackendOpt = WindowBackend::SFML;
-    }
-    else if(backendString == "OpenGL") {
+    } else if (backendString == "OpenGL") {
         windowBackendOpt = WindowBackend::OpenGL_GLFW;
     }
 
@@ -36,34 +34,32 @@ inline std::unique_ptr<Window> create(const ConfigSection& section) {
     std::unique_ptr<Window> window;
 
     // Defaults to SFML if property not found
-    const auto backendType =
-        section.getString(Window::BACKEND).value_or("SFML");
+    const auto backendType = section.getString(Window::BACKEND).value_or("SFML");
 
-    std::optional<WindowBackend> windowBackendOpt =
-        windowBackendFromString(backendType);
-    if(!windowBackendOpt.has_value()) {
+    std::optional<WindowBackend> windowBackendOpt = windowBackendFromString(backendType);
+    if (!windowBackendOpt.has_value()) {
         throw ConfigurationException("Unknown window backend '" + backendType + "'");
     }
 
-    switch(*windowBackendOpt) {
-        case WindowBackend::SFML: {
-            window = std::make_unique<SfmlWindow>();
-            break;
-        }
-        case WindowBackend::OpenGL_GLFW: {
-            // NOT IMPLEMENTED YET
-            // window = std::make_unique<OpenGlWindow();
-            throw ConfigurationException("Window backend '" + backendType + "' is not implemented");
-        }
+    switch (*windowBackendOpt) {
+    case WindowBackend::SFML: {
+        window = std::make_unique<SfmlWindow>();
+        break;
+    }
+    case WindowBackend::OpenGL_GLFW: {
+        // NOT IMPLEMENTED YET
+        // window = std::make_unique<OpenGlWindow();
+        throw ConfigurationException("Window backend '" + backendType + "' is not implemented");
+    }
     }
 
-    if(window && window->initialize(section) == false) {
+    if (window && window->initialize(section) == false) {
         window.reset(nullptr);
     }
 
     return window;
 }
 
-} // NAMESPACE WINDOWFACTORY
+} // namespace WindowFactory
 
-} // NAMESPACE CORE
+} // namespace Core

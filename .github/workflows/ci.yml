@@ -1,27 +1,50 @@
 # Workflow Name
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [develop]
+  pull_request:
 
 defaults:
   run:
     shell: bash
 
 jobs:
+  format-check:
+    name: Format Check
+    # Pinned: scripts/format.sh requires clang-format 18, which newer images may not package.
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Install clang-format
+      run: sudo apt-get update && sudo apt-get install -y clang-format-18
+
+    # Logged so a CI-only failure can be compared against a local run (clang-format version, line endings).
+    - name: Show formatter environment
+      run: |
+        apt-cache policy clang-format-18 | head -n 3
+        clang-format-18 --version
+        git ls-files --eol -- '*.cpp' '*.hpp' '*.cc' | awk '{print $1, $2}' | sort | uniq -c
+
+    - name: Run format check
+      run: ./scripts/format.sh --check
+
   build:
-    name: ${{ matrix.platform.name }} ${{ matrix.config.name }}
+    name: ${{ matrix.platform.name }} Static
     runs-on: ${{ matrix.platform.os }}
 
     strategy:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows VS2022, os: windows-2022  }
-        - { name: Windows VS2025, os: windows-2025  }
-        - { name: Linux GCC,      os: ubuntu-latest }
-        - { name: macOS,          os: macos-latest  }
-        config:
-        - { name: Static, flags: -DBUILD_SHARED_LIBS=FALSE }
+        # build_dir must match the preset's binaryDir in CMakePresets.json
+        - { name: Windows VS2022, os: windows-2022,  preset: windows-VS22,           build_dir: build }
+        - { name: Windows VS2025, os: windows-2025,  preset: windows-VS25,           build_dir: build }
+        - { name: Linux GCC,      os: ubuntu-latest, preset: release-unix_makefiles, build_dir: build/Release }
+        - { name: macOS,          os: macos-latest,  preset: release-unix_makefiles, build_dir: build/Release }
 
     steps:
     - name: Install Linux Dependencies
@@ -30,16 +53,23 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
+    # Restores FetchContent downloads and the compiled dependencies (SFML, googletest) so only
+    # project code is rebuilt. The key changes when presets/CMake files or the runner image change.
+    - name: Read runner image version
+      id: image
+      run: echo "version=${ImageVersion:-unknown}" >> "$GITHUB_OUTPUT"
+
+    - name: Cache build directory
+      uses: actions/cache@v4
+      with:
+        path: ${{ matrix.platform.build_dir }}
+        key: build-${{ matrix.platform.preset }}-${{ runner.os }}-${{ steps.image.outputs.version }}-${{ hashFiles('CMakeLists.txt', 'CMakePresets.json') }}
+
     - name: Generate Build Files
-      run: cmake -B ./build ${{matrix.config.flags}}
+      run: cmake --preset ${{ matrix.platform.preset }}
 
     - name: Build Code
-      run: cmake --build ./build --config Release
+      run: cmake --build --preset ${{ matrix.platform.preset }} --config Release
 
-    - name: Run All GTest Binaries (Linux)
-      if: runner.os != 'Windows'
-      run: ctest --test-dir ./build --output-on-failure
-
-    - name: Run All GTest Binaries (Windows)
-      if: runner.os == 'Windows'
-      run: ctest --test-dir ./build -C Release --output-on-failure
+    - name: Run All GTest Binaries
+      run: ctest --preset ${{ matrix.platform.preset }} -C Release --output-on-failure

@@ -18,7 +18,7 @@ namespace Core {
 using EventCallbackFn = std::function<void(const sf::Event&)>;
 
 class Window {
-public:
+  public:
     static constexpr std::string_view SECTION_NAME = "Window";
 
     // Window Configurable Properties
@@ -44,4 +44,4 @@ public:
     virtual void setEventCallback(EventCallbackFn callback) = 0;
 };
 
-} // NAMESPACE CORE
+} // namespace Core
