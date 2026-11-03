@@ -2,13 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "HCH (Debug)",
+            "name": "Debug Selected CMake target (Build first)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/Debug/games/HCH/Project-HCH",
-            "preLaunchTask": "Build HCH (Debug)",
+            "program": "${command:cmake.getLaunchTargetPath}",
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build: selected target",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -26,82 +26,10 @@
             ]
         },
         {
-            "name": "Sandbox (Debug)",
+            "name": "Debug Selected CMake target (No Build)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/Debug/sandbox/Sandbox",
-            "preLaunchTask": "Build Sandbox (Debug)",
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                },
-                {
-                    "description": "Set Disassembly Flavor to Intel",
-                    "text": "-gdb-set disassembly-flavor intel",
-                    "ignoreFailures": true
-                }
-            ]
-        },
-        {
-            "name": "HCH (Release)",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/Release/games/HCH/Project-HCH",
-            "preLaunchTask": "Build HCH (Release)",
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                },
-                {
-                    "description": "Set Disassembly Flavor to Intel",
-                    "text": "-gdb-set disassembly-flavor intel",
-                    "ignoreFailures": true
-                }
-            ]
-        },
-        {
-            "name": "Sandbox (Release)",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/Release/sandbox/Sandbox",
-            "preLaunchTask": "Build Sandbox (Release)",
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                },
-                {
-                    "description": "Set Disassembly Flavor to Intel",
-                    "text": "-gdb-set disassembly-flavor intel",
-                    "ignoreFailures": true
-                }
-            ]
-        },
-        {
-            "name": "Selected CMake target",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${command:cmake.launchTargetPath}",
+            "program": "${command:cmake.getLaunchTargetPath}",
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

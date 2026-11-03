@@ -11,7 +11,6 @@
                 "CMAKE_BUILD_TYPE": "Debug"
             }
         },
-
         {
             "name": "release-unix_makefiles",
             "displayName": "Release-unix_makefiles",
@@ -22,7 +21,6 @@
                 "CMAKE_BUILD_TYPE": "Release"
             }
         },
-
         {
             "name": "windows-VS22",
             "displayName": "Windows VS2022 Config",
@@ -54,6 +52,38 @@
         {
             "name": "windows-VS25",
             "configurePreset": "windows-VS25"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "release-unix_makefiles",
+            "configurePreset": "release-unix_makefiles",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "debug-unix_makefiles",
+            "configurePreset": "debug-unix_makefiles",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "windows-VS22",
+            "configurePreset": "windows-VS22",
+            "configuration": "Debug",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "windows-VS25",
+            "configurePreset": "windows-VS25",
+            "configuration": "Debug",
+            "output": {
+                "outputOnFailure": true
+            }
         }
     ]
 }
