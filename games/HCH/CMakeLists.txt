@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 3.30)
 # Game layer (ECS content, states, key bindings, game messages), built on the engine
 set(GAME_LIB_SRC
     Settings/KeyBindings.cpp
-    Messaging/Publishers/PlayerInputPublisher.cpp
-    Messaging/Messages/PlayerInputMessage.cpp
     Data/PlayerAction.cpp
     Data/GameResources.cpp
     Scene/Scene.cpp
@@ -24,11 +22,8 @@ set(GAME_LIB_SRC
 
 set(GAME_LIB_INC
     Settings/KeyBindings.hpp
-    Messaging/Publishers/PlayerInputPublisher.hpp
-    Messaging/Messages/PlayerInputMessage.hpp
     Data/PlayerAction.hpp
     Data/GameResources.hpp
-    Messaging/MessageIds.hpp
     Scene/Scene.hpp
     Scene/ECS/EntityFactory.hpp
     Scene/ECS/GameTuning.hpp

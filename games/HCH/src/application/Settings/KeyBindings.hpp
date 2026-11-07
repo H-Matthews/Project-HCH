@@ -2,7 +2,7 @@
 
 #include "application/Data/PlayerAction.hpp"
 
-#include "SFML/Window/Keyboard.hpp"
+#include "core/Event.hpp"
 
 #include <map>
 
@@ -15,13 +15,13 @@ class KeyBindings {
   public:
     KeyBindings();
 
-    void assignKey(Actions::Player action, sf::Keyboard::Scan scanCode);
-    Actions::Player getAssignedAction(sf::Keyboard::Scan scanCode) const;
+    void assignKey(Actions::Player action, Core::Key key);
+    Actions::Player getAssignedAction(Core::Key key) const;
 
-    const std::map<sf::Keyboard::Scan, Actions::Player>& getKeyBindings();
+    const std::map<Core::Key, Actions::Player>& getKeyBindings();
     static bool isRealTimeAction(Actions::Player action);
 
   private:
-    std::map<sf::Keyboard::Scan, Actions::Player> mKeyBindings;
+    std::map<Core::Key, Actions::Player> mKeyBindings;
 };
 } // namespace Application

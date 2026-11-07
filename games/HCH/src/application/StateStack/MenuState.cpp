@@ -4,15 +4,18 @@
 #include "application/Data/GameResources.hpp"
 #include "application/UI/TextUtil.hpp"
 
-#include "core/Application.hpp"
+#include "core/Event.hpp"
+#include "core/GameAssetContainer/ResourceHolder.hpp"
 
-std::string Application::MenuState::IDENTIFIER = "MENU";
+#include <variant>
 
-Application::MenuState::MenuState() : State(IDENTIFIER) {}
+
+Application::MenuState::MenuState(Core::StateStack& stack, Core::Context ctx)
+    : State(stack, ctx) {}
 
 void Application::MenuState::draw() {
-    sf::RenderWindow& window = getApplication().getRenderWindow();
-    const sf::Font& font = getApplication().getFonts().get(Fonts::ARIAL);
+    sf::RenderWindow& window = renderWindow();
+    const sf::Font& font = fonts().get(Fonts::ARIAL);
     const sf::Vector2f middle = sf::Vector2f(window.getSize()) / 2.f;
 
     window.setView(window.getDefaultView());
@@ -31,13 +34,18 @@ bool Application::MenuState::update(sf::Time) {
     return true;
 }
 
-bool Application::MenuState::handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) {
-    if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter) {
+bool Application::MenuState::handleEvent(const Core::Event& event) {
+    const auto* keyPressed = std::get_if<Core::KeyPressed>(&event);
+    if (!keyPressed) {
+        return true;
+    }
+
+    if (keyPressed->key == Core::Key::Enter) {
         requestStackPop();
 
         // Push GameState
         requestStackPush<Application::GameState>();
-    } else if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape) {
+    } else if (keyPressed->key == Core::Key::Escape) {
         requestStackPop();
     }
 

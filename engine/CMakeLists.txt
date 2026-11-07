@@ -5,9 +5,6 @@ cmake_minimum_required(VERSION 3.30)
 # "utility/Logging/Logger.hpp", "vendor/entt/include/entt.hpp".
 set(ENGINE_SRC
     core/Application.cpp
-    core/Messaging/Message.cpp
-    core/Messaging/MessageNetwork.cpp
-    core/Messaging/MessageNode.cpp
     core/StateStack/State.cpp
     core/StateStack/StateStack.cpp
     core/Window/SfmlWindow.cpp
@@ -32,10 +29,6 @@ set(ENGINE_SRC
 
 set(ENGINE_INC
     core/Application.hpp
-    core/Messaging/Message.hpp
-    core/Messaging/MessageNetwork.hpp
-    core/Messaging/MessageTypes.hpp
-    core/Messaging/MessageNode.hpp
     core/StateStack/State.hpp
     core/StateStack/StateStack.hpp
     core/Window/Window.hpp

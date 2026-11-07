@@ -3,7 +3,6 @@
 #include "core/Configuration/Configuration.hpp"
 #include "core/Configuration/DirectoryLayout.hpp"
 #include "core/StateStack/StateStack.hpp"
-#include "core/Messaging/MessageNetwork.hpp"
 #include "core/InputState.hpp"
 #include "core/Window/Window.hpp"
 #include "core/Event.hpp"

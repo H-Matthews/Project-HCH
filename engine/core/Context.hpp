@@ -1,5 +1,7 @@
 #pragma once
 
+#include "core/GameAssetContainer/ResourceTypes.hpp"
+
 namespace sf {
 class RenderWindow;
 }
@@ -17,6 +19,9 @@ struct Context {
     sf::RenderWindow* renderWindow;
 
     const InputState& input;
+
+    FontHolder& fonts;
+    TextureHolder& textures;
 };
 
 } // NAMESPACE CORE

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "core/Messaging/MessageNetwork.hpp"
 #include "core/StateStack/StateStack.hpp"
 
 #include "core/GameAssetContainer/ResourceTypes.hpp"
@@ -33,6 +32,8 @@ protected:
     const InputState& input() const { return mContext.input; }
     Window& window() const { return mContext.window; }
     sf::RenderWindow& renderWindow() const;
+    FontHolder& fonts() const { return mContext.fonts; }
+    TextureHolder& textures() const { return mContext.textures; }
 
     template <typename TState>
     requires(std::is_base_of_v<State, TState> && std::constructible_from<TState, StateStack&, Context>)

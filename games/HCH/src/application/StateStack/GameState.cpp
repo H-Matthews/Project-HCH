@@ -6,28 +6,67 @@
 #include "application/Data/GameResources.hpp"
 #include "application/UI/TextUtil.hpp"
 
-#include "core/Application.hpp"
-#include "core/StateStack/StateStack.hpp"
+#include "core/Event.hpp"
+#include "core/GameAssetContainer/ResourceHolder.hpp"
+#include "core/InputState.hpp"
 
 #include <string>
+#include <variant>
 
-std::string Application::GameState::IDENTIFIER = "GAME";
+Application::GameTuning Application::GameState::sTuning;
 
-Application::GameState::GameState() : State(IDENTIFIER) {}
+void Application::GameState::setTuning(const GameTuning& tuning) {
+    sTuning = tuning;
+}
 
-// Used to set references to external subsystems
+Application::GameState::GameState(Core::StateStack& stack, Core::Context ctx)
+    : State(stack, ctx) {}
+
+Application::GameState::~GameState() = default;
+
 bool Application::GameState::initializeState() {
-    if (!mStackRef) {
-        return false;
+    mScene = std::make_unique<Scene>(renderWindow(), sTuning);
+
+    return true;
+}
+
+bool Application::GameState::handleEvent(const Core::Event& event) {
+    const auto* keyPressed = std::get_if<Core::KeyPressed>(&event);
+    if (!keyPressed) {
+        return true;
     }
 
-    Core::Application& app = getApplication();
-    Core::MessageNetwork& network = app.getNetwork();
+    // One-shot actions (attack); held actions are polled in update()
+    const Actions::Player action = mKeyBindings.getAssignedAction(keyPressed->key);
+    if (action != Actions::Player::NONE && !KeyBindings::isRealTimeAction(action)) {
+        mScene->applyAction(action);
+    }
 
-    const GameTuning tuning =
-        GameTuning::fromConfig(app.getConfigSection(GameTuning::SECTION_NAME));
-    mScene = std::make_unique<Scene>(app.getRenderWindow(), network, tuning);
-    mPlayerInputPublisher = std::make_unique<PlayerInputPublisher>(network, mKeyBindings);
+    if (keyPressed->key == Core::Key::P) {
+        requestStackPush<Application::PauseState>();
+    } else if (keyPressed->key == Core::Key::Escape) {
+        requestStackPop();
+        requestStackPush<Application::MenuState>();
+    }
+
+    return true;
+}
+
+bool Application::GameState::update(sf::Time fixedTimeStep) {
+    // Held keys (movement) are polled; one-shot actions arrive through handleEvent
+    for (const auto& [key, action] : mKeyBindings.getKeyBindings()) {
+        if (KeyBindings::isRealTimeAction(action) && input().isDown(key)) {
+            mScene->applyAction(action);
+        }
+    }
+
+    mScene->update(fixedTimeStep);
+
+    if (mScene->stats().playerDead && !mGameOverRequested) {
+        mGameOverRequested = true;
+        GameOverState::setResult(mScene->stats().wave, mScene->stats().score);
+        requestStackPush<GameOverState>();
+    }
 
     return true;
 }
@@ -38,8 +77,8 @@ void Application::GameState::draw() {
 }
 
 void Application::GameState::drawHud() {
-    sf::RenderWindow& window = getApplication().getRenderWindow();
-    const sf::Font& font = getApplication().getFonts().get(Fonts::ARIAL);
+    sf::RenderWindow& window = renderWindow();
+    const sf::Font& font = fonts().get(Fonts::ARIAL);
 
     window.setView(window.getDefaultView());
 
@@ -68,38 +107,3 @@ void Application::GameState::drawHud() {
                              {20.f, static_cast<float>(window.getSize().y) - 32.f},
                              sf::Color(170, 170, 180)));
 }
-
-bool Application::GameState::update(sf::Time fixedTimeStep) {
-    mScene->update(fixedTimeStep);
-
-    if (mScene->stats().playerDead && !mGameOverRequested) {
-        mGameOverRequested = true;
-        GameOverState::setResult(mScene->stats().wave, mScene->stats().score);
-        requestStackPush<GameOverState>();
-    }
-
-    return true;
-}
-
-bool Application::GameState::handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) {
-    // Handle Event based Key Presses
-    mPlayerInputPublisher->handleKeyPressed(keyPressedEvent);
-
-    if (keyPressedEvent.scancode == sf::Keyboard::Scancode::P) {
-        requestStackPush<Application::PauseState>();
-    } else if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape) {
-        requestStackPop();
-        requestStackPush<Application::MenuState>();
-    }
-
-    return true;
-}
-
-bool Application::GameState::handleRealTimeInput() {
-    // Handle RealTime Input KeyPresses (movement)
-    mPlayerInputPublisher->handleRealTimeInput();
-
-    return true;
-}
-
-Application::GameState::~GameState() = default;

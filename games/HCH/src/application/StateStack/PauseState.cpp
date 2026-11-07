@@ -4,15 +4,18 @@
 #include "application/Data/GameResources.hpp"
 #include "application/UI/TextUtil.hpp"
 
-#include "core/Application.hpp"
+#include "core/Event.hpp"
+#include "core/GameAssetContainer/ResourceHolder.hpp"
 
-std::string Application::PauseState::IDENTIFIER = "PAUSE";
+#include <variant>
 
-Application::PauseState::PauseState() : State(IDENTIFIER) {}
+
+Application::PauseState::PauseState(Core::StateStack& stack, Core::Context ctx)
+    : State(stack, ctx) {}
 
 void Application::PauseState::draw() {
-    sf::RenderWindow& window = getApplication().getRenderWindow();
-    const sf::Font& font = getApplication().getFonts().get(Fonts::ARIAL);
+    sf::RenderWindow& window = renderWindow();
+    const sf::Font& font = fonts().get(Fonts::ARIAL);
     const sf::Vector2f size(window.getSize());
     const sf::Vector2f middle = size / 2.f;
 
@@ -30,12 +33,17 @@ bool Application::PauseState::update(sf::Time) {
     return false;
 }
 
-bool Application::PauseState::handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) {
+bool Application::PauseState::handleEvent(const Core::Event& event) {
+    const auto* keyPressed = std::get_if<Core::KeyPressed>(&event);
+    if (!keyPressed) {
+        return false;
+    }
+
     // Pops the Pause State, returning to the GameState
-    if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape ||
-        keyPressedEvent.scancode == sf::Keyboard::Scancode::P) {
+    if (keyPressed->key == Core::Key::Escape ||
+        keyPressed->key == Core::Key::P) {
         requestStackPop();
-    } else if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Backspace) {
+    } else if (keyPressed->key == Core::Key::Backspace) {
         // Remove all states and push Menu
         requestStateClear();
         requestStackPush<Application::MenuState>();

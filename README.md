@@ -8,7 +8,7 @@ Platforms: Linux (Ubuntu), macOS and Windows. More detail in the [wiki](https://
 
 | Path | What it is |
 |---|---|
-| `engine/` | The `engine` static library: `core/` (app, state stack, messaging, config, ECS base), `utility/` (logging, strings, time), `vendor/` (EnTT, TOML++) |
+| `engine/` | The `engine` static library: `core/` (app, state stack, events/input, config, ECS base), `utility/` (logging, strings, time), `vendor/` (EnTT, TOML++) |
 | `games/HCH/` | The game: `main.cpp`, game layer in `src/`, plus its own `configs/` and `assets/` |
 | `sandbox/` | Minimal executable that links only the engine, for trying engine features |
 | `tests/` | GoogleTest binaries (`Core/`, `Utility/`, `Application/`) |

@@ -2,8 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "core/Messaging/MessageNetwork.hpp"
-
+#include "application/Data/PlayerAction.hpp"
 #include "application/Scene/ECS/Components/GameplayComponents.hpp"
 #include "core/ecs/EntityManager.hpp"
 #include "application/Scene/ECS/GameTuning.hpp"
@@ -19,8 +18,10 @@ class Scene {
     static const std::string TYPE_NAME;
 
   public:
-    explicit Scene(sf::RenderWindow& window, Core::MessageNetwork& gameNetwork,
-                   const GameTuning& tuning = GameTuning());
+    explicit Scene(sf::RenderWindow& window, const GameTuning& tuning = GameTuning());
+
+    // Records player intent for the next update (movement is summed, attack is a request)
+    void applyAction(Actions::Player action);
 
     void update(sf::Time fixedTimeStep);
     void draw();
@@ -33,7 +34,7 @@ class Scene {
     float playerMaxHealth() const;
 
   private:
-    void initializeGameSystems(Core::MessageNetwork& gameNetwork);
+    void initializeGameSystems();
     void initializePlayerEntity();
 
   private:

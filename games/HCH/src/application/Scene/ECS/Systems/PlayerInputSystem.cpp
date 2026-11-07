@@ -4,45 +4,6 @@
 #include "utility/VectorMath.hpp"
 #include "application/Scene/ECS/GameTuning.hpp"
 
-System::PlayerInputSystem::PlayerInputSystem(Core::MessageNetwork& network)
-    : Core::MessageNode(network, "PlayerInput System", Core::NodeType::SUBSCRIBER) {
-    // Set Subscriber Topics
-    MessageNode::addTopic(Messages::ID::PlayerActionMessage);
-}
-
-void System::PlayerInputSystem::onNotify(Core::Message* message) {
-    auto* playerInput = dynamic_cast<Application::PlayerInputMessage*>(message);
-    if (!playerInput || !mRegistry) {
-        return;
-    }
-
-    auto view = mRegistry->view<Component::PlayerInputComponent>();
-
-    for (auto entity : view) {
-        auto& input = view.get<Component::PlayerInputComponent>(entity);
-
-        switch (playerInput->action) {
-        case Actions::Player::MOVE_UP:
-            input.direction.y -= 1.f;
-            break;
-        case Actions::Player::MOVE_DOWN:
-            input.direction.y += 1.f;
-            break;
-        case Actions::Player::MOVE_LEFT:
-            input.direction.x -= 1.f;
-            break;
-        case Actions::Player::MOVE_RIGHT:
-            input.direction.x += 1.f;
-            break;
-        case Actions::Player::ATTACK:
-            input.attackRequested = true;
-            break;
-        case Actions::Player::NONE:
-            break;
-        }
-    }
-}
-
 void System::PlayerInputSystem::update(const sf::Time) {
     const auto& tuning = mRegistry->ctx().get<Application::GameTuning>();
     auto view = mRegistry->view<Component::PlayerInputComponent, Component::Velocity,

@@ -4,7 +4,7 @@
 
 namespace Component {
 /**
- * Raw player intent collected from the message network during a step.
+ * Raw player intent collected during a step (see Scene::applyAction).
  * PlayerInputSystem converts it into velocity / attack requests, then clears it.
  */
 struct PlayerInputComponent {

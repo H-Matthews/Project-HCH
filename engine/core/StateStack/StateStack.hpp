@@ -18,7 +18,6 @@
 namespace Core {
 class Application;
 class State;
-class MessageNetwork;
 
 class StateStack {
   public:

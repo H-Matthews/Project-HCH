@@ -16,19 +16,19 @@ TEST(App_KeyBindings_Constructor_Test, defaultConstructor) {
     Application::KeyBindings keyBindings;
     Actions::Player action(Actions::Player::NONE);
 
-    action = keyBindings.getAssignedAction(sf::Keyboard::Scan::A);
+    action = keyBindings.getAssignedAction(Core::Key::A);
     EXPECT_EQ(action, Actions::Player::MOVE_LEFT);
 
-    action = keyBindings.getAssignedAction(sf::Keyboard::Scan::D);
+    action = keyBindings.getAssignedAction(Core::Key::D);
     EXPECT_EQ(action, Actions::Player::MOVE_RIGHT);
 
-    action = keyBindings.getAssignedAction(sf::Keyboard::Scan::W);
+    action = keyBindings.getAssignedAction(Core::Key::W);
     EXPECT_EQ(action, Actions::Player::MOVE_UP);
 
-    action = keyBindings.getAssignedAction(sf::Keyboard::Scan::S);
+    action = keyBindings.getAssignedAction(Core::Key::S);
     EXPECT_EQ(action, Actions::Player::MOVE_DOWN);
 
-    action = keyBindings.getAssignedAction(sf::Keyboard::Scan::Space);
+    action = keyBindings.getAssignedAction(Core::Key::Space);
     EXPECT_EQ(action, Actions::Player::ATTACK);
 }
 
@@ -42,13 +42,13 @@ TEST(App_KeyBindings_Constructor_Test, defaultConstructor) {
 TEST(App_KeyBindings_AssignKey_Test, assignKey) {
     Application::KeyBindings keyBindings;
     Actions::Player action(Actions::Player::NONE);
-    keyBindings.assignKey(Actions::Player::MOVE_UP, sf::Keyboard::Scan::T);
+    keyBindings.assignKey(Actions::Player::MOVE_UP, Core::Key::T);
 
     // Ensure the W Key is unassigned (Returns PlayerAction::NONE)
-    action = keyBindings.getAssignedAction(sf::Keyboard::Scan::W);
+    action = keyBindings.getAssignedAction(Core::Key::W);
     EXPECT_EQ(action, Actions::Player::NONE);
 
     // Ensure the T Key was assigned to PlayerAction:MOVE_UP
-    action = keyBindings.getAssignedAction(sf::Keyboard::Scan::T);
+    action = keyBindings.getAssignedAction(Core::Key::T);
     EXPECT_EQ(action, Actions::Player::MOVE_UP);
 }

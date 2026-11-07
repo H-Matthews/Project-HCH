@@ -1,13 +1,13 @@
 #pragma once
 
 #include "application/Scene/Scene.hpp"
-#include "application/Messaging/Publishers/PlayerInputPublisher.hpp"
+#include "application/Scene/ECS/GameTuning.hpp"
 #include "application/Settings/KeyBindings.hpp"
 
 #include "core/StateStack/State.hpp"
 
 #include <memory>
-#include <string>
+#include <string_view>
 
 namespace Application {
 
@@ -16,29 +16,30 @@ namespace Application {
  */
 class GameState : public Core::State {
   public:
-    static std::string IDENTIFIER;
+    static constexpr std::string_view TYPE = "GAME";
 
-    GameState();
+    // States are constructed by the StateStack, so the tuning is handed over statically
+    static void setTuning(const GameTuning& tuning);
+
+    GameState(Core::StateStack& stack, Core::Context ctx);
+    ~GameState() override;
 
     bool initializeState() override;
 
-    virtual void draw() override;
-    virtual bool update(sf::Time fixedTimeStep) override;
-    bool handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) override;
-    bool handleRealTimeInput() override;
+    bool handleEvent(const Core::Event& event) override;
+    bool update(sf::Time fixedTimeStep) override;
+    void draw() override;
 
-    ~GameState();
+    std::string_view getStateType() override { return TYPE; }
 
   private:
     void drawHud();
 
   private:
-    Application::KeyBindings mKeyBindings;
+    static GameTuning sTuning;
 
-    // Destruction order matters: the publisher unregisters from the network, and the scene owns
-    // the subscriber system, so both are released before the state goes away
+    Application::KeyBindings mKeyBindings;
     std::unique_ptr<Scene> mScene;
-    std::unique_ptr<PlayerInputPublisher> mPlayerInputPublisher;
 
     bool mGameOverRequested = false;
 };

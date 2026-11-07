@@ -57,20 +57,3 @@ formatter = "KeyValueFormatter"
 
 # END STATESTACK ---------------------------------
 
-# BEGINNING MESSAGE NETWORK ----------------------
-
-[MessageNetwork]
-logging_enabled = true
-
-[MessageNetwork.Logger]
-logger_name = "MessageNetworkLogger"
-global_log_level = "NONE"
-sinks = ["TextFileSink"]
-
-[MessageNetwork.Logger.TextFileSink]
-log_file_name = "MessageNetwork"
-log_file_extension = ".log"
-log_level = "INFO"
-formatter = "KeyValueFormatter"
-
-# END MESSAGE NETWORK ----------------------------

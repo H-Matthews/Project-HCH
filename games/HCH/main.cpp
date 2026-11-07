@@ -4,7 +4,7 @@
 #include "core/Configuration/ConfigReader/TOMLConfigReader.hpp"
 
 #include "application/Data/GameResources.hpp"
-#include "application/Messaging/MessageIds.hpp"
+#include "application/Scene/ECS/GameTuning.hpp"
 #include "application/StateStack/MenuState.hpp"
 #include "application/StateStack/GameState.hpp"
 #include "application/StateStack/PauseState.hpp"
@@ -46,7 +46,8 @@ int main() {
 
         application.initialize();
         Application::loadGameResources(application);
-        Messages::registerMessageNames(application.getNetwork());
+        Application::GameState::setTuning(Application::GameTuning::fromConfig(
+            application.getConfigSection(Application::GameTuning::SECTION_NAME)));
 
         application.pushState<Application::MenuState>();
         application.run();

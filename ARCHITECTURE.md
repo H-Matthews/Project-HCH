@@ -31,8 +31,8 @@ Project HCH is a C++20 game engine and the game built on top of it.
 
 The repository produces four kinds of target:
 
-- **`engine`**: a static library. It is game-agnostic and contains the application loop, state stack, messaging, configuration, ECS base classes and utilities.
-- **`application`**: a static library holding the HCH game layer (states, scene, components, systems, game messages). It is built on `engine`.
+- **`engine`**: a static library. It is game-agnostic and contains the application loop, state stack, events and input, configuration, ECS base classes and utilities.
+- **`application`**: a static library holding the HCH game layer (states, scene, components, systems, key bindings). It is built on `engine`.
 - **`Project-HCH`**: the game executable. Its `main.cpp` wires the engine to the game layer.
 - **`Sandbox`**: a minimal executable that links only `engine`. It is for trying engine features without any game code.
 
@@ -51,7 +51,9 @@ Project-HCH/
 │   ├── core/
 │   │   ├── Application.*         Window, main loop, lifecycle state machine
 │   │   ├── StateStack/           State base class and the stack that drives it
-│   │   ├── Messaging/            Pub/sub: MessageNetwork, MessageNode, Message
+│   │   ├── Event.hpp             Engine-owned Event variant, Key and MouseButton enums
+│   │   ├── InputState.hpp        Polled key/mouse state built from events
+│   │   ├── Window/               Window interface and SFML backend (+ SFML event translation)
 │   │   ├── ecs/                  EntityManager, Entity, BaseSystem (wrap EnTT)
 │   │   ├── Configuration/        Config loading, directory layout, logger setup
 │   │   ├── GameAssetContainer/   ResourceHolder<T> (textures, fonts)
@@ -66,7 +68,6 @@ Project-HCH/
 │   └── src/application/      Game layer
 │       ├── StateStack/           MenuState, GameState, PauseState, GameOverState
 │       ├── Scene/                Scene + ECS (Components/, Systems/, EntityFactory, GameTuning)
-│       ├── Messaging/            Message IDs, messages, publishers
 │       ├── Data/                 Resource keys + loading, PlayerAction
 │       ├── Settings/             KeyBindings
 │       └── UI/                   Text helpers
@@ -90,7 +91,7 @@ flowchart TB
     APP["application (static lib)<br/>games/HCH/src/application"]
 
     subgraph ENG["engine (static lib)"]
-        CORE["core/<br/>Application, StateStack, Messaging,<br/>ecs, Configuration, ResourceHolder"]
+        CORE["core/<br/>Application, StateStack, Event/InputState,<br/>ecs, Configuration, ResourceHolder"]
         UTIL["utility/<br/>Logging, strings, time"]
         VEND["vendor/<br/>EnTT, TOML++"]
     end
@@ -113,7 +114,7 @@ Because the engine cannot name game types, it offers generic mechanisms and the 
 
 | Concern | Engine provides | Game supplies |
 |---|---|---|
-| Message IDs | `Core::MessageID` (an integer alias; `0` means none) | The enum in `Messaging/MessageIds.hpp`, plus readable names via `Messages::registerMessageNames()` |
+| Input | `Core::Event`, `Core::Key`, `Core::InputState` | Key bindings (`Settings/KeyBindings`) that map `Core::Key` to player actions |
 | Resource keys | `TextureHolder` / `FontHolder`, keyed by `std::string` | Key constants (e.g. `Fonts::ARIAL`) and file loading in `Data/GameResources.*` |
 | States | `Core::State`, `Core::StateStack` (created from functor factories) | `MenuState`, `GameState`, `PauseState`, `GameOverState` |
 | Root directory | `Core::ConfigSpec::rootDirectory` | The `GAME_DIR` compile definition on the game library (`SANDBOX_DIR` for the sandbox) |
@@ -130,16 +131,15 @@ flowchart LR
     APP["Core::Application"]
 
     APP --> CFG["Configuration<br/>+ DirectoryLayout"]
-    APP --> NET["MessageNetwork"]
+    APP --> INP["InputState"]
     APP --> STK["StateStack"]
     APP --> WIN["sf::RenderWindow"]
     APP --> TEX["TextureHolder"]
     APP --> FNT["FontHolder"]
 
-    STK -. "Application&" .-> APP
+    STK -. "Context (window, input, holders)" .-> APP
     LOG(["Utility::Logger / LogRegistry<br/>(cross-cutting)"])
     APP -.-> LOG
-    NET -.-> LOG
     STK -.-> LOG
 ```
 
@@ -160,30 +160,27 @@ Any other transition is rejected. `pushState<T>()` is ignored while the applicat
 
 `Core::StateStack` holds a vector of `Core::State` objects. Typical use is layered screens: a pause menu on top of the game, for example.
 
-- **Input and updates** (`handleKeyPressed`, `handleMouseMoved`, `handleRealTimeInput`, `update`) are delivered top-down. Each state's return value says whether the states below it should also receive the call; returning `false` stops propagation (an overlay such as `PauseState` freezes the game beneath it this way).
+- **Events and updates** (`handleEvent(const Event&)` and `update`) are delivered top-down. Each state's return value says whether the states below it should also receive the call; returning `false` stops propagation (an overlay such as `PauseState` freezes the game beneath it this way).
 - **Drawing** is bottom-up, so lower states stay visible beneath overlays.
 - **Transitions are deferred.** `pushState<T>()`, `popState()` and `clearStates()` only enqueue a `PendingStateRequest`; the queue is applied by `applyPendingChanges()` at the end of `StateStack::update()`. This avoids invalidating the stack while it is being iterated.
 - **Creation uses functor factories.** A push stores a `std::function<std::unique_ptr<State>()>` created in a templated method, so the stack itself never includes game headers.
 
-States request changes through `State::requestStackPush<T>()`, `requestStackPop()` and `requestStateClear()`, and reach the application through `getApplication()`.
+States request changes through `State::requestStackPush<T>()`, `requestStackPop()` and `requestStateClear()`, and reach engine services through the `Context` they were constructed with: `window()`, `renderWindow()` (the SFML window, until there is a render abstraction), `input()` (`InputState`), `fonts()` and `textures()`. States are constructed as `State(StateStack&, Context)`.
 
-### 4.3 Messaging
+### 4.3 Events and input
 
-`Core::MessageNetwork` decouples producers from consumers. Classes derive from `Core::MessageNode` (`SUBSCRIBER`, `PUBLISHER` or `SUB_AND_PUB`), register with the network, and declare topics by `MessageID`.
+The engine owns its event types, so states never see SFML events. `Core::Event` is a `std::variant` of small structs (`KeyPressed`, `KeyReleased`, `TextEntered`, `MouseMoved`, `MousePressed`, `MouseReleased`, `MouseWheel`, `WindowResized`, `WindowClosed`, `FocusGained`, ...). `Core::Key` and `Core::MouseButton` are engine enums, and `Core::Overloaded` helps with `std::visit`.
 
 ```mermaid
-sequenceDiagram
-    participant Pub as PlayerInputPublisher (game)
-    participant Net as MessageNetwork (engine)
-    participant Sys as PlayerInputSystem (game)
-
-    Note over Pub,Sys: Nodes register on construction and declare topics
-    Pub->>Net: publish(PlayerInputMessage)
-    Note right of Net: queued, not delivered yet
-    Net->>Sys: notifySubscribers() invokes callback
+flowchart LR
+    SF["sf::Event"] --> TR["translate()<br/>SfmlEventTranslate.cpp"]
+    TR --> WIN["Window::pollEvents()"]
+    WIN --> APP["Application::processInput()"]
+    APP --> INP["InputState::update()"]
+    APP --> STK["StateStack::handleEvent()"]
 ```
 
-Messages are queued by `publish()` and delivered when `notifySubscribers()` runs. The application calls it once per fixed update, right after input is processed. Publishers never know who consumes a message. `MessageNetwork` is owned by `Application`; nodes receive it by reference.
+`SfmlWindow::pollEvents()` translates SFML events into `Core::Event` and drops the ones the engine does not use. `Application::processInput()` feeds each event to `InputState` (held keys, buttons and the mouse position, reset on `FocusLost`) and then to the state stack. States react to one-shot input in `handleEvent` and poll held input with `input().isDown(Key)` during `update`.
 
 ### 4.4 Entity Component System
 
@@ -199,7 +196,7 @@ The engine defines no components or concrete systems. Those belong to the game (
 
 `Core::ConfigSpec` tells the engine where to look: root directory, config directory, root config file and a `ConfigReader` implementation (`TOMLConfigReader`). `Configuration` loads the files and exposes top-level tables as `ConfigSection` objects. `DirectoryLayout` resolves the asset, config and `output/` directories relative to the game root. `LoggerBuilder` builds loggers from configuration.
 
-Subsystems ask for their own section by name (`Application`, `StateStack`, `MessageNetwork`, ...) and tolerate it being absent. For rationale and details see `engine/core/Configuration/DESIGN_CONFIGURATION.md`.
+Subsystems ask for their own section by name (`Application`, `StateStack`, ...) and tolerate it being absent. For rationale and details see `engine/core/Configuration/DESIGN_CONFIGURATION.md`.
 
 ### 4.6 Resources
 
@@ -254,9 +251,9 @@ Order matters: input is read first, and spawning runs last, so newly spawned ent
 
 Components (`Scene/ECS/Components/`): `Transform`, `Velocity`, `Collider`, `Health`, `Team`, `Shape`, `MeleeAttacker`, `Hitbox`, `EnemyAI` and `PlayerInputComponent`, plus `Player` and `Enemy` tag components.
 
-### 5.3 Game messaging
+### 5.3 Game input
 
-`Messaging/MessageIds.hpp` defines the game's `Messages::ID` enum (`PlayerActionMessage`, `EnemySpawnMessage`) and `registerMessageNames()`. `PlayerInputPublisher` translates SFML input (through `Settings/KeyBindings` and `Data/PlayerAction`) into `PlayerInputMessage`s, which `PlayerInputSystem` consumes.
+`Settings/KeyBindings` maps `Core::Key` to `Actions::Player`. `GameState` turns input into player intent on the `Scene`: one-shot actions (attack) from `KeyPressed` events in `handleEvent`, and held actions (movement) by polling `input().isDown(key)` each `update`. `Scene::applyAction()` accumulates the intent in `PlayerInputComponent`, which `PlayerInputSystem` converts into velocity, facing and attack requests.
 
 ## 6. Runtime flow
 
@@ -279,7 +276,7 @@ sequenceDiagram
     Note right of A: UNINITIALIZED → INITIALIZED
     M->>R: loadGameResources(app)
     Note right of R: fonts + textures into the holders
-    M->>A: getNetwork()->registerMessageName(...)
+    M->>M: GameState::setTuning(GameTuning::fromConfig(...))
     M->>S: pushState<MenuState>() (deferred)
     M->>A: run()
     Note right of A: INITIALIZED → RUNNING, enter main loop
@@ -296,9 +293,8 @@ flowchart TD
     A(["window open?"]) -->|no| Z(["exit loop"])
     A -->|yes| B["accumulate elapsed time<br/>(clamped to 0.25 s)"]
     B --> C{"accumulated &gt; TIME_PER_FRAME?"}
-    C -->|yes| D["processInput()<br/>window events + real-time input"]
-    D --> E["MessageNetwork::notifySubscribers()"]
-    E --> F["update(TIME_PER_FRAME)<br/>StateStack::update, then apply pending push/pop/clear"]
+    C -->|yes| D["processInput()<br/>window events to InputState + StateStack"]
+    D --> F["update(TIME_PER_FRAME)<br/>StateStack::update, then apply pending push/pop/clear"]
     F --> G{"state stack empty?"}
     G -->|yes| H["close window"]
     G -->|no| C
@@ -316,7 +312,7 @@ Each game (and the sandbox) has its own root directory containing `configs/`, `a
 | Path | Purpose |
 |---|---|
 | `games/HCH/configs/root.toml` | Entry file read by `Configuration` |
-| `games/HCH/configs/core_configurables.toml` | Settings for engine subsystems (sections such as `Application`, `StateStack`, `MessageNetwork`) |
+| `games/HCH/configs/core_configurables.toml` | Settings for engine subsystems (sections such as `Application`, `StateStack`) |
 | `games/HCH/configs/gameplay.toml` | Gameplay tuning, read by `GameTuning::fromConfig` |
 | `games/HCH/configs/prefabs.toml` | Reserved for entity definitions (currently a placeholder) |
 | `games/HCH/assets/` | `fonts/` and `textures/` |
@@ -341,9 +337,9 @@ ctest --test-dir ./build --output-on-failure
 
 | To add... | Do this |
 |---|---|
-| **A game state** | Derive from `Core::State` in `games/HCH/src/application/StateStack/`, add the files to `GAME_LIB_SRC`/`GAME_LIB_INC` in `games/HCH/CMakeLists.txt`, and push it with `requestStackPush<T>()` from another state. |
+| **A game state** | Derive from `Core::State` (constructor `(Core::StateStack&, Core::Context)`) in `games/HCH/src/application/StateStack/`, add the files to `GAME_LIB_SRC`/`GAME_LIB_INC` in `games/HCH/CMakeLists.txt`, and push it with `requestStackPush<T>()` from another state. |
 | **A component or system** | Add the component to `Scene/ECS/Components/`; derive the system from `Core::BaseSystem` in `Scene/ECS/Systems/`; register it in `Scene::initializeGameSystems()` at the correct position in the order. |
-| **A message** | Add an ID to `Messages::ID` and a name in `registerMessageNames()`; create `Message` and publisher/subscriber classes deriving from `MessageNode`. |
+| **An input action** | Add it to `Actions::Player`, bind a `Core::Key` in `Settings/KeyBindings`, and handle it in `Scene::applyAction()`. |
 | **A tunable value** | Add it to `gameplay.toml` and read it in `GameTuning::fromConfig`. |
 | **A texture or font** | Drop the file in `games/HCH/assets/`, add a key constant, and load it in `Data/GameResources.cpp`. |
 | **A new game** | Create `games/<Name>/` with its own `CMakeLists.txt`, `configs/`, `assets/` and `main.cpp`; link it to `engine`; and add it to the root `CMakeLists.txt`. The sandbox is the smallest example. |

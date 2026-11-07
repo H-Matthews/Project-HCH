@@ -83,7 +83,7 @@ Core::Application::Application(AppSpec appSpec)
       mStateStack(mConfiguration->getSection(StateStack::SECTION_NAME),
                   Context{*mWindow,
                           sfmlWindow ? &sfmlWindow->getRenderWindow() : nullptr,
-                          mInput}) {
+                          mInput, mFonts, mTextures}) {
     if constexpr (Utility::CAN_LOG) {
         Utility::LogRegistry::instance()->configureRegistry(mDirectories.outputDirectory());
 

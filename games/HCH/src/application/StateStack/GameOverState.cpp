@@ -5,9 +5,11 @@
 #include "application/Data/GameResources.hpp"
 #include "application/UI/TextUtil.hpp"
 
-#include "core/Application.hpp"
+#include "core/Event.hpp"
+#include "core/GameAssetContainer/ResourceHolder.hpp"
 
-std::string Application::GameOverState::IDENTIFIER = "GAME_OVER";
+#include <variant>
+
 int Application::GameOverState::sWave = 0;
 int Application::GameOverState::sScore = 0;
 
@@ -16,11 +18,12 @@ void Application::GameOverState::setResult(int wave, int score) {
     sScore = score;
 }
 
-Application::GameOverState::GameOverState() : State(IDENTIFIER) {}
+Application::GameOverState::GameOverState(Core::StateStack& stack, Core::Context ctx)
+    : State(stack, ctx) {}
 
 void Application::GameOverState::draw() {
-    sf::RenderWindow& window = getApplication().getRenderWindow();
-    const sf::Font& font = getApplication().getFonts().get(Fonts::ARIAL);
+    sf::RenderWindow& window = renderWindow();
+    const sf::Font& font = fonts().get(Fonts::ARIAL);
     const sf::Vector2f size(window.getSize());
     const sf::Vector2f middle = size / 2.f;
 
@@ -41,11 +44,16 @@ bool Application::GameOverState::update(sf::Time) {
     return false;
 }
 
-bool Application::GameOverState::handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) {
-    if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Enter) {
+bool Application::GameOverState::handleEvent(const Core::Event& event) {
+    const auto* keyPressed = std::get_if<Core::KeyPressed>(&event);
+    if (!keyPressed) {
+        return false;
+    }
+
+    if (keyPressed->key == Core::Key::Enter) {
         requestStateClear();
         requestStackPush<Application::GameState>();
-    } else if (keyPressedEvent.scancode == sf::Keyboard::Scancode::Escape) {
+    } else if (keyPressed->key == Core::Key::Escape) {
         requestStateClear();
         requestStackPush<Application::MenuState>();
     }
