@@ -24,4 +24,4 @@ struct Context {
     TextureHolder& textures;
 };
 
-} // NAMESPACE CORE
+} // namespace Core

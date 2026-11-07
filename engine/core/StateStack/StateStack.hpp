@@ -51,9 +51,8 @@ class StateStack {
     void handleEvent(const Event& event);
 
     template <typename TState>
-    requires(std::is_base_of_v<State, TState> &&
-        std::constructible_from<TState, StateStack&, Context>)
-    void pushState();
+    requires(std::is_base_of_v<State, TState>&&
+                 std::constructible_from<TState, StateStack&, Context>) void pushState();
 
     // Requests are deferred: pushState/popState/clearStates are applied at the end of the next
     // update(). Requests made while applying (e.g. from a state's initializeState()) wait one
@@ -92,8 +91,8 @@ class StateStack {
 };
 
 template <typename TState>
-requires(std::is_base_of_v<State, TState> && std::constructible_from<TState, StateStack&, Context>)
-void StateStack::pushState() {
+requires(std::is_base_of_v<State, TState>&&
+             std::constructible_from<TState, StateStack&, Context>) void StateStack::pushState() {
     PendingStateRequest request(Action::PUSH);
     request.stateConstructor = [this, ctx = mContext]() {
         return std::unique_ptr<State>(new TState(*this, ctx));

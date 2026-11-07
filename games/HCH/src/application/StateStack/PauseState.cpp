@@ -9,7 +9,6 @@
 
 #include <variant>
 
-
 Application::PauseState::PauseState(Core::StateStack& stack, Core::Context ctx)
     : State(stack, ctx) {}
 
@@ -28,8 +27,7 @@ void Application::PauseState::draw() {
                              {middle.x, middle.y + 30.f}, sf::Color(190, 190, 200), true));
 }
 
-void Application::PauseState::update(sf::Time) {
-}
+void Application::PauseState::update(sf::Time) {}
 
 void Application::PauseState::handleEvent(const Core::Event& event) {
     const auto* keyPressed = std::get_if<Core::KeyPressed>(&event);
@@ -38,13 +36,11 @@ void Application::PauseState::handleEvent(const Core::Event& event) {
     }
 
     // Pops the Pause State, returning to the GameState
-    if (keyPressed->key == Core::Key::Escape ||
-        keyPressed->key == Core::Key::P) {
+    if (keyPressed->key == Core::Key::Escape || keyPressed->key == Core::Key::P) {
         requestStackPop();
     } else if (keyPressed->key == Core::Key::Backspace) {
         // Remove all states and push Menu
         requestStateClear();
         requestStackPush<Application::MenuState>();
     }
-
 }

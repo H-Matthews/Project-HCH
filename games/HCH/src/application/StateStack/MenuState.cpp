@@ -9,9 +9,7 @@
 
 #include <variant>
 
-
-Application::MenuState::MenuState(Core::StateStack& stack, Core::Context ctx)
-    : State(stack, ctx) {}
+Application::MenuState::MenuState(Core::StateStack& stack, Core::Context ctx) : State(stack, ctx) {}
 
 void Application::MenuState::handleEvent(const Core::Event& event) {
     const auto* keyPressed = std::get_if<Core::KeyPressed>(&event);
@@ -27,11 +25,9 @@ void Application::MenuState::handleEvent(const Core::Event& event) {
     } else if (keyPressed->key == Core::Key::Escape) {
         requestStackPop();
     }
-
 }
 
-void Application::MenuState::update(sf::Time) {
-}
+void Application::MenuState::update(sf::Time) {}
 
 void Application::MenuState::draw() {
     sf::RenderWindow& window = renderWindow();
@@ -46,6 +42,7 @@ void Application::MenuState::draw() {
                              sf::Color(190, 190, 200), true));
     window.draw(UI::makeText(font, "Enter: Start        Esc: Quit", 26, {middle.x, middle.y + 40.f},
                              sf::Color::White, true));
-    window.draw(UI::makeText(font, "WASD / Arrows: move     Space / J: attack     P/Escape: pause    Del: main menu", 18,
-                             {middle.x, middle.y + 110.f}, sf::Color(150, 150, 165), true));
+    window.draw(UI::makeText(
+        font, "WASD / Arrows: move     Space / J: attack     P/Escape: pause    Del: main menu", 18,
+        {middle.x, middle.y + 110.f}, sf::Color(150, 150, 165), true));
 }

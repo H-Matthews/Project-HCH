@@ -36,16 +36,17 @@ std::vector<std::string> gLog;
 
 // A state with a configurable name and blocking policy. Its update() records whether the W key
 // looks down through its InputView.
-template <char Name, bool BlockInput, bool BlockUpdates>
-class TestState : public Core::State {
+template <char Name, bool BlockInput, bool BlockUpdates> class TestState : public Core::State {
   public:
     TestState(Core::StateStack& stack, Core::Context ctx) : State(stack, ctx) {}
 
-    void handleEvent(const Core::Event&) override { gLog.push_back(std::string(1, Name) + ":event"); }
+    void handleEvent(const Core::Event&) override {
+        gLog.push_back(std::string(1, Name) + ":event");
+    }
 
     void update(sf::Time) override {
-        gLog.push_back(std::string(1, Name) + ":update:" +
-                       (input().isDown(Core::Key::W) ? "down" : "up"));
+        gLog.push_back(std::string(1, Name) +
+                       ":update:" + (input().isDown(Core::Key::W) ? "down" : "up"));
     }
 
     void draw() override { gLog.push_back(std::string(1, Name) + ":draw"); }
@@ -54,14 +55,13 @@ class TestState : public Core::State {
 
     bool blocksInput() const override { return BlockInput; }
     bool blocksUpdates() const override { return BlockUpdates; }
-
 };
 
-using Plain = TestState<'B', false, false>;           // bottom state
-using Passive = TestState<'T', false, false>;         // overlay that blocks nothing
-using InputBlocker = TestState<'T', true, false>;     // overlay that blocks input only
-using UpdateBlocker = TestState<'T', false, true>;    // overlay that blocks updates only
-using FullBlocker = TestState<'T', true, true>;       // pause-style overlay
+using Plain = TestState<'B', false, false>;        // bottom state
+using Passive = TestState<'T', false, false>;      // overlay that blocks nothing
+using InputBlocker = TestState<'T', true, false>;  // overlay that blocks input only
+using UpdateBlocker = TestState<'T', false, true>; // overlay that blocks updates only
+using FullBlocker = TestState<'T', true, true>;    // pause-style overlay
 
 // Asks the stack for another state from inside initializeState()
 class Pusher : public Core::State {
@@ -82,8 +82,7 @@ using Log = std::vector<std::string>;
 
 class StateStackTest : public ::testing::Test {
   protected:
-    StateStackTest()
-        : stack(nullptr, Core::Context{window, nullptr, input, fonts, textures}) {
+    StateStackTest() : stack(nullptr, Core::Context{window, nullptr, input, fonts, textures}) {
         gLog.clear();
         input.update(Core::KeyPressed{Core::Key::W, {}});
     }
@@ -102,7 +101,7 @@ class StateStackTest : public ::testing::Test {
     Core::StateStack stack;
 };
 
-} // NAMESPACE ANONYMOUS
+} // namespace
 
 TEST_F(StateStackTest, nonBlockingOverlayReachesEveryState) {
     push<Plain>();

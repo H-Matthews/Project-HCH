@@ -70,20 +70,18 @@ std::unique_ptr<Window> createWindow(const Configuration& configuration) {
     return window;
 }
 
-} // NAMESPACE ANONYMOUS
+} // namespace
 
 Core::Application::Application(AppSpec appSpec)
     : mConfiguration(std::make_unique<Configuration>(std::move(appSpec.configSpec))),
       mDirectories(mConfiguration->rootDirectory(),
                    mConfiguration->getSection(Configuration::SECTION_NAME)),
-      mState(ApplicationState::UNINITIALIZED),
-      mWindow(createWindow(*mConfiguration)),
+      mState(ApplicationState::UNINITIALIZED), mWindow(createWindow(*mConfiguration)),
       // Unfortunately necessary for now
       sfmlWindow(dynamic_cast<SfmlWindow*>(mWindow.get())),
       mStateStack(mConfiguration->getSection(StateStack::SECTION_NAME),
-                  Context{*mWindow,
-                          sfmlWindow ? &sfmlWindow->getRenderWindow() : nullptr,
-                          mInput, mFonts, mTextures}) {
+                  Context{*mWindow, sfmlWindow ? &sfmlWindow->getRenderWindow() : nullptr, mInput,
+                          mFonts, mTextures}) {
     if constexpr (Utility::CAN_LOG) {
         Utility::LogRegistry::instance()->configureRegistry(mDirectories.outputDirectory());
 
@@ -183,8 +181,8 @@ void Application::run() {
 }
 
 void Application::processInput() {
-    while(const auto event = mWindow->pollEvent()) {
-        if(std::holds_alternative<WindowClosed>(*event)) {
+    while (const auto event = mWindow->pollEvent()) {
+        if (std::holds_alternative<WindowClosed>(*event)) {
             mWindow->close();
         }
 
@@ -222,18 +220,18 @@ void Application::buildSubsystemLoggers() {
 
 bool Application::isValidTransition(ApplicationState from, ApplicationState to) const {
     switch (from) {
-        case ApplicationState::UNINITIALIZED: {
-            return to == ApplicationState::INITIALIZED;
-        }
-        case ApplicationState::INITIALIZED: {
-            return to == ApplicationState::RUNNING;
-        }
-        case ApplicationState::RUNNING: {
-            return to == ApplicationState::SHUTTING_DOWN;
-        }
-        default: {
-            return false;
-        }
+    case ApplicationState::UNINITIALIZED: {
+        return to == ApplicationState::INITIALIZED;
+    }
+    case ApplicationState::INITIALIZED: {
+        return to == ApplicationState::RUNNING;
+    }
+    case ApplicationState::RUNNING: {
+        return to == ApplicationState::SHUTTING_DOWN;
+    }
+    default: {
+        return false;
+    }
     }
 }
 

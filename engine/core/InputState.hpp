@@ -20,29 +20,31 @@ namespace Core {
  * both true while isDown is false, so quick taps are never lost.
  */
 class InputState {
-public:
+  public:
     void update(const Event& event) {
-        std::visit(Overloaded {
-            [this](const KeyPressed& keyPressed) {
-                mKeys[idx(keyPressed.key)] = true;
-                if (!keyPressed.repeat) mKeysPressed[idx(keyPressed.key)] = true;
-            },
-            [this](const KeyReleased& keyReleased) {
-                mKeys[idx(keyReleased.key)] = false;
-                mKeysReleased[idx(keyReleased.key)] = true;
-            },
-            [this](const MousePressed& mousePressed) {
-                mButtons[idx(mousePressed.button)] = true;
-                mButtonsPressed[idx(mousePressed.button)] = true;
-            },
-            [this](const MouseReleased& mouseRelease) {
-                mButtons[idx(mouseRelease.button)] = false;
-                mButtonsReleased[idx(mouseRelease.button)] = true;
-            },
-            [this](const MouseMoved& mouseMoved) { mMouseX = mouseMoved.x; mMouseY = mouseMoved.y; },
-            [this](const FocusLost&) { reset(); },
-            [](const auto&) {}
-        }, event);
+        std::visit(Overloaded{[this](const KeyPressed& keyPressed) {
+                                  mKeys[idx(keyPressed.key)] = true;
+                                  if (!keyPressed.repeat)
+                                      mKeysPressed[idx(keyPressed.key)] = true;
+                              },
+                              [this](const KeyReleased& keyReleased) {
+                                  mKeys[idx(keyReleased.key)] = false;
+                                  mKeysReleased[idx(keyReleased.key)] = true;
+                              },
+                              [this](const MousePressed& mousePressed) {
+                                  mButtons[idx(mousePressed.button)] = true;
+                                  mButtonsPressed[idx(mousePressed.button)] = true;
+                              },
+                              [this](const MouseReleased& mouseRelease) {
+                                  mButtons[idx(mouseRelease.button)] = false;
+                                  mButtonsReleased[idx(mouseRelease.button)] = true;
+                              },
+                              [this](const MouseMoved& mouseMoved) {
+                                  mMouseX = mouseMoved.x;
+                                  mMouseY = mouseMoved.y;
+                              },
+                              [this](const FocusLost&) { reset(); }, [](const auto&) {}},
+                   event);
     }
 
     // Call once per fixed update, after the states have read the edges
@@ -65,9 +67,10 @@ public:
     int getMouseX() const { return mMouseX; }
     int getMouseY() const { return mMouseY; }
 
-private:
-    template<typename E>
-    static constexpr std::size_t idx(E e) { return static_cast<std::size_t>(e); }
+  private:
+    template <typename E> static constexpr std::size_t idx(E e) {
+        return static_cast<std::size_t>(e);
+    }
 
     void reset() {
         mKeys.fill(false);
@@ -90,4 +93,4 @@ private:
     int mMouseY = 0;
 };
 
-} // NAMESPACE CORE
+} // namespace Core

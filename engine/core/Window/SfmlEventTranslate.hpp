@@ -9,4 +9,4 @@
 namespace Core {
 std::optional<Event> translate(const sf::Event& sfEvent);
 
-} // NAMESPACE CORE
+} // namespace Core

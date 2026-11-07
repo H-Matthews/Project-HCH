@@ -17,8 +17,7 @@ void Application::GameState::setTuning(const GameTuning& tuning) {
     sTuning = tuning;
 }
 
-Application::GameState::GameState(Core::StateStack& stack, Core::Context ctx)
-    : State(stack, ctx) {}
+Application::GameState::GameState(Core::StateStack& stack, Core::Context ctx) : State(stack, ctx) {}
 
 bool Application::GameState::initializeState() {
     mScene = std::make_unique<Scene>(renderWindow(), sTuning);
@@ -27,7 +26,7 @@ bool Application::GameState::initializeState() {
 }
 
 void Application::GameState::handleEvent(const Core::Event& event) {
-    if(const auto* focusLost = std::get_if<Core::FocusLost>(&event)) {
+    if (const auto* focusLost = std::get_if<Core::FocusLost>(&event)) {
         requestStackPush<Application::PauseState>();
     }
 }
@@ -35,8 +34,8 @@ void Application::GameState::handleEvent(const Core::Event& event) {
 void Application::GameState::update(sf::Time fixedTimeStep) {
     // Held keys (movement) act every tick; one-shot actions (attack) act on the tick of the press
     for (const auto& [key, action] : mKeyBindings.getKeyBindings()) {
-        const bool triggered = KeyBindings::isRealTimeAction(action) ? input().isDown(key)
-                                                                     : input().wasPressed(key);
+        const bool triggered =
+            KeyBindings::isRealTimeAction(action) ? input().isDown(key) : input().wasPressed(key);
         if (triggered) {
             mScene->applyAction(action);
         }
@@ -90,7 +89,7 @@ void Application::GameState::drawHud() {
     window.draw(UI::makeText(
         font, "Wave " + std::to_string(stats.wave) + "    Score " + std::to_string(stats.score), 22,
         {20.f, 52.f}));
-    window.draw(UI::makeText(font, "WASD/Arrows: move   Space/J: attack   P/Escape: pause, Del: menu", 16,
-                             {20.f, static_cast<float>(window.getSize().y) - 32.f},
-                             sf::Color(170, 170, 180)));
+    window.draw(UI::makeText(
+        font, "WASD/Arrows: move   Space/J: attack   P/Escape: pause, Del: menu", 16,
+        {20.f, static_cast<float>(window.getSize().y) - 32.f}, sf::Color(170, 170, 180)));
 }

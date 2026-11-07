@@ -16,7 +16,7 @@ namespace Core {
 class Window;
 
 class State {
-public:
+  public:
     explicit State(StateStack& stack, Context ctx);
     virtual ~State() = default;
 
@@ -30,15 +30,17 @@ public:
 
     // What this state lets through to the states BELOW it (see the rule in StateStack.hpp).
     // Override in overlays such as pause or game-over screens.
-    virtual bool blocksInput() const { return false; }   // no events, no held keys below
-    virtual bool blocksUpdates() const { return false; } // states below are not updated (still drawn)
+    virtual bool blocksInput() const { return false; } // no events, no held keys below
+    virtual bool blocksUpdates() const {
+        return false;
+    } // states below are not updated (still drawn)
 
     // Called by StateStack each tick; not for state code
     void setInputEnabled(bool enabled) { mInput.setEnabled(enabled); }
 
     virtual std::string_view getStateType() = 0;
 
-protected:
+  protected:
     // Held keys/buttons. Reports "up" while a state above blocks input.
     const InputView& input() const { return mInput; }
     Window& window() const { return mContext.window; }
@@ -47,20 +49,20 @@ protected:
     TextureHolder& textures() const { return mContext.textures; }
 
     template <typename TState>
-    requires(std::is_base_of_v<State, TState> && std::constructible_from<TState, StateStack&, Context>)
-    void requestStackPush();
+    requires(std::is_base_of_v<State, TState>&&
+                 std::constructible_from<TState, StateStack&, Context>) void requestStackPush();
     void requestStackPop();
     void requestStateClear();
 
-private:
+  private:
     StateStack& mStateStack;
     Context mContext;
     InputView mInput;
 };
 
 template <typename TState>
-requires(std::is_base_of_v<State, TState> && std::constructible_from<TState, StateStack&, Context>)
-void State::requestStackPush() {
+requires(std::is_base_of_v<State, TState>&&
+             std::constructible_from<TState, StateStack&, Context>) void State::requestStackPush() {
     mStateStack.pushState<TState>();
 }
 

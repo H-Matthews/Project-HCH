@@ -38,4 +38,4 @@ class InputView {
     bool mEnabled = true;
 };
 
-} // NAMESPACE CORE
+} // namespace Core

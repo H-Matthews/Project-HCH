@@ -45,8 +45,8 @@ bool SfmlWindow::isOpen() const {
 void SfmlWindow::shutdown() {}
 
 std::optional<Event> SfmlWindow::pollEvent() {
-    while(const auto sfEvent = mSfmlWindow.pollEvent()) {
-        if(auto engineEvent = translate(*sfEvent)) {
+    while (const auto sfEvent = mSfmlWindow.pollEvent()) {
+        if (auto engineEvent = translate(*sfEvent)) {
             return engineEvent;
         }
     }

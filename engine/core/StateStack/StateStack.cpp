@@ -12,9 +12,7 @@ namespace Core {
 
 StateStack::~StateStack() = default;
 
-StateStack::StateStack(const ConfigSection* config, Context ctx)
-    : mConfig(config), mContext(ctx) {
-}
+StateStack::StateStack(const ConfigSection* config, Context ctx) : mConfig(config), mContext(ctx) {}
 
 void StateStack::refreshInputGating() {
     bool inputOpen = true;
@@ -158,4 +156,4 @@ void StateStack::applyPendingChanges() {
 StateStack::PendingStateRequest::PendingStateRequest(Action action)
     : action(action), stateConstructor() {}
 
-} // NAMESPACE CORE
+} // namespace Core

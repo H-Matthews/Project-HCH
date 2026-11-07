@@ -10,8 +10,12 @@ using Core::Key;
 using Core::MouseButton;
 
 namespace {
-Core::KeyPressed press(Key key, bool repeat = false) { return Core::KeyPressed{key, {}, repeat}; }
-Core::KeyReleased release(Key key) { return Core::KeyReleased{key, {}}; }
+Core::KeyPressed press(Key key, bool repeat = false) {
+    return Core::KeyPressed{key, {}, repeat};
+}
+Core::KeyReleased release(Key key) {
+    return Core::KeyReleased{key, {}};
+}
 } // namespace
 
 TEST(Core_InputState_Test, pressSetsHeldAndPressedEdge) {

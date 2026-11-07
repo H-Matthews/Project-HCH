@@ -22,4 +22,4 @@ void State::requestStackPop() {
 void State::requestStateClear() {
     mStateStack.clearStates();
 }
-} // NAMESPACE CORE
+} // namespace Core

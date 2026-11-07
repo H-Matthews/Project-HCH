@@ -39,8 +39,7 @@ void Application::GameOverState::draw() {
                              {middle.x, middle.y + 70.f}, sf::Color(190, 190, 200), true));
 }
 
-void Application::GameOverState::update(sf::Time) {
-}
+void Application::GameOverState::update(sf::Time) {}
 
 void Application::GameOverState::handleEvent(const Core::Event& event) {
     const auto* keyPressed = std::get_if<Core::KeyPressed>(&event);
@@ -55,5 +54,4 @@ void Application::GameOverState::handleEvent(const Core::Event& event) {
         requestStateClear();
         requestStackPush<Application::MenuState>();
     }
-
 }

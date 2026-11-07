@@ -20,37 +20,36 @@ class SandboxState : public Core::State {
   public:
     static constexpr std::string_view TYPE = "SandboxState";
 
-    SandboxState(Core::StateStack& stack, Core::Context ctx) :
-        State(stack, ctx) {}
+    SandboxState(Core::StateStack& stack, Core::Context ctx) : State(stack, ctx) {}
 
     std::string_view getStateType() override { return TYPE; }
 
     void handleEvent(const Core::Event& event) override {
-        if(auto* e = std::get_if<Core::KeyPressed>(&event)) {
-            if(e->key == Core::Key::Escape) {
+        if (auto* e = std::get_if<Core::KeyPressed>(&event)) {
+            if (e->key == Core::Key::Escape) {
                 requestStateClear();
             }
         }
     }
 
     void update(sf::Time) override {
-        if(input().isDown(Core::Key::W)) {
+        if (input().isDown(Core::Key::W)) {
             std::cout << "W Key" << std::endl;
         }
-        if(input().isDown(Core::Key::S)) {
+        if (input().isDown(Core::Key::S)) {
             std::cout << "S Key" << std::endl;
         }
-        if(input().isDown(Core::Key::A)) {
+        if (input().isDown(Core::Key::A)) {
             std::cout << "A Key" << std::endl;
         }
-        if(input().isDown(Core::Key::D)) {
+        if (input().isDown(Core::Key::D)) {
             std::cout << "D Key" << std::endl;
         }
 
-        if(input().wasPressed(Core::MouseButton::Left)) {
+        if (input().wasPressed(Core::MouseButton::Left)) {
             std::cout << "Clicked Left Mouse Button" << std::endl;
         }
-        if(input().wasPressed(Core::MouseButton::Right)) {
+        if (input().wasPressed(Core::MouseButton::Right)) {
             std::cout << "Clicked Right Mouse Button" << std::endl;
         }
 
@@ -62,9 +61,7 @@ class SandboxState : public Core::State {
         // }
     }
 
-    void draw() override {
-        renderWindow().clear(sf::Color(30,30,40));
-    }
+    void draw() override { renderWindow().clear(sf::Color(30, 30, 40)); }
 };
 
 static void initializeGlobalLogger() {

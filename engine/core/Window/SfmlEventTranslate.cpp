@@ -43,109 +43,141 @@ Key toKey(SfKey sfKey) {
 
     // Everything else, one by one
     switch (sfKey) {
-        case SfKey::Left:      return Key::Left;
-        case SfKey::Right:     return Key::Right;
-        case SfKey::Up:        return Key::Up;
-        case SfKey::Down:      return Key::Down;
- 
-        case SfKey::Escape:    return Key::Escape;
-        case SfKey::Space:     return Key::Space;
-        case SfKey::Enter:     return Key::Enter;
-        case SfKey::Backspace: return Key::Backspace;
-        case SfKey::Tab:       return Key::Tab;
- 
-        case SfKey::Insert:    return Key::Insert;
-        case SfKey::Delete:    return Key::Delete;
-        case SfKey::Home:      return Key::Home;
-        case SfKey::End:       return Key::End;
-        case SfKey::PageUp:    return Key::PageUp;
-        case SfKey::PageDown:  return Key::PageDown;
- 
-        case SfKey::LShift:    return Key::LShift;
-        case SfKey::RShift:    return Key::RShift;
-        case SfKey::LControl:  return Key::LControl;
-        case SfKey::RControl:  return Key::RControl;
-        case SfKey::LAlt:      return Key::LAlt;
-        case SfKey::RAlt:      return Key::RAlt;
-        case SfKey::LSystem:   return Key::LSystem;
-        case SfKey::RSystem:   return Key::RSystem;
+    case SfKey::Left:
+        return Key::Left;
+    case SfKey::Right:
+        return Key::Right;
+    case SfKey::Up:
+        return Key::Up;
+    case SfKey::Down:
+        return Key::Down;
 
-        default:               return Key::Unknown;
+    case SfKey::Escape:
+        return Key::Escape;
+    case SfKey::Space:
+        return Key::Space;
+    case SfKey::Enter:
+        return Key::Enter;
+    case SfKey::Backspace:
+        return Key::Backspace;
+    case SfKey::Tab:
+        return Key::Tab;
+
+    case SfKey::Insert:
+        return Key::Insert;
+    case SfKey::Delete:
+        return Key::Delete;
+    case SfKey::Home:
+        return Key::Home;
+    case SfKey::End:
+        return Key::End;
+    case SfKey::PageUp:
+        return Key::PageUp;
+    case SfKey::PageDown:
+        return Key::PageDown;
+
+    case SfKey::LShift:
+        return Key::LShift;
+    case SfKey::RShift:
+        return Key::RShift;
+    case SfKey::LControl:
+        return Key::LControl;
+    case SfKey::RControl:
+        return Key::RControl;
+    case SfKey::LAlt:
+        return Key::LAlt;
+    case SfKey::RAlt:
+        return Key::RAlt;
+    case SfKey::LSystem:
+        return Key::LSystem;
+    case SfKey::RSystem:
+        return Key::RSystem;
+
+    default:
+        return Key::Unknown;
     }
 }
 
 std::optional<MouseButton> toMouse(sf::Mouse::Button sfButton) {
-    switch(sfButton) {
-        case SfButton::Left:   return MouseButton::Left;
-        case SfButton::Right:  return MouseButton::Right;
-        case SfButton::Middle: return MouseButton::Middle;
-        case SfButton::Extra1: return MouseButton::Extra1;
-        case SfButton::Extra2: return MouseButton::Extra2;
-        default:               return std::nullopt;
+    switch (sfButton) {
+    case SfButton::Left:
+        return MouseButton::Left;
+    case SfButton::Right:
+        return MouseButton::Right;
+    case SfButton::Middle:
+        return MouseButton::Middle;
+    case SfButton::Extra1:
+        return MouseButton::Extra1;
+    case SfButton::Extra2:
+        return MouseButton::Extra2;
+    default:
+        return std::nullopt;
     }
 }
 
-} // NAMESPACE ANONYMOUS
+} // namespace
 
 // Return std::nullopt for events we don't care about
 std::optional<Event> translate(const sf::Event& e) {
     using SfEvent = sf::Event;
 
-    if(e.is<SfEvent::Closed>())         return WindowClosed{};
-    if(e.is<SfEvent::FocusGained>())    return FocusGained{};
-    if(e.is<SfEvent::FocusLost>())      return FocusLost{};
-    if(e.is<SfEvent::MouseEntered>())   return MouseEntered{};
-    if(e.is<SfEvent::MouseLeft>())      return MouseLeft{};
+    if (e.is<SfEvent::Closed>())
+        return WindowClosed{};
+    if (e.is<SfEvent::FocusGained>())
+        return FocusGained{};
+    if (e.is<SfEvent::FocusLost>())
+        return FocusLost{};
+    if (e.is<SfEvent::MouseEntered>())
+        return MouseEntered{};
+    if (e.is<SfEvent::MouseLeft>())
+        return MouseLeft{};
 
-    if(auto* sfR = e.getIf<SfEvent::Resized>()) {
+    if (auto* sfR = e.getIf<SfEvent::Resized>()) {
         return WindowResized{sfR->size.x, sfR->size.y};
     }
 
-    if(auto* sfK = e.getIf<SfEvent::KeyPressed>()) {
+    if (auto* sfK = e.getIf<SfEvent::KeyPressed>()) {
         return KeyPressed{
             toKey(sfK->code),
             {sfK->shift, sfK->control, sfK->alt, sfK->system},
             false // SFML3 gives no repeat flag
-        }; 
-    }
-
-    if(auto* sfK = e.getIf<SfEvent::KeyReleased>()) {
-        return KeyReleased{
-            toKey(sfK->code),
-            {sfK->shift, sfK->control, sfK->alt, sfK->system}
         };
     }
 
-    if(auto* sfT = e.getIf<SfEvent::TextEntered>()) {
+    if (auto* sfK = e.getIf<SfEvent::KeyReleased>()) {
+        return KeyReleased{toKey(sfK->code), {sfK->shift, sfK->control, sfK->alt, sfK->system}};
+    }
+
+    if (auto* sfT = e.getIf<SfEvent::TextEntered>()) {
         // Drop control characters (backspace, enter, tab, DEL); those arrive as KeyPressed
-        if(sfT->unicode < 32 || sfT->unicode == 127) {
+        if (sfT->unicode < 32 || sfT->unicode == 127) {
             return std::nullopt;
         }
         return TextEntered{sfT->unicode};
     }
 
-    if(auto* sfM = e.getIf<SfEvent::MouseMoved>()) {
+    if (auto* sfM = e.getIf<SfEvent::MouseMoved>()) {
         return MouseMoved{sfM->position.x, sfM->position.y};
     }
 
-    if(auto* sfM = e.getIf<SfEvent::MouseButtonPressed>()) {
+    if (auto* sfM = e.getIf<SfEvent::MouseButtonPressed>()) {
         const auto button = toMouse(sfM->button);
-        if(!button) {
+        if (!button) {
             return std::nullopt;
         }
         return MousePressed{*button, sfM->position.x, sfM->position.y};
     }
 
-    if(auto* sfM = e.getIf<SfEvent::MouseButtonReleased>()) {
+    if (auto* sfM = e.getIf<SfEvent::MouseButtonReleased>()) {
         const auto button = toMouse(sfM->button);
-        if(!button) {
+        if (!button) {
             return std::nullopt;
         }
         return MouseReleased{*button, sfM->position.x, sfM->position.y};
     }
 
-    if(auto* sfM = e.getIf<SfEvent::MouseWheelScrolled>()) {
-        if(sfM->wheel == sf::Mouse::Wheel::Vertical) {
+    if (auto* sfM = e.getIf<SfEvent::MouseWheelScrolled>()) {
+        if (sfM->wheel == sf::Mouse::Wheel::Vertical) {
             return MouseWheel{sfM->delta, sfM->position.x, sfM->position.y};
         }
 
@@ -156,5 +188,4 @@ std::optional<Event> translate(const sf::Event& e) {
     return std::nullopt;
 }
 
-} // NAMESPACE CORE
-
+} // namespace Core

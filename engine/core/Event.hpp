@@ -9,24 +9,87 @@ enum class Key : std::uint16_t {
     Unknown = 0,
 
     // Letters
-    A, B, C, D, E, F, G, H, I, J, K, L, M,
-    N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+    I,
+    J,
+    K,
+    L,
+    M,
+    N,
+    O,
+    P,
+    Q,
+    R,
+    S,
+    T,
+    U,
+    V,
+    W,
+    X,
+    Y,
+    Z,
 
     // Number Row
-    Num0, Num1, Num2, Num3, Num4, Num5, Num6, Num7, Num8, Num9,
+    Num0,
+    Num1,
+    Num2,
+    Num3,
+    Num4,
+    Num5,
+    Num6,
+    Num7,
+    Num8,
+    Num9,
 
     // Arrows
-    Left, Right, Up, Down,
+    Left,
+    Right,
+    Up,
+    Down,
 
     // Common Controls
-    Escape, Space, Enter, Backspace, Tab,
-    Insert, Delete, Home, End, PageUp, PageDown,
+    Escape,
+    Space,
+    Enter,
+    Backspace,
+    Tab,
+    Insert,
+    Delete,
+    Home,
+    End,
+    PageUp,
+    PageDown,
 
     // Modifiers (as keys)
-    LShift, RShift, LControl, RControl, LAlt, RAlt, LSystem, RSystem,
+    LShift,
+    RShift,
+    LControl,
+    RControl,
+    LAlt,
+    RAlt,
+    LSystem,
+    RSystem,
 
     // Function Keys
-    F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
+    F1,
+    F2,
+    F3,
+    F4,
+    F5,
+    F6,
+    F7,
+    F8,
+    F9,
+    F10,
+    F11,
+    F12,
 
     // Should always be last
     Count
@@ -45,7 +108,7 @@ struct Modifiers {
     bool shift = false;
     bool ctrl = false;
     bool alt = false;
-    bool system = false; // Windows/Command/Super 
+    bool system = false; // Windows/Command/Super
 };
 
 struct KeyPressed {
@@ -102,26 +165,14 @@ struct WindowClosed {};
 struct FocusGained {};
 struct FocusLost {};
 
-using Event = std::variant<
-    KeyPressed,
-    KeyReleased,
-    TextEntered,
-    MouseMoved,
-    MousePressed,
-    MouseReleased,
-    MouseWheel,
-    MouseEntered,
-    MouseLeft,
-    WindowResized,
-    WindowClosed,
-    FocusGained,
-    FocusLost
->;
+using Event = std::variant<KeyPressed, KeyReleased, TextEntered, MouseMoved, MousePressed,
+                           MouseReleased, MouseWheel, MouseEntered, MouseLeft, WindowResized,
+                           WindowClosed, FocusGained, FocusLost>;
 
-template <class... Ts>
-struct Overloaded: Ts... { using Ts::operator()...; };
+template <class... Ts> struct Overloaded : Ts... {
+    using Ts::operator()...;
+};
 
-template<class... Ts>
-Overloaded(Ts...) -> Overloaded<Ts...>;
+template <class... Ts> Overloaded(Ts...) -> Overloaded<Ts...>;
 
-} // NAMESPACE CORE
+} // namespace Core
