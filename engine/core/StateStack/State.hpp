@@ -23,7 +23,8 @@ public:
     // To be called after setting the StateStack reference
     virtual bool initializeState() { return true; }
 
-    virtual void handleEvent(const Event& event) = 0;
+    // Optional: gameplay reads input by polling in update(); use this for text entry and UI
+    virtual void handleEvent(const Event&) {}
     virtual void update(sf::Time fixedTimeStep) = 0;
     virtual void draw() = 0;
 

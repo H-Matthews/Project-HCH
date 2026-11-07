@@ -6,12 +6,10 @@
 #include "application/Data/GameResources.hpp"
 #include "application/UI/TextUtil.hpp"
 
-#include "core/Event.hpp"
 #include "core/GameAssetContainer/ResourceHolder.hpp"
 #include "core/InputState.hpp"
 
 #include <string>
-#include <variant>
 
 Application::GameTuning Application::GameState::sTuning;
 
@@ -28,33 +26,21 @@ bool Application::GameState::initializeState() {
     return true;
 }
 
-void Application::GameState::handleEvent(const Core::Event& event) {
-    const auto* keyPressed = std::get_if<Core::KeyPressed>(&event);
-    if (!keyPressed) {
-        return;
-    }
-
-    // One-shot actions (attack); held actions are polled in update()
-    const Actions::Player action = mKeyBindings.getAssignedAction(keyPressed->key);
-    if (action != Actions::Player::NONE && !KeyBindings::isRealTimeAction(action)) {
-        mScene->applyAction(action);
-    }
-
-    if (keyPressed->key == Core::Key::P) {
-        requestStackPush<Application::PauseState>();
-    } else if (keyPressed->key == Core::Key::Escape) {
-        requestStackPop();
-        requestStackPush<Application::MenuState>();
-    }
-
-}
-
 void Application::GameState::update(sf::Time fixedTimeStep) {
-    // Held keys (movement) are polled; one-shot actions arrive through handleEvent
+    // Held keys (movement) act every tick; one-shot actions (attack) act on the tick of the press
     for (const auto& [key, action] : mKeyBindings.getKeyBindings()) {
-        if (KeyBindings::isRealTimeAction(action) && input().isDown(key)) {
+        const bool triggered = KeyBindings::isRealTimeAction(action) ? input().isDown(key)
+                                                                     : input().wasPressed(key);
+        if (triggered) {
             mScene->applyAction(action);
         }
+    }
+
+    if (input().wasPressed(Core::Key::P) || input().wasPressed(Core::Key::Escape)) {
+        requestStackPush<Application::PauseState>();
+    } else if (input().wasPressed(Core::Key::Delete)) {
+        requestStackPop();
+        requestStackPush<Application::MenuState>();
     }
 
     mScene->update(fixedTimeStep);
@@ -64,7 +50,6 @@ void Application::GameState::update(sf::Time fixedTimeStep) {
         GameOverState::setResult(mScene->stats().wave, mScene->stats().score);
         requestStackPush<GameOverState>();
     }
-
 }
 
 void Application::GameState::draw() {

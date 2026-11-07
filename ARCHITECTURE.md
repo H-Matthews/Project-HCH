@@ -181,7 +181,7 @@ flowchart LR
     APP --> STK["StateStack::handleEvent()"]
 ```
 
-`SfmlWindow::pollEvents()` translates SFML events into `Core::Event` and drops the ones the engine does not use. `Application::processInput()` feeds each event to `InputState` (held keys, buttons and the mouse position, reset on `FocusLost`) and then to the state stack. States react to one-shot input in `handleEvent` and poll held input with `input().isDown(Key)` during `update`.
+`SfmlWindow::pollEvents()` translates SFML events into `Core::Event` and drops the ones the engine does not use. `Application::processInput()` feeds each event to `InputState` (held keys, buttons and the mouse position, reset on `FocusLost`) and then to the state stack. `InputState` answers three polled questions: `isDown(x)` (held), `wasPressed(x)` (went down since the last update) and `wasReleased(x)` (went up since the last update). The edges are cleared by `Application` once per fixed update, after the states have run, so a quick tap between two updates is never lost. Gameplay reads all of its input by polling in `update()`. `handleEvent` is optional and is meant for text entry and UI, where each event and its order matters.
 
 ### 4.4 Entity Component System
 

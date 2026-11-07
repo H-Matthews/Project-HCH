@@ -47,12 +47,19 @@ class SandboxState : public Core::State {
             std::cout << "D Key" << std::endl;
         }
 
-        if(input().isDown(Core::MouseButton::Left)) {
-            std::cout << "Left Mouse Button" << std::endl;
+        if(input().wasPressed(Core::MouseButton::Left)) {
+            std::cout << "Clicked Left Mouse Button" << std::endl;
         }
-        if(input().isDown(Core::MouseButton::Right)) {
-            std::cout << "Right Mouse Button" << std::endl;
+        if(input().wasPressed(Core::MouseButton::Right)) {
+            std::cout << "Clicked Right Mouse Button" << std::endl;
         }
+
+        // if(input().isDown(Core::MouseButton::Left)) {
+        //     std::cout << "Left Mouse Button" << std::endl;
+        // }
+        // if(input().isDown(Core::MouseButton::Right)) {
+        //     std::cout << "Right Mouse Button" << std::endl;
+        // }
     }
 
     void draw() override {

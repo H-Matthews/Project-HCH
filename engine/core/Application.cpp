@@ -154,6 +154,10 @@ void Application::run() {
             processInput();
             update(TIME_PER_FRAME);
 
+            // Edge queries (wasPressed/wasReleased) are valid for exactly one update
+            // So, clear
+            mInput.clearEdges();
+
             if (mStateStack.isEmpty()) {
                 mWindow->close();
 
