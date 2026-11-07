@@ -44,7 +44,7 @@ bool SfmlWindow::isOpen() const {
 // goes out of scope, its resources are cleaned up (RAII)
 void SfmlWindow::shutdown() {}
 
-std::optional<Event> SfmlWindow::pollEvents() {
+std::optional<Event> SfmlWindow::pollEvent() {
     while(const auto sfEvent = mSfmlWindow.pollEvent()) {
         if(auto engineEvent = translate(*sfEvent)) {
             return engineEvent;

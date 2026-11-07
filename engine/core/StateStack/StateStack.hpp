@@ -55,6 +55,9 @@ class StateStack {
         std::constructible_from<TState, StateStack&, Context>)
     void pushState();
 
+    // Requests are deferred: pushState/popState/clearStates are applied at the end of the next
+    // update(). Requests made while applying (e.g. from a state's initializeState()) wait one
+    // more update.
     void popState();
     void clearStates();
 

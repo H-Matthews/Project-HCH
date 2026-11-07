@@ -148,10 +148,13 @@ void Application::run() {
         sf::Time elapsedTime = std::min(clock.restart(), sf::seconds(0.25f));
         timeSinceLastUpdate += elapsedTime;
 
+        // Once per frame, even when no update step runs, so window events (close, resize, focus)
+        // are always serviced. Edges set here stay until an update step reads and clears them.
+        processInput();
+
         while (timeSinceLastUpdate > TIME_PER_FRAME) {
             timeSinceLastUpdate -= TIME_PER_FRAME;
 
-            processInput();
             update(TIME_PER_FRAME);
 
             // Edge queries (wasPressed/wasReleased) are valid for exactly one update
@@ -180,7 +183,7 @@ void Application::run() {
 }
 
 void Application::processInput() {
-    while(const auto event = mWindow->pollEvents()) {
+    while(const auto event = mWindow->pollEvent()) {
         if(std::holds_alternative<WindowClosed>(*event)) {
             mWindow->close();
         }

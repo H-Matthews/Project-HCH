@@ -24,7 +24,7 @@ class StubWindow : public Core::Window {
     void close() override {}
     bool isOpen() const override { return true; }
     void shutdown() override {}
-    std::optional<Core::Event> pollEvents() override { return std::nullopt; }
+    std::optional<Core::Event> pollEvent() override { return std::nullopt; }
     void swapBuffers() override {}
     uint32_t getWidth() const override { return 0; }
     uint32_t getHeight() const override { return 0; }
@@ -62,6 +62,21 @@ using Passive = TestState<'T', false, false>;         // overlay that blocks not
 using InputBlocker = TestState<'T', true, false>;     // overlay that blocks input only
 using UpdateBlocker = TestState<'T', false, true>;    // overlay that blocks updates only
 using FullBlocker = TestState<'T', true, true>;       // pause-style overlay
+
+// Asks the stack for another state from inside initializeState()
+class Pusher : public Core::State {
+  public:
+    Pusher(Core::StateStack& stack, Core::Context ctx) : State(stack, ctx) {}
+
+    bool initializeState() override {
+        requestStackPush<Plain>();
+        return true;
+    }
+
+    void update(sf::Time) override {}
+    void draw() override { gLog.push_back("P:draw"); }
+    std::string_view getStateType() override { return "Pusher"; }
+};
 
 using Log = std::vector<std::string>;
 
@@ -156,4 +171,40 @@ TEST_F(StateStackTest, stateBecomesReachableAgainAfterBlockerIsPopped) {
     stack.update(sf::Time::Zero);
 
     EXPECT_EQ(gLog, (Log{"B:event", "B:update:down"}));
+}
+
+TEST_F(StateStackTest, popOnEmptyStackIsIgnored) {
+    stack.popState();
+    stack.update(sf::Time::Zero);
+
+    EXPECT_TRUE(stack.isEmpty());
+}
+
+TEST_F(StateStackTest, extraPopsAreIgnored) {
+    push<Plain>();
+
+    stack.popState();
+    stack.popState();
+    stack.update(sf::Time::Zero);
+    stack.update(sf::Time::Zero);
+
+    EXPECT_TRUE(stack.isEmpty());
+}
+
+TEST_F(StateStackTest, pushFromInitializeStateIsDeferredOneUpdate) {
+    stack.pushState<Pusher>();
+    stack.update(sf::Time::Zero);
+
+    // First update applied only the original push; the one made in initializeState() waits
+    EXPECT_FALSE(stack.isPendingListEmpty());
+    gLog.clear();
+    stack.draw();
+    EXPECT_EQ(gLog, (Log{"P:draw"}));
+
+    stack.update(sf::Time::Zero);
+
+    EXPECT_TRUE(stack.isPendingListEmpty());
+    gLog.clear();
+    stack.draw();
+    EXPECT_EQ(gLog, (Log{"P:draw", "B:draw"}));
 }

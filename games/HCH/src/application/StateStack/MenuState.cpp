@@ -46,6 +46,6 @@ void Application::MenuState::draw() {
                              sf::Color(190, 190, 200), true));
     window.draw(UI::makeText(font, "Enter: Start        Esc: Quit", 26, {middle.x, middle.y + 40.f},
                              sf::Color::White, true));
-    window.draw(UI::makeText(font, "WASD / Arrows: move     Space / J: attack     P: pause", 18,
+    window.draw(UI::makeText(font, "WASD / Arrows: move     Space / J: attack     P/Escape: pause    Del: main menu", 18,
                              {middle.x, middle.y + 110.f}, sf::Color(150, 150, 165), true));
 }

@@ -13,7 +13,7 @@ class SfmlWindow : public Window {
     void close() override;
     bool isOpen() const override;
     void shutdown() override;
-    std::optional<Event> pollEvents() override;
+    std::optional<Event> pollEvent() override;
     void swapBuffers() override;
 
     uint32_t getWidth() const override { return mSfmlWindow.getSize().x; }

@@ -98,7 +98,12 @@ StateStack::createState(const StateStack::PendingStateRequest& changeRequest) {
 void StateStack::applyPendingChanges() {
     std::string logMessage;
 
-    for (StateStack::PendingStateRequest change : mPendingRequests) {
+    // Take the queue first: a state may request more changes from initializeState(), and those
+    // must not be added to the vector being iterated. They wait for the next update.
+    const std::vector<PendingStateRequest> requests = std::move(mPendingRequests);
+    mPendingRequests.clear();
+
+    for (const PendingStateRequest& change : requests) {
         if constexpr (Utility::CAN_LOG_INFO) {
             logMessage.clear();
             logMessage += "State Transition --> ";
@@ -115,8 +120,18 @@ void StateStack::applyPendingChanges() {
             break;
         }
         case Action::POP: {
+            if (mStack.empty()) {
+                if constexpr (Utility::CAN_LOG_WARN) {
+                    if (mLogger) {
+                        mLogger->logWarn("State Transition --> ignored POP on an empty stack");
+                    }
+                }
+
+                continue;
+            }
+
             if constexpr (Utility::CAN_LOG_INFO) {
-                logMessage += "REMOVING state: " + std::string(mStack[mStack.size() - 1]->getStateType());
+                logMessage += "REMOVING state: " + std::string(mStack.back()->getStateType());
             }
 
             mStack.pop_back();
@@ -138,8 +153,6 @@ void StateStack::applyPendingChanges() {
             }
         }
     }
-
-    mPendingRequests.clear();
 }
 
 StateStack::PendingStateRequest::PendingStateRequest(Action action)

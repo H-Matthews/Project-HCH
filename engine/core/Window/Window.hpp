@@ -28,7 +28,7 @@ class Window {
     virtual void close() = 0;
     virtual bool isOpen() const = 0;
     virtual void shutdown() = 0;
-    virtual std::optional<Event> pollEvents() = 0;
+    virtual std::optional<Event> pollEvent() = 0;
     virtual void swapBuffers() = 0;
 
     virtual uint32_t getWidth() const = 0;

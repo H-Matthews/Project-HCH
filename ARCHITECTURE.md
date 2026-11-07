@@ -175,13 +175,13 @@ The engine owns its event types, so states never see SFML events. `Core::Event` 
 ```mermaid
 flowchart LR
     SF["sf::Event"] --> TR["translate()<br/>SfmlEventTranslate.cpp"]
-    TR --> WIN["Window::pollEvents()"]
+    TR --> WIN["Window::pollEvent()"]
     WIN --> APP["Application::processInput()"]
     APP --> INP["InputState::update()"]
     APP --> STK["StateStack::handleEvent()"]
 ```
 
-`SfmlWindow::pollEvents()` translates SFML events into `Core::Event` and drops the ones the engine does not use. `Application::processInput()` feeds each event to `InputState` (held keys, buttons and the mouse position, reset on `FocusLost`) and then to the state stack. `InputState` answers three polled questions: `isDown(x)` (held), `wasPressed(x)` (went down since the last update) and `wasReleased(x)` (went up since the last update). The edges are cleared by `Application` once per fixed update, after the states have run, so a quick tap between two updates is never lost. Gameplay reads all of its input by polling in `update()`. `handleEvent` is optional and is meant for text entry and UI, where each event and its order matters.
+`SfmlWindow::pollEvent()` translates SFML events into `Core::Event` and drops the ones the engine does not use. `Application::processInput()` feeds each event to `InputState` (held keys, buttons and the mouse position, reset on `FocusLost`) and then to the state stack. `InputState` answers three polled questions: `isDown(x)` (held), `wasPressed(x)` (went down since the last update) and `wasReleased(x)` (went up since the last update). The edges are cleared by `Application` once per fixed update, after the states have run, so a quick tap between two updates is never lost. Gameplay reads all of its input by polling in `update()`. `handleEvent` is optional and is meant for text entry and UI, where each event and its order matters.
 
 ### 4.4 Entity Component System
 
@@ -293,9 +293,9 @@ sequenceDiagram
 flowchart TD
     A(["window open?"]) -->|no| Z(["exit loop"])
     A -->|yes| B["accumulate elapsed time<br/>(clamped to 0.25 s)"]
-    B --> C{"accumulated &gt; TIME_PER_FRAME?"}
-    C -->|yes| D["processInput()<br/>window events to InputState + StateStack"]
-    D --> F["update(TIME_PER_FRAME)<br/>StateStack::update, then apply pending push/pop/clear"]
+    B --> D["processInput()<br/>window events to InputState + StateStack<br/>(once per frame)"]
+    D --> C{"accumulated &gt; TIME_PER_FRAME?"}
+    C -->|yes| F["update(TIME_PER_FRAME)<br/>StateStack::update, then apply pending push/pop/clear<br/>then InputState::clearEdges()"]
     F --> G{"state stack empty?"}
     G -->|yes| H["close window"]
     G -->|no| C

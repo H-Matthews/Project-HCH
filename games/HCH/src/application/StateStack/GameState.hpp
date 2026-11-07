@@ -26,6 +26,7 @@ class GameState : public Core::State {
 
     bool initializeState() override;
 
+    void handleEvent(const Core::Event& event) override;
     void update(sf::Time fixedTimeStep) override;
     void draw() override;
 
