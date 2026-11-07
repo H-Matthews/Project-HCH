@@ -14,14 +14,13 @@ class SfmlWindow : public Window {
     void close() override;
     bool isOpen() const override;
     void shutdown() override;
-    void pollEvents() override;
+    std::optional<Event> pollEvents() override;
     void swapBuffers() override;
 
     uint32_t getWidth() const override { return mSfmlWindow.getSize().x; }
     uint32_t getHeight() const override { return mSfmlWindow.getSize().y; }
 
     void* getNativeWindowHandle() const override;
-    void setEventCallback(EventCallbackFn callback) override;
 
     // SFML combines BOTH the OS window and the 2D
     // graphics renderer into a single object. So, these must be here

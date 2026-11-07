@@ -4,7 +4,9 @@
 #include "core/Configuration/DirectoryLayout.hpp"
 #include "core/StateStack/StateStack.hpp"
 #include "core/Messaging/MessageNetwork.hpp"
+#include "core/InputState.hpp"
 #include "core/Window/Window.hpp"
+#include "core/Event.hpp"
 #include "core/GameAssetContainer/ResourceHolder.hpp"
 #include "core/GameAssetContainer/ResourceTypes.hpp"
 
@@ -53,7 +55,6 @@ class Application {
     }
 
     // Subsystem Getters
-    MessageNetwork& getNetwork() { return mNetwork; }
     Window& getWindow() { return *mWindow; }
     sf::RenderWindow& getRenderWindow();
     TextureHolder& getTextures() { return mTextures; }
@@ -69,11 +70,9 @@ class Application {
     void run();
 
   private:
-    void processRealtimeInput();
+    void processInput();
     void update(sf::Time fixedTimeStep);
     void render();
-
-    void handleEvent(const sf::Event& event);
 
     void buildSubsystemLoggers();
 
@@ -95,9 +94,9 @@ class Application {
     FontHolder mFonts;
 
     // CORE APPLICATION CLASSES
-    MessageNetwork mNetwork;
     std::unique_ptr<Window> mWindow;
-    SfmlWindow* sfmlWindow = nullptr; // Unforuntaely necessary for now
+    SfmlWindow* sfmlWindow = nullptr; // Unfortunately necessary for now
+    InputState mInput;
     StateStack mStateStack;
 
     std::shared_ptr<Utility::Logger> mLogger;

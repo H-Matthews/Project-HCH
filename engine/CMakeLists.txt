@@ -11,6 +11,7 @@ set(ENGINE_SRC
     core/StateStack/State.cpp
     core/StateStack/StateStack.cpp
     core/Window/SfmlWindow.cpp
+    core/Window/SfmlEventTranslate.cpp
     core/Configuration/Configuration.cpp
     core/Configuration/DirectoryLayout.cpp
     core/Configuration/ConfigReader/TOMLConfigReader.cpp
@@ -38,8 +39,11 @@ set(ENGINE_INC
     core/StateStack/State.hpp
     core/StateStack/StateStack.hpp
     core/Window/Window.hpp
+    core/Window/SfmlEventTranslate.hpp
     core/Window/SfmlWindow.hpp
     core/Window/WindowFactory.hpp
+    core/Event.hpp
+    core/InputState.hpp
     core/Exceptions/ConfigurationException.hpp
     core/Configuration/Configuration.hpp
     core/Configuration/DirectoryLayout.hpp

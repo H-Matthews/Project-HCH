@@ -1,5 +1,6 @@
 #include "core/Window/SfmlWindow.hpp"
 
+#include "core/Window/SfmlEventTranslate.hpp"
 #include "core/Configuration/ConfigSection/ConfigSection.hpp"
 
 #include <SFML/Window/VideoMode.hpp>
@@ -23,6 +24,9 @@ bool SfmlWindow::initialize(const ConfigSection& section) {
     mSfmlWindow.create(sf::VideoMode(windowSize), title, sf::Style::Close);
     mSfmlWindow.setVerticalSyncEnabled(vsync);
 
+    // This should always be off
+    mSfmlWindow.setKeyRepeatEnabled(false);
+
     return mSfmlWindow.isOpen();
 }
 
@@ -40,12 +44,14 @@ bool SfmlWindow::isOpen() const {
 // goes out of scope, its resources are cleaned up (RAII)
 void SfmlWindow::shutdown() {}
 
-void SfmlWindow::pollEvents() {
-    while (const std::optional<sf::Event> sfEvent = mSfmlWindow.pollEvent()) {
-        if (mEventCallback) {
-            mEventCallback(*sfEvent);
+std::optional<Event> SfmlWindow::pollEvents() {
+    while(const auto sfEvent = mSfmlWindow.pollEvent()) {
+        if(auto engineEvent = translate(*sfEvent)) {
+            return engineEvent;
         }
     }
+
+    return std::nullopt;
 }
 
 void SfmlWindow::swapBuffers() {
@@ -55,10 +61,6 @@ void SfmlWindow::swapBuffers() {
 
 void* SfmlWindow::getNativeWindowHandle() const {
     return reinterpret_cast<void*>(mSfmlWindow.getNativeHandle());
-}
-
-void SfmlWindow::setEventCallback(EventCallbackFn callback) {
-    mEventCallback = std::move(callback);
 }
 
 } // namespace Core

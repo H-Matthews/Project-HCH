@@ -8,13 +8,15 @@
 
 #include <cassert>
 
-Core::StateStack::~StateStack() = default;
+namespace Core {
 
-Core::StateStack::StateStack(Application& application, const ConfigSection* config)
-    : mStack(), mPendingRequests(), mConfig(config), applicationRef(application), mLogger(nullptr) {
+StateStack::~StateStack() = default;
+
+StateStack::StateStack(const ConfigSection* config, Context ctx)
+    : mConfig(config), mStack(), mPendingRequests(), mContext(ctx), mLogger(nullptr) {
 }
 
-void Core::StateStack::update(sf::Time fixedTimeStep) {
+void StateStack::update(sf::Time fixedTimeStep) {
     for (auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr) {
         if (!(*itr)->update(fixedTimeStep)) {
             break;
@@ -24,71 +26,55 @@ void Core::StateStack::update(sf::Time fixedTimeStep) {
     applyPendingChanges();
 }
 
-void Core::StateStack::draw() {
-    for (auto& state : mStack)
+void StateStack::draw() const {
+    for (const auto& state : mStack) {
         state->draw();
+    }
 }
 
-void Core::StateStack::handleKeyPressed(const sf::Event::KeyPressed& keyPressed) {
-    for (auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr) {
-        if (!(*itr)->handleKeyPressed(keyPressed)) {
+void StateStack::handleEvent(const Event& event) {
+    for(auto stackIt = mStack.rbegin(); stackIt != mStack.rend(); ++stackIt) {
+        if (!(*stackIt)->handleEvent(event)) {
             break;
         }
     }
 }
 
-void Core::StateStack::handleMouseMoved(const sf::Event::MouseMoved& mouseMoved) {
-    for (auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr) {
-        if (!(*itr)->handleMouseMoved(mouseMoved)) {
-            break;
-        }
-    }
-}
-
-void Core::StateStack::handleRealTimeInput() {
-    for (auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr) {
-        if (!(*itr)->handleRealTimeInput()) {
-            break;
-        }
-    }
-}
-
-void Core::StateStack::popState() {
+void StateStack::popState() {
     mPendingRequests.emplace_back(Action::POP);
 }
 
-void Core::StateStack::clearStates() {
+void StateStack::clearStates() {
     mPendingRequests.emplace_back(Action::CLEAR);
 }
 
-bool Core::StateStack::isEmpty() const {
+bool StateStack::isEmpty() const {
     return mStack.empty();
 }
 
-bool Core::StateStack::isPendingListEmpty() const {
+bool StateStack::isPendingListEmpty() const {
     return mPendingRequests.empty();
 }
 
-void Core::StateStack::initializeLogger() {
+void StateStack::initializeLogger() {
     if constexpr (Utility::CAN_LOG) {
         if (!mLogger && mConfig) {
-            mLogger = Core::buildLogger(*mConfig);
+            mLogger = buildLogger(*mConfig);
         }
     }
 }
 
-std::unique_ptr<Core::State>
-Core::StateStack::createState(const Core::StateStack::PendingStateRequest& changeRequest) {
+std::unique_ptr<State>
+StateStack::createState(const StateStack::PendingStateRequest& changeRequest) {
     std::unique_ptr<Core::State> createdState(changeRequest.stateConstructor());
-    createdState->setStackRef(this);
     createdState->initializeState();
     return createdState;
 }
 
-void Core::StateStack::applyPendingChanges() {
+void StateStack::applyPendingChanges() {
     std::string logMessage;
 
-    for (Core::StateStack::PendingStateRequest change : mPendingRequests) {
+    for (StateStack::PendingStateRequest change : mPendingRequests) {
         if constexpr (Utility::CAN_LOG_INFO) {
             logMessage.clear();
             logMessage += "State Transition --> ";
@@ -99,14 +85,14 @@ void Core::StateStack::applyPendingChanges() {
             mStack.push_back(createState(change));
 
             if constexpr (Utility::CAN_LOG_INFO) {
-                logMessage += "PUSHING state: " + mStack.back()->getStateName();
+                logMessage += "PUSHING state: " + std::string(mStack.back()->getStateType());
             }
 
             break;
         }
         case Action::POP: {
             if constexpr (Utility::CAN_LOG_INFO) {
-                logMessage += "REMOVING state: " + mStack[mStack.size() - 1]->getStateName();
+                logMessage += "REMOVING state: " + std::string(mStack[mStack.size() - 1]->getStateType());
             }
 
             mStack.pop_back();
@@ -132,5 +118,7 @@ void Core::StateStack::applyPendingChanges() {
     mPendingRequests.clear();
 }
 
-Core::StateStack::PendingStateRequest::PendingStateRequest(Action action)
+StateStack::PendingStateRequest::PendingStateRequest(Action action)
     : action(action), stateConstructor() {}
+
+} // NAMESPACE CORE

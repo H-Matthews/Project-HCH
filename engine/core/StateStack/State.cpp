@@ -3,29 +3,15 @@
 #include "core/StateStack/StateStack.hpp"
 #include "core/Application.hpp"
 
-Core::State::State(std::string stateIdentifier)
-    : mStackRef(nullptr), mStateIdentifierString(stateIdentifier) {}
+namespace Core {
+State::State(StateStack& stack, Context ctx)
+    : mStateStack(stack), mContext(ctx) {}
 
-Core::State::~State() {}
-
-const std::string Core::State::getStateName() {
-    return mStateIdentifierString;
+void State::requestStackPop() {
+    mStateStack.popState();
 }
 
-void Core::State::setStackRef(StateStack* stack) {
-    mStackRef = stack;
-
-    return;
+void State::requestStateClear() {
+    mStateStack.clearStates();
 }
-
-void Core::State::requestStackPop() {
-    mStackRef->popState();
-}
-
-void Core::State::requestStateClear() {
-    mStackRef->clearStates();
-}
-
-Core::Application& Core::State::getApplication() {
-    return mStackRef->getApplication();
-}
+} // NAMESPACE CORE

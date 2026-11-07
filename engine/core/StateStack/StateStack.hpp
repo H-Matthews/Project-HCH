@@ -1,5 +1,7 @@
 #pragma once
 
+#include "core/Event.hpp"
+#include "core/Context.hpp"
 #include "core/Configuration/ConfigSection/ConfigSection.hpp"
 
 #include "utility/Logging/Logger.hpp"
@@ -26,25 +28,23 @@ class StateStack {
     enum class Action { PUSH = 0, POP, CLEAR };
 
   public:
-    explicit StateStack(Application& application, const ConfigSection* config = nullptr);
+    explicit StateStack(const ConfigSection* config, Context ctx);
     ~StateStack();
 
     void update(sf::Time fixedTimeStep);
-    void draw();
+    void draw() const;
+    void handleEvent(const Event& event);
 
-    void handleKeyPressed(const sf::Event::KeyPressed& keyPressed);
-    void handleMouseMoved(const sf::Event::MouseMoved& mouseMoved);
-    void handleRealTimeInput();
-
-    template <typename TState> requires(std::is_base_of_v<State, TState>) void pushState();
+    template <typename TState>
+    requires(std::is_base_of_v<State, TState> &&
+        std::constructible_from<TState, StateStack&, Context>)
+    void pushState();
 
     void popState();
     void clearStates();
 
     bool isEmpty() const;
     bool isPendingListEmpty() const;
-
-    Application& getApplication() { return applicationRef; }
 
     void initializeLogger();
 
@@ -61,18 +61,23 @@ class StateStack {
     std::unique_ptr<State> createState(const PendingStateRequest& changeRequest);
 
   private:
-    std::vector<std::unique_ptr<State>> mStack;
-    std::vector<PendingStateRequest> mPendingRequests;
     const ConfigSection* mConfig;
 
-    Application& applicationRef;
+    std::vector<std::unique_ptr<State>> mStack;
+    std::vector<PendingStateRequest> mPendingRequests;
+    Context mContext;
 
     std::shared_ptr<Utility::Logger> mLogger;
 };
 
-template <typename TState> requires(std::is_base_of_v<State, TState>) void StateStack::pushState() {
+template <typename TState>
+requires(std::is_base_of_v<State, TState> && std::constructible_from<TState, StateStack&, Context>)
+void StateStack::pushState() {
     PendingStateRequest request(Action::PUSH);
-    request.stateConstructor = []() { return std::unique_ptr<State>(new TState()); };
+    request.stateConstructor = [this, ctx = mContext]() {
+        return std::unique_ptr<State>(new TState(*this, ctx));
+    };
     mPendingRequests.push_back(request);
 }
+
 } // namespace Core

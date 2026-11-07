@@ -1,12 +1,11 @@
 #include "core/Application.hpp"
 
 #include "core/Window/WindowFactory.hpp"
-
 // Unfortunately necessary for now
 #include "core/Window/SfmlWindow.hpp"
-
 #include "core/Configuration/LoggerBuilder.hpp"
 #include "core/Exceptions/ConfigurationException.hpp"
+#include "core/Context.hpp"
 
 #include "utility/StringOperations.hpp"
 #include "utility/Logging/LogRegistry.hpp"
@@ -59,8 +58,8 @@ Core::Application::Application(AppSpec appSpec)
       mDirectories(mConfiguration->rootDirectory(),
                    mConfiguration->getSection(Configuration::SECTION_NAME)),
       mState(ApplicationState::UNINITIALIZED),
-      mNetwork(mConfiguration->getSection(MessageNetwork::SECTION_NAME)),
-      mStateStack(*this, mConfiguration->getSection(StateStack::SECTION_NAME)) {
+      mStateStack(mConfiguration->getSection(StateStack::SECTION_NAME),
+                  Context{*mWindow, mInput, *this}) {
     if constexpr (Utility::CAN_LOG) {
         Utility::LogRegistry::instance()->configureRegistry(mDirectories.outputDirectory());
 
@@ -103,8 +102,6 @@ void Application::initialize() {
     // Unfortunately necessary for now
     sfmlWindow = dynamic_cast<SfmlWindow*>((mWindow.get()));
 
-    mWindow->setEventCallback([this](const sf::Event& event) { this->handleEvent(event); });
-
     requestTransition(ApplicationState::INITIALIZED);
 }
 
@@ -112,6 +109,7 @@ sf::RenderWindow& Application::getRenderWindow() {
     if (!sfmlWindow) {
         throw ConfigurationException("Window backend is not SFML");
     }
+
     return sfmlWindow->getRenderWindow();
 }
 
@@ -140,8 +138,6 @@ void Application::run() {
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
     while (mWindow->isOpen()) {
-        mWindow->pollEvents();
-
         // Clamp so a long stall (window drag, breakpoint) cannot cause a spiral of updates
         sf::Time elapsedTime = std::min(clock.restart(), sf::seconds(0.25f));
         timeSinceLastUpdate += elapsedTime;
@@ -149,7 +145,7 @@ void Application::run() {
         while (timeSinceLastUpdate > TIME_PER_FRAME) {
             timeSinceLastUpdate -= TIME_PER_FRAME;
 
-            processRealtimeInput();
+            processInput();
             update(TIME_PER_FRAME);
 
             if (mStateStack.isEmpty()) {
@@ -173,21 +169,15 @@ void Application::run() {
     }
 }
 
-void Application::handleEvent(const sf::Event& event) {
-    if (const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
-        mStateStack.handleKeyPressed(*keyPressed);
-    } else if (const auto* mouseMoved = event.getIf<sf::Event::MouseMoved>()) {
-        mStateStack.handleMouseMoved(*mouseMoved);
-    } else if (event.is<sf::Event::Closed>()) {
-        mWindow->close();
+void Application::processInput() {
+    while(const auto event = mWindow->pollEvents()) {
+        if(std::holds_alternative<WindowClosed>(*event)) {
+            mWindow->close();
+        }
+
+        mInput.update(*event);
+        mStateStack.handleEvent(*event);
     }
-}
-
-void Application::processRealtimeInput() {
-    mStateStack.handleRealTimeInput();
-
-    // Notify subscribers of realtime input
-    mNetwork.notifySubscribers();
 }
 
 void Application::update(sf::Time fixedTimeStep) {
@@ -214,24 +204,23 @@ void Application::render() {
 }
 
 void Application::buildSubsystemLoggers() {
-    mNetwork.initializeLogger();
     mStateStack.initializeLogger();
 }
 
 bool Application::isValidTransition(ApplicationState from, ApplicationState to) const {
     switch (from) {
-    case ApplicationState::UNINITIALIZED: {
-        return to == ApplicationState::INITIALIZED;
-    }
-    case ApplicationState::INITIALIZED: {
-        return to == ApplicationState::RUNNING;
-    }
-    case ApplicationState::RUNNING: {
-        return to == ApplicationState::SHUTTING_DOWN;
-    }
-    default: {
-        return false;
-    }
+        case ApplicationState::UNINITIALIZED: {
+            return to == ApplicationState::INITIALIZED;
+        }
+        case ApplicationState::INITIALIZED: {
+            return to == ApplicationState::RUNNING;
+        }
+        case ApplicationState::RUNNING: {
+            return to == ApplicationState::SHUTTING_DOWN;
+        }
+        default: {
+            return false;
+        }
     }
 }
 

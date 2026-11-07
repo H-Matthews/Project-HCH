@@ -15,42 +15,39 @@
 namespace Core {
 
 class State {
-  public:
-    State(std::string stateIdentifier);
-    virtual ~State();
+public:
+    explicit State(StateStack& stack, Context ctx);
+    virtual ~State() = default;
 
     // To be called after setting the StateStack reference
     virtual bool initializeState() { return true; }
 
-    virtual void draw() = 0;
+    virtual bool handleEvent(const Event& event) = 0;
     virtual bool update(sf::Time fixedTimeStep) = 0;
-    virtual bool handleKeyPressed(const sf::Event::KeyPressed& keyPressedEvent) = 0;
-    virtual bool handleMouseMoved(const sf::Event::MouseMoved&) { return false; }
-    virtual bool handleRealTimeInput() { return false; }
+    virtual void draw() = 0;
 
-    const std::string getStateName();
-    void setStackRef(StateStack* stack);
+    virtual std::string_view getStateType() = 0;
 
-  protected:
-    template <typename TState> requires(std::is_base_of_v<State, TState>) void requestStackPush();
+protected:
+    const InputState& input() const { return mContext.input; }
+    Window& window() const { return mContext.window; }
+    Application& app() const { return mContext.application; }
 
-    Application& getApplication();
-
+    template <typename TState>
+    requires(std::is_base_of_v<State, TState> && std::constructible_from<TState, Context>)
+    void requestStackPush();
     void requestStackPop();
     void requestStateClear();
 
-  protected:
-    StateStack* mStackRef;
-
-  private:
-    std::string mStateIdentifierString;
+private:
+    StateStack& mStateStack;
+    Context mContext;
 };
 
 template <typename TState>
-requires(std::is_base_of_v<State, TState>) void State::requestStackPush() {
-    mStackRef->pushState<TState>();
-
-    return;
+requires(std::is_base_of_v<State, TState> && std::constructible_from<TState, Context>)
+void State::requestStackPush() {
+    mStateStack.pushState<TState>();
 }
 
 } // namespace Core
