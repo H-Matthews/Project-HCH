@@ -13,6 +13,26 @@
 Application::MenuState::MenuState(Core::StateStack& stack, Core::Context ctx)
     : State(stack, ctx) {}
 
+void Application::MenuState::handleEvent(const Core::Event& event) {
+    const auto* keyPressed = std::get_if<Core::KeyPressed>(&event);
+    if (!keyPressed) {
+        return;
+    }
+
+    if (keyPressed->key == Core::Key::Enter) {
+        requestStackPop();
+
+        // Push GameState
+        requestStackPush<Application::GameState>();
+    } else if (keyPressed->key == Core::Key::Escape) {
+        requestStackPop();
+    }
+
+}
+
+void Application::MenuState::update(sf::Time) {
+}
+
 void Application::MenuState::draw() {
     sf::RenderWindow& window = renderWindow();
     const sf::Font& font = fonts().get(Fonts::ARIAL);
@@ -28,26 +48,4 @@ void Application::MenuState::draw() {
                              sf::Color::White, true));
     window.draw(UI::makeText(font, "WASD / Arrows: move     Space / J: attack     P: pause", 18,
                              {middle.x, middle.y + 110.f}, sf::Color(150, 150, 165), true));
-}
-
-bool Application::MenuState::update(sf::Time) {
-    return true;
-}
-
-bool Application::MenuState::handleEvent(const Core::Event& event) {
-    const auto* keyPressed = std::get_if<Core::KeyPressed>(&event);
-    if (!keyPressed) {
-        return true;
-    }
-
-    if (keyPressed->key == Core::Key::Enter) {
-        requestStackPop();
-
-        // Push GameState
-        requestStackPush<Application::GameState>();
-    } else if (keyPressed->key == Core::Key::Escape) {
-        requestStackPop();
-    }
-
-    return true;
 }

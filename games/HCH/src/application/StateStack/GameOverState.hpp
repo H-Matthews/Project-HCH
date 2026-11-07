@@ -18,11 +18,15 @@ class GameOverState : public Core::State {
 
     GameOverState(Core::StateStack& stack, Core::Context ctx);
 
-    virtual void draw() override;
-    virtual bool update(sf::Time fixedTimeStep) override;
-    bool handleEvent(const Core::Event& event) override;
+    void draw() override;
+    void update(sf::Time fixedTimeStep) override;
+    void handleEvent(const Core::Event& event) override;
 
     std::string_view getStateType() override { return TYPE; }
+
+    // Overlay: freezes and silences the states beneath it
+    bool blocksInput() const override { return true; }
+    bool blocksUpdates() const override { return true; }
 
   private:
     static int sWave;

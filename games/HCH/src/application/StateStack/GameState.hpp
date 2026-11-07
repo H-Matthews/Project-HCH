@@ -22,12 +22,12 @@ class GameState : public Core::State {
     static void setTuning(const GameTuning& tuning);
 
     GameState(Core::StateStack& stack, Core::Context ctx);
-    ~GameState() override;
+    ~GameState() override = default;
 
     bool initializeState() override;
 
-    bool handleEvent(const Core::Event& event) override;
-    bool update(sf::Time fixedTimeStep) override;
+    void handleEvent(const Core::Event& event) override;
+    void update(sf::Time fixedTimeStep) override;
     void draw() override;
 
     std::string_view getStateType() override { return TYPE; }

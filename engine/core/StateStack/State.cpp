@@ -5,7 +5,7 @@
 
 namespace Core {
 State::State(StateStack& stack, Context ctx)
-    : mStateStack(stack), mContext(ctx) {}
+    : mStateStack(stack), mContext(ctx), mInput(ctx.input) {}
 
 sf::RenderWindow& State::renderWindow() const {
     if (!mContext.renderWindow) {

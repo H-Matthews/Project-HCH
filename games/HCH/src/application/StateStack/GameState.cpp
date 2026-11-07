@@ -22,18 +22,16 @@ void Application::GameState::setTuning(const GameTuning& tuning) {
 Application::GameState::GameState(Core::StateStack& stack, Core::Context ctx)
     : State(stack, ctx) {}
 
-Application::GameState::~GameState() = default;
-
 bool Application::GameState::initializeState() {
     mScene = std::make_unique<Scene>(renderWindow(), sTuning);
 
     return true;
 }
 
-bool Application::GameState::handleEvent(const Core::Event& event) {
+void Application::GameState::handleEvent(const Core::Event& event) {
     const auto* keyPressed = std::get_if<Core::KeyPressed>(&event);
     if (!keyPressed) {
-        return true;
+        return;
     }
 
     // One-shot actions (attack); held actions are polled in update()
@@ -49,10 +47,9 @@ bool Application::GameState::handleEvent(const Core::Event& event) {
         requestStackPush<Application::MenuState>();
     }
 
-    return true;
 }
 
-bool Application::GameState::update(sf::Time fixedTimeStep) {
+void Application::GameState::update(sf::Time fixedTimeStep) {
     // Held keys (movement) are polled; one-shot actions arrive through handleEvent
     for (const auto& [key, action] : mKeyBindings.getKeyBindings()) {
         if (KeyBindings::isRealTimeAction(action) && input().isDown(key)) {
@@ -68,7 +65,6 @@ bool Application::GameState::update(sf::Time fixedTimeStep) {
         requestStackPush<GameOverState>();
     }
 
-    return true;
 }
 
 void Application::GameState::draw() {

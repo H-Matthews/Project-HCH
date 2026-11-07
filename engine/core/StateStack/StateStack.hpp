@@ -19,6 +19,23 @@ namespace Core {
 class Application;
 class State;
 
+/**
+ * PROPAGATION RULE
+ *
+ * The stack is walked top-down (most recently pushed state first). A state is reached unless a
+ * state ABOVE it blocks that channel. Each State declares what it blocks:
+ *
+ *   blocksInput()    -> states below receive no events, and their input() reports every key up
+ *   blocksUpdates()  -> states below are not updated (they are still drawn, bottom-up)
+ *
+ * The state that blocks is itself still reached. Example, with a Pause State on top of Game:
+ *
+ *   Pause (blocks input + updates)  -> gets events, input and update
+ *   Game                            -> gets nothing; frozen and deaf until Pause is popped
+ *
+ * The whole rule lives in StateStack::handleEvent(), StateStack::update() and
+ * StateStack::refreshInputGating().
+ */
 class StateStack {
   public:
     static constexpr std::string_view SECTION_NAME = "StateStack";
@@ -48,6 +65,9 @@ class StateStack {
 
   private:
     void applyPendingChanges();
+
+    // Enables or disables each state's InputView according to the propagation rule
+    void refreshInputGating();
 
     struct PendingStateRequest {
         explicit PendingStateRequest(Action action);

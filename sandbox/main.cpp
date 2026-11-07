@@ -25,28 +25,26 @@ class SandboxState : public Core::State {
 
     std::string_view getStateType() override { return TYPE; }
 
-    bool handleEvent(const Core::Event& event) override {
+    void handleEvent(const Core::Event& event) override {
         if(auto* e = std::get_if<Core::KeyPressed>(&event)) {
             if(e->key == Core::Key::Escape) {
                 requestStateClear();
             }
         }
-
-        return false;
     }
 
-    bool update(sf::Time) override {
-        if(input().isDown(Core::Key::Left)) {
-            std::cout << "Left Key" << std::endl;
+    void update(sf::Time) override {
+        if(input().isDown(Core::Key::W)) {
+            std::cout << "W Key" << std::endl;
         }
-        if(input().isDown(Core::Key::Right)) {
-            std::cout << "Right Key" << std::endl;
+        if(input().isDown(Core::Key::S)) {
+            std::cout << "S Key" << std::endl;
         }
-        if(input().isDown(Core::Key::Up)) {
-            std::cout << "Up Key" << std::endl;
+        if(input().isDown(Core::Key::A)) {
+            std::cout << "A Key" << std::endl;
         }
-        if(input().isDown(Core::Key::Down)) {
-            std::cout << "Down Key" << std::endl;
+        if(input().isDown(Core::Key::D)) {
+            std::cout << "D Key" << std::endl;
         }
 
         if(input().isDown(Core::MouseButton::Left)) {
@@ -55,8 +53,6 @@ class SandboxState : public Core::State {
         if(input().isDown(Core::MouseButton::Right)) {
             std::cout << "Right Mouse Button" << std::endl;
         }
-
-        return true;
     }
 
     void draw() override {

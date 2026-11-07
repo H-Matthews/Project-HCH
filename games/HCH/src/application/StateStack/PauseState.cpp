@@ -28,15 +28,13 @@ void Application::PauseState::draw() {
                              {middle.x, middle.y + 30.f}, sf::Color(190, 190, 200), true));
 }
 
-// Returning false stops the GameState underneath from updating
-bool Application::PauseState::update(sf::Time) {
-    return false;
+void Application::PauseState::update(sf::Time) {
 }
 
-bool Application::PauseState::handleEvent(const Core::Event& event) {
+void Application::PauseState::handleEvent(const Core::Event& event) {
     const auto* keyPressed = std::get_if<Core::KeyPressed>(&event);
     if (!keyPressed) {
-        return false;
+        return;
     }
 
     // Pops the Pause State, returning to the GameState
@@ -49,5 +47,4 @@ bool Application::PauseState::handleEvent(const Core::Event& event) {
         requestStackPush<Application::MenuState>();
     }
 
-    return false;
 }

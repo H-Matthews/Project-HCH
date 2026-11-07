@@ -39,15 +39,13 @@ void Application::GameOverState::draw() {
                              {middle.x, middle.y + 70.f}, sf::Color(190, 190, 200), true));
 }
 
-// Returning false freezes the GameState underneath
-bool Application::GameOverState::update(sf::Time) {
-    return false;
+void Application::GameOverState::update(sf::Time) {
 }
 
-bool Application::GameOverState::handleEvent(const Core::Event& event) {
+void Application::GameOverState::handleEvent(const Core::Event& event) {
     const auto* keyPressed = std::get_if<Core::KeyPressed>(&event);
     if (!keyPressed) {
-        return false;
+        return;
     }
 
     if (keyPressed->key == Core::Key::Enter) {
@@ -58,5 +56,4 @@ bool Application::GameOverState::handleEvent(const Core::Event& event) {
         requestStackPush<Application::MenuState>();
     }
 
-    return false;
 }

@@ -13,13 +13,33 @@ namespace Core {
 StateStack::~StateStack() = default;
 
 StateStack::StateStack(const ConfigSection* config, Context ctx)
-    : mConfig(config), mStack(), mPendingRequests(), mContext(ctx), mLogger(nullptr) {
+    : mConfig(config), mContext(ctx) {
+}
+
+void StateStack::refreshInputGating() {
+    bool inputOpen = true;
+
+    for (auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr) {
+        (*itr)->setInputEnabled(inputOpen);
+
+        if ((*itr)->blocksInput()) {
+            inputOpen = false;
+        }
+    }
 }
 
 void StateStack::update(sf::Time fixedTimeStep) {
+    refreshInputGating();
+
+    bool updatesOpen = true;
+
     for (auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr) {
-        if (!(*itr)->update(fixedTimeStep)) {
-            break;
+        if (updatesOpen) {
+            (*itr)->update(fixedTimeStep);
+        }
+
+        if ((*itr)->blocksUpdates()) {
+            updatesOpen = false;
         }
     }
 
@@ -33,8 +53,12 @@ void StateStack::draw() const {
 }
 
 void StateStack::handleEvent(const Event& event) {
-    for(auto stackIt = mStack.rbegin(); stackIt != mStack.rend(); ++stackIt) {
-        if (!(*stackIt)->handleEvent(event)) {
+    refreshInputGating();
+
+    for (auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr) {
+        (*itr)->handleEvent(event);
+
+        if ((*itr)->blocksInput()) {
             break;
         }
     }

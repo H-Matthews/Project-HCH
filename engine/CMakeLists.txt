@@ -29,6 +29,7 @@ set(ENGINE_SRC
 
 set(ENGINE_INC
     core/Application.hpp
+    core/StateStack/InputView.hpp
     core/StateStack/State.hpp
     core/StateStack/StateStack.hpp
     core/Window/Window.hpp

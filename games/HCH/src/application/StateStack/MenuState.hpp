@@ -11,9 +11,9 @@ class MenuState : public Core::State {
 
     MenuState(Core::StateStack& stack, Core::Context ctx);
 
-    virtual void draw() override;
-    virtual bool update(sf::Time fixedTimeStep) override;
-    bool handleEvent(const Core::Event& event) override;
+    void handleEvent(const Core::Event& event) override;
+    void update(sf::Time fixedTimeStep) override;
+    void draw() override;
 
     std::string_view getStateType() override { return TYPE; }
 };

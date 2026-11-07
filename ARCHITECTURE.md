@@ -160,7 +160,8 @@ Any other transition is rejected. `pushState<T>()` is ignored while the applicat
 
 `Core::StateStack` holds a vector of `Core::State` objects. Typical use is layered screens: a pause menu on top of the game, for example.
 
-- **Events and updates** (`handleEvent(const Event&)` and `update`) are delivered top-down. Each state's return value says whether the states below it should also receive the call; returning `false` stops propagation (an overlay such as `PauseState` freezes the game beneath it this way).
+- **Propagation is declarative.** The stack is walked top-down, and a state is reached unless a state above it blocks that channel. A state declares `blocksInput()` (states below get no events, and their `input()` reports every key up) and/or `blocksUpdates()` (states below are not updated, but still drawn). `PauseState` and `GameOverState` block both. `handleEvent` and `update` return `void`; the whole rule lives in `StateStack::handleEvent()`, `update()` and `refreshInputGating()`.
+- **Input is gated per state.** `State::input()` returns an `InputView`, a thin per-state gate over the one shared `InputState`. The stack disables the view of every state beneath a `blocksInput()` state, so polled `isDown()` is blocked the same way events are.
 - **Drawing** is bottom-up, so lower states stay visible beneath overlays.
 - **Transitions are deferred.** `pushState<T>()`, `popState()` and `clearStates()` only enqueue a `PendingStateRequest`; the queue is applied by `applyPendingChanges()` at the end of `StateStack::update()`. This avoids invalidating the stack while it is being iterated.
 - **Creation uses functor factories.** A push stores a `std::function<std::unique_ptr<State>()>` created in a templated method, so the stack itself never includes game headers.
