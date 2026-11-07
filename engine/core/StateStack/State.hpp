@@ -6,13 +6,14 @@
 #include "core/GameAssetContainer/ResourceTypes.hpp"
 
 #include <SFML/System/Time.hpp>
-#include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics.hpp>
 
 #include <string>
 
 namespace Core {
+
+class Window;
 
 class State {
 public:
@@ -31,10 +32,10 @@ public:
 protected:
     const InputState& input() const { return mContext.input; }
     Window& window() const { return mContext.window; }
-    Application& app() const { return mContext.application; }
+    sf::RenderWindow& renderWindow() const;
 
     template <typename TState>
-    requires(std::is_base_of_v<State, TState> && std::constructible_from<TState, Context>)
+    requires(std::is_base_of_v<State, TState> && std::constructible_from<TState, StateStack&, Context>)
     void requestStackPush();
     void requestStackPop();
     void requestStateClear();
@@ -45,7 +46,7 @@ private:
 };
 
 template <typename TState>
-requires(std::is_base_of_v<State, TState> && std::constructible_from<TState, Context>)
+requires(std::is_base_of_v<State, TState> && std::constructible_from<TState, StateStack&, Context>)
 void State::requestStackPush() {
     mStateStack.pushState<TState>();
 }

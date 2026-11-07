@@ -60,7 +60,7 @@ class SandboxState : public Core::State {
     }
 
     void draw() override {
-        app().getRenderWindow().clear(sf::Color(30,30,40));
+        renderWindow().clear(sf::Color(30,30,40));
     }
 };
 

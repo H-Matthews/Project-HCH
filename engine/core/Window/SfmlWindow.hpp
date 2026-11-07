@@ -3,7 +3,6 @@
 #include "core/Window/Window.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Window/Event.hpp>
 
 namespace Core {
 
@@ -31,7 +30,6 @@ class SfmlWindow : public Window {
 
   private:
     sf::RenderWindow mSfmlWindow;
-    EventCallbackFn mEventCallback;
 };
 
 } // namespace Core

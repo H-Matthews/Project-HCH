@@ -76,7 +76,6 @@ class Application {
 
     void buildSubsystemLoggers();
 
-    bool transitionState(State statusToTransfer);
     bool isValidTransition(ApplicationState from, ApplicationState to) const;
 
     inline bool isInitialized() const;

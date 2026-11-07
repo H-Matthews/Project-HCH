@@ -7,7 +7,6 @@
 #include "utility/Logging/Logger.hpp"
 
 #include <SFML/System/Time.hpp>
-#include <SFML/Window/Event.hpp>
 
 #include <vector>
 #include <functional>

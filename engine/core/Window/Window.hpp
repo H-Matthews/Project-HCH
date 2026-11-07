@@ -9,15 +9,7 @@
 #include <functional>
 #include <optional>
 
-// TODO: REMOVE ASAP
-#include <SFML/Window/Event.hpp>
-
 namespace Core {
-
-// TODO: Create Engine Event System
-// Because the Engine does NOT yet have its own Event System,
-// We are forced to have SFML in the WindowInterface
-using EventCallbackFn = std::function<void(const sf::Event&)>;
 
 class Window {
   public:

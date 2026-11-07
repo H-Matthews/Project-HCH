@@ -1,19 +1,22 @@
 #pragma once
 
+namespace sf {
+class RenderWindow;
+}
+
 namespace Core {
 
 class Window;
 class InputState;
-class Application;
 
 struct Context {
     Window& window;
-    const InputState& input;
 
-    // This is just so we can get the sf::RenderWindow
-    // Should NOT be used for anything else. The sf::RenderWindow is required
-    // on draw() calls for now.
-    Application& application;
+    // Null if the window backend is not SFML.
+    // TEMPORARY: required on draw() calls until the engine has its own render abstraction.
+    sf::RenderWindow* renderWindow;
+
+    const InputState& input;
 };
 
 } // NAMESPACE CORE

@@ -53,13 +53,37 @@ std::optional<Core::ApplicationState> convertStringToAppStateEnum(std::string_vi
     return appStateEnum;
 }
 
+namespace {
+
+// The window must exist before the StateStack is built, because Context holds a reference to it
+std::unique_ptr<Window> createWindow(const Configuration& configuration) {
+    const ConfigSection* windowSection = configuration.getSection(Window::SECTION_NAME);
+    if (!windowSection) {
+        throw ConfigurationException("Missing [Window] config section");
+    }
+
+    auto window = WindowFactory::create(*windowSection);
+    if (!window) {
+        throw ConfigurationException("Window is NULL");
+    }
+
+    return window;
+}
+
+} // NAMESPACE ANONYMOUS
+
 Core::Application::Application(AppSpec appSpec)
     : mConfiguration(std::make_unique<Configuration>(std::move(appSpec.configSpec))),
       mDirectories(mConfiguration->rootDirectory(),
                    mConfiguration->getSection(Configuration::SECTION_NAME)),
       mState(ApplicationState::UNINITIALIZED),
+      mWindow(createWindow(*mConfiguration)),
+      // Unfortunately necessary for now
+      sfmlWindow(dynamic_cast<SfmlWindow*>(mWindow.get())),
       mStateStack(mConfiguration->getSection(StateStack::SECTION_NAME),
-                  Context{*mWindow, mInput, *this}) {
+                  Context{*mWindow,
+                          sfmlWindow ? &sfmlWindow->getRenderWindow() : nullptr,
+                          mInput}) {
     if constexpr (Utility::CAN_LOG) {
         Utility::LogRegistry::instance()->configureRegistry(mDirectories.outputDirectory());
 
@@ -84,24 +108,6 @@ bool Application::requestTransition(ApplicationState nextState) {
 }
 
 void Application::initialize() {
-    if (!mConfiguration) {
-        throw ConfigurationException("Configuration is NULL");
-    }
-
-    const ConfigSection* windowSection = mConfiguration->getSection(Window::SECTION_NAME);
-    if (!windowSection) {
-        throw ConfigurationException("Missing [Window] config section");
-    }
-
-    mWindow = WindowFactory::create(*windowSection);
-
-    if (!mWindow) {
-        throw ConfigurationException("Window is NULL");
-    }
-
-    // Unfortunately necessary for now
-    sfmlWindow = dynamic_cast<SfmlWindow*>((mWindow.get()));
-
     requestTransition(ApplicationState::INITIALIZED);
 }
 

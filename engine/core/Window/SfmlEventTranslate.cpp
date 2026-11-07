@@ -74,14 +74,14 @@ Key toKey(SfKey sfKey) {
     }
 }
 
-MouseButton toMouse(sf::Mouse::Button sfButton) {
+std::optional<MouseButton> toMouse(sf::Mouse::Button sfButton) {
     switch(sfButton) {
         case SfButton::Left:   return MouseButton::Left;
         case SfButton::Right:  return MouseButton::Right;
         case SfButton::Middle: return MouseButton::Middle;
         case SfButton::Extra1: return MouseButton::Extra1;
         case SfButton::Extra2: return MouseButton::Extra2;
-        default:               return MouseButton::Left; // Should be unreachable
+        default:               return std::nullopt;
     }
 }
 
@@ -117,6 +117,10 @@ std::optional<Event> translate(const sf::Event& e) {
     }
 
     if(auto* sfT = e.getIf<SfEvent::TextEntered>()) {
+        // Drop control characters (backspace, enter, tab, DEL); those arrive as KeyPressed
+        if(sfT->unicode < 32 || sfT->unicode == 127) {
+            return std::nullopt;
+        }
         return TextEntered{sfT->unicode};
     }
 
@@ -125,11 +129,19 @@ std::optional<Event> translate(const sf::Event& e) {
     }
 
     if(auto* sfM = e.getIf<SfEvent::MouseButtonPressed>()) {
-        return MousePressed{toMouse(sfM->button), sfM->position.x, sfM->position.y};
+        const auto button = toMouse(sfM->button);
+        if(!button) {
+            return std::nullopt;
+        }
+        return MousePressed{*button, sfM->position.x, sfM->position.y};
     }
 
     if(auto* sfM = e.getIf<SfEvent::MouseButtonReleased>()) {
-        return MouseReleased{toMouse(sfM->button), sfM->position.x, sfM->position.y};
+        const auto button = toMouse(sfM->button);
+        if(!button) {
+            return std::nullopt;
+        }
+        return MouseReleased{*button, sfM->position.x, sfM->position.y};
     }
 
     if(auto* sfM = e.getIf<SfEvent::MouseWheelScrolled>()) {
